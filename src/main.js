@@ -9,6 +9,7 @@ import { perf } from './perf.js';
 import { worldMat } from './world.js';
 import { CatAvatar, defaultLook, cleanLook, FUR_COLORS, EYE_COLORS, PATTERNS } from './cat.js';
 import { store, emit, on } from './util.js';
+import { rec } from './rec.js';
 
 THREE.ColorManagement.enabled = false; // pipeline em espaço gama: mais leve no Adreno 530 do Oculus Go
 const $ = (id) => document.getElementById(id);
@@ -103,17 +104,24 @@ async function enterVR() {
 $('play').onclick = start; $('vr').onclick = enterVR; $('vr2').onclick = enterVR;
 
 // ---------- loop ----------
-let last = 0;
+let last = 0, recFlip = false; const recCam = new THREE.PerspectiveCamera(80, 16 / 9, 0.05, 400); scene.add(recCam);
+addEventListener('keydown', (e) => { if (e.code === 'KeyR' && started && !(e.target && e.target.tagName === 'INPUT') && !(ui.open && ui.page === 'kb')) { const m = rec.toggle(canvas); if (m) S.toast(m, '#ff9a8a'); } });
 renderer.setAnimationLoop((t, frame) => {
   const dt = Math.min(0.05, Math.max(0.001, (t - last) / 1000)); const raw = (t - last) / 1000; last = t;
   if (!started) { if (pcat) { pcat.root.rotation.y = Math.PI + Math.sin(t / 1400) * 0.9; pcat.speed = 1.2; pcat.update(dt); } pcam.aspect = innerWidth / innerHeight; pcam.updateProjectionMatrix(); renderer.render(pv, pcam); return; }
   perf.tick(raw);
   // resolução dinâmica dentro do VR (quando o navegador suporta viewport scaling)
   if (frame && renderer.xr.isPresenting) { const ref = renderer.xr.getReferenceSpace(), pose = ref && frame.getViewerPose(ref); if (pose) for (const v of pose.views) if (v.requestViewportScale) v.requestViewportScale(Math.max(0.5, perf.scale)); }
-  G.update(dt); ui.update(dt);
+  G.update(dt); ui.update(dt); rec.tick();
   renderer.render(scene, camera);
+  // gravando dentro do VR: o canvas da página não recebe a imagem dos olhos, então desenhamos nele uma visão extra (a cada 2 quadros)
+  if (rec.on && renderer.xr.isPresenting && (recFlip = !recFlip)) {
+    const rt = renderer.getRenderTarget(); renderer.xr.enabled = false; renderer.setRenderTarget(null);
+    camera.getWorldPosition(recCam.position); camera.getWorldQuaternion(recCam.quaternion); recCam.aspect = canvas.width / canvas.height; recCam.updateProjectionMatrix();
+    renderer.render(scene, recCam); renderer.xr.enabled = true; renderer.setRenderTarget(rt);
+  }
 });
 on('look', () => { /* a cor das patas vem de S.look a cada quadro */ });
 addEventListener('beforeunload', () => { net.leave(); });
-self.RV = { G, S, net, perf, player, ui }; // para depuração no console
+self.RV = { G, S, net, perf, player, ui, rec }; // para depuração no console
 boot();

@@ -184,4 +184,12 @@
 "dungeon/shield-round",
 "dungeon/potion",
 "survival/fish",
-"plat/heart"]
+"plat/heart",
+"grave/character-ghost",
+"grave/character-skeleton",
+"grave/character-zombie",
+"dungeon/character-orc",
+"survival/tool-shovel",
+"survival/tool-pickaxe-upgraded",
+"survival/tool-hammer",
+"nature/canoe_paddle"]

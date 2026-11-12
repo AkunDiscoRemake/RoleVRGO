@@ -77,6 +77,10 @@ export const QUESTS = {
   i2: { npc: 'capitao', title: 'Pescaria', desc: 'Pesque 5 peixes.', goal: { t: 'fish', n: 5 }, xp: 120, coins: 110, after: 'i1' },
   i3: { npc: 'capitao', title: 'O navio naufragado', desc: 'Ache o segredo no mastro do naufrágio.', goal: { t: 'secret', k: 'island', n: 1 }, xp: 180, coins: 220, after: 'i2' },
   t1: { npc: 'sensei', title: 'Pista de obstáculos', desc: 'Complete a pista de escalada do Campo de Treino.', goal: { t: 'secret', k: 'training', n: 1 }, xp: 120, coins: 90 },
+  f3: { npc: 'salvia', title: 'Floresta assombrada', desc: 'Derrote 5 inimigos na Floresta.', goal: { t: 'kill', n: 5 }, xp: 150, coins: 120, after: 'f1' },
+  m4: { npc: 'tunel', title: 'Orcs nos túneis', desc: 'Derrote 4 Orcs.', goal: { t: 'kill', k: 'orc', n: 4 }, xp: 200, coins: 180, after: 'm3' },
+  d3: { npc: 'safira', title: 'Ossos do deserto', desc: 'Derrote 6 Esqueletos.', goal: { t: 'kill', k: 'skeleton', n: 6 }, xp: 180, coins: 150 },
+  v5: { npc: 'ferreiro', title: 'Mãos à obra', desc: 'Fabrique 2 itens (menu rápido > Fabricar).', goal: { t: 'craft', n: 2 }, xp: 100, coins: 80, after: 'v4' },
   t2: { npc: 'sensei', title: 'Defesa primeiro', desc: 'Bloqueie 5 golpes do Mestre.', goal: { t: 'blocked', n: 5 }, xp: 120, coins: 90, after: 't1' }
 };
 // Missões diárias (3 por dia, sorteadas pela data UTC)
@@ -86,7 +90,8 @@ export const DAILY = [
   { title: 'Colete 10 itens da natureza', goal: { t: 'forage', n: 10 }, xp: 90, coins: 70 }, { title: 'Dê 25 impulsos com as patas', goal: { t: 'fling', n: 25 }, xp: 80, coins: 60 },
   { title: 'Visite 4 mapas', goal: { t: 'visit', n: 4 }, xp: 100, coins: 80 }, { title: 'Venda itens por 150 moedas', goal: { t: 'sold', n: 150 }, xp: 90, coins: 60 },
   { title: 'Use 5 emotes', goal: { t: 'emote', n: 5 }, xp: 60, coins: 50 }, { title: 'Desenterre 2 tesouros', goal: { t: 'dig', n: 2 }, xp: 110, coins: 90 },
-  { title: 'Vença 1 luta', goal: { t: 'ko', n: 1 }, xp: 150, coins: 120 }, { title: 'Converse com 4 NPCs', goal: { t: 'talk', n: 4 }, xp: 70, coins: 50 }
+  { title: 'Vença 1 luta', goal: { t: 'ko', n: 1 }, xp: 150, coins: 120 }, { title: 'Converse com 4 NPCs', goal: { t: 'talk', n: 4 }, xp: 70, coins: 50 },
+  { title: 'Derrote 8 inimigos', goal: { t: 'kill', n: 8 }, xp: 140, coins: 110 }, { title: 'Fabrique 1 item', goal: { t: 'craft', n: 1 }, xp: 80, coins: 60 }
 ];
 // Conquistas: s = estatística, n = alvo
 export const ACHIEVEMENTS = [
@@ -102,7 +107,8 @@ export const ACHIEVEMENTS = [
   { id: 'lv1', n: 'Nível 5', d: 'Chegue ao nível 5', s: 'level', v: 5, c: 100 }, { id: 'lv2', n: 'Nível 15', d: 'Chegue ao nível 15', s: 'level', v: 15, c: 500 },
   { id: 'co1', n: 'Pé-de-meia', d: 'Ganhe 1000 moedas no total', s: 'earned', v: 1000, c: 100 }, { id: 'so1', n: 'Sociável', d: 'Faça carinho em outro jogador', s: 'pat', v: 1, c: 40 },
   { id: 'em1', n: 'Expressivo', d: 'Use 20 emotes', s: 'emote', v: 20, c: 50 }, { id: 'qu1', n: 'Prestativo', d: 'Complete 10 missões', s: 'quests', v: 10, c: 300 },
-  { id: 'ev1', n: 'Na hora certa', d: 'Participe de 1 evento mundial', s: 'event', v: 1, c: 100 }, { id: 'fr1', n: 'Amigos', d: 'Adicione 1 amigo', s: 'friends', v: 1, c: 50 }
+  { id: 'ev1', n: 'Na hora certa', d: 'Participe de 1 evento mundial', s: 'event', v: 1, c: 100 }, { id: 'ki1', n: 'Caçador', d: 'Derrote 10 inimigos', s: 'kill', v: 10, c: 80 }, { id: 'ki2', n: 'Exterminador', d: 'Derrote 150 inimigos', s: 'kill', v: 150, c: 700 },
+  { id: 'cr1', n: 'Artesão', d: 'Fabrique 5 itens', s: 'craft', v: 5, c: 120 }, { id: 'fr1', n: 'Amigos', d: 'Adicione 1 amigo', s: 'friends', v: 1, c: 50 }
 ];
 // Eventos mundiais: determinísticos pelo relógio (bloco de 10 min: 4 min ativo) — iguais para todos, sem servidor.
 export const EVENTS = [
@@ -137,3 +143,31 @@ export const PROPS = [
   { id: 'flag', n: '🚩 Bandeira', model: 'plat/flag', s: 2.6, nocol: 1 }, { id: 'snowman', n: '⛄ Boneco de neve', model: 'holiday/snowman-hat', s: 1.8 },
   { id: 'fire', n: '🔥 Fogueira', model: 'nature/campfire_stones', s: 3, nocol: 1, fire: 1 }
 ];
+
+// Fabricação (menu rápido > Fabricar, ou ferreiros): consome materiais e entrega o resultado.
+// out: {item, n} | {equip:'pick'|'glove'|'rod', tier} | {held:id} | {hat:id}
+export const RECIPES = [
+  { n: 'Petiscos de peixe (x2)', need: { sardine: 2 }, out: { item: 'snack', n: 2 } },
+  { n: 'Erva-de-gato', need: { mushroom: 3, flower: 2 }, out: { item: 'catnip', n: 1 } },
+  { n: 'Picareta de Ferro', need: { iron: 6, wood: 4 }, out: { equip: 'pick', tier: 1 } },
+  { n: 'Picareta de Ouro', need: { gold: 8, iron: 4 }, out: { equip: 'pick', tier: 2 } },
+  { n: 'Picareta de Diamante', need: { diamond: 2, gold: 6 }, out: { equip: 'pick', tier: 3 } },
+  { n: 'Luvas de Treino', need: { copper: 5, wood: 3 }, out: { equip: 'glove', tier: 1 } },
+  { n: 'Luvas de Aço', need: { iron: 10, silver: 4 }, out: { equip: 'glove', tier: 2 } },
+  { n: 'Vara de Bambu', need: { wood: 6, copper: 2 }, out: { equip: 'rod', tier: 1 } },
+  { n: 'Espada de Treino', need: { iron: 8, wood: 3 }, out: { held: 'sword' } },
+  { n: 'Lança', need: { iron: 5, wood: 5 }, out: { held: 'spear' } },
+  { n: 'Escudo', need: { iron: 6, wood: 4 }, out: { held: 'shield' } },
+  { n: 'Poção Veloz', need: { cactusfruit: 4, quartz: 2 }, out: { held: 'potion' } },
+  { n: 'Coração', need: { ruby: 1, flower: 4 }, out: { held: 'heart' } },
+  { n: 'Estrela da Sorte', need: { star: 2 }, out: { held: 'star' } },
+  { n: 'Coroa (chapéu)', need: { gold: 10, amethyst: 2 }, out: { hat: 2 } },
+  { n: 'Capacete de minerador', need: { iron: 4, coal: 6 }, out: { hat: 5 } }
+];
+// Inimigos (PvE). Rodam no aparelho de cada jogador — não são sincronizados entre jogadores.
+export const ENEMIES = {
+  ghost: { n: 'Fantasma', model: 'grave/character-ghost', s: 1.7, hp: 40, dmg: 8, sp: 2.3, xp: 18, coins: [4, 10], drop: ['quartz', 0.08], fly: 1 },
+  skeleton: { n: 'Esqueleto', model: 'grave/character-skeleton', s: 1.75, hp: 55, dmg: 10, sp: 2.7, xp: 24, coins: [6, 14], drop: ['oldcoin', 0.18] },
+  zombie: { n: 'Zumbi', model: 'grave/character-zombie', s: 1.7, hp: 75, dmg: 12, sp: 1.7, xp: 26, coins: [6, 14], drop: ['snack', 0.25] },
+  orc: { n: 'Orc', model: 'dungeon/character-orc', s: 1.95, hp: 100, dmg: 15, sp: 2.4, xp: 40, coins: [10, 22], drop: ['iron', 0.35] }
+};

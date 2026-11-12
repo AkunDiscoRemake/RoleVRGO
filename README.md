@@ -27,7 +27,7 @@ Mundo multiplayer VR de gatos feito para **Oculus Go** (WebXR, controle 3DoF): G
 
 \* O navegador do Oculus Go normalmente reserva o botão Back para o sistema e não o entrega às páginas; por isso o topo do touchpad faz a mesma função. Se o navegador expuser o botão, ele abre o menu rápido.
 
-Computador: WASD, mouse, clique = gatilho, Espaço pula, M menu, B menu rápido, Enter chat, 1–9 emotes, Q/E esquiva, F bloquear.
+Computador: WASD, mouse, clique = gatilho, Espaço pula, M menu, B menu rápido, V troca a câmera (1ª/2ª/3ª pessoa), R grava vídeo, Enter chat, 1–9 emotes, Q/E esquiva, F bloquear.
 
 As mãos são duas bolinhas flutuantes (sem braços): uma segue a rotação do controle, a outra é espelhada proceduralmente. Não há hand tracking.
 
@@ -36,6 +36,10 @@ As mãos são duas bolinhas flutuantes (sem braços): uma segue a rotação do c
 - **Mapas:** Vila, Floresta, Mina, Deserto, Montanhas Nevadas, Arena, Castelo, Cidade, Ilha, Campo de Treino — cada um com NPCs, baús, segredo, minérios e atividades próprias.
 - **Luta:** socos por velocidade da pata, combos, bloqueio, esquiva, zonas de PvP, bonecos e um NPC de sparring (identificado como NPC).
 - **Mineração, pesca, coleta, tesouros enterrados**, lojas, 5 profissões, missões de NPC e diárias, conquistas, XP/níveis, inventário e economia.
+- **Inimigos** (fantasmas, esqueletos, zumbis, orcs) em 6 mapas: perseguem, avisam o golpe e atacam; rodam no aparelho de cada jogador (não são sincronizados).
+- **Fabricação** de ferramentas, itens de pata, consumíveis e chapéus a partir dos materiais coletados (menu rápido > Fabricar, ou Forja dos ferreiros).
+- **Câmera** em 1ª, 2ª e 3ª pessoa (menu rápido ou tecla V).
+- **Gravação de vídeo** (menu rápido ou tecla R): gera um `.webm` e baixa para a pasta Downloads; limite de 3 minutos.
 - **Itens na pata** com bônus (dano, velocidade, mineração, bloqueio, XP) e **objetos colocáveis** sincronizados com a sala.
 - **Social:** salas públicas e privadas por código, chat (teclado virtual e frases rápidas), amigos por código, grupos, emotes, carinho.
 - **Eventos mundiais** e **ciclo dia/noite** determinísticos pelo relógio (iguais para todos).

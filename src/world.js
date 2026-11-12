@@ -127,8 +127,15 @@ export class World {
     return m;
   }
   addWater(y, color, mul) {
-    this.waterY = y;
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(this.size * (mul || 1), this.size * (mul || 1)), new THREE.MeshBasicMaterial({ color: color || 0x3a8fd0, transparent: true, opacity: 0.82 }));
+    this.waterY = y; const sz = this.size * (mul || 1), seg = 28;
+    const mat = new THREE.MeshBasicMaterial({ color: color || 0x3a8fd0, transparent: true, opacity: 0.84 });
+    this.waterU = { uTime: { value: 0 } };
+    mat.onBeforeCompile = (sh) => { // ondas no vertex shader + brilho nas cristas
+      sh.uniforms.uTime = this.waterU.uTime;
+      sh.vertexShader = 'uniform float uTime;\nvarying float vWave;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nfloat wv = sin(position.x * 0.42 + uTime * 1.3) * 0.5 + sin(position.y * 0.37 + uTime * 1.7) * 0.5 + sin((position.x + position.y) * 0.9 + uTime * 2.3) * 0.25;\ntransformed.z += wv * 0.07;\nvWave = wv;');
+      sh.fragmentShader = 'varying float vWave;\n' + sh.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb += vec3(0.16, 0.18, 0.2) * smoothstep(0.55, 1.1, vWave) + vec3(-0.05, -0.03, 0.0) * smoothstep(-0.4, -1.1, vWave);');
+    };
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(sz, sz, seg, seg), mat);
     m.rotation.x = -Math.PI / 2; m.position.y = y; m.renderOrder = 1; this.group.add(m); this.water = m; return m;
   }
 
@@ -166,13 +173,15 @@ export class World {
       for (let n = start; n < end; n++) {
         const it = items[n], r = it.raw, P = r.pos, N = r.nrm, C = r.col, I = r.idx;
         const cos = Math.cos(it.ry), sin = Math.sin(it.ry), t = it.tint;
+        const y0 = r.b[1], hgt = r.b[4] - r.b[1], ao = hgt > 0.15 ? 1 / (hgt * 0.45) : 0; // sombreado falso: base mais escura dá volume sem custo
         for (let i = 0; i < r.v; i++) {
           const px = P[i * 3] * it.sx, py = P[i * 3 + 1] * it.sy, pz = P[i * 3 + 2] * it.sz, k = (vo + i) * 3;
           pos[k] = px * cos + pz * sin + it.x; pos[k + 1] = py + it.y; pos[k + 2] = -px * sin + pz * cos + it.z;
           const ax = N[i * 3], az = N[i * 3 + 2];
           nrm[k] = ax * cos + az * sin; nrm[k + 1] = N[i * 3 + 1]; nrm[k + 2] = -ax * sin + az * cos;
-          if (t) { col[k] = Math.min(255, C[i * 3] * t[0]); col[k + 1] = Math.min(255, C[i * 3 + 1] * t[1]); col[k + 2] = Math.min(255, C[i * 3 + 2] * t[2]); }
-          else { col[k] = C[i * 3]; col[k + 1] = C[i * 3 + 1]; col[k + 2] = C[i * 3 + 2]; }
+          const sh = ao ? 0.7 + 0.3 * Math.min(1, (P[i * 3 + 1] - y0) * ao) : 1;
+          if (t) { col[k] = Math.min(255, C[i * 3] * t[0] * sh); col[k + 1] = Math.min(255, C[i * 3 + 1] * t[1] * sh); col[k + 2] = Math.min(255, C[i * 3 + 2] * t[2] * sh); }
+          else { col[k] = C[i * 3] * sh; col[k + 1] = C[i * 3 + 1] * sh; col[k + 2] = C[i * 3 + 2] * sh; }
         }
         for (let i = 0; i < r.i; i++) idx[io + i] = I[i] + vo;
         vo += r.v; io += r.i;

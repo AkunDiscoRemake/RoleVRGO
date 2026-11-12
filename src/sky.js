@@ -16,6 +16,17 @@ export class Sky {
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     this.stars = new THREE.Points(g, new THREE.PointsMaterial({ color: 0xffffff, size: 2.2, sizeAttenuation: false, fog: false, transparent: true, opacity: 0, depthWrite: false })); this.stars.frustumCulled = false; scene.add(this.stars);
     this.orb = new THREE.Mesh(new THREE.IcosahedronGeometry(9, 1), new THREE.MeshBasicMaterial({ color: 0xfff2b0, fog: false })); scene.add(this.orb);
+    // cúpula com degradê (zênite -> horizonte), 1 draw call
+    const dg = new THREE.SphereGeometry(330, 20, 10, 0, Math.PI * 2, 0, Math.PI * 0.62); dg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(dg.attributes.position.count * 3), 3));
+    this.dome = new THREE.Mesh(dg, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false })); this.dome.renderOrder = -10; this.dome.frustumCulled = false; scene.add(this.dome);
+    // nuvens low-poly instanciadas, 1 draw call
+    const parts = []; for (const [x, y, z, r] of [[0, 0, 0, 1], [1.1, -0.1, 0.2, 0.75], [-1.05, -0.12, -0.1, 0.7], [0.3, 0.35, -0.3, 0.6], [-0.4, 0.1, 0.5, 0.55]]) { const g = new THREE.IcosahedronGeometry(r, 0); g.scale(1, 0.55, 1); g.translate(x, y, z); parts.push(g); }
+    let nv = 0; for (const g of parts) nv += g.attributes.position.count; const cp = new Float32Array(nv * 3); let o = 0; for (const g of parts) { cp.set(g.attributes.position.array, o); o += g.attributes.position.count * 3; g.dispose(); }
+    const cg = new THREE.BufferGeometry(); cg.setAttribute('position', new THREE.BufferAttribute(cp, 3)); cg.computeVertexNormals();
+    this.clouds = new THREE.InstancedMesh(cg, new THREE.MeshLambertMaterial({ fog: false, flatShading: false, emissive: 0x222222 }), 16); this.clouds.frustumCulled = false; this.clouds.castShadow = false; scene.add(this.clouds);
+    this.cl = []; for (let i = 0; i < 16; i++) this.cl.push({ a: Math.random() * 6.283, r: 90 + Math.random() * 170, y: 55 + Math.random() * 45, s: 9 + Math.random() * 14, v: 0.004 + Math.random() * 0.006 });
+    this.glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load('assets/glow.png'), color: 0xfff0b0, transparent: true, opacity: 0.85, fog: false, depthWrite: false, blending: THREE.AdditiveBlending })); this.glow.scale.set(120, 120, 1); this.glow.renderOrder = -9; scene.add(this.glow);
+    this._m = new THREE.Matrix4(); this._q = new THREE.Quaternion(); this._s = new THREE.Vector3(); this._p = new THREE.Vector3(); this._top = new THREE.Color(); this.domeT = 0;
     this._a = new THREE.Color(); this._b = new THREE.Color(); this._c = new THREE.Color();
   }
   update(nowMs, def, center, perf) {
@@ -38,5 +49,12 @@ export class Sky {
     this.sun.target.position.copy(center);
     this.orb.visible = !def.indoor; this.stars.visible = !def.indoor && this.night > 0.3; this.stars.material.opacity = clamp((this.night - 0.3) * 2, 0, 1); this.stars.position.copy(center);
     this.sun.castShadow = perf.shadows === 2;
+    // cúpula: recolore ~2x por segundo
+    this.dome.visible = !def.indoor; this.dome.position.set(center.x, center.y - 20, center.z);
+    this.domeT -= 1; if (this.dome.visible && this.domeT <= 0) { this.domeT = 30; const top = this._top.copy(col).multiplyScalar(0.55); top.b = Math.min(1, top.b * 1.35 + 0.04); const C = this.dome.geometry.attributes.color, Pp = this.dome.geometry.attributes.position; for (let i = 0; i < C.count; i++) { const k = Math.pow(clamp(Pp.getY(i) / 330, 0, 1), 0.6); C.setXYZ(i, col.r + (top.r - col.r) * k, col.g + (top.g - col.g) * k, col.b + (top.b - col.b) * k); } C.needsUpdate = true; }
+    // nuvens: giram devagar em volta do jogador
+    const cv = !def.indoor && perf.level >= 1; this.clouds.visible = cv; this.glow.visible = !def.indoor && perf.level >= 1;
+    if (cv) { const tt = nowMs / 1000; for (let i = 0; i < this.cl.length; i++) { const c = this.cl[i], a = c.a + tt * c.v; this._m.compose(this._p.set(center.x + Math.cos(a) * c.r, c.y, center.z + Math.sin(a) * c.r), this._q, this._s.set(c.s, c.s * 0.7, c.s)); this.clouds.setMatrixAt(i, this._m); } this.clouds.instanceMatrix.needsUpdate = true; this.clouds.material.color.copy(this._b.setHex(0x9098b8).lerp(this._c.setHex(0xffffff), day)).lerp(this._c.setHex(0xffb890), dusk * 0.5); this.clouds.material.emissive.setScalar(0.1 + day * 0.12); }
+    if (this.glow.visible) { this.glow.position.copy(this.orb.position); this.glow.material.color.copy(this.orb.material.color); this.glow.material.opacity = 0.55 + dusk * 0.35; }
   }
 }

@@ -74,6 +74,8 @@ export function audioInit() {
       .then((buf) => { buffers[f] = buf; }).catch(() => { /* som opcional */ });
   });
 }
+let recDest = null;
+export function audioStream() { if (!ctx || !ctx.createMediaStreamDestination) return null; if (!recDest) { recDest = ctx.createMediaStreamDestination(); master.connect(recDest); } return recDest.stream; }
 export function setVolume(v) { audioVolume = v; if (master) master.gain.value = v; }
 // vol 0..1, pan -1..1, rate
 export function play(name, vol, pan, rate) {

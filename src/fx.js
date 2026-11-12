@@ -13,6 +13,10 @@ export class FX {
     this.points = new THREE.Points(g, new THREE.PointsMaterial({ size: 0.34, map: this.tex, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true }));
     this.points.frustumCulled = false; this.points.renderOrder = 4; scene.add(this.points);
     this.texts = []; this._c = new THREE.Color(); this.next = 0;
+    // partículas de ambiente (neve, vaga-lumes, folhas, poeira, faíscas): 1 draw call, presas a uma caixa em volta do jogador
+    const NA = 90; this.aN = NA; this.aPos = new Float32Array(NA * 3); this.aSeed = new Float32Array(NA * 3); for (let i = 0; i < NA * 3; i++) this.aSeed[i] = Math.random();
+    const ag = new THREE.BufferGeometry(); ag.setAttribute('position', new THREE.BufferAttribute(this.aPos, 3).setUsage(THREE.DynamicDrawUsage));
+    this.amb = new THREE.Points(ag, new THREE.PointsMaterial({ size: 0.16, map: this.tex, color: 0xffffff, transparent: true, opacity: 0.8, depthWrite: false, sizeAttenuation: true })); this.amb.frustumCulled = false; this.amb.renderOrder = 4; this.amb.visible = false; scene.add(this.amb); this.ambType = '';
     for (let i = 0; i < 6; i++) {
       const c = document.createElement('canvas'); c.width = 256; c.height = 64; const t = new THREE.CanvasTexture(c); t.minFilter = THREE.LinearFilter; t.generateMipmaps = false;
       const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthTest: false, depthWrite: false })); s.scale.set(1.3, 0.325, 1); s.visible = false; s.renderOrder = 9; scene.add(s);
@@ -32,6 +36,17 @@ export class FX {
     let o = this.texts[0]; for (const t of this.texts) if (t.life <= 0) { o = t; break; } else if (t.life < o.life) o = t;
     const g = o.c.getContext('2d'); g.clearRect(0, 0, 256, 64); g.font = 'bold 40px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 7; g.strokeStyle = 'rgba(0,0,0,0.8)'; g.strokeText(str, 128, 32); g.fillStyle = color || '#fff'; g.fillText(str, 128, 32);
     o.t.needsUpdate = true; o.s.position.set(x, y, z); o.s.visible = true; o.s.material.opacity = 1; o.life = 1.1;
+  }
+  // tipo: snow | fire (vaga-lumes, só à noite) | leaf | dust | spark | ''
+  ambient(type, center, time, night) {
+    const on = !!type && perf.particles >= 0.5 && !(type === 'fire' && night < 0.4); this.amb.visible = on; if (!on) return;
+    if (type !== this.ambType) { this.ambType = type; const m = this.amb.material; m.color.setHex({ snow: 0xffffff, fire: 0xe8ff70, leaf: 0xa8e070, dust: 0xf0d8a0, spark: 0x80d0ff }[type] || 0xffffff); m.size = { snow: 0.13, fire: 0.22, leaf: 0.12, dust: 0.09, spark: 0.16 }[type] || 0.12; m.blending = type === 'fire' || type === 'spark' ? THREE.AdditiveBlending : THREE.NormalBlending; m.opacity = type === 'dust' ? 0.5 : 0.85; m.needsUpdate = true; }
+    const P = this.aPos, S = this.aSeed, B = 26, H = 12, fall = { snow: 1.3, fire: 0, leaf: 0.5, dust: 0.1, spark: -0.15 }[type] || 0, drift = { snow: 0.5, fire: 0.25, leaf: 0.9, dust: 1.6, spark: 0.1 }[type] || 0.3;
+    for (let i = 0; i < this.aN; i++) { const k = i * 3, sx = S[k], sy = S[k + 1], sz = S[k + 2];
+      let x = sx * B + time * drift * (0.5 + sz) + Math.sin(time * 0.7 + sx * 30) * 0.6, y = sy * H - time * fall * (0.6 + sx * 0.8) + (type === 'fire' ? Math.sin(time * 0.9 + sz * 40) * 0.8 : 0), z = sz * B + Math.cos(time * 0.6 + sy * 30) * 0.6;
+      x = ((x - center.x) % B + B) % B - B / 2 + center.x; z = ((z - center.z) % B + B) % B - B / 2 + center.z; y = ((y - center.y) % H + H) % H - 2 + center.y;
+      P[k] = x; P[k + 1] = y; P[k + 2] = z; }
+    this.amb.geometry.attributes.position.needsUpdate = true;
   }
   update(dt) {
     const P = this.pos, V = this.vel, L = this.life; let any = false;

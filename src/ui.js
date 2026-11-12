@@ -4,7 +4,8 @@ import { S } from './state.js';
 import { net } from './net.js';
 import { perf } from './perf.js';
 import { MAPS, MAP_ORDER, MAP_ICONS } from './maps.js';
-import { ITEMS, RARITY, QUESTS, ACHIEVEMENTS, PROFS, SHOPS, PICKS, GLOVES, RODS, QUICK_CHAT, currentEvent, HELD, PROPS } from './data.js';
+import { ITEMS, RARITY, QUESTS, ACHIEVEMENTS, PROFS, SHOPS, PICKS, GLOVES, RODS, QUICK_CHAT, currentEvent, HELD, PROPS, RECIPES } from './data.js';
+import { rec } from './rec.js';
 import { FUR_COLORS, EYE_COLORS, PATTERNS, HATS, EMOTES, roundRect } from './cat.js';
 import { play, setVolume, audioVolume } from './assets.js';
 import { on, emit, store, clamp } from './util.js';
@@ -37,7 +38,8 @@ export const ui = {
     player.onBack = () => this.quick();
     G.uiClick = () => this.click();
     on('toast', (t, c) => { this.toasts.push({ t, c: c || '#fff', life: 4.5 }); if (this.toasts.length > 3) this.toasts.shift(); this.hudDirty = true; });
-    for (const ev of ['hp', 'xp', 'coins', 'net', 'combo', 'map', 'event']) on(ev, () => { this.hudDirty = true; });
+    for (const ev of ['hp', 'xp', 'coins', 'net', 'combo', 'map', 'event', 'rec']) on(ev, () => { this.hudDirty = true; });
+    on('view', (m) => { S.toast('📷 Câmera: ' + ['1ª pessoa', '2ª pessoa', '3ª pessoa'][m - 1], '#bfe6ff'); this.dirty = true; });
     for (const ev of ['inv', 'coins', 'players', 'friends', 'party', 'chat', 'lobby', 'map', 'meta']) on(ev, () => { if (this.open) this.dirty = true; });
     on('dialog', (n) => { this.npc = n; this.line = Math.floor(Math.random() * n.lines.length); this.show('dialog'); });
     on('friendsDirty', () => G.refreshFriends()); on('partyChat', (m) => { G._log('[grupo] ' + m.n, m.x); play('msg', 0.4); });
@@ -58,10 +60,18 @@ export const ui = {
   qhead(title, root) { this.text(384, 34, title, { a: 'center', fs: 22, c: '#ffd76a' }); if (!root) this.btn(224, 14, 70, 38, '◀', () => { this.page = 'q_root'; this.scroll = 0; this.msg = ''; }, { bg: '#33355a' }); this.btn(474, 14, 70, 38, '✕', () => this.hide(), { bg: '#b04050' }); },
   qpager(n, per) { const pages = Math.max(1, Math.ceil(n / per)); this.scroll = clamp(this.scroll, 0, pages - 1); if (pages > 1) { this.btn(224, 462, 90, 40, '▲', () => { this.scroll--; }, { off: this.scroll <= 0, bg: '#33355a' }); this.text(384, 482, (this.scroll + 1) + '/' + pages, { a: 'center' }); this.btn(454, 462, 90, 40, '▼', () => { this.scroll++; }, { off: this.scroll >= pages - 1, bg: '#33355a' }); } return this.scroll * per; },
   p_q_root() {
-    this.qhead('Menu rápido', true); const h = S.held();
-    const rows = [['🐱 Avatar', 'Cores, padrão e chapéu', 'q_avatar'], ['🗡 Itens na pata', 'Agora: ' + h.n + (h.id !== 'none' ? ' — ' + h.d : ''), 'q_items'], ['📦 Colocar objetos', 'Spawnar caixas, trampolins, fogueira...', 'q_spawn'], ['😺 Emotes', 'Gestos e animações', 'q_emotes'], ['🗺 Viajar', 'Mapas já visitados', 'q_travel'], ['🍖 Consumíveis', 'Petisco x' + S.count('snack') + ' · Erva-de-gato x' + S.count('catnip'), 'q_use']];
-    rows.forEach((r, i) => this.qrow(i, r[0], r[1], () => { this.page = r[2]; this.scroll = 0; }, { bg: '#4a5cc8' }));
-    this.qrow(6, '📜 Menu completo (missões, social, config)', null, () => { this.page = 'map'; }, { bg: '#33355a', fs: 16 });
+    this.qhead('Menu rápido', true); const h = S.held(), P = this.player;
+    const rows = [['🐱 Avatar', 'q_avatar'], ['🗡 Itens na pata: ' + h.n, 'q_items'], ['🔨 Fabricar itens', 'q_craft'], ['📦 Colocar objetos', 'q_spawn'], ['😺 Emotes', 'q_emotes'], ['🗺 Viajar', 'q_travel'], ['🍖 Consumíveis', 'q_use']];
+    rows.forEach((r, i) => this.btn(224, 60 + i * 44, 320, 40, r[0], () => { this.page = r[1]; this.scroll = 0; }, { bg: '#4a5cc8', fs: 18 }));
+    this.btn(224, 60 + 7 * 44, 320, 40, '📷 Câmera: ' + ['1ª pessoa', '2ª pessoa (de frente)', '3ª pessoa (por trás)'][P.viewMode - 1], () => P.cycleView(), { bg: '#33355a', fs: 17 });
+    this.btn(224, 60 + 8 * 44, 320, 40, rec.on ? '⏹ Parar e baixar vídeo (' + Math.floor(rec.seconds()) + 's)' : '⏺ Gravar vídeo', () => { const m = rec.toggle(G.renderer.domElement); if (m) this.msg = m; else if (rec.on) this.hide(); }, { bg: rec.on ? '#b04050' : '#33355a', fs: 17, off: !rec.supported() });
+    this.btn(224, 60 + 9 * 44, 320, 40, '📜 Menu completo', () => { this.page = 'map'; }, { bg: '#33355a', fs: 17 });
+  },
+  p_q_craft() {
+    this.qhead('🔨 Fabricar'); const off = this.qpager(RECIPES.length, 6);
+    RECIPES.slice(off, off + 6).forEach((r, i) => { const st = S.recipeState(r); const need = Object.keys(r.need).map((k) => ITEMS[k].n + ' ' + S.count(k) + '/' + r.need[k]).join(' · ');
+      this.qrow(i, (st.done ? '✔ ' : '') + r.n, st.done ? 'Você já tem' : st.locked ? 'Fabrique o nível anterior primeiro' : need, () => { this.msg = S.craft(r); if (!this.msg) emit('saveNow'); }, { off: !st.ok, bg: '#3a9a5a' }); });
+    this.text(384, 424, 'Materiais vêm de mineração, coleta e pesca.', { a: 'center', fs: 13, c: '#99a', b: false });
   },
   p_q_avatar() {
     this.qhead('🐱 Avatar'); const L = S.look, d = S.d;
@@ -92,7 +102,7 @@ export const ui = {
   show(page) {
     this.page = page; this.scroll = 0; this.msg = '';
     if (!this.open) {
-      const P = this.player, yaw = P.headYaw; P.headPos(_c);
+      const P = this.player, yaw = P.viewYaw; P.headPos(_c);
       this.panel.position.set(_c.x - Math.sin(yaw) * 1.25, _c.y - 0.08, _c.z - Math.cos(yaw) * 1.25); this.panel.rotation.set(0, yaw, 0);
       this.panel.visible = true; this.open = true; G.uiOpen = true; play('open', 0.5);
     }
@@ -205,7 +215,7 @@ export const ui = {
   _look() { S.touch(); G.pushMeta(); emit('look'); emit('saveNow'); },
   p_emotes() {
     this.text(20, 80, 'Emotes e gestos — os outros jogadores veem a animação', { c: '#bfe6ff', fs: 18 });
-    EMOTES.forEach((e, i) => this.btn(40 + (i % 3) * 235, 104 + Math.floor(i / 3) * 96, 220, 82, e.icon + ' ' + e.name, () => { G.emote(e.id); this.hide(); }, { fs: 24, bg: '#4a5cc8' }));
+    EMOTES.forEach((e, i) => this.btn(40 + (i % 3) * 235, 100 + Math.floor(i / 3) * 74, 220, 64, e.icon + ' ' + e.name, () => { G.emote(e.id); this.hide(); }, { fs: 22, bg: '#4a5cc8' }));
     this.text(20, 410, 'Carinho: passe a pata devagar na cabeça de outro gato (fora da zona de luta).', { fs: 16, b: false }); this.text(20, 436, 'Sentado/dormindo: aperte o gatilho para levantar.', { fs: 16, b: false });
   },
   p_config() {
@@ -226,7 +236,7 @@ export const ui = {
   },
   p_help() {
     this.text(20, 34, '❓ Como jogar', { fs: 24, c: '#ffd76a' }); let y = 74;
-    const L = this.player.desktop ? ['Mouse: olhar e apontar as patas · WASD: andar · Espaço: pular · Shift: correr', 'Clique: gatilho (agarrar superfícies, falar com NPC, abrir baú, pescar)', 'Olhe para o chão e mova o mouse para empurrar com as patas (impulso).', 'M/Tab: menu · B ou Backspace: menu rápido · Enter: chat · 1-9: emotes · Q/E: esquiva · F: bloquear', 'Socos: mova as patas rápido contra o alvo (bonecos, Mestre, jogadores na zona de luta).']
+    const L = this.player.desktop ? ['Mouse: olhar e apontar as patas · WASD: andar · Espaço: pular · Shift: correr', 'Clique: gatilho (agarrar superfícies, falar com NPC, abrir baú, pescar)', 'Olhe para o chão e mova o mouse para empurrar com as patas (impulso).', 'M/Tab: menu · B: menu rápido · V: câmera 1ª/2ª/3ª pessoa · R: gravar vídeo · Enter: chat · Q/E: esquiva · F: bloquear', 'Socos: mova as patas rápido contra o alvo (bonecos, Mestre, jogadores na zona de luta).']
       : ['IMPULSO: aponte o controle para o chão até as patas encostarem e varra para trás.', 'ESCALAR: encoste as patas numa parede, SEGURE o gatilho, puxe para baixo e solte.', 'ANDAR: segure o gatilho com as patas no ar — você anda na direção apontada.', 'TOUCHPAD: centro = menu · cima (ou botão Back) = menu rápido · lados = girar/esquiva · baixo = bloquear.', 'APONTAR + GATILHO: falar com NPCs, abrir baús, lançar a linha de pesca na água.', 'SOCAR / MINERAR / CAVAR: bata com as patas rápido no alvo. Mais velocidade = mais dano.'];
     for (const l of L) { y = this.wrap(24, y, '• ' + l, W - 50, 24, { fs: 17, b: false }) + 8; }
     this.wrap(24, y + 6, 'As duas patas são bolinhas flutuantes: uma segue o controle e a outra espelha o movimento. O Oculus Go só rastreia a rotação do controle (3DoF), então tudo foi pensado para girar o pulso.', W - 50, 22, { fs: 15, b: false, c: '#bfe6ff' });
@@ -291,7 +301,8 @@ export const ui = {
       this.text(32, y + 16, (st === 'done' ? '✔ ' : st === 'ready' ? '❓ ' : st === 'open' ? '❗ ' : '… ') + q.title + (st === 'active' || st === 'ready' ? '  (' + pr + '/' + q.goal.n + ')' : ''), { fs: 17, c: st === 'done' ? '#9cf09c' : '#ffd76a' }); this.text(32, y + 39, q.desc + '  → ' + q.xp + ' XP, ' + q.coins + ' 💰', { fs: 14, b: false, max: 540 });
       if (st === 'open') this.btn(W - 170, y + 9, 140, 38, 'Aceitar', () => { S.accept(id); G._npcMarks(); }, { bg: '#3a9a5a', fs: 17 }); else if (st === 'ready') this.btn(W - 170, y + 9, 140, 38, 'Entregar', () => { S.complete(id); G._npcMarks(); emit('saveNow'); }, { bg: '#e8a030', fs: 17 });
       y += 62; }
-    let x = 20; if (n.shop) { this.btn(x, 440, 200, 50, '🛒 Loja', () => { this.page = 'shop'; this.shopSell = false; this.scroll = 0; }, { bg: '#4a5cc8' }); x += 214; }
+    let x = 20; if (n.shop === 'smith') { this.btn(W - 340, 440, 160, 50, '🔨 Forja', () => { this.page = 'q_craft'; this.scroll = 0; }, { bg: '#b07020' }); }
+    if (n.shop) { this.btn(x, 440, 200, 50, '🛒 Loja', () => { this.page = 'shop'; this.shopSell = false; this.scroll = 0; }, { bg: '#4a5cc8' }); x += 214; }
     if (n.prof) { this.btn(x, 440, 240, 50, '🎓 Escolher profissão', () => { this.page = 'prof'; }, { bg: '#4a5cc8' }); x += 254; }
     if (n.spar) this.text(20, 250, 'Acerte o Mestre dentro do ringue para iniciar o treino. Ele avisa (pisca) antes de atacar: bloqueie ou esquive!', { fs: 15, b: false, max: W - 40 });
     this.btn(W - 170, 440, 150, 50, 'Tchau!', () => this.hide(), { bg: '#33355a' });
@@ -335,6 +346,7 @@ export const ui = {
     const hp = S.hp / S.maxHp(); g.fillStyle = 'rgba(0,0,0,0.5)'; roundRect(g, 222, 127, 110, 14, 7); g.fill(); g.fillStyle = hp > 0.5 ? '#4ac86a' : hp > 0.25 ? '#e8a030' : '#e05050'; roundRect(g, 222, 127, Math.max(14, 110 * hp), 14, 7); g.fill();
     g.fillStyle = '#ffd76a'; g.fillText('💰' + d.coins, 344, 134);
     g.fillStyle = !net.online ? '#e05050' : net.status === 'online' ? '#4ac86a' : '#e8a030'; g.beginPath(); g.arc(466, 134, 7, 0, 6.3); g.fill();
+    if (rec.on) { g.textAlign = 'left'; g.font = 'bold 20px sans-serif'; g.fillStyle = '#ff5050'; g.fillText('● REC ' + Math.floor(rec.seconds()) + 's', 30, 14); this.hudDirty = true; }
     if (this.combo > 1) { g.textAlign = 'center'; g.font = 'bold 22px sans-serif'; g.fillStyle = '#ff9a40'; g.fillText('COMBO x' + this.combo, 256, 14); }
     this.htex.needsUpdate = true;
   }

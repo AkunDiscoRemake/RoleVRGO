@@ -1,4 +1,4 @@
-import { ITEMS, QUESTS, DAILY, ACHIEVEMENTS, PROFS, PICKS, GLOVES, RODS, HAT_PRICES, RARITY, HELD } from './data.js';
+import { ITEMS, QUESTS, DAILY, ACHIEVEMENTS, PROFS, PICKS, GLOVES, RODS, HAT_PRICES, RARITY, HELD, RECIPES } from './data.js';
 import { emit, on, store, dayKey, rng } from './util.js';
 import { net } from './net.js';
 import { play } from './assets.js';
@@ -17,6 +17,14 @@ export const S = {
   },
   held() { return HELD.find((h) => h.id === this.d.hand) || HELD[0]; },
   setHand(id) { const h = HELD.find((x) => x.id === id); if (!h) return 'Item inválido'; if (this.d.held.indexOf(id) < 0) { const pr = this.buyPrice(h.price); if (this.d.coins < pr) return 'Faltam ' + (pr - this.d.coins) + ' moedas'; this.d.coins -= pr; this.d.held.push(id); play('coin', 0.7); emit('coins'); } this.d.hand = id; this.toast(id === 'none' ? 'Patas livres' : 'Na pata: ' + h.n + ' (' + h.d + ')', '#6fd26f'); play('pickup', 0.7); this.touch(); emit('meta'); return ''; },
+  // ---------- fabricação ----------
+  recipeState(r) { const o = r.out, d = this.d; let have = true; for (const k in r.need) if (this.count(k) < r.need[k]) have = false;
+    let done = false, locked = false; if (o.equip) { done = d.equip[o.equip] >= o.tier; locked = d.equip[o.equip] < o.tier - 1; } else if (o.held) done = d.held.indexOf(o.held) >= 0; else if (o.hat != null) done = d.hats.indexOf(o.hat) >= 0;
+    return { have, done, locked, ok: have && !done && !locked }; },
+  craft(r) { const st = this.recipeState(r); if (st.done) return 'Você já tem'; if (st.locked) return 'Fabrique o nível anterior primeiro'; if (!st.have) return 'Faltam materiais';
+    for (const k in r.need) this.removeItem(k, r.need[k]); const o = r.out, d = this.d;
+    if (o.item) this.addItem(o.item, o.n); else if (o.equip) d.equip[o.equip] = o.tier; else if (o.held) { d.held.push(o.held); d.hand = o.held; emit('meta'); } else if (o.hat != null) d.hats.push(o.hat);
+    this.toast('🔨 Fabricado: ' + r.n, '#ffd76a'); play('wood', 0.8); play('confirm', 0.6); this.addXp(15); this.stat('craft'); this.touch(); emit('inv'); return ''; },
   maxHp() { return 100 + (this.d.prof === 'fighter' ? 20 : 0) + Math.min(40, this.d.level * 2); },
   xpNeed(l) { return 80 + (l || this.d.level) * 60; },
   touch() { this.dirty = true; store.set('save', { name: this.name, look: this.look, d: this.d }); },

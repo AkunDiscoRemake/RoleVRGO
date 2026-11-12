@@ -8,6 +8,7 @@ import { clamp, emit } from './util.js';
 // sagital do corpo. Bolinha encostada em superfície = âncora: mover o controle
 // desloca o corpo no sentido oposto (empurrar, escalar, impulsionar).
 const V = () => new THREE.Vector3();
+const _qpi = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI);
 const _a = V(), _b = V(), _n = V(), _q = new THREE.Quaternion(), _e = new THREE.Euler(0, 0, 0, 'YXZ');
 const UP = new THREE.Vector3(0, 1, 0);
 
@@ -20,13 +21,14 @@ export class Player {
     this.grounded = false; this.inWater = false; this.speed = 0; this.surfaceN = V();
     this.hands = [0, 1].map(() => ({ pos: V(), target: V(), prevT: V(), vel: V(), touch: false, grab: false, nearT: 0, speed: 0 }));
     this.hist = []; this.wasTouching = false;
-    this.ctrlDir = new THREE.Vector3(0, 0, -1); this.aimDir = new THREE.Vector3(0, 0, -1); this.aimPos = V(); this.ctrlQuat = new THREE.Quaternion(); this.prevDir = V(); this.flickUp = 0;
+    this.ctrlDir = new THREE.Vector3(0, 0, -1); this.aimDir = new THREE.Vector3(0, 0, -1); this.aimPos = V(); this.rawDir = V(); this.rawCtrl = new THREE.Vector3(0, 0, -1); this.ctrlQuat = new THREE.Quaternion(); this.prevDir = V(); this.flickUp = 0;
     this.bodyYaw = 0; this.headYaw = 0; this.headPitch = 0; this.side = 1; // 1 = controle na mão direita
     this.trigger = false; this.walkHeld = false; this.block = false; this.blockInput = false; this.iframes = 0; this.dodgeCd = 0; this.stamina = 100;
     this.frozen = false; this.fightZone = false; this.emoteWave = 0; this.guardHold = false;
     this.keys = {}; this.desktop = true; this.locked = false; this.padWas = false;
     this.onTrigger = null; this.onRelease = null; this.onMenu = null; this.onBack = null; // callbacks do jogo
     this.speedMul = 1; this.backWas = false;
+    this.viewMode = 1; this.viewYaw = 0; this.emoteId = 0; this.emoteTime = 0; // câmera: 1 = 1ª pessoa, 2 = 2ª (de frente), 3 = 3ª (por trás)
     this.controllers = [];
     for (let i = 0; i < 2; i++) {
       const c = renderer.xr.getController(i); this.head.add(c); this.controllers.push(c);
@@ -45,6 +47,7 @@ export class Player {
       this.keys[e.code] = true;
       if (e.code === 'Tab' || e.code === 'KeyM') { e.preventDefault(); if (this.onMenu) this.onMenu(); }
       if (e.code === 'KeyB' || e.key === 'BrowserBack' || e.key === 'GoBack') { e.preventDefault(); if (this.onBack) this.onBack(); }
+      if (e.code === 'KeyV') this.cycleView();
       if (e.code === 'KeyQ') this.dodge(-1); if (e.code === 'KeyE') this.dodge(1);
       if (e.code === 'Space' && this.grounded && !this.frozen) { this.vel.y = 4.6; this.grounded = false; emit('jump'); }
       emit('key', e.code);
@@ -73,24 +76,36 @@ export class Player {
     this.iframes = 0.38; this.dodgeCd = 1.0; this.stamina -= 20; emit('dodge');
   }
   // direção de visão no plano
+  cycleView() { this.viewMode = this.viewMode % 3 + 1; emit('view', this.viewMode); }
   forward(out) { return out.set(-Math.sin(this.headYaw), 0, -Math.cos(this.headYaw)); }
   headPos(out) { return this.camera.getWorldPosition(out); }
 
   _readInput(dt) {
     const xr = this.renderer.xr.isPresenting; this.desktop = !xr;
+    // posição da câmera conforme o modo de visão (no VR o deslocamento é fixo, para não enjoar)
+    const vm = this.viewMode, H = this.head;
+    if (vm === 1) { H.position.set(0, EYE, 0); H.rotation.y = 0; }
+    else if (vm === 3) { const pc = xr ? -0.15 : this.pitch; H.position.set(0, Math.max(0.35, EYE + 0.45 - Math.sin(pc) * 3.0), Math.cos(pc) * 3.0); H.rotation.y = 0; }
+    else { const pc = xr ? -0.1 : this.pitch; H.position.set(0, Math.max(0.35, EYE + 0.15 - Math.sin(pc) * 2.6), -Math.cos(pc) * 2.6); H.rotation.y = Math.PI; }
+    if (this.camLift) H.position.y += this.camLift;
+    // câmera externa: se algo estiver entre o gato e a câmera, ela se aproxima (não atravessa paredes)
+    if (vm !== 1 && this._w) { const c = Math.cos(this.yaw), s = Math.sin(this.yaw), ox = H.position.z * s, oz = H.position.z * c, oy = H.position.y - EYE; let k = 1;
+      for (let f = 0.2; f <= 1.001; f += 0.2) { _b.set(this.pos.x + ox * f, this.pos.y + EYE + oy * f, this.pos.z + oz * f); if (this._w.collide(_b, 0.22, _n)) { k = Math.max(0.12, f - 0.2); break; } }
+      this.camK = k < (this.camK || 1) ? k : (this.camK || 1) + (k - (this.camK || 1)) * Math.min(1, dt * 4); H.position.z *= this.camK; H.position.y = EYE + oy * this.camK; } else this.camK = 1;
     this.rig.rotation.y = this.yaw; this.rig.updateMatrixWorld(true);
     if (!xr) { this.camera.rotation.set(this.pitch, 0, 0, 'YXZ'); this.camera.position.set(0, 0, 0); this.camera.updateMatrixWorld(true); }
     // cabeça
     const cam = xr ? this.renderer.xr.getCamera() : this.camera;
     if (xr) { cam.matrixWorld.decompose(_a, _q, _b); } else this.camera.getWorldQuaternion(_q);
-    _e.setFromQuaternion(_q, 'YXZ'); this.headYaw = _e.y; this.headPitch = _e.x;
+    _e.setFromQuaternion(_q, 'YXZ'); this.viewYaw = _e.y; this.headYaw = vm === 2 ? _e.y - Math.PI : _e.y; this.headPitch = vm === 1 ? _e.x : 0;
+    this.rawDir.set(0, 0, -1).applyQuaternion(_q);
     let d = this.headYaw - this.bodyYaw; d = Math.atan2(Math.sin(d), Math.cos(d)); this.bodyYaw += d * Math.min(1, dt * 6);
     // controle
     let pad = false, px = 0, py = 0;
     if (xr) {
       const c = this.active && this.active.userData.src ? this.active : this.controllers.find((k) => k.userData.src);
       if (c) {
-        c.getWorldQuaternion(this.ctrlQuat);
+        c.getWorldQuaternion(this.ctrlQuat); this.rawCtrl.set(0, 0, -1).applyQuaternion(this.ctrlQuat); if (vm === 2) this.ctrlQuat.premultiply(_qpi);
         const gp = c.userData.src.gamepad;
         if (gp) {
           const b = gp.buttons, ax = gp.axes;
@@ -101,15 +116,15 @@ export class Player {
           let back = false; for (let k = 4; k < b.length; k++) if (b[k] && b[k].pressed) back = true;
           if (back && !this.backWas && this.onBack) this.onBack(); this.backWas = back;
         }
-      } else this.ctrlQuat.copy(_q);
+      } else { this.ctrlQuat.copy(_q); this.rawCtrl.copy(this.rawDir); }
     } else {
       this.ctrlQuat.copy(_q);
       this.blockKey = !!this.keys.KeyF;
     }
     this.ctrlDir.set(0, 0, -1).applyQuaternion(this.ctrlQuat);
     // mira: no VR é o "laser" do controle; no desktop é o centro da tela e as patas ficam um pouco abaixo
-    if (xr) { this.aimDir.copy(this.ctrlDir); }
-    else { this.aimDir.copy(this.ctrlDir); _e.set(clamp(this.pitch - 0.38, -1.55, 1.5), this.yaw, 0, 'YXZ'); this.ctrlDir.set(0, 0, -1).applyEuler(_e); }
+    if (xr) { this.aimDir.copy(vm === 1 ? this.ctrlDir : this.rawCtrl); }
+    else { this.aimDir.copy(this.rawDir); _e.set(clamp(this.pitch - 0.38, -1.55, 1.5), this.yaw, 0, 'YXZ'); this.ctrlDir.set(0, 0, -1).applyEuler(_e); }
     // "puxão" para cima do controle (usado na pesca)
     this.flickUp = (this.ctrlDir.y - this.prevDir.y) / Math.max(dt, 0.001); this.prevDir.copy(this.ctrlDir);
     // cliques do touchpad por zona: cima/centro = menu, lados = girar (ou esquiva em luta), baixo = bloquear
@@ -124,6 +139,7 @@ export class Player {
   }
 
   update(dt, world) {
+    this._w = world;
     this._readInput(dt);
     const P = this.pos, vel = this.vel;
     this.dodgeCd -= dt; this.iframes -= dt;
@@ -141,11 +157,17 @@ export class Player {
       t.set(P.x + cb * 0.17 * s, sy, P.z - sb * 0.17 * s);
       if (this.block) { t.set(P.x - Math.sin(this.headYaw) * 0.36 + cb * 0.11 * s, P.y + EYE - 0.06, P.z - Math.cos(this.headYaw) * 0.36 - sb * 0.11 * s); }
       else if (i === 1 && this.emoteWave > 0) { t.set(P.x + cb * 0.3 * s + Math.sin(this.emoteWave * 12) * 0.12 * cb, P.y + EYE + 0.32, P.z - sb * 0.3 * s - Math.sin(this.emoteWave * 12) * 0.12 * sb); }
+      else if (this.emoteId) { const et = this.emoteTime, e = this.emoteId, sg = i === 0 ? 1 : -1; let u = 0.9, f = 0.18, sd = 0.36;
+        if (e === 2) u = 0.9 + Math.sin(et * 7.5) * 0.35 * sg; else if (e === 8) { u = 1.3 + Math.abs(Math.sin(et * 6)) * 0.2; sd = 0.4; } else if (e === 10) { sd = 0.55; } else if (e === 11) { u = 0.5; f = 0.45; sd = 0.12; } else if (e === 12) { u = 0.8 + Math.round(Math.sin(et * 5) * 2) / 2 * 0.3 * sg; f = 0.3; } else if (e === 6) { u = 0.82; f = 0.34; sd = 0.07; } else if (e === 5) { u = 0.78; f = 0.28; sd = 0.14; }
+        t.set(P.x + cb * sd * s - sb * f, P.y + u, P.z - sb * sd * s - cb * f); }
       else if (i === 0) t.addScaledVector(dir, REACH);
       else { t.x += mx * REACH; t.y += dir.y * REACH; t.z += mz * REACH; }
     }
     if (this.emoteWave > 0) this.emoteWave -= dt;
-    if (this.desktop) this.camera.getWorldPosition(this.aimPos); else this.aimPos.copy(this.hands[0].target);
+    if (this.desktop) this.camera.getWorldPosition(this.aimPos); else if (this.viewMode === 1) this.aimPos.copy(this.hands[0].target); else { this.camera.getWorldPosition(this.aimPos); this.aimPos.y -= 0.25; }
+    // a câmera externa não entra no chão
+    if (this.viewMode !== 1) { this.camera.getWorldPosition(_b); const fl = world.heightAt(_b.x, _b.z) + 0.4; this.camLift = Math.max(0, (this.camLift || 0) + (fl - _b.y)) * 0.9; } else this.camLift = 0;
+    if (this.emoteId) this.emoteTime += dt;
 
     // ---- solver das mãos (âncoras) ----
     let touching = 0; _a.set(0, 0, 0);

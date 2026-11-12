@@ -9,7 +9,8 @@ export const FUR_COLORS = ['#f2a65a', '#3b3b45', '#f5f1e8', '#8a8f98', '#c9793d'
 export const EYE_COLORS = ['#58c26a', '#4aa3e0', '#e0b030', '#c86a2a', '#9b6ad6', '#e0e0e0'];
 export const EMOTES = [
   { id: 1, name: 'Acenar', icon: '👋' }, { id: 2, name: 'Dançar', icon: '💃' }, { id: 3, name: 'Sentar', icon: '🪑' }, { id: 4, name: 'Dormir', icon: '💤' },
-  { id: 5, name: 'Rir', icon: '😹' }, { id: 6, name: 'Coração', icon: '❤' }, { id: 7, name: 'Miar', icon: '🐱' }, { id: 8, name: 'Comemorar', icon: '🎉' }, { id: 9, name: 'Bravo', icon: '😾' }
+  { id: 5, name: 'Rir', icon: '😹' }, { id: 6, name: 'Coração', icon: '❤' }, { id: 7, name: 'Miar', icon: '🐱' }, { id: 8, name: 'Comemorar', icon: '🎉' }, { id: 9, name: 'Bravo', icon: '😾' },
+  { id: 10, name: 'Girar', icon: '🌀' }, { id: 11, name: 'Reverência', icon: '🙇' }, { id: 12, name: 'Robô', icon: '🤖' }
 ];
 export function defaultLook(seed) {
   const r = seed == null ? Math.random() : seed;
@@ -193,27 +194,76 @@ export class CatAvatar {
   say(text, secs) { this.bubble = text; this.bubbleT = secs || 5; this.drawTag(); }
   setEmote(id) { this.emote = id; this.emoteT = 0; const e = EMOTES.find((x) => x.id === id); if (e && id !== 3 && id !== 4) this.say(e.icon, 2.5); }
   // anima; lod=true pula detalhes (gatos distantes)
+  // Animação procedural estilo "desenho animado": cada pose é um alvo e o corpo
+  // persegue o alvo com suavização (transições sem tranco), com esticar/achatar
+  // em pulos e aterrissagens, gingado ao andar, respiração e olhar em volta parado.
   update(dt, lod) {
     this.t += dt; this.emoteT += dt;
     if (this.bubbleT > 0) { this.bubbleT -= dt; if (this.bubbleT <= 0) { this.bubble = ''; this.drawTag(); } }
+    const py = this.root.position.y, vyNow = (py - (this._ly == null ? py : this._ly)) / Math.max(dt, 0.001); this._ly = py; this.vy = (this.vy || 0) + (vyNow - (this.vy || 0)) * Math.min(1, dt * 12);
     if (lod) return;
-    const u = this.u, m = this.mesh, sp = Math.min(this.speed, 5);
-    this.walk += dt * (4 + sp * 3.2) * (sp > 0.2 && this.grounded ? 1 : 0);
-    let lL = 0, lR = 0, bob = 0, tilt = 0, sway = 0, yoff = 0, tail = Math.sin(this.t * 1.7) * 0.5, hy = this.headYaw, hp = this.headPitch;
-    if (!this.grounded) { lL = 0.5; lR = -0.35; tail = Math.sin(this.t * 9) * 0.7; }
-    else if (sp > 0.2) { const a = Math.sin(this.walk) * Math.min(0.9, 0.35 + sp * 0.2); lL = a; lR = -a; bob = Math.abs(Math.cos(this.walk)) * 0.035; tilt = -Math.min(0.2, sp * 0.04); }
-    const e = this.emote, et = this.emoteT;
-    if (e === 2) { sway = Math.sin(et * 7) * 0.22; bob = Math.abs(Math.sin(et * 7)) * 0.09; lL = Math.sin(et * 7) * 0.5; lR = -lL; tail = Math.sin(et * 10); hy += Math.sin(et * 3.5) * 0.4; }
-    else if (e === 3) { yoff = -0.2; lL = lR = -1.35; tail = Math.sin(this.t * 1.2) * 0.4; }
-    else if (e === 4) { yoff = -0.42; sway = 1.45; lL = lR = -0.3; tail = 0.2; hp = 0.2; }
-    else if (e === 5) { bob = Math.abs(Math.sin(et * 16)) * 0.05; hp = -0.25 + Math.sin(et * 16) * 0.1; }
-    else if (e === 8) { bob = Math.abs(Math.sin(et * 6)) * 0.3; lL = lR = 0.4; tail = Math.sin(et * 12); }
-    else if (e === 9) { hp = 0.2; tail = Math.sin(et * 20) * 0.9; sway = Math.sin(et * 30) * 0.03; }
-    else if (e === 7) { hp = -0.3; }
-    if (this.blocking) { tilt = 0.12; hp += 0.1; }
-    u.uLegs.value.set(lL, lR); u.uHead.value.set(clamp(hy, -1.2, 1.2), clamp(hp, -0.9, 0.9)); u.uTail.value = tail;
-    m.position.y = bob + yoff; m.rotation.x = tilt; m.rotation.z = sway;
-    if (this.flash > 0) { this.flash -= dt; const f = Math.max(0, this.flash) * 3; this.mat.emissive.setRGB(f, f * 0.25, f * 0.2); }
+    const u = this.u, m = this.mesh, sp = Math.min(this.speed, 6), t = this.t, P = this.pose || (this.pose = { lL: 0, lR: 0, bob: 0, tilt: 0, sway: 0, yoff: 0, tail: 0, hy: 0, hp: 0, tw: 0, sy: 0 });
+    // aterrissagem: mola amortecida de achatar/esticar
+    if (this.grounded && this._wasG === false) this.sqV = -Math.min(4.5, 1.2 + Math.abs(this._airVy || 0) * 0.35);
+    if (!this.grounded) this._airVy = this.vy; this._wasG = this.grounded;
+    this.sqV = (this.sqV || 0) + (-(this.sq || 0) * 220 - (this.sqV || 0) * 16) * dt; this.sq = (this.sq || 0) + this.sqV * dt;
+    const moving = sp > 0.25 && this.grounded;
+    this.walk += dt * (5 + sp * 3.4) * (moving ? 1 : 0);
+    let lL = 0, lR = 0, bob = 0, tilt = 0, sway = 0, yoff = 0, tw = 0, sy = Math.sin(t * 2.1) * 0.014, tail = Math.sin(t * 1.7) * 0.5, hy = this.headYaw + Math.sin(t * 0.55 + this.walk) * 0.1 * (moving ? 0 : 1), hp = this.headPitch;
+    if (!this.grounded) {
+      if (this.vy > 0.6) { lL = -0.95; lR = -0.55; sy = 0.11; tilt = -0.12; hp -= 0.15; } // subindo: pernas encolhidas, corpo esticado
+      else { const f = Math.sin(t * 15) * 0.3; lL = 0.45 + f; lR = -0.35 - f; sy = 0.06; tilt = 0.14; hp += 0.12; } // caindo: pernas pedalando
+      tail = Math.sin(t * 10) * 0.8;
+    } else if (moving) {
+      const run = Math.min(1, sp / 4.5), w = this.walk, a = Math.sin(w) * (0.45 + run * 0.55);
+      lL = a; lR = -a; bob = Math.abs(Math.cos(w)) * (0.04 + run * 0.05); sway = Math.sin(w) * (0.07 - run * 0.02); tw = Math.sin(w) * 0.13;
+      tilt = -(0.05 + run * 0.24); hp += 0.04 + run * 0.14 + Math.cos(w * 2) * 0.03; tail = Math.sin(w) * 0.7; sy = Math.cos(w * 2) * 0.02;
+    }
+    const e = this.emote, et = this.emoteT, k = Math.min(1, et * 4);
+    if (e === 1) { sway = -0.1 * k; hy += 0.25 * k; hp -= 0.1 * k; }
+    else if (e === 2) { const b = et * 7.5; sway = Math.sin(b) * 0.26; tw = Math.sin(b * 0.5) * 0.5; bob = Math.abs(Math.sin(b)) * 0.11; lL = Math.max(0, Math.sin(b)) * -0.8; lR = Math.max(0, -Math.sin(b)) * -0.8; tail = Math.sin(b * 1.5); hy += Math.sin(b * 0.5) * 0.5; sy = Math.sin(b * 2) * 0.05; }
+    else if (e === 3) { yoff = -0.2 * k; lL = lR = -1.35 * k; tail = Math.sin(t * 1.2) * 0.4; tilt = 0.05; }
+    else if (e === 4) { yoff = -0.42 * k; sway = 1.45 * k; lL = lR = -0.3; tail = 0.2; hp = 0.2; sy = Math.sin(t * 1.3) * 0.04; }
+    else if (e === 5) { bob = Math.abs(Math.sin(et * 16)) * 0.05; hp = -0.3 + Math.sin(et * 16) * 0.1; tilt = 0.12; sy = Math.sin(et * 16) * 0.04; tail = Math.sin(et * 8) * 0.8; }
+    else if (e === 6) { sway = Math.sin(et * 3) * 0.12; hp = -0.12; bob = 0.02; tail = Math.sin(et * 5) * 0.9; }
+    else if (e === 7) { hp = -0.35 * k; sy = 0.05 * Math.sin(Math.min(1, et * 2) * Math.PI); tail = 0.6; }
+    else if (e === 8) { const j = Math.abs(Math.sin(et * 6)); bob = j * 0.34; lL = lR = -0.6 * j; sy = (j - 0.5) * 0.16; tw = Math.sin(et * 3) * 0.3; tail = Math.sin(et * 12); hp = -0.2; }
+    else if (e === 9) { hp = 0.22; tilt = -0.1; tail = Math.sin(et * 20) * 0.9; sway = Math.sin(et * 30) * 0.03; const st = Math.sin(et * 9); lL = st > 0.6 ? -0.7 : 0; bob = st > 0.6 ? 0.03 : 0; }
+    else if (e === 10) { tw = et * 9; bob = Math.abs(Math.sin(et * 9)) * 0.08; sy = 0.05; tail = 1.1; }
+    else if (e === 11) { const b = Math.sin(Math.min(1, et / 1.6) * Math.PI); tilt = -0.95 * b; hp = 0.3 * b; lL = lR = 0.12 * b; }
+    else if (e === 12) { const q = (v) => Math.round(v * 2) / 2, b = et * 5; sway = q(Math.sin(b)) * 0.2; tw = q(Math.sin(b * 0.5)) * 0.6; hy += q(Math.sin(b * 0.7)) * 0.7; lL = q(Math.sin(b)) * 0.5; lR = -lL; bob = Math.abs(q(Math.sin(b * 2))) * 0.04; tail = q(Math.sin(b)) * 0.8; }
+    if (this.blocking) { tilt = 0.14; hp += 0.12; yoff -= 0.05; lL = 0.25; lR = -0.25; }
+    if (this.flash > 0.15) { tilt += 0.25; hp -= 0.3; } // recuo ao levar golpe
+    const f = 1 - Math.exp(-dt * 20), g = 1 - Math.exp(-dt * 10);
+    P.lL += (lL - P.lL) * f; P.lR += (lR - P.lR) * f; P.bob += (bob - P.bob) * f; P.sway += (sway - P.sway) * f; P.tail += (tail - P.tail) * f; P.sy += (sy - P.sy) * f;
+    P.tilt += (tilt - P.tilt) * g; P.yoff += (yoff - P.yoff) * g; P.hy += (hy - P.hy) * f; P.hp += (hp - P.hp) * f; if (e === 10) P.tw = tw; else P.tw += (tw - P.tw) * f;
+    u.uLegs.value.set(P.lL, P.lR); u.uHead.value.set(clamp(P.hy, -1.2, 1.2), clamp(P.hp, -0.9, 0.9)); u.uTail.value = P.tail;
+    const s = clamp(P.sy + this.sq, -0.4, 0.4);
+    m.position.y = P.bob + P.yoff; m.rotation.set(P.tilt, P.tw, P.sway); m.scale.set(1 - s * 0.5, 1 + s, 1 - s * 0.5);
+    if (this.flash > 0) { this.flash -= dt; const fl = Math.max(0, this.flash) * 3; this.mat.emissive.setRGB(fl, fl * 0.25, fl * 0.2); }
+  }
+  // posições procedurais das duas patas flutuantes (NPCs e emotes): balançam ao andar, sobem ao pular, dançam...
+  procHands(a, b) {
+    const p = this.root.position, yaw = this.root.rotation.y, c = Math.cos(yaw), s = Math.sin(yaw), t = this.t, e = this.emote, et = this.emoteT, sc = this.scale;
+    let f1 = 0.1, f2 = 0.1, u1 = 0.52, u2 = 0.52, sd = 0.3;
+    const sw = Math.sin(this.walk) * Math.min(0.32, this.speed * 0.12);
+    if (!this.grounded) { u1 = u2 = this.vy > 0.6 ? 0.95 : 1.1; sd = 0.38; }
+    else if (this.speed > 0.25) { f1 += sw; f2 -= sw; u1 += Math.abs(sw) * 0.25; u2 += Math.abs(sw) * 0.25; }
+    else { u1 += Math.sin(t * 2.1) * 0.02; u2 += Math.sin(t * 2.1 + 0.6) * 0.02; }
+    if (e === 1) { u2 = 1.32; sd = 0.34 + Math.sin(et * 12) * 0.1; }
+    else if (e === 2) { u1 = 0.9 + Math.sin(et * 7.5) * 0.35; u2 = 0.9 - Math.sin(et * 7.5) * 0.35; sd = 0.36; f1 = f2 = 0.18; }
+    else if (e === 3) { u1 = u2 = 0.42; f1 = f2 = 0.26; sd = 0.18; }
+    else if (e === 4) { u1 = u2 = 0.12; }
+    else if (e === 5) { u1 = u2 = 0.78; f1 = f2 = 0.28; sd = 0.14; }
+    else if (e === 6) { u1 = u2 = 0.82; f1 = f2 = 0.34; sd = 0.07; }
+    else if (e === 8) { u1 = u2 = 1.3 + Math.abs(Math.sin(et * 6)) * 0.2; sd = 0.4; }
+    else if (e === 9) { u1 = u2 = 0.62; f1 = f2 = 0.3; sd = 0.26 + Math.sin(et * 30) * 0.02; }
+    else if (e === 10) { u1 = u2 = 0.9; sd = 0.55; }
+    else if (e === 11) { u1 = u2 = 0.5; f1 = f2 = 0.45; sd = 0.12; }
+    else if (e === 12) { const q = Math.round(Math.sin(et * 5) * 2) / 2; u1 = 0.8 + q * 0.3; u2 = 0.8 - q * 0.3; f1 = f2 = 0.3; }
+    if (this.blocking) { u1 = u2 = 0.95; f1 = f2 = 0.36; sd = 0.11; }
+    const y = p.y + (this.pose ? this.pose.bob + this.pose.yoff : 0);
+    a.set(p.x + (c * sd - s * f1) * sc, y + u1 * sc, p.z + (-s * sd - c * f1) * sc); b.set(p.x + (-c * sd - s * f2) * sc, y + u2 * sc, p.z + (s * sd - c * f2) * sc);
   }
   dispose() { this.mesh.geometry.dispose(); this.mat.dispose(); if (this.tag) { this.tag.material.map.dispose(); this.tag.material.dispose(); } if (this.root.parent) this.root.parent.remove(this.root); }
 }

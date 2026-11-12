@@ -8,18 +8,19 @@ import { Sky } from './sky.js';
 import { perf } from './perf.js';
 import { net } from './net.js';
 import { S } from './state.js';
-import { ITEMS, ORES, PICKS, GLOVES, RODS, FISH_TABLE, TREASURE_TABLE, RARITY, QUESTS, currentEvent, HELD, PROPS } from './data.js';
+import { ITEMS, ORES, PICKS, GLOVES, RODS, FISH_TABLE, TREASURE_TABLE, RARITY, QUESTS, currentEvent, HELD, PROPS, ENEMIES } from './data.js';
 import { rng, hashStr, clamp, emit, on, angDiff } from './util.js';
 import { EYE, HAND_R } from './config.js';
 
 const _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(), _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _col = new THREE.Color(), _col2 = new THREE.Color(), _q2 = new THREE.Quaternion();
+const AMBIENT = { village: 'leaf', forest: 'fire', mine: 'spark', desert: 'dust', snow: 'snow', castle: 'leaf', island: 'leaf', training: 'leaf', arena: 'dust' };
 const UP = new THREE.Vector3(0, 1, 0), ZERO = new THREE.Vector3(0, 0, 0);
 const instMat = new THREE.MeshLambertMaterial({ vertexColors: true });
 function setInst(mesh, i, x, y, z, s, ry) { _q.setFromAxisAngle(UP, ry || 0); _m.compose(_p.set(x, y, z), _q, typeof s === 'number' ? _s.set(s, s, s) : _s.set(s[0], s[1], s[2])); mesh.setMatrixAt(i, _m); mesh.instanceMatrix.needsUpdate = true; }
 function pickTable(tab, luck, r) { let tot = 0; const w = tab.map((t, i) => { const v = t[1] * (1 + (luck || 0) * i * 1.2); tot += v; return v; }); let x = (r || Math.random)() * tot; for (let i = 0; i < tab.length; i++) { x -= w[i]; if (x <= 0) return tab[i][0]; } return tab[0][0]; }
 
 export const G = {
-  props: new Map(), propSeq: 0, fireT: 0,
+  props: new Map(), propSeq: 0, fireT: 0, enemies: [], tool: 0,
   ready: false, mapId: null, def: null, world: null, E: null, objs: [], npcs: [], remotes: new Map(), sids: {}, sid: Math.random().toString(36).slice(2, 6),
   room: 'PRACA', roomName: 'Praça Central', roomPublic: true, chatLog: [], friends: [], fishing: null, spar: null, lastHurt: 0, netT: 0, evBlock: -1, evT: 0, fade: 0, pending: null, time: 0, stepT: 0, combo: 0, comboT: 0,
 
@@ -47,7 +48,7 @@ export const G = {
     E.portal = (to, x, z) => E.portals.push({ to, x, z }); E.collect = (item, model, x, z, s, tint) => E.collects.push({ item, model, x, z, s: s || 2, tint });
     E.dig = (x, z) => E.digs.push({ x, z }); E.fish = (x, z, r) => E.fishes.push({ x, z, r }); E.secret = (key, x, y, z, r) => E.secrets.push({ key, x, y, z, r });
     E.dummy = (x, z) => E.dummies.push({ x, z }); E.zone = (type, x, z, r) => E.zones.push({ type, x, z, r }); E.lamp = (x, y, z, c) => E.lamps.push({ x, y, z, c: c || 0xffd890 });
-    E.sign = (text, x, y, z) => E.signs.push({ text, x, y, z }); E.board = (x, z, yaw) => E.boards.push({ x, z, yaw }); E.spring = (x, z, p) => E.springs.push({ x, z, p });
+    E.sign = (text, x, y, z) => E.signs.push({ text, x, y, z }); E.board = (x, z, yaw) => E.boards.push({ x, z, yaw }); E.spring = (x, z, p) => E.springs.push({ x, z, p }); E.enemies = []; E.enemy = (type, x, z) => E.enemies.push({ type, x, z });
     def.build(w, E, rng(hashStr(id)));
     this.world = w; this.E = E; this.def = def; this.mapId = id;
     const add = (o) => { scene.add(o); this.objs.push(o); return o; };
@@ -107,6 +108,9 @@ export const G = {
       if (n.spar) { n.hpMax = 120; n.hp = 120; n.state = 'idle'; n.st = 0; n.zone = E.zones.find((z) => Math.hypot(z.x - n.x, z.z - n.z) < z.r + 8); }
     }
     this._npcMarks();
+    // inimigos (um InstancedMesh por tipo)
+    this.enemies = []; const eg = {}; for (const e of E.enemies) (eg[e.type] = eg[e.type] || []).push(e);
+    for (const k in eg) { const def = ENEMIES[k], mesh = inst(modelGeometry(def.model), eg[k].length); eg[k].forEach((e, i) => { e.def = def; e.mesh = mesh; e.i = i; e.hx = e.x; e.hz = e.z; e.y = w.heightAt(e.x, e.z); e.hp = def.hp; e.state = 'idle'; e.st = 0; e.t = Math.random() * 6; e.ry = Math.random() * 6.28; e.ph = Math.random() * 6; e.tx = e.x; e.tz = e.z; e.flash = 0; e.kx = e.kz = 0; mesh.setColorAt(i, _col.setRGB(1, 1, 1)); this.enemies.push(e); }); }
     w.buildGrid();
     this.player.teleport(sp[0], w.floorAt(sp[0], 50, sp[1]) + 0.1, sp[1], sp[2]);
     for (let i = 0; i < 12; i++) w.update(sp[0], sp[1], perf);
@@ -117,6 +121,7 @@ export const G = {
   _disposeMap() {
     for (const o of this.objs) { this.scene.remove(o); if (o.geometry && !o.geometry.userData.shared) { /* geometrias de modelo ficam em cache */ } if (o.material && o.material !== instMat && o.material !== worldMat) { if (o.material.map && o.material.map !== this.fx.tex) o.material.map.dispose(); o.material.dispose(); } if (o.isInstancedMesh) o.dispose(); }
     this.props.forEach((p) => this.scene.remove(p.mesh)); this.props.clear();
+    this.enemies = [];
     this.objs.length = 0; for (const n of this.npcs) n.av.dispose(); this.npcs.length = 0;
     if (this.labels) this.labels.dispose(); if (this.world) this.world.dispose();
     this.world = null; this.portalMesh = this.oreMesh = this.gemMesh = this.chestMesh = this.digMesh = this.starMesh = this.dummyMesh = this.lampMesh = this.glow = null;
@@ -132,7 +137,7 @@ export const G = {
     on('peerJoin', (id, meta) => { if (!meta || this.remotes.has(id)) return; const av = new CatAvatar(meta.look, meta.name || 'Gato', { sub: 'Nv ' + (meta.level || 1), tagColor: this._tagColor(id, meta) }); av.root.visible = false; this.scene.add(av.root); const r = { id, av, meta, has: false, x: 0, y: 0, z: 0, yaw: 0, hy: 0, hp: 0, h: [0, 0.6, -0.4, 0, 0.6, -0.4], flags: 1, life: 100, px: 0, pz: 0, hit: [0, 0], patT: 0 }; this.remotes.set(id, r); if (meta.sid) this.sids[meta.sid] = r; this._remoteHeld(r); setTimeout(() => this.props.forEach((p) => { if (p.owner === net.id) net.send('prop', { id: p.id, k: p.k, x: p.x, y: p.y, z: p.z, ry: p.ry }); }), 1500); emit('toast', meta.name + ' entrou', '#bfe6ff'); emit('players'); });
     on('peerMeta', (id, meta) => { const r = this.remotes.get(id); if (!r || !meta) return; if (JSON.stringify(meta.look) !== JSON.stringify(r.meta.look)) r.av.setLook(meta.look); r.meta = meta; this._remoteHeld(r); r.av.tagColor = this._tagColor(id, meta); r.av.setName(meta.name || 'Gato', 'Nv ' + (meta.level || 1)); if (meta.sid) this.sids[meta.sid] = r; emit('players'); });
     on('peerLeave', (id) => { const r = this.remotes.get(id); if (!r) return; if (r.heldMesh) this.scene.remove(r.heldMesh); this.props.forEach((p, k) => { if (p.owner === id) this._delProp(k); }); r.av.dispose(); this.remotes.delete(id); for (const k in this.sids) if (this.sids[k] === r) delete this.sids[k]; emit('players'); });
-    on('peerState', (p) => { const r = this.sids[p[0]]; if (!r) return; r.x = p[1]; r.y = p[2]; r.z = p[3]; r.yaw = p[4]; r.hy = p[5]; r.hp = p[6]; for (let i = 0; i < 6; i++) r.h[i] = p[7 + i]; const fl = p[13]; const em = fl >> 4; if (em !== r.av.emote) { r.av.setEmote(em); if (em === 7) playAt('click', r.av.root.position, this.camera, 0), meow(0.5, 1.1); } r.flags = fl; r.life = p[14]; if (!r.has) { r.has = true; r.av.root.position.set(r.x, r.y, r.z); r.av.root.visible = true; } });
+    on('peerState', (p) => { const r = this.sids[p[0]]; if (!r) return; r.x = p[1]; r.y = p[2]; r.z = p[3]; r.yaw = p[4]; r.hy = p[5]; r.hp = p[6]; for (let i = 0; i < 6; i++) r.h[i] = p[7 + i]; const fl = p[13]; const em = (fl >> 4) & 15; r.tool = (fl >> 8) & 7; if (em !== r.av.emote) { r.av.setEmote(em); if (em === 7) playAt('click', r.av.root.position, this.camera, 0), meow(0.5, 1.1); } r.flags = fl; r.life = p[14]; if (!r.has) { r.has = true; r.av.root.position.set(r.x, r.y, r.z); r.av.root.visible = true; } });
     on('peerEvent', (e) => this._peerEvent(e));
     on('fling', () => S.stat('fling')); on('fellOut', () => { const sp = this.def.spawn; this.player.teleport(sp[0], this.world.floorAt(sp[0], 50, sp[1]) + 0.2, sp[1], sp[2]); });
     on('land', (v) => { play('thud', Math.min(1, v / 14)); }); on('handTouch', (i, h) => { const sp = h.speed; if (sp > 1.2) { play(this.world.surface === 'snow' ? 'step_snow' : this.world.surface === 'stone' ? 'step_stone' : 'step_grass', Math.min(0.8, sp / 7)); this.player.pulse(Math.min(1, sp / 6), 20); } });
@@ -179,7 +184,7 @@ export const G = {
   },
   _log(who, text) { this.chatLog.push({ who, text }); if (this.chatLog.length > 30) this.chatLog.shift(); emit('chat'); },
   say(text) { text = String(text).slice(0, 80); if (!text) return; this._log(S.name, text); net.send('chat', { x: text }); emit('selfSay', text); },
-  emote(id) { const P = this.player; this.myEmote = id; this.emoteT = id === 3 || id === 4 ? 9999 : 3; if (id === 1) P.emoteWave = 2.5; if (id === 7) meow(1); if (id === 6) this.fx.burst(P.pos.x, P.pos.y + 1.4, P.pos.z, 0xff5080, 8, 1.2, -1); const e = EMOTES.find((x) => x.id === id); if (e) emit('selfSay', e.icon); S.stat('emote'); P.frozen = id === 3 || id === 4; },
+  emote(id) { const P = this.player; this.myEmote = id; this.emoteT = id === 3 || id === 4 ? 9999 : 3; if (id === 1) P.emoteWave = 2.5; P.emoteId = [2, 5, 6, 8, 10, 11, 12].indexOf(id) >= 0 ? id : 0; P.emoteTime = 0; if (id === 7) meow(1); if (id === 6) this.fx.burst(P.pos.x, P.pos.y + 1.4, P.pos.z, 0xff5080, 8, 1.2, -1); const e = EMOTES.find((x) => x.id === id); if (e) emit('selfSay', e.icon); S.stat('emote'); P.frozen = id === 3 || id === 4; },
   async refreshFriends() { if (!net.online) return; try { this.friends = await net.rpc('rv_friends'); S.setStat('friends', this.friends.filter((f) => f.status === 'accepted').length); this.remotes.forEach((r) => { r.av.tagColor = this._tagColor(r.id, r.meta); r.av.drawTag(); }); emit('friends'); } catch (e) { /* offline */ } },
   _combo() { this.combo = this.comboT > 0 ? this.combo + 1 : 1; this.comboT = 1.6; if (this.combo === 5) { S.stat('combo'); S.toast('🔥 COMBO x5!', '#ff9a40'); play('power', 0.5); } emit('combo', this.combo); },
   _knockedOut(by) { S.toast('💫 Você foi nocauteado por ' + by, '#ff8a8a'); play('ko', 0.7); this.player.frozen = true; this.koT = 2.2; this.fade = 0.001; this.pending = '__respawn'; },
@@ -196,7 +201,7 @@ export const G = {
     if (!this.world || this.pending) return true;
     if (this.uiClick && this.uiClick()) return true;
     if (this.fishing) { this._reel(true); return true; }
-    if (this.myEmote === 3 || this.myEmote === 4) { this.myEmote = 0; this.emoteT = 0; this.player.frozen = false; return true; }
+    if (this.myEmote === 3 || this.myEmote === 4) { this.myEmote = 0; this.emoteT = 0; this.player.frozen = false; this.player.emoteId = 0; return true; }
     const a = this.aim();
     if (a && a.npc) { this.talk(a.npc); return true; }
     if (a && a.chest) { this.openChest(a.chest); return true; }
@@ -241,45 +246,102 @@ export const G = {
     P.update(dt, this.world);
     const W = this.world; W.update(P.pos.x, P.pos.z, perf);
     // vida / emote / combo
-    if (S.hp > 0 && S.hp < S.maxHp() && (!fz || this.time - this.lastHurt > 5)) { S.hp = Math.min(S.maxHp(), S.hp + (fz ? 3 : 12) * (S.held().regen || 1) * dt); this._hpT = (this._hpT || 0) + dt; if (this._hpT > 0.5) { this._hpT = 0; emit('hp'); } }
-    if (this.emoteT > 0 && (this.emoteT -= dt) <= 0) { this.myEmote = 0; P.frozen = false; }
+    if (S.hp > 0 && S.hp < S.maxHp() && (this.time - this.lastHurt > (fz ? 5 : 3.5))) { S.hp = Math.min(S.maxHp(), S.hp + (fz ? 3 : 12) * (S.held().regen || 1) * dt); this._hpT = (this._hpT || 0) + dt; if (this._hpT > 0.5) { this._hpT = 0; emit('hp'); } }
+    if (this.emoteT > 0 && (this.emoteT -= dt) <= 0) { this.myEmote = 0; P.frozen = false; P.emoteId = 0; }
     if (this.comboT > 0 && (this.comboT -= dt) <= 0) { this.combo = 0; emit('combo', 0); }
     this._held(dt);
     // passos
     if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; play(P.inWater ? 'splash' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
-    this._interact(dt, now); this._npcs(dt); this._remotes(dt); this._fishing(dt); this._events(dt, now);
+    this._interact(dt, now); this._npcs(dt); this._enemies(dt); this._self(dt); this._remotes(dt); this._fishing(dt); this._events(dt, now);
     // mãos + sombras em lote
     const hp = this.hands; hp.begin(); const fur = S.look.fur;
     for (let i = 0; i < 2; i++) { const h = P.hands[i]; hp.hand(h.pos.x, h.pos.y, h.pos.z, HAND_R, P.block ? '#ffd0a0' : fur); }
     if (perf.shadows) hp.blob(P.pos.x, W.floorAt(P.pos.x, P.pos.y + 0.3, P.pos.z), P.pos.z, 0.34);
     this.remotes.forEach((r) => { if (!r.has || !r.av.root.visible) return; const p = r.av.root.position; if (r.near) { hp.hand(p.x + r.h[0], p.y + r.h[1], p.z + r.h[2], HAND_R, r.av.look.fur); hp.hand(p.x + r.h[3], p.y + r.h[4], p.z + r.h[5], HAND_R, r.av.look.fur); } if (perf.shadows && r.near) hp.blob(p.x, W.floorAt(p.x, p.y + 0.3, p.z), p.z, 0.34); });
-    for (const n of this.npcs) { if (!n.near) continue; const p = n.av.root.position, c = Math.cos(n.av.root.rotation.y), s = Math.sin(n.av.root.rotation.y); let fwd = 0.12, up = 0.5 + Math.sin(this.time * 2 + n.t) * 0.03; if (n.spar && n.state === 'windup') { up = 1.15; fwd = -0.1; } else if (n.spar && n.state === 'strike') { up = 0.85; fwd = 0.75; } else if (n.spar && n.state !== 'idle') { up = 0.8; fwd = 0.3; } for (const sd of [-1, 1]) hp.hand(p.x + c * 0.3 * sd - s * fwd, p.y + up, p.z - s * 0.3 * sd - c * fwd, HAND_R, n.av.look.fur); if (perf.shadows) hp.blob(p.x, n.y, p.z, 0.34); }
+    for (const n of this.npcs) { if (!n.near) continue; const p = n.av.root.position, av = n.av; av.procHands(_v, _v2);
+      if (n.spar && n.state !== 'idle' && n.state !== 'ko') { const c = Math.cos(av.root.rotation.y), sn = Math.sin(av.root.rotation.y), up = n.state === 'windup' ? 1.15 : n.state === 'strike' ? 0.85 : 0.8, fwd = n.state === 'windup' ? -0.1 : n.state === 'strike' ? 0.75 : 0.3; _v.set(p.x + c * 0.3 - sn * fwd, p.y + up, p.z - sn * 0.3 - c * fwd); _v2.set(p.x - c * 0.3 - sn * fwd, p.y + up, p.z + sn * 0.3 - c * fwd); }
+      hp.hand(_v.x, _v.y, _v.z, HAND_R, av.look.fur); hp.hand(_v2.x, _v2.y, _v2.z, HAND_R, av.look.fur); if (perf.shadows) hp.blob(p.x, n.y, p.z, 0.34); }
+    if (perf.shadows) for (const e of this.enemies) if (e.state !== 'dead' && e.near) hp.blob(e.x, e.y, e.z, 0.4);
     hp.end(perf.shadows > 0);
     // lanternas e céu
     this.sky.update(now, this.def, P.pos, perf);
     if (this.lampMesh) { const n = this.sky.night; this.lampMesh.material.color.setScalar(0.5 + n * 0.5); this.glow.visible = n > 0.12 && perf.particles >= 0.5; this.glow.material.opacity = n * 0.85; }
     if (this.portalMesh) this.portalMesh.material.opacity = 0.6 + Math.sin(this.time * 3) * 0.15;
     if (this.starMesh) for (const s of this.E.secrets) if (!s.found) setInst(this.starMesh, s.i, s.x, s.y + 0.5 + Math.sin(this.time * 2) * 0.15, s.z, 1.6, this.time * 1.5);
+    if (W.waterU) W.waterU.uTime.value = this.time;
+    this.fx.ambient(AMBIENT[this.mapId] || '', P.pos, this.time, this.sky.night);
     this.fx.update(dt);
     // laser de mira
     const a = this.uiOpen ? null : this.aim(); const show = this.uiOpen || !!a; this.laser.visible = show && !P.hands[0].touch && !P.desktop;
-    if (this.laser.visible) { const arr = this.laser.geometry.attributes.position.array, O = P.hands[0].target, D = P.aimDir, len = this.uiOpen ? (this.uiDist || 2) : this.aimT; arr[0] = O.x; arr[1] = O.y; arr[2] = O.z; arr[3] = O.x + D.x * len; arr[4] = O.y + D.y * len; arr[5] = O.z + D.z * len; this.laser.geometry.attributes.position.needsUpdate = true; }
+    if (this.laser.visible) { const arr = this.laser.geometry.attributes.position.array, O = P.viewMode === 1 ? P.hands[0].target : P.aimPos, D = P.aimDir, len = this.uiOpen ? (this.uiDist || 2) : this.aimT; arr[0] = O.x; arr[1] = O.y; arr[2] = O.z; arr[3] = O.x + D.x * len; arr[4] = O.y + D.y * len; arr[5] = O.z + D.z * len; this.laser.geometry.attributes.position.needsUpdate = true; }
     // rede: envia estado
-    this.netT -= dt; if (this.netT <= 0 && net.status === 'online') { const hz = this.remotes.size > 6 ? Math.min(perf.netHz, 6) : perf.netHz; this.netT = 1 / hz; const h = P.hands, x = P.pos.x, y = P.pos.y, z = P.pos.z, f2 = (v) => Math.round(v * 100) / 100; const flags = (P.grounded ? 1 : 0) | (P.block ? 2 : 0) | (fz ? 4 : 0) | (P.iframes > 0 ? 8 : 0) | ((this.myEmote || 0) << 4); net.sendState([this.sid, f2(x), f2(y), f2(z), f2(P.bodyYaw), f2(angDiff(P.bodyYaw, P.headYaw)), f2(P.headPitch), f2(h[0].pos.x - x), f2(h[0].pos.y - y), f2(h[0].pos.z - z), f2(h[1].pos.x - x), f2(h[1].pos.y - y), f2(h[1].pos.z - z), flags, Math.round(S.hp)]); }
+    this.netT -= dt; if (this.netT <= 0 && net.status === 'online') { const hz = this.remotes.size > 6 ? Math.min(perf.netHz, 6) : perf.netHz; this.netT = 1 / hz; const h = P.hands, x = P.pos.x, y = P.pos.y, z = P.pos.z, f2 = (v) => Math.round(v * 100) / 100; const flags = (P.grounded ? 1 : 0) | (P.block ? 2 : 0) | (fz ? 4 : 0) | (P.iframes > 0 ? 8 : 0) | ((this.myEmote || 0) << 4) | (this.tool << 8); net.sendState([this.sid, f2(x), f2(y), f2(z), f2(P.bodyYaw), f2(angDiff(P.bodyYaw, P.headYaw)), f2(P.headPitch), f2(h[0].pos.x - x), f2(h[0].pos.y - y), f2(h[0].pos.z - z), f2(h[1].pos.x - x), f2(h[1].pos.y - y), f2(h[1].pos.z - z), flags, Math.round(S.hp)]); }
   },
 
   // ---------- item na pata (visual + bônus) ----------
   _held(dt) {
     const P = this.player, h = S.held(); P.speedMul = h.speed || 1;
-    if (this.heldId !== h.id) { this.heldId = h.id; if (h.model) { this.heldMesh.geometry = modelGeometry(h.model); this.heldMesh.scale.setScalar(h.s); } }
-    this.heldMesh.visible = !!h.model && !P.block;
-    if (this.heldMesh.visible) { this.heldMesh.position.copy(P.hands[0].pos); _q.setFromUnitVectors(UP, _v.copy(P.ctrlDir).multiplyScalar(0.75).add(_v2.set(0, 0.66, 0)).normalize()); this.heldMesh.quaternion.copy(_q); }
-    this.remotes.forEach((r) => { if (!r.heldMesh) return; r.heldMesh.visible = r.has && r.near && r.av.root.visible; if (r.heldMesh.visible) { const p = r.av.root.position; r.heldMesh.position.set(p.x + r.h[0], p.y + r.h[1], p.z + r.h[2]); r.heldMesh.rotation.set(-0.7, r.av.root.rotation.y, 0, 'YXZ'); } });
+    // ferramenta de contexto: sem item escolhido, a picareta aparece perto de minério, a pá perto de um X e a vara ao pescar
+    let tool = 0;
+    if (this.fishing) tool = 3; else if (h.id === 'none' || h.id === 'pick') { const px = P.pos.x, pz = P.pos.z; for (const o of this.E.ores) if (o.alive && Math.abs(o.x - px) < 3.5 && Math.abs(o.z - pz) < 3.5) { tool = 1; break; } if (!tool) for (const d of this.E.digs) if (d.alive && Math.abs(d.x - px) < 3.5 && Math.abs(d.z - pz) < 3.5) { tool = 2; break; } }
+    this.tool = tool;
+    const vis = this._toolVis(this.heldMesh, tool === 3 || h.id === 'none' ? null : h, tool, S.d.equip.pick);
+    this.heldMesh.visible = vis && !P.block && !P.emoteId;
+    if (this.heldMesh.visible) { this.heldMesh.position.copy(P.hands[0].pos); const sw = Math.min(0.5, P.hands[0].speed * 0.06); _q.setFromUnitVectors(UP, _v.copy(P.ctrlDir).multiplyScalar(0.8 + sw).add(_v2.set(0, 0.62, 0)).normalize()); this.heldMesh.quaternion.copy(_q); }
+    this.remotes.forEach((r) => { if (!r.heldMesh) { r.heldMesh = new THREE.Mesh(modelGeometry('survival/tool-pickaxe'), instMat); r.heldMesh.frustumCulled = false; r.heldMesh.visible = false; this.scene.add(r.heldMesh); } const hd = HELD.find((x) => x.id === (r.meta && r.meta.held)); const v = r.has && r.near && r.av.root.visible && this._toolVis(r.heldMesh, r.tool === 3 || !hd || hd.id === 'none' ? null : hd, r.tool || 0, 0); r.heldMesh.visible = !!v; if (v) { const p = r.av.root.position; r.heldMesh.position.set(p.x + r.h[0], p.y + r.h[1], p.z + r.h[2]); r.heldMesh.rotation.set(-0.7, r.av.root.rotation.y, 0, 'YXZ'); } });
     // trampolins e fogueiras colocados por jogadores
     this.fireT -= dt; const fire = this.fireT <= 0; if (fire) this.fireT = 0.25;
     this.props.forEach((p) => { const d = p.def; if (d.spring && Math.abs(P.pos.x - p.x) < 0.9 && Math.abs(P.pos.z - p.z) < 0.9 && P.pos.y - p.y < 1.1 && P.pos.y - p.y > -0.3 && P.vel.y <= 0.5) { P.vel.y = d.spring; P.grounded = false; play('power', 0.5, 0, 1.4); this.fx.burst(p.x, p.y + 0.8, p.z, 0x80ffb0, 10, 2); } if (d.fire && fire && Math.abs(P.pos.x - p.x) < 25 && Math.abs(P.pos.z - p.z) < 25) this.fx.burst(p.x, p.y + 0.3, p.z, 0xff8a30, 2, 0.8, -2.5); });
   },
-  _remoteHeld(r) { const h = HELD.find((x) => x.id === (r.meta && r.meta.held)); if (!h || !h.model) { if (r.heldMesh) { this.scene.remove(r.heldMesh); r.heldMesh = null; } return; } if (!r.heldMesh) { r.heldMesh = new THREE.Mesh(modelGeometry(h.model), instMat); r.heldMesh.frustumCulled = false; this.scene.add(r.heldMesh); } r.heldMesh.geometry = modelGeometry(h.model); r.heldMesh.scale.setScalar(h.s); },
+  _remoteHeld(r) { /* o item do jogador remoto é atualizado a cada quadro em _held */ },
+  // escolhe o modelo mostrado na pata: item equipado ou ferramenta de contexto (1 picareta, 2 pá, 3 vara)
+  _toolVis(mesh, held, tool, tier) {
+    let key = null, sc = 1;
+    if (tool === 3) { key = 'prim/cyl'; sc = [0.035, 1.5, 0.035]; } else if (tool === 2) { key = 'survival/tool-shovel'; sc = 2.4; } else if (held && held.model && !(tool === 1 && held.id !== 'pick')) { key = held.model; sc = held.s; } else if (tool === 1 || (held && held.id === 'pick')) { key = tier >= 2 ? 'survival/tool-pickaxe-upgraded' : 'survival/tool-pickaxe'; sc = 2.8; }
+    if (!key) return false; if (mesh.userData.key !== key) { mesh.userData.key = key; mesh.geometry = modelGeometry(key); if (typeof sc === 'number') mesh.scale.setScalar(sc); else mesh.scale.set(sc[0], sc[1], sc[2]); }
+    return true;
+  },
+  // ---------- seu próprio gato (visível em 2ª e 3ª pessoa) ----------
+  _self(dt) {
+    const P = this.player; if (!this.selfCat) { this.selfCat = new CatAvatar(S.look, S.name, { noTag: true }); this.scene.add(this.selfCat.root); on('look', () => this.selfCat.setLook(S.look)); }
+    const av = this.selfCat; av.root.visible = P.viewMode !== 1; if (!av.root.visible) return;
+    av.root.position.copy(P.pos); av.root.rotation.y = P.bodyYaw; av.speed = av.speed * 0.8 + P.speed * 0.2; av.grounded = P.grounded || P.wasTouching; av.blocking = P.block; av.headYaw = angDiff(P.bodyYaw, P.headYaw); av.headPitch = 0;
+    if (av.emote !== (this.myEmote || 0)) { av.emote = this.myEmote || 0; av.emoteT = 0; } av.update(dt, false);
+  },
+  // ---------- inimigos: perseguem, avisam o golpe (incham e ficam vermelhos) e atacam; dá para bloquear e esquivar ----------
+  _enemies(dt) {
+    const P = this.player, w = this.world, t = this.time, px = P.pos.x, pz = P.pos.z;
+    for (const e of this.enemies) {
+      const def = e.def; let dx = px - e.x, dz = pz - e.z; const d = Math.hypot(dx, dz) || 0.001; e.near = d < perf.drawDist;
+      if (e.state === 'dead') { if (t > e.respawn) { e.state = 'idle'; e.hp = def.hp; e.x = e.hx; e.z = e.hz; e.y = w.heightAt(e.x, e.z); } else continue; }
+      if (d > 60) { if (!e.far) { e.far = true; setInst(e.mesh, e.i, e.x, e.y, e.z, def.s, e.ry); } continue; } e.far = false;
+      e.st -= dt; e.t -= dt; let mv = 0, mx = 0, mz = 0, lean = 0, sc = 1;
+      const dy = Math.abs(P.pos.y - e.y), alive = S.hp > 0 && !this.pending;
+      if (e.state === 'idle') { if (d < 10 && dy < 3.5 && alive) { e.state = 'chase'; e.st = 0.4; this.fx.text(e.x, e.y + 2.2, e.z, def.n + '!', '#ff9a8a'); playAt('thud', _v.set(e.x, e.y, e.z), this.camera, 0.6); }
+        else { if (e.t <= 0) { e.t = 2.5 + Math.random() * 4; const a = Math.random() * 6.28, r = Math.random() * 5; e.tx = e.hx + Math.cos(a) * r; e.tz = e.hz + Math.sin(a) * r; } const ex = e.tx - e.x, ez = e.tz - e.z, ed = Math.hypot(ex, ez); if (ed > 0.3) { mv = 0.8; mx = ex / ed; mz = ez / ed; } } }
+      else if (e.state === 'chase') { if (!alive || Math.hypot(e.x - e.hx, e.z - e.hz) > 26 || d > 22) e.state = 'home'; else if (d > 1.3) { mv = def.sp; mx = dx / d; mz = dz / d; lean = 0.18; } else if (e.st <= 0 && dy < 1.6) { e.state = 'windup'; e.st = 0.55; } else { mx = dx / d; mz = dz / d; } }
+      else if (e.state === 'windup') { mx = dx / d; mz = dz / d; lean = -0.35; sc = 1.18; e.flash = 0.2; if (e.st <= 0) { e.state = 'strike'; e.st = 0.22;
+          if (d < 1.9 && dy < 1.7 && alive) { if (P.iframes > 0) this.fx.text(px, P.pos.y + 1.5, pz, 'Esquivou!', '#bfe6ff'); else { let dmg = def.dmg; const a = Math.atan2(-(e.x - px), -(e.z - pz)), blocked = P.block && Math.abs(angDiff(P.headYaw, a)) < 1.2; if (blocked) { dmg = Math.ceil(dmg * (S.held().block || 0.2)); S.stat('blocked'); P.stamina = Math.max(0, P.stamina - 10); } S.hp = Math.max(0, S.hp - dmg); this.lastHurt = t; P.vel.x += dx / d * (blocked ? 1.5 : 4.5); P.vel.z += dz / d * (blocked ? 1.5 : 4.5); if (!blocked) P.vel.y += 1.4; play(blocked ? 'block' : 'punch_heavy', 0.9); P.pulse(1, 70); emit('hp'); emit('hurt', blocked); if (this.selfCat) this.selfCat.flash = 0.3; if (S.hp <= 0) this._knockedOut(def.n); } } } }
+      else if (e.state === 'strike') { mx = dx / d; mz = dz / d; lean = 0.55; if (e.st <= 0) { e.state = 'chase'; e.st = 0.7 + Math.random() * 0.5; } }
+      else if (e.state === 'hurt') { lean = -0.3; sc = 0.9; mx = dx / d; mz = dz / d; if (e.st <= 0) e.state = 'chase'; }
+      else if (e.state === 'home') { const ex = e.hx - e.x, ez = e.hz - e.z, ed = Math.hypot(ex, ez); e.hp = Math.min(def.hp, e.hp + 20 * dt); if (ed < 1) e.state = 'idle'; else { mv = def.sp; mx = ex / ed; mz = ez / ed; } if (d < 7 && alive && ed < 18) e.state = 'chase'; }
+      // movimento (não entra na água) + empurrão ao levar golpe
+      let nx = e.x + (mx * mv + e.kx) * dt, nz = e.z + (mz * mv + e.kz) * dt; e.kx *= Math.max(0, 1 - dt * 6); e.kz *= Math.max(0, 1 - dt * 6);
+      if (Math.abs(nx) < w.half - 3 && Math.abs(nz) < w.half - 3) { const nh = w.heightAt(nx, nz); if (nh > w.waterY + 0.05 && nh - e.y < 1.2) { e.x = nx; e.z = nz; e.y = nh; } else { e.t = 0; } }
+      if (mx || mz) e.ry += angDiff(e.ry, Math.atan2(mx, mz)) * Math.min(1, dt * 9);
+      if (mv > 0) e.ph += dt * (6 + mv * 3);
+      // golpes do jogador
+      if (d < 2.6) this._handHits(e.x, e.y + (def.fly ? 1.0 : 0.75), e.z, 0.55, 1.5, (h) => { if (t - (e.last || 0) < 0.25) return; e.last = t; const dmg = this._damage(h), l = Math.hypot(h.vel.x, h.vel.z) || 1; e.hp -= dmg; e.flash = 0.25; e.kx = h.vel.x / l * 5; e.kz = h.vel.z / l * 5; if (e.state !== 'windup' && e.state !== 'strike' && dmg >= 14) { e.state = 'hurt'; e.st = 0.2; } else if (e.state === 'idle' || e.state === 'home') { e.state = 'chase'; e.st = 0.3; } play(dmg > 14 ? 'punch_heavy' : 'punch', 0.9); P.pulse(1, 40); this.fx.text(e.x, e.y + 2, e.z, '-' + dmg, '#ffd040'); this.fx.burst(e.x, e.y + 0.9, e.z, 0xffb040, 8, 3); S.stat('hit'); this._combo();
+        if (e.hp <= 0) { e.state = 'dead'; e.respawn = t + 40; setInst(e.mesh, e.i, 0, -999, 0, 0, 0); const c = def.coins[0] + Math.floor(Math.random() * (def.coins[1] - def.coins[0] + 1)); S.addCoins(c); S.addXp(def.xp); S.stat('kill', e.type); if (Math.random() < def.drop[1]) S.addItem(def.drop[0], 1); S.toast('☠ ' + def.n + ' derrotado: +' + c + ' moedas', '#ffd76a'); play('mine_break', 0.5); this.fx.burst(e.x, e.y + 0.8, e.z, 0xd0d0ff, 26, 4.5); } });
+      if (e.state === 'dead') continue;
+      // animação procedural: pulinhos ao andar, flutuar (fantasma), inclinar, inchar no aviso
+      const hop = def.fly ? 0.35 + Math.sin(t * 2.2 + e.i) * 0.14 : mv > 0 ? Math.abs(Math.sin(e.ph)) * 0.2 : Math.sin(t * 2 + e.i) * 0.015 + 0.015;
+      const sq = def.fly ? 1 : mv > 0 ? 1 + Math.cos(e.ph * 2) * 0.06 : 1 + Math.sin(t * 2 + e.i) * 0.02;
+      _q.setFromAxisAngle(UP, e.ry); _q2.setFromAxisAngle(_v.set(1, 0, 0), lean + (def.fly ? Math.sin(t * 1.7 + e.i) * 0.08 : 0)); _q.multiply(_q2);
+      _m.compose(_p.set(e.x, e.y + hop, e.z), _q, _s.set(def.s * sc / Math.sqrt(sq), def.s * sc * sq, def.s * sc / Math.sqrt(sq))); e.mesh.setMatrixAt(e.i, _m); e.mesh.instanceMatrix.needsUpdate = true;
+      if (e.flash > 0 || e.wasFlash) { e.flash -= dt; const f = Math.max(0, e.flash) * 5; e.mesh.setColorAt(e.i, e.state === 'windup' ? _col.setRGB(1 + f * 1.5, 1 - f * 0.4, 1 - f * 0.4) : _col.setRGB(1 + f * 2, 1 + f * 2, 1 + f * 2)); e.mesh.instanceColor.needsUpdate = true; e.wasFlash = e.flash > 0; }
+    }
+  },
   // ---------- objetos colocados no mundo (sincronizados por broadcast) ----------
   _addProp(key, owner, k, x, y, z, ry) {
     const def = PROPS.find((p) => p.id === k); if (!def || !this.world) return; this._delProp(key);

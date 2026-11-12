@@ -155,6 +155,7 @@ export const MAPS = {
       E.chest('f_1', -55, null, -30, 0); E.chest('f_2', 50, null, 35, 1); E.chest('f_3', -10, null, -62, 1); E.fish(4, river(4) + 5, 6);
       w.put('nature/statue_obelisk', -60, 10, { s: 5, col: 'box' }); E.sign('Ruínas antigas', -60, w.heightAt(-60, 10) + 5, 10); ring(6, 6, (x, z) => w.put('nature/statue_columnDamaged', -60 + x, 10 + z, { s: 4, col: 'box' }));
       E.chest('f_ruin', -60, null, 13, 1);
+      for (let i = 0; i < 8; i++) { let x, z; do { x = (r() - 0.5) * 140; z = (r() - 0.5) * 140; } while (!dry(x, z) || Math.hypot(x, z - 60) < 28 || Math.hypot(x + 28, z - 42) < 16); E.enemy(i % 3 === 2 ? 'zombie' : 'ghost', x, z); }
     }
   },
   // ======================= MINA =======================
@@ -182,6 +183,7 @@ export const MAPS = {
       ring(7, 6, (x, z) => E.ore(r() < 0.5 ? 'quartz' : 'amethyst', x, z)); E.chest('m_core', 0, null, 0, 2); E.secret('mine', 0, w.heightAt(0, 0) + 1, 0, 3);
       ring(5, 9.5, (x, z) => { w.put('plat/jewel', x, z, { s: [3, 6, 3], tint: [0.6, 0.9, 1.4] }); E.lamp(x, w.heightAt(x, z) + 1.4, z, 0x60c0ff); });
       E.chest('m_1', -30, null, -18, 1); E.chest('m_2', 28, null, -30, 1); E.chest('m_3', 34, null, 22, 0);
+      { let k = 0, tr = 0; while (k < 9 && tr++ < 3000) { const x = (r() - 0.5) * 90, z = (r() - 0.5) * 90; if (!free(x, z) || Math.hypot(x, z - 40) < 20) continue; E.enemy(k % 3 === 2 ? 'ghost' : 'orc', x, z); k++; } }
     }
   },
   // ======================= DESERTO =======================
@@ -211,6 +213,7 @@ export const MAPS = {
       for (let i = 0; i < 12; i++) { let x, z; do { x = (r() - 0.5) * 150; z = (r() - 0.5) * 150; } while (!out(x, z)); E.collect('cactusfruit', 'nature/cactus_short', x, z, 2.6); }
       for (let i = 0; i < 12; i++) { let x, z; do { x = (r() - 0.5) * 150; z = (r() - 0.5) * 150; } while (!out(x, z)); E.ore(i < 4 ? 'sunstone' : i < 8 ? 'gold' : 'copper', x, z); }
       E.chest('d_1', -60, null, -50, 1); E.chest('d_2', 62, null, 40, 0); E.chest('d_3', -20, null, -66, 1);
+      for (let i = 0; i < 8; i++) { let x, z; do { x = (r() - 0.5) * 150; z = (r() - 0.5) * 150; } while (!out(x, z) || Math.hypot(x, z - 74) < 26 || w.heightAt(x, z) < w.waterY + 0.3); E.enemy('skeleton', x, z); }
       // acampamento de caravana
       w.put('town/cart-high', 10, 62, { s: 2.8, ry: 0.4, col: 'box' }); w.put('survival/tent', 15, 66, { s: 6, col: 'box', cs: 0.7 }); w.put('nature/campfire_stones', 11, 67, { s: 3 }); E.lamp(11, w.heightAt(11, 67) + 0.5, 67, 0xff8a30);
     }
@@ -239,7 +242,8 @@ export const MAPS = {
       const top = w.heightAt(peak[0], peak[1]); w.put('castle/flag-wide', peak[0], peak[1], { s: 5, abs: top }); E.secret('snow', peak[0], top + 1, peak[1], 4); E.chest('s_top', peak[0] + 2, top, peak[1] + 1, 2); E.lamp(peak[0], top + 4.6, peak[1], 0x90d0ff);
       for (let i = 0; i < 14; i++) { const a = r() * 6.28, d = 20 + r() * 34; E.ore(r() < 0.55 ? 'ice' : r() < 0.6 ? 'silver' : 'iron', peak[0] + Math.cos(a) * d, peak[1] + Math.sin(a) * d); }
       for (let i = 0; i < 16; i++) { let x, z; do { x = (r() - 0.5) * 160; z = (r() - 0.5) * 160; } while (!low(x, z)); E.collect('snowbell', 'nature/flower_purpleC', x, z, 3.4); }
-      E.chest('s_1', -60, null, 50, 0); E.chest('s_2', 64, null, 30, 1); E.spring(-30, 62, 15); E.sign('Trampolim de neve!', -30, w.heightAt(-30, 62) + 2.2, 62);
+      E.chest('s_1', -60, null, 50, 0); E.chest('s_2', 64, null, 30, 1);
+      for (let i = 0; i < 6; i++) { let x, z; do { x = (r() - 0.5) * 160; z = (r() - 0.5) * 160; } while (!low(x, z) || Math.hypot(x, z - 68) < 30); E.enemy(i % 3 === 0 ? 'ghost' : 'orc', x, z); } E.spring(-30, 62, 15); E.sign('Trampolim de neve!', -30, w.heightAt(-30, 62) + 2.2, 62);
     }
   },
   // ======================= ARENA =======================
@@ -305,6 +309,7 @@ export const MAPS = {
       scatter(w, r, ['castle/rocks-large', 'nature/plant_bushDetailed', 'nature/flower_redA', 'nature/grass_large'], 90, { s: [2, 3], ok: outside, detail: 1 });
       for (let i = 0; i < 6; i++) { const a = r() * 6.28; E.ore(i < 3 ? 'iron' : 'stone', Math.cos(a) * 58, Math.sin(a) * 58 - 5); }
       E.fish(40, -5, 4);
+      for (let i = 0; i < 6; i++) { let x, z; do { x = (r() - 0.5) * 130; z = (r() - 0.5) * 130; } while (!outside(x, z) || Math.hypot(x, z - 62) < 22 || w.heightAt(x, z) < w.waterY + 0.3); E.enemy(i % 2 ? 'skeleton' : 'zombie', x, z); }
     }
   },
   // ======================= CIDADE =======================
@@ -367,6 +372,7 @@ export const MAPS = {
       // morro do vigia
       const hx = -14, hz = -12, hh = w.heightAt(hx, hz); w.put('pirate/tower-complete-small', hx, hz, { s: 1.5, col: 'box', cs: 0.8 }); E.chest('i_hill', hx + 4, null, hz, 1); E.lamp(hx, hh + 9.6, hz, 0xffc060);
       E.chest('i_1', 38, null, -20, 0); E.chest('i_2', -40, null, 14, 1);
+      for (let i = 0; i < 5; i++) { let x, z; do { x = (r() - 0.5) * 100; z = (r() - 0.5) * 90; } while (!(w.heightAt(x, z) > 0.8) || Math.hypot(x, z - 33) < 24); E.enemy('skeleton', x, z); }
       for (let i = 0; i < 8; i++) { const a = r() * 6.28; const x = -14 + Math.cos(a) * 12, z = -12 + Math.sin(a) * 12; E.ore(i < 3 ? 'gold' : i < 6 ? 'copper' : 'silver', x, z); }
     }
   },
