@@ -128,7 +128,7 @@ export class World {
   }
   addWater(y, color, mul) {
     this.waterY = y; const sz = this.size * (mul || 1), seg = 28;
-    const mat = new THREE.MeshBasicMaterial({ color: color || 0x3a8fd0, transparent: true, opacity: 0.84 });
+    const mat = new THREE.MeshBasicMaterial({ color: color || 0x3a8fd0, transparent: true, opacity: 0.84, side: THREE.DoubleSide });
     this.waterU = { uTime: { value: 0 } };
     mat.onBeforeCompile = (sh) => { // ondas no vertex shader + brilho nas cristas
       sh.uniforms.uTime = this.waterU.uTime;

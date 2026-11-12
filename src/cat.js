@@ -19,7 +19,7 @@ export function defaultLook(seed) {
 export function cleanLook(l) {
   const d = defaultLook(0.3); l = l || {};
   const hex = (v, f) => (typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v) ? v : f);
-  return { fur: hex(l.fur, d.fur), fur2: hex(l.fur2, d.fur2), pattern: clamp(l.pattern | 0, 0, PATTERNS.length - 1), eyes: hex(l.eyes, d.eyes), hat: clamp(l.hat | 0, 0, HATS.length - 1) };
+  return { fur: hex(l.fur, d.fur), fur2: hex(l.fur2, d.fur2), pattern: clamp(l.pattern | 0, 0, PATTERNS.length - 1), eyes: hex(l.eyes, d.eyes), hat: clamp(l.hat | 0, 0, HATS.length - 1), acc: clamp(l.acc | 0, 0, 11) };
 }
 
 const _c = new THREE.Color();
@@ -101,6 +101,19 @@ export function buildCatGeometry(look) {
   else if (H === 7) { b.box(0.45, 0.08, 0.37, 0, top - 0.02, -0.02, [190, 40, 50], 1, NECK); b.box(0.06, 0.12, 0.04, 0.2, top - 0.08, 0.17, [190, 40, 50], 1, NECK); }
   else if (H === 8) { b.cyl(0.27, 0.27, 0.015, 10, 0, top + 0.01, -0.02, [80, 60, 160], 1, NECK); b.cone(0.16, 0.36, 8, 0, top + 0.19, -0.02, [80, 60, 160], 1, NECK); b.box(0.05, 0.05, 0.02, 0, top + 0.1, -0.17, [245, 215, 80], 1, NECK); }
   else if (H === 9) { const g = new THREE.TorusGeometry(0.13, 0.018, 4, 10); g.rotateX(Math.PI / 2); g.translate(0, top + 0.16, -0.02); b.add(g, [255, 235, 120], 1, NECK); }
+  // acessórios conquistáveis
+  const A = look.acc, gold = [245, 200, 50], white = [245, 245, 250];
+  if (A === 1) { b.box(0.13, 0.08, 0.03, -0.11, 0.99, -0.225, [20, 20, 26], 1, NECK); b.box(0.13, 0.08, 0.03, 0.11, 0.99, -0.225, [20, 20, 26], 1, NECK); b.box(0.1, 0.02, 0.02, 0, 1.0, -0.225, [20, 20, 26], 1, NECK); b.box(0.02, 0.02, 0.2, -0.225, 1.0, -0.12, [20, 20, 26], 1, NECK); b.box(0.02, 0.02, 0.2, 0.225, 1.0, -0.12, [20, 20, 26], 1, NECK); }
+  else if (A === 2) { b.box(0.4, 0.09, 0.32, 0, 0.75, 0, [220, 60, 60], 0); b.box(0.4, 0.03, 0.32, 0, 0.75, 0, white, 0); b.box(0.09, 0.26, 0.04, 0.1, 0.6, -0.17, [220, 60, 60], 0); b.box(0.09, 0.05, 0.045, 0.1, 0.5, -0.17, white, 0); }
+  else if (A === 3) { b.box(0.09, 0.08, 0.03, -0.06, 0.73, -0.16, [200, 40, 60], 0); b.box(0.09, 0.08, 0.03, 0.06, 0.73, -0.16, [200, 40, 60], 0); b.box(0.04, 0.04, 0.04, 0, 0.73, -0.16, [120, 20, 40], 0); }
+  else if (A === 4) { b.box(0.28, 0.3, 0.14, 0, 0.55, 0.2, [70, 130, 200], 0); b.box(0.2, 0.1, 0.03, 0, 0.5, 0.28, [240, 200, 60], 0); b.box(0.04, 0.3, 0.3, -0.13, 0.58, 0.02, [50, 90, 150], 0); b.box(0.04, 0.3, 0.3, 0.13, 0.58, 0.02, [50, 90, 150], 0); }
+  else if (A === 5) { b.box(0.4, 0.5, 0.03, 0, 0.48, 0.17, [200, 40, 50], 0, null, null, 0.12); b.box(0.42, 0.05, 0.3, 0, 0.75, 0.01, [200, 40, 50], 0); b.box(0.06, 0.06, 0.03, 0, 0.74, -0.15, gold, 0); }
+  else if (A === 6) { b.box(0.04, 0.14, 0.02, -0.03, 0.66, -0.15, [60, 100, 220], 0, null, null, 0, 0.3); b.box(0.04, 0.14, 0.02, 0.03, 0.66, -0.15, [220, 60, 60], 0, null, null, 0, -0.3); b.cyl(0.055, 0.055, 0.02, 8, 0, 0.56, -0.155, gold, 0); }
+  else if (A === 7) { for (const sx of [-1, 1]) { const g1 = new THREE.SphereGeometry(0.16, 6, 5); g1.scale(1, 1.4, 0.25); g1.translate(sx * 0.22, 0.68, 0.2); b.add(g1, [190, 240, 255], 0, [0, 0, 0]); const g2 = new THREE.SphereGeometry(0.1, 6, 5); g2.scale(1, 1.2, 0.25); g2.translate(sx * 0.2, 0.46, 0.2); b.add(g2, [230, 250, 255], 0, [0, 0, 0]); } }
+  else if (A === 8) { b.box(0.34, 0.12, 0.04, 0, 0.99, -0.225, [60, 190, 230], 1, NECK); b.box(0.36, 0.14, 0.02, 0, 0.99, -0.215, [240, 200, 40], 1, NECK); b.cyl(0.025, 0.025, 0.34, 6, 0.25, 1.08, -0.1, [240, 200, 40], 1, NECK); b.cyl(0.035, 0.035, 0.05, 6, 0.25, 1.26, -0.1, [240, 90, 60], 1, NECK); }
+  else if (A === 9) { const g = new THREE.TorusGeometry(0.36, 0.03, 4, 12); g.rotateX(Math.PI / 2); g.translate(0, 0.5, 0); b.add(g, [255, 225, 90], 0, [0, 0, 0]); const g2 = new THREE.TorusGeometry(0.3, 0.02, 4, 12); g2.rotateX(Math.PI / 2); g2.translate(0, 0.28, 0); b.add(g2, [255, 240, 150], 0, [0, 0, 0]); }
+  else if (A === 10) { for (let i = 0; i < 9; i++) { const a = -1.9 + i * 0.475; b.box(0.045, 0.045, 0.045, Math.sin(a) * 0.19, 0.71 - Math.cos(a) * 0.03, -Math.cos(a) * 0.16, white, 0); } }
+  else if (A === 11) { b.cone(0.05, 0.2, 5, -0.2, 1.2, -0.12, [150, 30, 40], 1, NECK); b.cone(0.05, 0.2, 5, 0.2, 1.2, -0.12, [150, 30, 40], 1, NECK); }
   return b.build();
 }
 

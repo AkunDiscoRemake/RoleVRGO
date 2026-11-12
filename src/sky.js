@@ -29,7 +29,7 @@ export class Sky {
     this._m = new THREE.Matrix4(); this._q = new THREE.Quaternion(); this._s = new THREE.Vector3(); this._p = new THREE.Vector3(); this._top = new THREE.Color(); this.domeT = 0;
     this._a = new THREE.Color(); this._b = new THREE.Color(); this._c = new THREE.Color();
   }
-  update(nowMs, def, center, perf) {
+  update(nowMs, def, center, perf, under) {
     const t = ((nowMs / 1000) % DAY_LENGTH) / DAY_LENGTH; // 0 = nascer do sol
     const ang = t * Math.PI * 2, el = Math.sin(ang); this.hour = (t * 24 + 6) % 24;
     const day = clamp(el * 3 + 0.5, 0, 1), dusk = clamp(1 - Math.abs(el) * 3.2, 0, 1);
@@ -49,8 +49,9 @@ export class Sky {
     this.sun.target.position.copy(center);
     this.orb.visible = !def.indoor; this.stars.visible = !def.indoor && this.night > 0.3; this.stars.material.opacity = clamp((this.night - 0.3) * 2, 0, 1); this.stars.position.copy(center);
     this.sun.castShadow = perf.shadows === 2;
+    if (under) { col.setHex(0x1a9ac8).multiplyScalar(0.55 + day * 0.45); this.scene.background.copy(col); this.scene.fog.color.copy(col); this.scene.fog.near = 1; this.scene.fog.far = 36; }
     // cúpula: recolore ~2x por segundo
-    this.dome.visible = !def.indoor; this.dome.position.set(center.x, center.y - 20, center.z);
+    this.dome.visible = !def.indoor && !under; this.dome.position.set(center.x, center.y - 20, center.z);
     this.domeT -= 1; if (this.dome.visible && this.domeT <= 0) { this.domeT = 30; const top = this._top.copy(col).multiplyScalar(0.55); top.b = Math.min(1, top.b * 1.35 + 0.04); const C = this.dome.geometry.attributes.color, Pp = this.dome.geometry.attributes.position; for (let i = 0; i < C.count; i++) { const k = Math.pow(clamp(Pp.getY(i) / 330, 0, 1), 0.6); C.setXYZ(i, col.r + (top.r - col.r) * k, col.g + (top.g - col.g) * k, col.b + (top.b - col.b) * k); } C.needsUpdate = true; }
     // nuvens: giram devagar em volta do jogador
     const cv = !def.indoor && perf.level >= 1; this.clouds.visible = cv; this.glow.visible = !def.indoor && perf.level >= 1;

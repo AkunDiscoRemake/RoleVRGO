@@ -10,6 +10,7 @@ import { worldMat } from './world.js';
 import { CatAvatar, defaultLook, cleanLook, FUR_COLORS, EYE_COLORS, PATTERNS } from './cat.js';
 import { store, emit, on } from './util.js';
 import { rec } from './rec.js';
+import { music } from './music.js';
 
 THREE.ColorManagement.enabled = false; // pipeline em espaço gama: mais leve no Adreno 530 do Oculus Go
 const $ = (id) => document.getElementById(id);
@@ -86,7 +87,8 @@ function start() {
   perf.setProfile(store.get('profile', 'balanced'));
   G.room = chosen.code; G.roomName = chosen.name; G.roomPublic = chosen.pub;
   G.init(scene, camera, renderer, player); ui.init(scene, camera, player);
-  G.loadMap('village'); S.touch(); emit('saveNow');
+  on('map', (id) => music.setMap(id)); music.start();
+  G.loadMap('village'); S.touch(); emit('saveNow'); S.streakCheck(); S.checkAccs();
   if (net.online) { G.refreshFriends(); if (S.d.party) net.joinParty(S.d.party); }
   if (!(S.d.stats.fling > 0)) setTimeout(() => S.toast('Fale com a Mimi (❗) à sua frente. Menu: touchpad / tecla M', '#bfe6ff'), 1500);
 }
@@ -95,7 +97,7 @@ async function enterVR() {
   try {
     renderer.xr.setFramebufferScaleFactor(perf.fbScale());
     const session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor', 'bounded-floor'] });
-    await renderer.xr.setSession(session); start(); audioInit(); perf.apply();
+    await renderer.xr.setSession(session); start(); audioInit(); music.start(); perf.apply();
     if (session.frameRate) perf.target = Math.min(72, session.frameRate);
     $('hint').style.display = 'none';
     session.addEventListener('end', () => { perf.target = 60; resize(); $('hint').style.display = 'block'; });
@@ -123,5 +125,5 @@ renderer.setAnimationLoop((t, frame) => {
 });
 on('look', () => { /* a cor das patas vem de S.look a cada quadro */ });
 addEventListener('beforeunload', () => { net.leave(); });
-self.RV = { G, S, net, perf, player, ui, rec }; // para depuração no console
+self.RV = { G, S, net, perf, player, ui, rec, music }; // para depuração no console
 boot();

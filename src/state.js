@@ -1,4 +1,4 @@
-import { ITEMS, QUESTS, DAILY, ACHIEVEMENTS, PROFS, PICKS, GLOVES, RODS, HAT_PRICES, RARITY, HELD, RECIPES } from './data.js';
+import { ITEMS, QUESTS, DAILY, ACHIEVEMENTS, PROFS, PICKS, GLOVES, RODS, HAT_PRICES, RARITY, HELD, RECIPES, ACCS, PERKS, CONTRACT_TYPES, ALBUM, titleFor } from './data.js';
 import { emit, on, store, dayKey, rng } from './util.js';
 import { net } from './net.js';
 import { play } from './assets.js';
@@ -8,7 +8,7 @@ import { HATS } from './cat.js';
 export const S = {
   name: 'Gato', look: null,
   d: null, dirty: false, boostUntil: 0, hp: 100, combo: 0,
-  blank() { return { level: 1, xp: 0, coins: 30, inv: {}, equip: { pick: 0, glove: 0, rod: 0 }, hats: [0], prof: '', profXp: {}, q: { active: {}, done: [] }, daily: { day: 0, prog: [0, 0, 0], claimed: [] }, ach: [], stats: {}, chests: { day: 0, open: [] }, secrets: [], maps: [], party: '', held: ['none', 'pick'], hand: 'none' }; },
+  blank() { return { level: 1, xp: 0, coins: 30, inv: {}, equip: { pick: 0, glove: 0, rod: 0 }, hats: [0], prof: '', profXp: {}, q: { active: {}, done: [] }, daily: { day: 0, prog: [0, 0, 0], claimed: [] }, ach: [], stats: {}, chests: { day: 0, open: [] }, secrets: [], maps: [], party: '', held: ['none', 'pick'], hand: 'none', perks: {}, seen: {}, albumDone: [], accSeen: [], contract: null, streak: { day: 0, n: 0 } }; },
   load(data) {
     const b = this.blank(); const d = data && typeof data === 'object' ? data : {};
     for (const k in b) if (d[k] == null) d[k] = b[k];
@@ -25,8 +25,21 @@ export const S = {
     for (const k in r.need) this.removeItem(k, r.need[k]); const o = r.out, d = this.d;
     if (o.item) this.addItem(o.item, o.n); else if (o.equip) d.equip[o.equip] = o.tier; else if (o.held) { d.held.push(o.held); d.hand = o.held; emit('meta'); } else if (o.hat != null) d.hats.push(o.hat);
     this.toast('🔨 Fabricado: ' + r.n, '#ffd76a'); play('wood', 0.8); play('confirm', 0.6); this.addXp(15); this.stat('craft'); this.touch(); emit('inv'); return ''; },
-  maxHp() { return 100 + (this.d.prof === 'fighter' ? 20 : 0) + Math.min(40, this.d.level * 2); },
-  xpNeed(l) { return 80 + (l || this.d.level) * 60; },
+  maxHp() { return 100 + (this.d.prof === 'fighter' ? 20 : 0) + Math.min(40, this.d.level * 2) + this.perk('hp') * 10; },
+  xpNeed(l) { l = l || this.d.level; return 90 + l * 65 + l * l * 3; },
+  // ---------- talentos, título, acessórios, álbum, contratos, sequência diária ----------
+  perk(id) { return this.d.perks[id] || 0; },
+  perkPoints() { let used = 0; for (const k in this.d.perks) used += this.d.perks[k]; return this.d.level - 1 - used; },
+  addPerk(id) { const p = PERKS.find((x) => x.id === id); if (!p || this.perkPoints() <= 0 || this.perk(id) >= p.max) return; this.d.perks[id] = this.perk(id) + 1; play('power', 0.5); this.toast('Talento: ' + p.n + ' ' + this.d.perks[id] + '/' + p.max, '#c06bff'); this.touch(); emit('hp'); },
+  resetPerks() { if (this.d.coins < 100) return 'Custa 100 moedas'; this.d.coins -= 100; this.d.perks = {}; this.touch(); emit('coins'); return ''; },
+  title() { return titleFor(this.d.level); },
+  accOk(i) { const a = ACCS[i]; return !!a && (i === 0 || (this.d.stats[a.s] || (a.s === 'level' ? this.d.level : 0)) >= a.v); },
+  checkAccs() { for (let i = 1; i < ACCS.length; i++) if (this.accOk(i) && this.d.accSeen.indexOf(i) < 0) { this.d.accSeen.push(i); this.toast('🎀 Acessório conquistado: ' + ACCS[i].n + ' (vista em Avatar)', '#ff9ad8'); play('secret', 0.6); } },
+  albumCount(k) { let have = 0, tot = 0; for (const id in ITEMS) if (ITEMS[id].k === k) { tot++; if (this.d.seen[id]) have++; } return [have, tot]; },
+  newContract() { const lvl = this.d.level, r = Math.random, T = CONTRACT_TYPES[Math.floor(r() * CONTRACT_TYPES.length)], tier = 1 + Math.floor(r() * 3), n = Math.max(1, Math.round(T.base * tier * (1 + lvl * 0.04)));
+    this.d.contract = { t: T.t, n, p: 0, title: T.title.replace('%n', n), xp: Math.round((50 + lvl * 14) * tier), coins: Math.round((40 + lvl * 11) * tier), tier }; play('book', 0.7); this.touch(); },
+  claimContract() { const c = this.d.contract; if (!c || c.p < c.n) return; this.d.contract = null; this.addXp(c.xp); this.addCoins(c.coins); this.toast('📋 Contrato concluído: +' + c.xp + ' XP, +' + c.coins + ' moedas', '#6fd26f'); play('quest', 0.7); this.stat('contracts'); },
+  streakCheck() { const now = net.now(), k = dayKey(now), st = this.d.streak; if (st.day === k) return; st.n = st.day === dayKey(now - 86400000) ? st.n + 1 : 1; st.day = k; const c = 25 * Math.min(st.n, 7); this.d.coins += c; this.toast('📅 Sequência diária: dia ' + st.n + ' — +' + c + ' moedas', '#ffd76a'); this.touch(); emit('coins'); },
   touch() { this.dirty = true; store.set('save', { name: this.name, look: this.look, d: this.d }); },
   toast(t, c) { emit('toast', t, c); },
 
@@ -34,6 +47,7 @@ export const S = {
     if (n <= 0) return;
     if (net.now() < this.boostUntil) n = Math.round(n * 1.2);
     const hx = this.held().xp; if (hx) n = Math.round(n * hx);
+    n = Math.round(n * (1 + this.perk('xp') * 0.05));
     const d = this.d; d.xp += n; let up = false;
     while (d.xp >= this.xpNeed()) { d.xp -= this.xpNeed(); d.level++; up = true; }
     emit('xp', n);
@@ -44,6 +58,8 @@ export const S = {
   count(id) { return this.d.inv[id] || 0; },
   addItem(id, n, silent) {
     n = n || 1; this.d.inv[id] = (this.d.inv[id] || 0) + n; const it = ITEMS[id];
+    if (it && !this.d.seen[id]) { this.d.seen[id] = 1; if (ALBUM[it.k]) { const c = this.albumCount(it.k); this.toast('📖 Novo no álbum: ' + it.n + ' (' + ALBUM[it.k] + ' ' + c[0] + '/' + c[1] + ')', '#bfe6ff'); if (c[0] === c[1] && this.d.albumDone.indexOf(it.k) < 0) { this.d.albumDone.push(it.k); this.d.coins += 400; this.toast('📖 Coleção completa: ' + ALBUM[it.k] + '! +400 moedas', '#ffb52e'); play('win', 0.6); this.stat('collections'); emit('coins'); } } }
+    if (id === 'pearl') this.stat('pearl', null, n);
     if (!silent && it) this.toast('+' + n + ' ' + it.n, RARITY[it.r].c);
     if (it && it.r >= 3 && (it.k === 'gem')) this.stat('epic', null, 1);
     if (id === 'moonfish') this.stat('moonfish', null, 1);
@@ -78,13 +94,14 @@ export const S = {
   setProf(p) { this.d.prof = p; this.toast('Profissão: ' + PROFS[p].n, '#ffd76a'); this.touch(); emit('meta'); },
 
   // ---------- estatísticas -> missões, diárias, conquistas ----------
-  setStat(s, v) { if ((this.d.stats[s] || 0) < v) { this.d.stats[s] = v; this.checkAch(); } },
+  setStat(s, v) { if ((this.d.stats[s] || 0) < v) { this.d.stats[s] = v; this.checkAch(); this.checkAccs(); } },
   stat(t, key, n) {
     n = n || 1; const d = this.d; d.stats[t] = (d.stats[t] || 0) + n;
     for (const id in d.q.active) { const q = QUESTS[id], g = q.goal; if (g.t === t && g.t !== 'deliver' && (!g.k || g.k === key)) { const before = d.q.active[id]; d.q.active[id] = Math.min(g.n, before + n); if (before < g.n && d.q.active[id] >= g.n) { this.toast('Missão pronta: ' + q.title, '#ffd76a'); play('sel', 0.6); } } }
     const dl = this.dailyList();
     for (let i = 0; i < 3; i++) { const g = dl[i].goal; if (g.t === t && d.daily.prog[i] < g.n) { d.daily.prog[i] = Math.min(g.n, d.daily.prog[i] + n); if (d.daily.prog[i] >= g.n) { this.toast('Diária concluída! Resgate no menu Missões.', '#ffd76a'); play('sel', 0.6); } } }
-    this.checkAch(); this.touch();
+    const ct = d.contract; if (ct && ct.t === t && ct.p < ct.n) { ct.p = Math.min(ct.n, ct.p + n); if (ct.p >= ct.n) { this.toast('📋 Contrato pronto! Resgate em Missões.', '#ffd76a'); play('sel', 0.6); } }
+    this.checkAch(); this.checkAccs(); this.touch();
   },
   checkAch() {
     const d = this.d;

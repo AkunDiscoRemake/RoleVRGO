@@ -4,7 +4,8 @@ import { S } from './state.js';
 import { net } from './net.js';
 import { perf } from './perf.js';
 import { MAPS, MAP_ORDER, MAP_ICONS } from './maps.js';
-import { ITEMS, RARITY, QUESTS, ACHIEVEMENTS, PROFS, SHOPS, PICKS, GLOVES, RODS, QUICK_CHAT, currentEvent, HELD, PROPS, RECIPES } from './data.js';
+import { ITEMS, RARITY, QUESTS, ACHIEVEMENTS, PROFS, SHOPS, PICKS, GLOVES, RODS, QUICK_CHAT, currentEvent, HELD, PROPS, RECIPES, ACCS, PERKS, ALBUM } from './data.js';
+import { music } from './music.js';
 import { rec } from './rec.js';
 import { FUR_COLORS, EYE_COLORS, PATTERNS, HATS, EMOTES, roundRect } from './cat.js';
 import { play, setVolume, audioVolume } from './assets.js';
@@ -83,7 +84,8 @@ export const ui = {
     row(3, 'Padrão', PATTERNS[L.pattern], null, () => { L.pattern = (L.pattern + PATTERNS.length - 1) % PATTERNS.length; this._look(); }, () => { L.pattern = (L.pattern + 1) % PATTERNS.length; this._look(); });
     const hi = Math.max(0, d.hats.indexOf(L.hat)); row(4, 'Chapéu (' + d.hats.length + ' seus)', HATS[L.hat], null, () => { L.hat = d.hats[(hi + d.hats.length - 1) % d.hats.length]; this._look(); }, () => { L.hat = d.hats[(hi + 1) % d.hats.length]; this._look(); });
     this.qrow(5, '✏ Nome: ' + S.name, null, () => this.keyboard('Seu nome', S.name, 16, (t) => { S.name = t.trim() || S.name; S.touch(); G.pushMeta(); emit('saveNow'); }, 'q_avatar'), { bg: '#33355a', fs: 17 });
-    this.text(384, 440, 'Os outros jogadores veem as mudanças na hora.', { a: 'center', fs: 13, c: '#99a', b: false }); this.text(384, 460, 'Mais chapéus: Boutique da Fifi (Cidade).', { a: 'center', fs: 13, c: '#99a', b: false });
+    const own = ACCS.map((a, i) => i).filter((i) => S.accOk(i)), ai = Math.max(0, own.indexOf(L.acc || 0)); row(6, 'Acessório (' + (own.length - 1) + '/' + (ACCS.length - 1) + ' conquistados)', ACCS[L.acc || 0].n, null, () => { L.acc = own[(ai + own.length - 1) % own.length]; this._look(); }, () => { L.acc = own[(ai + 1) % own.length]; this._look(); });
+    this.text(384, 484, 'Veja como conquistar em Missões > Acessórios.', { a: 'center', fs: 13, c: '#99a', b: false });
   },
   p_q_items() {
     this.qhead('🗡 Itens na pata'); const off = this.qpager(HELD.length, 6);
@@ -159,9 +161,10 @@ export const ui = {
     g.clearRect(0, 0, W, H);
     if (this.page[0] === 'q' && this.page[1] === '_') { g.fillStyle = 'rgba(24,22,44,0.95)'; roundRect(g, 214, 0, 340, H, 20); g.fill(); g.strokeStyle = '#ffd76a'; g.lineWidth = 3; roundRect(g, 216, 2, 336, H - 4, 18); g.stroke(); this['p_' + this.page](); if (this.msg) this.text(384, H - 14, this.msg, { a: 'center', c: '#ff9a8a', fs: 14 }); this.tex.needsUpdate = true; return; }
     g.fillStyle = 'rgba(24,22,44,0.94)'; roundRect(g, 0, 0, W, H, 22); g.fill(); g.strokeStyle = '#6a7cff'; g.lineWidth = 3; roundRect(g, 2, 2, W - 4, H - 4, 20); g.stroke();
-    const modal = this.page === 'dialog' || this.page === 'shop' || this.page === 'prof' || this.page === 'kb' || this.page === 'help' || this.page === 'ach';
+    const sub2 = this.page === 'ach' || this.page === 'album' || this.page === 'perks' || this.page === 'accs';
+    const modal = this.page === 'dialog' || this.page === 'shop' || this.page === 'prof' || this.page === 'kb' || this.page === 'help' || sub2;
     if (!modal) { TABS.forEach((t, i) => this.btn(10 + i * 107, 10, 103, 44, t[1], () => { this.page = t[0]; this.scroll = 0; this.msg = ''; if (t[0] === 'social') this._loadRooms(); }, { sel: this.page === t[0], fs: 17, bg: '#33355a' })); }
-    else this.btn(W - 60, 10, 48, 44, '✕', () => { if (this.page === 'kb') this.show(this.kb.back); else if (this.page === 'shop' || this.page === 'prof') this.page = 'dialog'; else if (this.page === 'ach') this.page = 'quests'; else if (this.page === 'help') this.page = 'config'; else this.hide(); }, { bg: '#b04050' });
+    else this.btn(W - 60, 10, 48, 44, '✕', () => { if (this.page === 'kb') this.show(this.kb.back); else if (this.page === 'shop' || this.page === 'prof') this.page = 'dialog'; else if (sub2) this.page = 'quests'; else if (this.page === 'help') this.page = 'config'; else this.hide(); }, { bg: '#b04050' });
     this['p_' + this.page]();
     if (this.msg) { g.fillStyle = 'rgba(0,0,0,0.6)'; roundRect(g, 140, H - 44, W - 280, 34, 10); g.fill(); this.text(W / 2, H - 27, this.msg, { a: 'center', c: '#ffd76a', fs: 18 }); }
     this.tex.needsUpdate = true;
@@ -170,7 +173,7 @@ export const ui = {
   // ---------- páginas ----------
   p_map() {
     const ev = currentEvent(net.now()); this.text(20, 80, 'Viagem rápida (mapas já visitados)', { c: '#bfe6ff' });
-    MAP_ORDER.forEach((id, i) => { const ok = id === 'village' || S.d.maps.indexOf(id) >= 0, here = id === G.mapId; this.btn(20 + (i % 5) * 148, 100 + Math.floor(i / 5) * 78, 140, 66, MAP_ICONS[id] + ' ' + MAPS[id].name, () => { this.hide(); G.travel(id); }, { off: !ok || here, sel: here, fs: 16, bg: ev.active && ev.map === id ? '#a05cc8' : '#4a5cc8' }); });
+    MAP_ORDER.forEach((id, i) => { const ok = id === 'village' || S.d.maps.indexOf(id) >= 0, here = id === G.mapId; this.btn(20 + (i % 6) * 123, 96 + Math.floor(i / 6) * 92, 117, 84, MAP_ICONS[id] + ' ' + MAPS[id].name, () => { this.hide(); G.travel(id); }, { off: !ok || here, sel: here, fs: 16, bg: ev.active && ev.map === id ? '#a05cc8' : '#4a5cc8' }); });
     this.text(20, 278, 'Mapas com 🔒 cinza: entre uma vez pelo portal na Vila para liberar.', { fs: 15, c: '#99a', b: false });
     const g = this.g; g.fillStyle = 'rgba(255,255,255,0.07)'; roundRect(g, 20, 296, W - 40, 150, 12); g.fill();
     this.text(34, 318, '🌟 ' + (ev.active ? 'Evento ativo: ' + ev.ev.n : 'Próximo evento: ' + ev.ev.n), { c: '#ffe070' });
@@ -189,20 +192,38 @@ export const ui = {
     this.text(20, 478, 'Venda itens nas lojas dos NPCs.', { fs: 15, c: '#99a', b: false });
   },
   p_quests() {
-    const d = S.d; this.text(20, 78, 'Missões diárias', { c: '#ffd76a' });
-    S.dailyList().forEach((q, i) => { const y = 96 + i * 42, pr = d.daily.prog[i], done = pr >= q.goal.n, cl = d.daily.claimed.indexOf(i) >= 0; this.bar(20, y, 500, 34, pr / q.goal.n, cl ? '#3a6a4a' : '#3a9a5a'); this.text(32, y + 17, q.title + '  (' + pr + '/' + q.goal.n + ')', { fs: 17 }); this.btn(532, y, 216, 34, cl ? '✔ Resgatada' : '+' + q.xp + ' XP  +' + q.coins + ' 💰', () => S.claimDaily(i), { off: !done || cl, bg: '#e8a030', fs: 16 }); });
-    this.text(20, 240, 'Missões de NPCs', { c: '#ffd76a' }); const act = Object.keys(d.q.active); const off = this.pager(act.length, 4, 458);
-    if (!act.length) this.text(20, 274, 'Nenhuma ativa. Fale com NPCs marcados com ❗', { fs: 17, c: '#99a', b: false });
-    act.slice(off, off + 4).forEach((id, i) => { const q = QUESTS[id], y = 258 + i * 48, pr = S.questProgress(id); this.bar(20, y, W - 40, 42, pr / q.goal.n, '#4a5cc8'); this.text(32, y + 13, q.title + '  (' + pr + '/' + q.goal.n + ')', { fs: 17 }); this.text(32, y + 31, q.desc, { fs: 14, b: false, c: '#dde', max: W - 70 }); });
-    this.btn(20, 458, 250, 40, '🏆 Conquistas ' + d.ach.length + '/' + ACHIEVEMENTS.length, () => { this.page = 'ach'; this.scroll = 0; }, { bg: '#33355a', fs: 17 });
-    this.text(290, 478, 'Missões concluídas: ' + d.q.done.length + '/' + Object.keys(QUESTS).length, { fs: 16, c: '#9cf09c' });
+    const d = S.d; this.text(20, 76, 'Missões diárias', { c: '#ffd76a', fs: 18 }); this.text(W - 20, 76, '📅 Sequência: dia ' + (d.streak.n || 1), { a: 'right', fs: 15, c: '#bfe6ff' });
+    S.dailyList().forEach((q, i) => { const y = 90 + i * 38, pr = d.daily.prog[i], done = pr >= q.goal.n, cl = d.daily.claimed.indexOf(i) >= 0; this.bar(20, y, 500, 32, pr / q.goal.n, cl ? '#3a6a4a' : '#3a9a5a'); this.text(32, y + 16, q.title + '  (' + pr + '/' + q.goal.n + ')', { fs: 16 }); this.btn(532, y, 216, 32, cl ? '✔ Resgatada' : '+' + q.xp + ' XP  +' + q.coins + ' 💰', () => S.claimDaily(i), { off: !done || cl, bg: '#e8a030', fs: 15 }); });
+    this.text(20, 220, 'Contrato (infinitos — a recompensa cresce com seu nível)', { c: '#ffd76a', fs: 18 }); const c = d.contract;
+    if (c) { this.bar(20, 234, 500, 34, c.p / c.n, '#a05cc8'); this.text(32, 251, c.title + '  (' + c.p + '/' + c.n + ')', { fs: 16 }); this.btn(532, 234, 150, 34, '+' + c.xp + ' XP +' + c.coins + '💰', () => S.claimContract(), { off: c.p < c.n, bg: '#e8a030', fs: 14 }); this.btn(688, 234, 60, 34, '↻', () => S.newContract(), { bg: '#8a4a4a' }); }
+    else this.btn(20, 234, 728, 34, '📋 Pegar um contrato novo', () => S.newContract(), { bg: '#a05cc8', fs: 17 });
+    this.text(20, 290, 'Missões de NPCs', { c: '#ffd76a', fs: 18 }); const act = Object.keys(d.q.active); const off = this.pager(act.length, 3, 458);
+    if (!act.length) this.text(20, 322, 'Nenhuma ativa. Fale com NPCs marcados com ❗', { fs: 16, c: '#99a', b: false });
+    act.slice(off, off + 3).forEach((id, i) => { const q = QUESTS[id], y = 304 + i * 48, pr = S.questProgress(id); this.bar(20, y, W - 40, 42, pr / q.goal.n, '#4a5cc8'); this.text(32, y + 13, q.title + '  (' + pr + '/' + q.goal.n + ')', { fs: 16 }); this.text(32, y + 31, q.desc, { fs: 14, b: false, c: '#dde', max: W - 70 }); });
+    const pts = S.perkPoints();
+    [['🏆 Conquistas ' + d.ach.length + '/' + ACHIEVEMENTS.length, 'ach'], ['📖 Álbum', 'album'], ['⭐ Talentos' + (pts > 0 ? ' (' + pts + ')' : ''), 'perks'], ['🎀 Acessórios', 'accs']].forEach((b, i) => this.btn(20 + i * 132, 458, 126, 40, b[0], () => { this.page = b[1]; this.scroll = 0; }, { bg: i === 2 && pts > 0 ? '#a05cc8' : '#33355a', fs: 14 }));
+  },
+  p_album() {
+    this.text(20, 34, '📖 Álbum de coleção', { fs: 24, c: '#ffd76a' }); this.text(20, 64, 'Cada coleção completa rende 400 moedas. Itens novos entram aqui na primeira vez que você os pega.', { fs: 14, b: false, c: '#bfe6ff', max: W - 90 });
+    Object.keys(ALBUM).forEach((k, row) => { const y = 84 + row * 82, c = S.albumCount(k), g = this.g; g.fillStyle = 'rgba(255,255,255,0.06)'; roundRect(g, 20, y, W - 40, 76, 10); g.fill(); this.text(32, y + 16, ALBUM[k] + '  ' + c[0] + '/' + c[1] + (c[0] === c[1] ? '  ✔ completa' : ''), { fs: 17, c: c[0] === c[1] ? '#ffd76a' : '#fff' });
+      let x = 32, yy = y + 40; for (const id in ITEMS) { const it = ITEMS[id]; if (it.k !== k) continue; const has = S.d.seen[id], label = has ? it.n : '???'; g.font = 'bold 14px sans-serif'; const w2 = g.measureText(label).width + 16; if (x + w2 > W - 30) { x = 32; yy += 24; } g.fillStyle = has ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.35)'; roundRect(g, x, yy - 10, w2, 21, 7); g.fill(); this.text(x + 8, yy + 1, label, { fs: 14, c: has ? RARITY[it.r].c : '#667' }); x += w2 + 6; } });
+  },
+  p_perks() {
+    const pts = S.perkPoints(); this.text(20, 34, '⭐ Talentos', { fs: 24, c: '#ffd76a' }); this.text(20, 64, 'Você ganha 1 ponto por nível. Pontos disponíveis: ' + pts, { fs: 16, c: pts > 0 ? '#9cf09c' : '#bfe6ff' });
+    PERKS.forEach((p, i) => { const x = 20 + (i % 2) * 368, y = 84 + Math.floor(i / 2) * 84, n = S.perk(p.id), g = this.g; g.fillStyle = 'rgba(255,255,255,0.06)'; roundRect(g, x, y, 360, 76, 10); g.fill(); this.text(x + 12, y + 18, p.n + '   ' + n + '/' + p.max, { fs: 18 }); this.text(x + 12, y + 42, p.d, { fs: 14, b: false, c: '#dde', max: 250 }); this.bar(x + 12, y + 58, 240, 8, n / p.max, '#c06bff'); this.btn(x + 272, y + 14, 76, 48, '+', () => S.addPerk(p.id), { off: pts <= 0 || n >= p.max, bg: '#a05cc8', fs: 28 }); });
+    this.btn(20, 430, 300, 40, '↺ Redistribuir (100 moedas)', () => { this.msg = S.resetPerks() || 'Talentos zerados'; }, { bg: '#8a4a4a', fs: 16 });
+  },
+  p_accs() {
+    this.text(20, 34, '🎀 Acessórios conquistáveis', { fs: 24, c: '#ffd76a' }); this.text(20, 64, 'Não se compram: cada um é liberado por um feito. Toque para vestir.', { fs: 15, b: false, c: '#bfe6ff' });
+    ACCS.forEach((a, i) => { const x = 20 + (i % 2) * 368, y = 84 + Math.floor(i / 2) * 62, ok = S.accOk(i), on = (S.look.acc || 0) === i, v = a.s ? Math.min(a.v, a.s === 'level' ? S.d.level : S.d.stats[a.s] || 0) : 0;
+      this.btn(x, y, 360, 56, '', () => { S.look.acc = i; this._look(); }, { off: !ok, sel: on, bg: '#4a5cc8' }); this.text(x + 14, y + 18, (on ? '✔ ' : ok ? '' : '🔒 ') + a.n, { fs: 17, c: ok ? '#fff' : '#8a88a0' }); this.text(x + 14, y + 40, i === 0 ? 'Sem acessório' : a.how + (ok ? '' : '  (' + v + '/' + a.v + ')'), { fs: 13, b: false, c: ok ? '#dfe6ff' : '#8a88a0', max: 330 }); });
   },
   p_ach() {
     this.text(20, 34, '🏆 Conquistas', { fs: 24, c: '#ffd76a' }); const off = this.pager(ACHIEVEMENTS.length, 8, 460);
     ACHIEVEMENTS.slice(off, off + 8).forEach((a, i) => { const y = 66 + i * 48, has = S.d.ach.indexOf(a.id) >= 0, v = S.d.stats[a.s] || 0; this.bar(20, y, W - 40, 42, has ? 1 : v / a.v, has ? '#8a6a20' : '#33355a'); this.text(32, y + 13, (has ? '✔ ' : '') + a.n, { fs: 17, c: has ? '#ffd76a' : '#fff' }); this.text(32, y + 31, a.d + (has ? '' : '  (' + Math.min(v, a.v) + '/' + a.v + ')'), { fs: 14, b: false, c: '#dde' }); this.text(W - 34, y + 21, '+' + a.c + ' 💰', { a: 'right', fs: 16 }); });
   },
   p_profile() {
-    const d = S.d, L = S.look; this.text(20, 80, S.name + ' — Nível ' + d.level, { fs: 24 }); this.btn(560, 62, 188, 36, '✏ Mudar nome', () => this.keyboard('Seu nome', S.name, 16, (t) => { S.name = t.trim() || S.name; S.touch(); G.pushMeta(); emit('saveNow'); }, 'profile'), { bg: '#33355a', fs: 16 });
+    const d = S.d, L = S.look; this.text(20, 80, S.name + ' — Nível ' + d.level + ' · ' + S.title(), { fs: 24 }); this.btn(560, 62, 188, 36, '✏ Mudar nome', () => this.keyboard('Seu nome', S.name, 16, (t) => { S.name = t.trim() || S.name; S.touch(); G.pushMeta(); emit('saveNow'); }, 'profile'), { bg: '#33355a', fs: 16 });
     this.bar(20, 100, 520, 18, d.xp / S.xpNeed(), '#6a9cff'); this.text(552, 109, d.xp + '/' + S.xpNeed() + ' XP', { fs: 15 });
     this.text(20, 136, 'Profissão: ' + (d.prof ? PROFS[d.prof].icon + ' ' + PROFS[d.prof].n : 'nenhuma (fale com o Mestre Ofício na Vila)') + '   |   Código de amigo: ' + (net.friendCode || '—'), { fs: 15, c: '#bfe6ff', max: W - 40 });
     const sw = (y, label, list, key) => { this.text(20, y + 17, label, { fs: 16 }); list.forEach((c, i) => { const x = 130 + i * 50; const g = this.g; if (L[key] === c) { g.fillStyle = '#fff'; roundRect(g, x - 3, y - 3, 46, 40, 9); g.fill(); } g.fillStyle = c; roundRect(g, x, y, 40, 34, 7); g.fill(); this.widgets.push({ x, y, w: 40, h: 34, cb: () => { L[key] = c; this._look(); } }); }); };
@@ -227,12 +248,14 @@ export const ui = {
     this.text(20, 222, 'Resolução ' + Math.round(perf.scale * 100) + '%  ·  visão ' + perf.drawDist + ' m  ·  draw calls ' + inf.calls + '  ·  triângulos ' + inf.triangles + (perf.heapMB ? '  ·  memória JS ' + perf.heapMB + ' MB' : ''), { fs: 16 });
     this.text(20, 246, 'Sem sensor térmico no navegador: a carga é estimada pelo tempo de quadro.', { fs: 14, c: '#99a', b: false });
     this.text(20, 290, 'Volume', {}); this.btn(120, 272, 50, 38, '−', () => { setVolume(clamp(audioVolume - 0.2, 0, 1)); store.set('vol', audioVolume); }); this.bar(180, 282, 200, 18, audioVolume, '#6a9cff'); this.btn(390, 272, 50, 38, '+', () => { setVolume(clamp(audioVolume + 0.2, 0, 1)); store.set('vol', audioVolume); play('confirm', 0.6); });
+    this.btn(20, 380, 230, 40, '🎵 Música: ' + (music.on ? 'SIM' : 'NÃO'), () => music.setOn(!music.on), { bg: music.on ? '#3a9a5a' : '#8a4a4a', fs: 16 });
     this.btn(480, 272, 268, 38, 'Controle na mão: ' + (this.player.side > 0 ? 'direita' : 'esquerda'), () => { this.player.side *= -1; store.set('side', this.player.side); }, { bg: '#33355a', fs: 16 });
     this.btn(20, 330, 230, 44, '❓ Como jogar', () => { this.page = 'help'; }, { bg: '#33355a' });
     this.btn(266, 330, 230, 44, '💾 Salvar agora', () => { emit('saveNow'); this.msg = net.online ? 'Progresso salvo no servidor' : 'Offline: salvo só neste aparelho'; }, { bg: '#33355a' });
     if (G.renderer.xr.isPresenting) this.btn(512, 330, 236, 44, '🚪 Sair do VR', () => { const s = G.renderer.xr.getSession(); if (s) s.end(); }, { bg: '#b04050' });
-    this.text(20, 410, 'RoleVRGO v' + VERSION + '  ·  Assets: Kenney.nl (CC0)  ·  Multiplayer: Supabase Realtime', { fs: 15, c: '#99a', b: false });
-    this.text(20, 434, 'ID temporário deste aparelho: ' + (net.id ? net.id.slice(0, 8) : '—') + '  ·  ' + (net.online ? 'conectado' : 'OFFLINE (jogo solo, sem salvar na nuvem)'), { fs: 15, c: net.online ? '#9cf09c' : '#ff9a8a', b: false });
+    this.text(270, 400, 'Nadar: braçadas com as patas ou gatilho (WASD/Espaço/C no PC).', { fs: 14, c: '#bfe6ff', b: false });
+    this.text(20, 440, 'RoleVRGO v' + VERSION + '  ·  Assets: Kenney.nl (CC0)  ·  Multiplayer: Supabase Realtime', { fs: 15, c: '#99a', b: false });
+    this.text(20, 462, 'ID temporário deste aparelho: ' + (net.id ? net.id.slice(0, 8) : '—') + '  ·  ' + (net.online ? 'conectado' : 'OFFLINE (jogo solo, sem salvar na nuvem)'), { fs: 15, c: net.online ? '#9cf09c' : '#ff9a8a', b: false });
   },
   p_help() {
     this.text(20, 34, '❓ Como jogar', { fs: 24, c: '#ffd76a' }); let y = 74;

@@ -33,9 +33,12 @@ As mãos são duas bolinhas flutuantes (sem braços): uma segue a rotação do c
 
 ## Conteúdo
 
-- **Mapas:** Vila, Floresta, Mina, Deserto, Montanhas Nevadas, Arena, Castelo, Cidade, Ilha, Campo de Treino — cada um com NPCs, baús, segredo, minérios e atividades próprias.
+- **Mapas:** Vila, Floresta, Mina, Deserto, Montanhas Nevadas, Arena, Castelo, Cidade, Ilha, Campo de Treino e **Aero Paraíso** (estética Frutiger Aero: lago fundo para nadar e mergulhar, bolhas brilhantes estouráveis, cúpulas e torres de vidro, arco-íris, cardumes, pérolas) — cada um com NPCs, baús, segredo, minérios e atividades próprias.
 - **Luta:** socos por velocidade da pata, combos, bloqueio, esquiva, zonas de PvP, bonecos e um NPC de sparring (identificado como NPC).
 - **Mineração, pesca, coleta, tesouros enterrados**, lojas, 5 profissões, missões de NPC e diárias, conquistas, XP/níveis, inventário e economia.
+- **Longa duração:** talentos (1 ponto por nível), contratos infinitos com recompensa que cresce com o nível, álbum de coleção, chefes em 6 mapas, sequência diária, títulos e **acessórios conquistáveis** (liberados por feitos, não comprados).
+- **Natação** no Aero Paraíso e no mar da Ilha: braçadas com as patas ou gatilho; parado, o gato flutua até a superfície.
+- **Música ambiente** gerada em tempo real com osciladores (um clima por mapa; pode ser desligada em Config).
 - **Inimigos** (fantasmas, esqueletos, zumbis, orcs) em 6 mapas: perseguem, avisam o golpe e atacam; rodam no aparelho de cada jogador (não são sincronizados).
 - **Fabricação** de ferramentas, itens de pata, consumíveis e chapéus a partir dos materiais coletados (menu rápido > Fabricar, ou Forja dos ferreiros).
 - **Câmera** em 1ª, 2ª e 3ª pessoa (menu rápido ou tecla V).

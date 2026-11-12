@@ -74,6 +74,9 @@ export function audioInit() {
       .then((buf) => { buffers[f] = buf; }).catch(() => { /* som opcional */ });
   });
 }
+export function audioNodes() { return ctx ? { ctx, master } : null; }
+// estouro de bolha procedural
+export function pop(vol) { if (!ctx || audioVolume <= 0) return; const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain(), f0 = 600 + Math.random() * 500; o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f0 * 2.6, t + 0.07); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.3 * (vol || 1), t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1); o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.12); }
 let recDest = null;
 export function audioStream() { if (!ctx || !ctx.createMediaStreamDestination) return null; if (!recDest) { recDest = ctx.createMediaStreamDestination(); master.connect(recDest); } return recDest.stream; }
 export function setVolume(v) { audioVolume = v; if (master) master.gain.value = v; }

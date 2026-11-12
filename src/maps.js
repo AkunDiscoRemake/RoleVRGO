@@ -11,6 +11,8 @@ export function initPrims() {
   const b = new THREE.BoxGeometry(1, 1, 1); b.translate(0, 0.5, 0); addPrim('prim/box', b);
   const c = new THREE.CylinderGeometry(0.5, 0.5, 1, 10); c.translate(0, 0.5, 0); addPrim('prim/cyl', c);
   const k = new THREE.ConeGeometry(0.5, 1, 8); k.translate(0, 0.5, 0); addPrim('prim/cone', k);
+  addPrim('prim/dome', new THREE.SphereGeometry(0.5, 14, 6, 0, Math.PI * 2, 0, Math.PI / 2));
+  const sp = new THREE.IcosahedronGeometry(0.5, 2); sp.translate(0, 0.5, 0); addPrim('prim/sphere', sp);
 }
 const T = (hex) => [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255];
 function mix(c, a, b, t) { c[0] = a[0] + (b[0] - a[0]) * t; c[1] = a[1] + (b[1] - a[1]) * t; c[2] = a[2] + (b[2] - a[2]) * t; }
@@ -90,8 +92,8 @@ export const MAPS = {
       ring(8, 14.5, (x, z) => lampPost(w, E, x, z), PI / 8);
       ring(8, 11, (x, z, a) => w.put('grave/bench', x, z, { s: 2, ry: -a + H, col: 'box' }), PI / 8);
       // portais para os outros mapas
-      const dest = ['forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training'];
-      ring(9, 20.5, (x, z, a, i) => E.portal(dest[i], x, z), -H + PI / 9);
+      const dest = ['forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero'];
+      ring(10, 20.5, (x, z, a, i) => E.portal(dest[i], x, z), -H + PI / 10);
       // casas
       ring(10, 33, (x, z, a, i) => { const ry = Math.round(Math.atan2(z, -x) / H) * H; house(w, x, z, ry, { wood: i % 2, floors: 1 + (i % 3 === 0 ? 1 : 0), chimney: i % 2, s: 4.6, roof: i % 3 === 1 ? 'town/roof-point' : 'town/roof-high-point' }); }, 0.3);
       ring(7, 47, (x, z, a, i) => { if (Math.hypot(x - pond[0], z - pond[1]) < 16) return; const ry = Math.round(Math.atan2(z, -x) / H) * H; house(w, x, z, ry, { wood: (i + 1) % 2, s: 4.2 }); }, 0.9);
@@ -155,6 +157,7 @@ export const MAPS = {
       E.chest('f_1', -55, null, -30, 0); E.chest('f_2', 50, null, 35, 1); E.chest('f_3', -10, null, -62, 1); E.fish(4, river(4) + 5, 6);
       w.put('nature/statue_obelisk', -60, 10, { s: 5, col: 'box' }); E.sign('Ruínas antigas', -60, w.heightAt(-60, 10) + 5, 10); ring(6, 6, (x, z) => w.put('nature/statue_columnDamaged', -60 + x, 10 + z, { s: 4, col: 'box' }));
       E.chest('f_ruin', -60, null, 13, 1);
+      E.enemy('ghost', -60, 16, true);
       for (let i = 0; i < 8; i++) { let x, z; do { x = (r() - 0.5) * 140; z = (r() - 0.5) * 140; } while (!dry(x, z) || Math.hypot(x, z - 60) < 28 || Math.hypot(x + 28, z - 42) < 16); E.enemy(i % 3 === 2 ? 'zombie' : 'ghost', x, z); }
     }
   },
@@ -183,6 +186,7 @@ export const MAPS = {
       ring(7, 6, (x, z) => E.ore(r() < 0.5 ? 'quartz' : 'amethyst', x, z)); E.chest('m_core', 0, null, 0, 2); E.secret('mine', 0, w.heightAt(0, 0) + 1, 0, 3);
       ring(5, 9.5, (x, z) => { w.put('plat/jewel', x, z, { s: [3, 6, 3], tint: [0.6, 0.9, 1.4] }); E.lamp(x, w.heightAt(x, z) + 1.4, z, 0x60c0ff); });
       E.chest('m_1', -30, null, -18, 1); E.chest('m_2', 28, null, -30, 1); E.chest('m_3', 34, null, 22, 0);
+      E.enemy('orc', 0, 9, true);
       { let k = 0, tr = 0; while (k < 9 && tr++ < 3000) { const x = (r() - 0.5) * 90, z = (r() - 0.5) * 90; if (!free(x, z) || Math.hypot(x, z - 40) < 20) continue; E.enemy(k % 3 === 2 ? 'ghost' : 'orc', x, z); k++; } }
     }
   },
@@ -213,6 +217,7 @@ export const MAPS = {
       for (let i = 0; i < 12; i++) { let x, z; do { x = (r() - 0.5) * 150; z = (r() - 0.5) * 150; } while (!out(x, z)); E.collect('cactusfruit', 'nature/cactus_short', x, z, 2.6); }
       for (let i = 0; i < 12; i++) { let x, z; do { x = (r() - 0.5) * 150; z = (r() - 0.5) * 150; } while (!out(x, z)); E.ore(i < 4 ? 'sunstone' : i < 8 ? 'gold' : 'copper', x, z); }
       E.chest('d_1', -60, null, -50, 1); E.chest('d_2', 62, null, 40, 0); E.chest('d_3', -20, null, -66, 1);
+      E.enemy('skeleton', 8, -25, true);
       for (let i = 0; i < 8; i++) { let x, z; do { x = (r() - 0.5) * 150; z = (r() - 0.5) * 150; } while (!out(x, z) || Math.hypot(x, z - 74) < 26 || w.heightAt(x, z) < w.waterY + 0.3); E.enemy('skeleton', x, z); }
       // acampamento de caravana
       w.put('town/cart-high', 10, 62, { s: 2.8, ry: 0.4, col: 'box' }); w.put('survival/tent', 15, 66, { s: 6, col: 'box', cs: 0.7 }); w.put('nature/campfire_stones', 11, 67, { s: 3 }); E.lamp(11, w.heightAt(11, 67) + 0.5, 67, 0xff8a30);
@@ -243,6 +248,7 @@ export const MAPS = {
       for (let i = 0; i < 14; i++) { const a = r() * 6.28, d = 20 + r() * 34; E.ore(r() < 0.55 ? 'ice' : r() < 0.6 ? 'silver' : 'iron', peak[0] + Math.cos(a) * d, peak[1] + Math.sin(a) * d); }
       for (let i = 0; i < 16; i++) { let x, z; do { x = (r() - 0.5) * 160; z = (r() - 0.5) * 160; } while (!low(x, z)); E.collect('snowbell', 'nature/flower_purpleC', x, z, 3.4); }
       E.chest('s_1', -60, null, 50, 0); E.chest('s_2', 64, null, 30, 1);
+      E.enemy('orc', 40, 44, true);
       for (let i = 0; i < 6; i++) { let x, z; do { x = (r() - 0.5) * 160; z = (r() - 0.5) * 160; } while (!low(x, z) || Math.hypot(x, z - 68) < 30); E.enemy(i % 3 === 0 ? 'ghost' : 'orc', x, z); } E.spring(-30, 62, 15); E.sign('Trampolim de neve!', -30, w.heightAt(-30, 62) + 2.2, 62);
     }
   },
@@ -309,6 +315,7 @@ export const MAPS = {
       scatter(w, r, ['castle/rocks-large', 'nature/plant_bushDetailed', 'nature/flower_redA', 'nature/grass_large'], 90, { s: [2, 3], ok: outside, detail: 1 });
       for (let i = 0; i < 6; i++) { const a = r() * 6.28; E.ore(i < 3 ? 'iron' : 'stone', Math.cos(a) * 58, Math.sin(a) * 58 - 5); }
       E.fish(40, -5, 4);
+      E.enemy('zombie', -56, -44, true);
       for (let i = 0; i < 6; i++) { let x, z; do { x = (r() - 0.5) * 130; z = (r() - 0.5) * 130; } while (!outside(x, z) || Math.hypot(x, z - 62) < 22 || w.heightAt(x, z) < w.waterY + 0.3); E.enemy(i % 2 ? 'skeleton' : 'zombie', x, z); }
     }
   },
@@ -345,7 +352,7 @@ export const MAPS = {
   },
   // ======================= ILHA =======================
   island: {
-    name: 'Ilha do Tesouro', size: 190, surface: 'sand', sky: [0x80d0f8, 0xffa070, 0x08122c], fog: 1.2,
+    name: 'Ilha do Tesouro', size: 190, surface: 'sand', swim: true, sky: [0x80d0f8, 0xffa070, 0x08122c], fog: 1.2,
     spawn: [0, 30, 0], build(w, E, r) {
       w.heightFn = (x, z) => { const d = Math.hypot(x, z * 1.15), a = Math.atan2(z, x); const rad = 52 + Math.sin(a * 3) * 7 + Math.sin(a * 5 + 1) * 4; let h = (rad - d) * 0.16; h = h > 0 ? Math.min(h, 2.2) + Math.pow(Math.max(0, 1 - Math.hypot(x + 14, z + 12) / 30), 2) * 13 + fbm(x * 0.06, z * 0.06, 9, 2) * 1.2 : Math.max(h, -5); const s = Math.hypot(x - 64, z - 30); if (s < 16) h = Math.max(h, (16 - s) * 0.14 - 1.3); return h; };
       const sand = C(0xf0dca0), gr = C(0x62b848), rock = C(0x8a8a80), sea = C(0xc8b888);
@@ -372,8 +379,51 @@ export const MAPS = {
       // morro do vigia
       const hx = -14, hz = -12, hh = w.heightAt(hx, hz); w.put('pirate/tower-complete-small', hx, hz, { s: 1.5, col: 'box', cs: 0.8 }); E.chest('i_hill', hx + 4, null, hz, 1); E.lamp(hx, hh + 9.6, hz, 0xffc060);
       E.chest('i_1', 38, null, -20, 0); E.chest('i_2', -40, null, 14, 1);
+      E.enemy('skeleton', -22, -2, true);
       for (let i = 0; i < 5; i++) { let x, z; do { x = (r() - 0.5) * 100; z = (r() - 0.5) * 90; } while (!(w.heightAt(x, z) > 0.8) || Math.hypot(x, z - 33) < 24); E.enemy('skeleton', x, z); }
       for (let i = 0; i < 8; i++) { const a = r() * 6.28; const x = -14 + Math.cos(a) * 12, z = -12 + Math.sin(a) * 12; E.ore(i < 3 ? 'gold' : i < 6 ? 'copper' : 'silver', x, z); }
+    }
+  },
+  // ======================= AERO PARAÍSO (Frutiger Aero) =======================
+  aero: {
+    name: 'Aero Paraíso', size: 190, surface: 'grass', sky: [0x4cc6ff, 0xffb8e6, 0x0c2a66], fog: 1.3, swim: true,
+    spawn: [0, 64, 0], build(w, E, r) {
+      // lago em anel bem fundo (dá para mergulhar) em volta de uma ilhota central; colinas verdes brilhantes ao redor
+      w.heightFn = (x, z) => { const d = Math.hypot(x, z); let h = 1.2 + fbm(x * 0.03, z * 0.03, 41, 2) * 5 * smooth(clamp((d - 44) / 20, 0, 1)); const k = clamp((d - 9) / 31, 0, 1); if (d < 40) h = Math.min(h, 1.2 - Math.sin(k * PI) * 13 - (d < 9 ? 0 : 0.2)); if (d < 9) h = 1.4 + (9 - d) * 0.08; if (d > 84) h += Math.min(10, (d - 84) * (d - 84) * 0.06); return h; };
+      const g1 = C(0x5fe03c), g2 = C(0x86f24e), sand = C(0xfaf6e6), sea = C(0xa8ecec), deep = C(0x4fb8d8);
+      w.buildGround(64, (x, z, h, c) => { if (h < 0) mix(c, sea, deep, clamp(-h / 11, 0, 1)); else { mix(c, g1, g2, noise2(x * 0.09, z * 0.09, 8)); if (h < 1.1) mix(c, c, sand, clamp((1.1 - h) * 2.2, 0, 1)); } });
+      w.addWater(0, 0x2ccbf2);
+      returnPortal(w, E, 0, 72);
+      const land = (x, z) => w.heightAt(x, z) > 1 && Math.hypot(x, z - 68) > 8, AQ = [0.72, 1.25, 1.45], WH = [1.25, 1.3, 1.35];
+      // torres de vidro e cúpulas brancas brilhantes
+      ring(6, 66, (x, z, a, i) => { if (Math.abs(x) < 14 && z > 0) return; w.put(['city/building-skyscraper-a', 'city/building-skyscraper-c', 'city/building-skyscraper-e'][i % 3], x, z, { s: 6 + (i % 3), ry: -a, col: 'box', tint: AQ }); }, 0.5);
+      for (const [x, z, s] of [[-30, 56, 9], [32, 54, 8], [-58, 10, 11], [60, -14, 10], [0, -60, 13], [-40, -44, 8]]) { w.put('prim/dome', x, z, { s, tint: WH, y: -0.2 }); w.addBoxC(x, w.heightAt(x, z) - 1, z, s * 0.62, s * 0.36 + 1, s * 0.62); w.addBoxC(x, w.heightAt(x, z) - 1, z, s * 0.36, s * 0.46 + 1, s * 0.36); w.put('prim/sphere', x, z, { s: s * 0.16, tint: [0.4, 1.3, 1.6], y: s * 0.47 }); E.lamp(x, w.heightAt(x, z) + s * 0.55, z, 0x80e8ff); }
+      // esferas brilhantes em pedestais, turbinas eólicas, painéis
+      ring(8, 46, (x, z, a, i) => { w.put('prim/cyl', x, z, { s: [0.5, 1.6, 0.5], tint: WH, col: 'box' }); w.put('prim/sphere', x, z, { s: 1.5, tint: i % 2 ? [0.45, 1.35, 1.6] : [0.7, 1.6, 0.6], y: 1.6 }); E.lamp(x, w.heightAt(x, z) + 2.4, z, i % 2 ? 0x70e0ff : 0xa0ff80); }, 0.2);
+      for (const [x, z] of [[-70, -40], [72, 30], [-66, 44], [50, -62]]) { const y = w.heightAt(x, z); w.put('prim/cyl', x, z, { s: [0.7, 18, 0.7], tint: WH, col: 'box' }); w.put('prim/sphere', x, z, { s: 1.6, tint: WH, abs: y + 17.3 }); for (let k = 0; k < 3; k++) { const a = k * 2.094 + x; boxAbs(w, x + Math.cos(a) * 3.6, y + 18 + Math.sin(a) * 3.6 - 0.2, z + 0.8, Math.abs(Math.cos(a)) * 6.6 + 0.6, Math.abs(Math.sin(a)) * 6.6 + 0.6, 0.25, 0xf4f8ff); } }
+      for (let i = 0; i < 5; i++) boxAbs(w, -20 + i * 3.2, w.heightAt(-20, 78) + 0.5, 80, 3, 0.15, 5, 0x2a6ad8);
+      // ponte de vidro até a ilhota central, com a grande esfera-fonte
+      for (let i = 0; i < 10; i++) boxAbs(w, 0, 1.25, 41 - i * 3.3, 4, 0.3, 3.2, i % 2 ? 0x9fe8ff : 0xc8f6ff);
+      w.put('town/fountain-round-detail', 0, 0, { s: 2.4, col: 'box', cs: 0.75, ch: 0.6 }); w.put('prim/sphere', 0, 0, { s: 3.2, tint: [0.5, 1.4, 1.7], y: 1.4 }); w.addBoxC(0, 1.4, 0, 2, 4.4, 2); E.lamp(0, 6.6, 0, 0x90f0ff);
+      ring(6, 6.5, (x, z) => w.put('nature/tree_palmDetailedTall', x, z, { s: 4.2, col: 'trunk', cw: 0.07, tint: [0.9, 1.25, 0.9] }), 0.4);
+      // natureza exuberante
+      scatter(w, r, ['nature/tree_palmTall', 'nature/tree_palmBend', 'nature/tree_default', 'nature/tree_fat'], 80, { s: [4, 6.5], col: 'trunk', cw: 0.09, ok: (x, z) => land(x, z) && Math.hypot(x, z) > 43, tint: [0.9, 1.3, 0.85] });
+      scatter(w, r, ['nature/flower_redA', 'nature/flower_yellowB', 'nature/flower_purpleC', 'nature/grass_large', 'nature/plant_bushDetailed'], 200, { s: [2.2, 3.6], ok: land, detail: 1, tint: [1.15, 1.25, 1.1] });
+      // fundo do lago: corais, pérolas, cardumes, cúpula submersa secreta
+      const under = (x, z) => w.heightAt(x, z) < -3;
+      scatter(w, r, ['nature/rock_tallA', 'nature/rock_tallH', 'nature/stone_tallB', 'nature/plant_bushLarge', 'nature/plant_bushDetailed'], 90, { area: [-40, -40, 40, 40], s: [2, 4.5], water: 1, ok: under, tv: 0, tint: [1.7, 0.8, 1.1] });
+      scatter(w, r, ['nature/rock_tallD', 'nature/plant_bush', 'nature/grass_large'], 70, { area: [-40, -40, 40, 40], s: [2, 4], water: 1, ok: under, tint: [0.7, 1.5, 1.3] });
+      for (let i = 0; i < 26; i++) { let x, z; do { x = (r() - 0.5) * 76; z = (r() - 0.5) * 76; } while (!under(x, z)); E.collect('pearl', 'plat/jewel', x, z, 1.5, [2.2, 2.2, 2.4]); }
+      for (let i = 0; i < 7; i++) { let x, z; do { x = (r() - 0.5) * 70; z = (r() - 0.5) * 70; } while (w.heightAt(x, z) > -8); E.collect('coral', 'nature/rock_smallA', x, z, 2.4, [2.2, 0.7, 1.2]); }
+      const sx = -23, sz = -4, sy = w.heightAt(sx, sz); w.put('prim/dome', sx, sz, { s: 9, tint: [0.6, 1.3, 1.5], abs: sy - 0.3 }); E.secret('aero', sx, sy + 1.2, sz, 3.5); E.chest('z_dome', sx + 1, sy, sz + 1, 2); E.lamp(sx, sy + 3, sz, 0x80ffff);
+      E.school(20, -5.5, 10, 9, 18); E.school(-12, -7, -22, 7, 14); E.school(6, -3, -24, 6, 12);
+      E.chest('z_deep', 22, null, 8, 1); E.chest('z_1', -60, null, -20, 0); E.chest('z_2', 58, null, 44, 1); E.chest('z_3', 30, null, -66, 0);
+      E.bubbles(70); E.rainbow(0, -78, 64);
+      E.fish(0, 30, 9); E.spring(-12, 56, 16); E.spring(14, 52, 13); E.spring(46, 20, 20);
+      for (let i = 0; i < 6; i++) { const a = r() * 6.28; E.ore('quartz', Math.cos(a) * 58, Math.sin(a) * 58); }
+      E.npc('aqua', 'Aqua', 'Guia do Aero Paraíso', 5, 60, { fur: '#7fb7c9', fur2: '#f5f1e8', pattern: 1, eyes: '#4aa3e0', hat: 9, acc: 7 }, { quests: ['z1', 'z2', 'z3'], lines: ['Bem-vindo ao Aero Paraíso! Céu azul, grama brilhante e água cristalina.', 'O lago é fundo: mergulhe e nade. Dê braçadas com as patas ou segure o gatilho para ir na direção apontada.', 'No fundo há pérolas, corais e uma cúpula secreta.', 'Parado na água você flutua de volta à superfície.'] });
+      E.npc('vista', 'Vista', 'Loja Cristal', -7, 59, { fur: '#f5f1e8', fur2: '#7fb7c9', pattern: 5, eyes: '#58c26a', hat: 0, acc: 1 }, { quests: ['z4'], shop: 'general', lines: ['Estoure as bolhas com as patas! Elas voltam logo.', 'Tudo aqui é brilhante, limpo e otimista. Como o futuro devia ser.', 'Os trampolins de vidro jogam você lá no alto.'] });
+      E.sign('Lago Cristal — mergulhe!', 0, 3.4, 44); lampPost(w, E, -4, 66); lampPost(w, E, 4, 66);
     }
   },
   // ======================= CAMPO DE TREINO =======================
@@ -405,7 +455,7 @@ export const MAPS = {
     }
   }
 };
-export const MAP_ORDER = ['village', 'forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training'];
-export const MAP_ICONS = { village: '🏡', forest: '🌲', mine: '⛏', desert: '🏜', snow: '🏔', arena: '🥊', castle: '🏰', city: '🏙', island: '🏝', training: '🎯' };
-export const PORTAL_COLORS = { village: 0x70e070, forest: 0x2f9e4f, mine: 0x8a70c0, desert: 0xf0c050, snow: 0xb8e8ff, arena: 0xf05a40, castle: 0xa0a8c0, city: 0x50a0f0, island: 0x30d0d0, training: 0xf0a040 };
+export const MAP_ORDER = ['village', 'forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero'];
+export const MAP_ICONS = { village: '🏡', forest: '🌲', mine: '⛏', desert: '🏜', snow: '🏔', arena: '🥊', castle: '🏰', city: '🏙', island: '🏝', training: '🎯', aero: '🫧' };
+export const PORTAL_COLORS = { village: 0x70e070, forest: 0x2f9e4f, mine: 0x8a70c0, desert: 0xf0c050, snow: 0xb8e8ff, arena: 0xf05a40, castle: 0xa0a8c0, city: 0x50a0f0, island: 0x30d0d0, training: 0xf0a040, aero: 0x60e8ff };
 export { hasModel };

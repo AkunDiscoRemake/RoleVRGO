@@ -15,6 +15,7 @@ export const ITEMS = {
   sardine: { n: 'Sardinha', r: 0, v: 8, k: 'fish' }, tilapia: { n: 'Tilápia', r: 0, v: 14, k: 'fish' }, bass: { n: 'Robalo', r: 1, v: 30, k: 'fish' },
   dourado: { n: 'Dourado', r: 2, v: 80, k: 'fish' }, koi: { n: 'Carpa Koi', r: 3, v: 200, k: 'fish' }, moonfish: { n: 'Peixe-Lua', r: 4, v: 550, k: 'fish' },
   oldcoin: { n: 'Moeda Antiga', r: 1, v: 40, k: 'treasure' }, relic: { n: 'Relíquia Felina', r: 3, v: 260, k: 'treasure' }, idol: { n: 'Ídolo de Ouro', r: 4, v: 700, k: 'treasure' },
+  pearl: { n: 'Pérola', r: 1, v: 35, k: 'treasure' }, coral: { n: 'Coral Brilhante', r: 2, v: 90, k: 'treasure' },
   snack: { n: 'Petisco', r: 0, v: 5, k: 'food', heal: 45 }, catnip: { n: 'Erva-de-gato', r: 1, v: 20, k: 'food', boost: 180 }
 };
 // nós de mineração: hp, tier mínimo da picareta, cor, xp
@@ -81,6 +82,10 @@ export const QUESTS = {
   m4: { npc: 'tunel', title: 'Orcs nos túneis', desc: 'Derrote 4 Orcs.', goal: { t: 'kill', k: 'orc', n: 4 }, xp: 200, coins: 180, after: 'm3' },
   d3: { npc: 'safira', title: 'Ossos do deserto', desc: 'Derrote 6 Esqueletos.', goal: { t: 'kill', k: 'skeleton', n: 6 }, xp: 180, coins: 150 },
   v5: { npc: 'ferreiro', title: 'Mãos à obra', desc: 'Fabrique 2 itens (menu rápido > Fabricar).', goal: { t: 'craft', n: 2 }, xp: 100, coins: 80, after: 'v4' },
+  z1: { npc: 'aqua', title: 'Mergulho inaugural', desc: 'Nade 150 metros no lago do Aero Paraíso.', goal: { t: 'swim', n: 150 }, xp: 120, coins: 100 },
+  z2: { npc: 'aqua', title: 'Pérolas do fundo', desc: 'Entregue 8 Pérolas colhidas no fundo do lago.', goal: { t: 'deliver', k: 'pearl', n: 8 }, xp: 200, coins: 220, after: 'z1' },
+  z3: { npc: 'aqua', title: 'A cúpula submersa', desc: 'Ache o segredo no fundo do lago.', goal: { t: 'secret', k: 'aero', n: 1 }, xp: 240, coins: 260, after: 'z2' },
+  z4: { npc: 'vista', title: 'Estoura-bolhas', desc: 'Estoure 25 bolhas flutuantes com as patas.', goal: { t: 'pop', n: 25 }, xp: 110, coins: 90 },
   t2: { npc: 'sensei', title: 'Defesa primeiro', desc: 'Bloqueie 5 golpes do Mestre.', goal: { t: 'blocked', n: 5 }, xp: 120, coins: 90, after: 't1' }
 };
 // Missões diárias (3 por dia, sorteadas pela data UTC)
@@ -108,7 +113,9 @@ export const ACHIEVEMENTS = [
   { id: 'co1', n: 'Pé-de-meia', d: 'Ganhe 1000 moedas no total', s: 'earned', v: 1000, c: 100 }, { id: 'so1', n: 'Sociável', d: 'Faça carinho em outro jogador', s: 'pat', v: 1, c: 40 },
   { id: 'em1', n: 'Expressivo', d: 'Use 20 emotes', s: 'emote', v: 20, c: 50 }, { id: 'qu1', n: 'Prestativo', d: 'Complete 10 missões', s: 'quests', v: 10, c: 300 },
   { id: 'ev1', n: 'Na hora certa', d: 'Participe de 1 evento mundial', s: 'event', v: 1, c: 100 }, { id: 'ki1', n: 'Caçador', d: 'Derrote 10 inimigos', s: 'kill', v: 10, c: 80 }, { id: 'ki2', n: 'Exterminador', d: 'Derrote 150 inimigos', s: 'kill', v: 150, c: 700 },
-  { id: 'cr1', n: 'Artesão', d: 'Fabrique 5 itens', s: 'craft', v: 5, c: 120 }, { id: 'fr1', n: 'Amigos', d: 'Adicione 1 amigo', s: 'friends', v: 1, c: 50 }
+  { id: 'cr1', n: 'Artesão', d: 'Fabrique 5 itens', s: 'craft', v: 5, c: 120 }, { id: 'sw1', n: 'Peixinho', d: 'Nade 500 metros', s: 'swim', v: 500, c: 150 }, { id: 'po1', n: 'Estoura-Bolhas', d: 'Estoure 100 bolhas', s: 'pop', v: 100, c: 150 },
+  { id: 'bo1', n: 'Mata-Chefe', d: 'Derrote 1 chefe', s: 'boss', v: 1, c: 200 }, { id: 'ct1', n: 'Contratado', d: 'Conclua 10 contratos', s: 'contracts', v: 10, c: 400 }, { id: 'al1', n: 'Colecionador', d: 'Complete 2 coleções do álbum', s: 'collections', v: 2, c: 500 },
+  { id: 'fr1', n: 'Amigos', d: 'Adicione 1 amigo', s: 'friends', v: 1, c: 50 }
 ];
 // Eventos mundiais: determinísticos pelo relógio (bloco de 10 min: 4 min ativo) — iguais para todos, sem servidor.
 export const EVENTS = [
@@ -171,3 +178,29 @@ export const ENEMIES = {
   zombie: { n: 'Zumbi', model: 'grave/character-zombie', s: 1.7, hp: 75, dmg: 12, sp: 1.7, xp: 26, coins: [6, 14], drop: ['snack', 0.25] },
   orc: { n: 'Orc', model: 'dungeon/character-orc', s: 1.95, hp: 100, dmg: 15, sp: 2.4, xp: 40, coins: [10, 22], drop: ['iron', 0.35] }
 };
+export const BOSS_NAMES = { ghost: 'Espectro Ancião', skeleton: 'Rei Esqueleto', zombie: 'Zumbi Gigante', orc: 'Chefe Orc' };
+export const BOSS_DROPS = ['emerald', 'ruby', 'relic', 'amethyst'];
+
+// Acessórios CONQUISTÁVEIS (não se compram): liberam quando a condição é cumprida. s = estatística, v = valor.
+export const ACCS = [
+  { n: 'Nenhum', how: '' }, { n: 'Óculos escuros', how: 'Chegue ao nível 3', s: 'level', v: 3 }, { n: 'Cachecol', how: 'Abra 10 baús', s: 'chest', v: 10 },
+  { n: 'Gravata borboleta', how: 'Complete 5 missões', s: 'quests', v: 5 }, { n: 'Mochila', how: 'Visite 6 mapas', s: 'maps', v: 6 }, { n: 'Capa de herói', how: 'Derrote 25 inimigos', s: 'kill', v: 25 },
+  { n: 'Medalha', how: 'Vença 5 lutas', s: 'ko', v: 5 }, { n: 'Asas de bolha', how: 'Estoure 60 bolhas no Aero Paraíso', s: 'pop', v: 60 }, { n: 'Snorkel', how: 'Nade 300 metros', s: 'swim', v: 300 },
+  { n: 'Aura dourada', how: 'Chegue ao nível 20', s: 'level', v: 20 }, { n: 'Colar de pérolas', how: 'Colete 15 pérolas', s: 'pearl', v: 15 }, { n: 'Chifres de chefe', how: 'Derrote 3 chefes', s: 'boss', v: 3 }
+];
+// Talentos: 1 ponto por nível.
+export const PERKS = [
+  { id: 'hp', n: '❤ Vitalidade', d: '+10 de vida por ponto', max: 6 }, { id: 'dmg', n: '🥊 Força', d: '+6% de dano por ponto', max: 6 }, { id: 'speed', n: '💨 Agilidade', d: '+4% de velocidade por ponto', max: 5 },
+  { id: 'jump', n: '🦘 Impulso', d: '+6% de força nos saltos por ponto', max: 5 }, { id: 'mine', n: '⛏ Garimpo', d: '+12% de mineração por ponto', max: 5 }, { id: 'luck', n: '🍀 Sorte', d: '+10% de moedas em baús e peixes raros', max: 5 },
+  { id: 'regen', n: '✨ Recuperação', d: '+30% de regeneração por ponto', max: 3 }, { id: 'xp', n: '📘 Sabedoria', d: '+5% de XP por ponto', max: 5 }
+];
+export const TITLES = [[1, 'Filhote'], [4, 'Curioso'], [8, 'Explorador'], [12, 'Aventureiro'], [16, 'Veterano'], [20, 'Herói'], [26, 'Campeão'], [32, 'Lenda'], [40, 'Mito']];
+export function titleFor(level) { let t = TITLES[0][1]; for (const x of TITLES) if (level >= x[0]) t = x[1]; return t; }
+// Contratos infinitos: gerados conforme o nível.
+export const CONTRACT_TYPES = [
+  { t: 'mine', title: 'Minere %n nós', base: 10 }, { t: 'kill', title: 'Derrote %n inimigos', base: 6 }, { t: 'fish', title: 'Pesque %n peixes', base: 4 }, { t: 'chest', title: 'Abra %n baús', base: 3 },
+  { t: 'forage', title: 'Colete %n itens da natureza', base: 8 }, { t: 'dig', title: 'Desenterre %n tesouros', base: 3 }, { t: 'hit', title: 'Acerte %n golpes', base: 30 }, { t: 'fling', title: 'Dê %n impulsos', base: 25 },
+  { t: 'swim', title: 'Nade %n metros', base: 120 }, { t: 'pop', title: 'Estoure %n bolhas', base: 15 }, { t: 'craft', title: 'Fabrique %n itens', base: 1 }
+];
+// Álbum de coleção: categorias de itens; completar uma dá recompensa.
+export const ALBUM = { fish: 'Peixes', gem: 'Gemas', ore: 'Minérios', forage: 'Natureza', treasure: 'Tesouros' };
