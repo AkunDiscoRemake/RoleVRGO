@@ -53,7 +53,7 @@ export const maker = {
   // definição de mapa compatível com G.loadMap
   def() {
     const m = this.map, sk = SKIES[m.sky] || SKIES[0], gr = GROUNDS[m.ground] || GROUNDS[0], self = this; this.loadAssets(m);
-    return { name: m.name, size: clamp(m.size, 60, 200), surface: gr[3], sky: sk.sky, indoor: sk.indoor, fog: 1.1, swim: m.water > 0, spawn: [m.spawn[0], m.spawn[1], m.spawn[2] || 0], custom: true, netKey: 'c_' + (this.id || 'local'), moodId: MOODS[m.mood] || 'village', ambId: AMBS[m.amb] || '',
+    return { name: m.name, size: clamp(m.size, 60, 200), surface: gr[3], sky: sk.sky, indoor: sk.indoor, fog: 1.1, swim: m.water > 0, spawn: [m.spawn[0], m.spawn[1], m.spawn[2] || 0], custom: true, netKey: 'c_' + (this.id || 'l' + String(net.id || '').slice(0, 8)), moodId: MOODS[m.mood] || 'village', ambId: AMBS[m.amb] || '',
       build(w, E) {
         const half = w.half, amp = m.hills || 0;
         w.heightFn = (x, z) => { let h = amp ? (fbm(x * 0.03, z * 0.03, 5, 2) - 0.45) * amp * 2.2 : 0; const d = Math.max(Math.abs(x), Math.abs(z)); if (d > half - 8) h += Math.min(8, (d - half + 8) * (d - half + 8) * 0.12); return h; };
@@ -148,7 +148,8 @@ export const maker = {
   // ---------- servidor (comunidade) ----------
   async save(pub) {
     this.autosave(); if (!net.online) return 'Offline: rascunho salvo só neste aparelho';
-    try { const r = await net.rpc('rv_map_save', { p_map_id: this.mine ? this.id : null, p_name: this.map.name, p_data: this.map, p_public: !!pub }); this.id = r.id; this.mine = true; this.dirty = false; this.pub = !!pub; this.autosave(); emit('maker'); return pub ? 'Publicado! Código: ' + r.id : 'Salvo (privado). Código: ' + r.id; }
+    try { const r = await net.rpc('rv_map_save', { p_map_id: this.mine ? this.id : null, p_name: this.map.name, p_data: this.map, p_public: !!pub }); const first = this.id !== r.id; this.id = r.id; this.mine = true; this.dirty = false; this.pub = !!pub; this.autosave(); emit('maker');
+      if (first && this.G && this.G.mapId === 'custom') { this.G.customDef.netKey = 'c_' + r.id; net.join(this.G.room, 'c_' + r.id, this.G.roomPublic); this.G.pushMeta(); } return pub ? 'Publicado! Código: ' + r.id : 'Salvo (privado). Código: ' + r.id; }
     catch (e) { return /rv_map|schema cache|PGRST202/.test(e.message || '') ? 'O banco ainda não tem as tabelas de mapas (rode supabase/maps.sql)' : 'Erro ao salvar: ' + (e.message || e); }
   },
   async list(sort) { const { data, error } = await net.client.rpc('rv_map_list', { p_sort: sort || 'new' }); if (error) throw error; return data || []; },
