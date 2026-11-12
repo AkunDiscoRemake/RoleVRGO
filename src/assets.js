@@ -18,6 +18,8 @@ export function addPrim(key, geo, rgb) {
   g.computeBoundingBox(); const b = g.boundingBox;
   index[key] = { raw: { pos, nrm, col, idx, v, i: v, b: [b.min.x, b.min.y, b.min.z, b.max.x, b.max.y, b.max.z] } };
 }
+export function modelKeys() { return Object.keys(index).filter((k) => k.indexOf('asset:') !== 0); }
+export function addRaw(key, raw) { index[key] = { raw }; delete geoCache[key]; }
 export function hasModel(key) { return !!(index && index[key]); }
 export function modelInfo(key) { return index[key]; }
 // Devolve vistas cruas (sem cópia) para o batcher estático.

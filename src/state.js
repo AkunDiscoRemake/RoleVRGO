@@ -44,6 +44,7 @@ export const S = {
   toast(t, c) { emit('toast', t, c); },
 
   addXp(n, why) {
+    if (this.sandbox) return;
     if (n <= 0) return;
     if (net.now() < this.boostUntil) n = Math.round(n * 1.2);
     const hx = this.held().xp; if (hx) n = Math.round(n * hx);
@@ -54,9 +55,10 @@ export const S = {
     if (up) { this.hp = this.maxHp(); this.toast('⭐ Nível ' + d.level + '!', '#ffd76a'); play('levelup', 0.7); this.addCoins(d.level * 10); this.setStat('level', d.level); emit('levelup', d.level); }
     this.touch();
   },
-  addCoins(n) { if (!n) return; this.d.coins += n; if (n > 0) this.stat('earned', null, n); this.touch(); emit('coins'); },
+  addCoins(n) { if (!n || (this.sandbox && n > 0)) return; this.d.coins += n; if (n > 0) this.stat('earned', null, n); this.touch(); emit('coins'); },
   count(id) { return this.d.inv[id] || 0; },
   addItem(id, n, silent) {
+    if (this.sandbox) { if (!silent && ITEMS[id]) this.toast('(' + ITEMS[id].n + ' — mapas criados não dão itens)', '#99a'); return; }
     n = n || 1; this.d.inv[id] = (this.d.inv[id] || 0) + n; const it = ITEMS[id];
     if (it && !this.d.seen[id]) { this.d.seen[id] = 1; if (ALBUM[it.k]) { const c = this.albumCount(it.k); this.toast('📖 Novo no álbum: ' + it.n + ' (' + ALBUM[it.k] + ' ' + c[0] + '/' + c[1] + ')', '#bfe6ff'); if (c[0] === c[1] && this.d.albumDone.indexOf(it.k) < 0) { this.d.albumDone.push(it.k); this.d.coins += 400; this.toast('📖 Coleção completa: ' + ALBUM[it.k] + '! +400 moedas', '#ffb52e'); play('win', 0.6); this.stat('collections'); emit('coins'); } } }
     if (id === 'pearl') this.stat('pearl', null, n);
@@ -96,6 +98,7 @@ export const S = {
   // ---------- estatísticas -> missões, diárias, conquistas ----------
   setStat(s, v) { if ((this.d.stats[s] || 0) < v) { this.d.stats[s] = v; this.checkAch(); this.checkAccs(); } },
   stat(t, key, n) {
+    if (this.sandbox) return;
     n = n || 1; const d = this.d; d.stats[t] = (d.stats[t] || 0) + n;
     for (const id in d.q.active) { const q = QUESTS[id], g = q.goal; if (g.t === t && g.t !== 'deliver' && (!g.k || g.k === key)) { const before = d.q.active[id]; d.q.active[id] = Math.min(g.n, before + n); if (before < g.n && d.q.active[id] >= g.n) { this.toast('Missão pronta: ' + q.title, '#ffd76a'); play('sel', 0.6); } } }
     const dl = this.dailyList();
@@ -121,10 +124,10 @@ export const S = {
   rollDaily() { const k = dayKey(net.now()); if (this.d.daily.day !== k) { this.d.daily = { day: k, prog: [0, 0, 0], claimed: [] }; this.d.chests = { day: k, open: [] }; this.d.stats.visitToday = 0; this.dirty = true; } },
   dailyList() { const r = rng(this.d.daily.day || 1), idx = []; while (idx.length < 3) { const i = Math.floor(r() * DAILY.length); if (idx.indexOf(i) < 0) idx.push(i); } return idx.map((i) => DAILY[i]); },
   claimDaily(i) { const q = this.dailyList()[i], d = this.d.daily; if (d.prog[i] < q.goal.n || d.claimed.indexOf(i) >= 0) return; d.claimed.push(i); this.addXp(q.xp); this.addCoins(q.coins); this.toast('Diária: +' + q.xp + ' XP, +' + q.coins + ' moedas', '#6fd26f'); play('quest', 0.7); this.stat('quests', null, 1); },
-  chestOpen(key) { return this.d.chests.open.indexOf(key) >= 0; },
-  markChest(key) { this.d.chests.open.push(key); this.touch(); },
+  chestOpen(key) { if (this.sandbox) return (this._sbChests || []).indexOf(key) >= 0; return this.d.chests.open.indexOf(key) >= 0; },
+  markChest(key) { if (this.sandbox) { (this._sbChests = this._sbChests || []).push(key); return; } this.d.chests.open.push(key); this.touch(); },
   visit(map) { if (this.d.maps.indexOf(map) < 0) { this.d.maps.push(map); this.setStat('maps', this.d.maps.length); this.addXp(25); } this.stat('visit', map, 1); },
-  secret(key, map) { if (this.d.secrets.indexOf(key) >= 0) return false; this.d.secrets.push(key); const xp = this.d.prof === 'explorer' ? 160 : 80; this.toast('✨ Segredo descoberto! +' + xp + ' XP', '#c06bff'); play('secret', 0.7); this.addXp(xp); this.stat('secret', map, 1); return true; },
+  secret(key, map) { if (this.sandbox) { this.toast('✨ Segredo do mapa encontrado!', '#c06bff'); play('secret', 0.7); return true; } if (this.d.secrets.indexOf(key) >= 0) return false; this.d.secrets.push(key); const xp = this.d.prof === 'explorer' ? 160 : 80; this.toast('✨ Segredo descoberto! +' + xp + ' XP', '#c06bff'); play('secret', 0.7); this.addXp(xp); this.stat('secret', map, 1); return true; },
   profBonus(p) { return this.d.prof === p; }
 };
 // salvamento periódico

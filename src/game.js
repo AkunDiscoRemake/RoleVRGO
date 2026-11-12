@@ -11,6 +11,7 @@ import { S } from './state.js';
 import { ITEMS, ORES, PICKS, GLOVES, RODS, FISH_TABLE, TREASURE_TABLE, RARITY, QUESTS, currentEvent, HELD, PROPS, ENEMIES, BOSS_NAMES, BOSS_DROPS, titleFor } from './data.js';
 import { rng, hashStr, clamp, emit, on, angDiff } from './util.js';
 import { EYE, HAND_R } from './config.js';
+import { maker } from './maker.js';
 
 const _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(), _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _col = new THREE.Color(), _col2 = new THREE.Color(), _q2 = new THREE.Quaternion();
 const bubbleMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
@@ -47,10 +48,11 @@ export const G = {
   },
 
   // ================= carregamento de mapa =================
-  travel(id) { if (this.pending || !MAPS[id] || id === this.mapId) return; this.pending = id; this.fade = 0.001; play('portal', 0.6); },
-  loadMap(id) {
+  travel(id) { if (this.pending || (!MAPS[id] && id !== 'custom') || id === this.mapId) return; this.pending = id; this.fade = 0.001; play('portal', 0.6); },
+  loadMap(id, keep) {
     const scene = this.scene; this._disposeMap();
-    const def = MAPS[id], w = new World(scene, def.size); w.surface = def.surface;
+    const def = id === 'custom' ? this.customDef : MAPS[id], w = new World(scene, def.size); w.surface = def.surface;
+    if (id !== 'custom' && maker.playing) maker.close(); S._sbChests = [];
     const E = { npcs: [], ores: [], chests: [], portals: [], collects: [], digs: [], fishes: [], secrets: [], dummies: [], zones: [], lamps: [], signs: [], boards: [], springs: [] };
     E.npc = (nid, name, role, x, z, look, o) => E.npcs.push(Object.assign({ id: nid, name, role, x, z, look }, o));
     E.ore = (type, x, z) => E.ores.push({ type, x, z }); E.chest = (key, x, y, z, tier) => E.chests.push({ key, x, y, z, tier });
@@ -59,7 +61,7 @@ export const G = {
     E.dummy = (x, z) => E.dummies.push({ x, z }); E.zone = (type, x, z, r) => E.zones.push({ type, x, z, r }); E.lamp = (x, y, z, c) => E.lamps.push({ x, y, z, c: c || 0xffd890 });
     E.sign = (text, x, y, z) => E.signs.push({ text, x, y, z }); E.board = (x, z, yaw) => E.boards.push({ x, z, yaw }); E.spring = (x, z, p) => E.springs.push({ x, z, p }); E.enemies = []; E.enemy = (type, x, z, boss) => E.enemies.push({ type, x, z, boss }); E.schools = []; E.school = (x, y, z, r, n) => E.schools.push({ x, y, z, r, n }); E.bubbleN = 0; E.bubbles = (n) => { E.bubbleN = n; }; E.rainbow = (x, z, r) => { E.rb = { x, z, r }; }; E.falls = []; E.waterfall = (x, y1, z, y0, wd) => E.falls.push({ x, y1, z, y0, wd });
     def.build(w, E, rng(hashStr(id)));
-    w.swim = !!def.swim; matU.uGloss.value = id === 'aero' ? 1 : 0; matU.uCaust.value = def.swim ? 1 : 0;
+    w.swim = !!def.swim; matU.uGloss.value = id === 'aero' || (def.custom && def.sky[0] === 0x4cc6ff) ? 1 : 0; matU.uCaust.value = def.swim ? 1 : 0;
     this.world = w; this.E = E; this.def = def; this.mapId = id;
     const add = (o) => { scene.add(o); this.objs.push(o); return o; };
     const inst = (geo, n, mat) => { const m = new THREE.InstancedMesh(geo, mat || instMat, Math.max(1, n)); m.count = n; m.frustumCulled = false; m.castShadow = true; return add(m); };
@@ -76,7 +78,7 @@ export const G = {
       const dg = new THREE.CircleGeometry(0.95, 14); this.portalMesh = add(new THREE.InstancedMesh(dg, new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.75, side: THREE.DoubleSide, depthWrite: false }), E.portals.length)); this.portalMesh.frustumCulled = false;
       E.portals.forEach((p, i) => { setInst(this.portalMesh, i, p.x, p.y + 1.45, p.z, 1, p.yaw); this.portalMesh.setColorAt(i, _col.setHex(PORTAL_COLORS[p.to])); });
     }
-    for (const s of E.springs) { s.y = w.heightAt(s.x, s.z); w.put('plat/spring', s.x, s.z, { s: 2.4 }); }
+    for (const s of E.springs) { s.y = s.fy != null ? s.fy : w.heightAt(s.x, s.z); w.put('plat/spring', s.x, s.z, { s: 2.4 }); }
     for (const s of E.signs) this.labels.add(s.text, s.x, s.y, s.z, Math.atan2(sp[0] - s.x, sp[1] - s.z), 3.2);
     for (const f of E.fishes) this.labels.add('🎣 Ponto de pesca', f.x, w.waterY + 1.6, f.z, Math.atan2(sp[0] - f.x, sp[1] - f.z), 2.6, '#bfe6ff');
     for (const z of E.zones) this.labels.add('⚔ Zona de luta (PvP)', z.x, w.heightAt(z.x, z.z) + 4.4, z.z + 0.01, Math.atan2(sp[0] - z.x, sp[1] - z.z), 3.4, '#ffb0a0');
@@ -85,21 +87,21 @@ export const G = {
     const nOre = E.ores.length + 8;
     this.oreMesh = inst(modelGeometry('survival/rock-b'), nOre); this.gemMesh = inst(modelGeometry('plat/jewel'), nOre);
     for (let i = 0; i < 8; i++) E.ores.push({ type: 'star', x: 0, z: 0, ev: true, alive: false });
-    E.ores.forEach((o, i) => { o.i = i; o.y = w.heightAt(o.x, o.z); o.hp = ORES[o.type].hp; if (o.alive == null) o.alive = true; o.ry = (i * 2.4) % 6.28; o.sc = 1.25 + (i % 3) * 0.2; this._oreVis(o); });
+    E.ores.forEach((o, i) => { o.i = i; o.y = o.fy != null ? o.fy : w.heightAt(o.x, o.z); o.hp = ORES[o.type].hp; if (o.alive == null) o.alive = true; o.ry = (i * 2.4) % 6.28; o.sc = 1.25 + (i % 3) * 0.2; this._oreVis(o); });
     // baús (+1 vaga para o Baú Dourado)
     E.chests.push({ key: 'ev', x: 0, y: -999, z: 0, tier: 3, ev: true, hidden: true });
     this.chestMesh = inst(modelGeometry('plat/chest'), E.chests.length);
     E.chests.forEach((c, i) => { c.i = i; if (c.y == null) c.y = w.heightAt(c.x, c.z); c.ry = Math.atan2(sp[0] - c.x, sp[1] - c.z); this._chestVis(c); });
     // coletáveis por modelo
     const groups = {}; for (const c of E.collects) (groups[c.model] = groups[c.model] || []).push(c);
-    for (const k in groups) { const mesh = inst(modelGeometry(k), groups[k].length); groups[k].forEach((c, i) => { c.mesh = mesh; c.i = i; c.y = w.heightAt(c.x, c.z); c.alive = true; c.ry = i * 1.7; setInst(mesh, i, c.x, c.y, c.z, c.s, c.ry); mesh.setColorAt(i, c.tint ? _col.setRGB(c.tint[0], c.tint[1], c.tint[2]) : _col.setRGB(1.25, 1.25, 1.25)); }); }
+    for (const k in groups) { const mesh = inst(modelGeometry(k), groups[k].length); groups[k].forEach((c, i) => { c.mesh = mesh; c.i = i; c.y = c.fy != null ? c.fy : w.heightAt(c.x, c.z); c.alive = true; c.ry = i * 1.7; setInst(mesh, i, c.x, c.y, c.z, c.s, c.ry); mesh.setColorAt(i, c.tint ? _col.setRGB(c.tint[0], c.tint[1], c.tint[2]) : _col.setRGB(1.25, 1.25, 1.25)); }); }
     // tesouros enterrados (X)
     if (E.digs.length) { const a = new THREE.BoxGeometry(1.1, 0.06, 0.22), b = new THREE.BoxGeometry(0.22, 0.06, 1.1); a.rotateY(0.785); b.rotateY(0.785); const pos = new Float32Array(72 * 3), nr = new Float32Array(72 * 3); const an = a.toNonIndexed(), bn = b.toNonIndexed(); pos.set(an.attributes.position.array); pos.set(bn.attributes.position.array, 108); nr.set(an.attributes.normal.array); nr.set(bn.attributes.normal.array, 108); const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nr, 3));
       this.digMesh = inst(g, E.digs.length, new THREE.MeshLambertMaterial({ color: 0xc03a2a })); E.digs.forEach((d, i) => { d.i = i; d.y = w.heightAt(d.x, d.z); d.hp = 4; d.alive = true; setInst(this.digMesh, i, d.x, d.y + 0.05, d.z, 1, i); }); }
     // segredos (estrela flutuante até serem achados)
     if (E.secrets.length) { this.starMesh = inst(modelGeometry('plat/star'), E.secrets.length); E.secrets.forEach((s, i) => { s.i = i; s.found = S.d.secrets.indexOf(s.key) >= 0; this.starMesh.setColorAt(i, _col.setRGB(1.3, 1.2, 0.6)); setInst(this.starMesh, i, s.x, s.y + 0.3, s.z, s.found ? 0 : 1.6, 0); }); }
     // bonecos de treino
-    if (E.dummies.length) { this.dummyMesh = inst(modelGeometry('arena/character-soldier'), E.dummies.length); E.dummies.forEach((d, i) => { d.i = i; d.y = w.heightAt(d.x, d.z); d.wob = 0; d.ry = Math.atan2(sp[0] - d.x, sp[1] - d.z); setInst(this.dummyMesh, i, d.x, d.y, d.z, 1.7, d.ry); this.dummyMesh.setColorAt(i, _col.setRGB(1, 1, 1)); w.put('prim/cyl', d.x, d.z, { s: [0.9, 0.12, 0.9], tint: [0.5, 0.4, 0.3] }); }); }
+    if (E.dummies.length) { this.dummyMesh = inst(modelGeometry('arena/character-soldier'), E.dummies.length); E.dummies.forEach((d, i) => { d.i = i; d.y = d.fy != null ? d.fy : w.heightAt(d.x, d.z); d.wob = 0; d.ry = Math.atan2(sp[0] - d.x, sp[1] - d.z); setInst(this.dummyMesh, i, d.x, d.y, d.z, 1.7, d.ry); this.dummyMesh.setColorAt(i, _col.setRGB(1, 1, 1)); w.put('prim/cyl', d.x, d.z, { s: [0.9, 0.12, 0.9], tint: [0.5, 0.4, 0.3] }); }); }
     // lanternas
     if (E.lamps.length) {
       this.lampMesh = inst(new THREE.IcosahedronGeometry(0.17, 0), E.lamps.length, new THREE.MeshBasicMaterial({ fog: false })); this.lampMesh.castShadow = false;
@@ -113,7 +115,7 @@ export const G = {
     this._boards();
     // NPCs
     for (const n of E.npcs) {
-      const av = new CatAvatar(n.look, n.name, { npc: true, sub: n.role, tagColor: '#ffe9a8' }); n.y = w.heightAt(n.x, n.z); n.hx = n.x; n.hz = n.z; n.yaw = n.yaw || Math.atan2(sp[0] - n.x, sp[1] - n.z) + Math.PI; n.av = av; n.t = Math.random() * 5; n.wander = n.wander == null ? (n.shop || n.spar ? 0 : 1.6) : n.wander; n.tx = n.x; n.tz = n.z;
+      const av = new CatAvatar(n.look, n.name, { npc: true, sub: n.role, tagColor: '#ffe9a8' }); n.y = n.fy != null ? n.fy : w.heightAt(n.x, n.z); n.hx = n.x; n.hz = n.z; n.yaw = n.yaw || Math.atan2(sp[0] - n.x, sp[1] - n.z) + Math.PI; n.av = av; n.t = Math.random() * 5; n.wander = n.wander == null ? (n.shop || n.spar ? 0 : 1.6) : n.wander; n.tx = n.x; n.tz = n.z;
       av.root.position.set(n.x, n.y, n.z); av.root.rotation.y = n.yaw; scene.add(av.root); this.npcs.push(n);
       if (n.spar) { n.hpMax = 120; n.hp = 120; n.state = 'idle'; n.st = 0; n.zone = E.zones.find((z) => Math.hypot(z.x - n.x, z.z - n.z) < z.r + 8); }
     }
@@ -153,8 +155,9 @@ export const G = {
     this.player.teleport(sp[0], w.floorAt(sp[0], 50, sp[1]) + 0.1, sp[1], sp[2]);
     for (let i = 0; i < 12; i++) w.update(sp[0], sp[1], perf);
     this.fishing = null; this.bobber.visible = this.line.visible = false; this.spar = null; this.evBlock = -1; this.evT = 0;
-    S.visit(id); S.hp = S.maxHp(); emit('hp'); emit('map', id);
-    if (net.online) { net.join(this.room, id, this.roomPublic); this.pushMeta(); }
+    if (def.after) def.after(this, add);
+    if (!def.custom) S.visit(id); S.hp = S.maxHp(); emit('hp'); emit('map', def.moodId || id);
+    if (net.online && !keep) { net.join(this.room, def.netKey || id, this.roomPublic); this.pushMeta(); }
   },
   _disposeMap() {
     for (const o of this.objs) { this.scene.remove(o); if (o.geometry && !o.geometry.userData.shared) { /* geometrias de modelo ficam em cache */ } if (o.material && o.material !== instMat && o.material !== worldMat) { if (o.material.map && o.material.map !== this.fx.tex) o.material.map.dispose(); o.material.dispose(); } if (o.isInstancedMesh) o.dispose(); }
@@ -239,6 +242,7 @@ export const G = {
   onTrigger() {
     if (!this.world || this.pending) return true;
     if (this.uiClick && this.uiClick()) return true;
+    if (maker.editing && this.mapId === 'custom') { maker.act(); return true; }
     if (this.fishing) { this._reel(true); return true; }
     if (this.myEmote === 3 || this.myEmote === 4) { this.myEmote = 0; this.emoteT = 0; this.player.frozen = false; this.player.emoteId = 0; return true; }
     const a = this.aim();
@@ -288,7 +292,7 @@ export const G = {
     if (S.hp > 0 && S.hp < S.maxHp() && (this.time - this.lastHurt > (fz ? 5 : 3.5))) { S.hp = Math.min(S.maxHp(), S.hp + (fz ? 3 : 12) * (S.held().regen || 1) * (1 + S.perk('regen') * 0.3) * dt); this._hpT = (this._hpT || 0) + dt; if (this._hpT > 0.5) { this._hpT = 0; emit('hp'); } }
     if (this.emoteT > 0 && (this.emoteT -= dt) <= 0) { this.myEmote = 0; P.frozen = false; P.emoteId = 0; }
     if (this.comboT > 0 && (this.comboT -= dt) <= 0) { this.combo = 0; emit('combo', 0); }
-    this._held(dt);
+    this._held(dt); maker.update(this);
     const tp = P.tp; this.tpBall.visible = this.tpArc.visible = tp.show; if (tp.show) { this.tpBall.position.set(tp.x, tp.y + 0.22 + Math.sin(this.time * 6) * 0.04, tp.z); this.tpBall.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.geometry.setDrawRange(0, tp.n); this.tpArc.geometry.attributes.position.needsUpdate = true; }
     // passos
     if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; play(P.inWater ? 'splash' : this.E.aero && P.pos.y > 1.9 && Math.hypot(P.pos.x, P.pos.z) < 44 ? 'glass' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
@@ -312,7 +316,7 @@ export const G = {
     if (this.portalMesh) this.portalMesh.material.opacity = 0.6 + Math.sin(this.time * 3) * 0.15;
     if (this.starMesh) for (const s of this.E.secrets) if (!s.found) setInst(this.starMesh, s.i, s.x, s.y + 0.5 + Math.sin(this.time * 2) * 0.15, s.z, 1.6, this.time * 1.5);
     if (W.waterU) W.waterU.uTime.value = this.time;
-    this.fx.ambient(this.under ? 'bubble' : AMBIENT[this.mapId] || '', P.pos, this.time, this.sky.night);
+    this.fx.ambient(this.under ? 'bubble' : this.def.custom ? this.def.ambId : AMBIENT[this.mapId] || '', P.pos, this.time, this.sky.night);
     this.fx.update(dt);
     // laser de mira
     const a = this.uiOpen ? null : this.aim(); const show = this.uiOpen || !!a; this.laser.visible = show && !P.hands[0].touch && !P.desktop;

@@ -7,6 +7,7 @@ import { MAPS, MAP_ORDER, MAP_ICONS } from './maps.js';
 import { ITEMS, RARITY, QUESTS, ACHIEVEMENTS, PROFS, SHOPS, PICKS, GLOVES, RODS, QUICK_CHAT, currentEvent, HELD, PROPS, RECIPES, ACCS, PERKS, ALBUM } from './data.js';
 import { music } from './music.js';
 import { hands } from './hands.js';
+import { maker, SKIES, GROUNDS, MOODS, AMBS, COLORS, CAT_ORDER } from './maker.js';
 import { rec } from './rec.js';
 import { FUR_COLORS, EYE_COLORS, PATTERNS, HATS, EMOTES, roundRect } from './cat.js';
 import { play, setVolume, audioVolume } from './assets.js';
@@ -16,7 +17,7 @@ import { VERSION } from './config.js';
 // Menu e HUD desenhados em canvas e exibidos como painéis 3D. O "laser" do controle
 // (ou o centro da tela no desktop) aponta; o gatilho clica. Todos os botões fazem algo real.
 const W = 768, H = 512, PW = 1.5, PH = 1.0;
-const TABS = [['map', '🗺 Mapa'], ['bag', '🎒 Bolsa'], ['quests', '📜 Missões'], ['profile', '🐱 Perfil'], ['social', '👥 Social'], ['emotes', '😺 Emotes'], ['config', '⚙ Config']];
+const TABS = [['map', '🗺 Mapa'], ['bag', '🎒 Bolsa'], ['quests', '📜 Missões'], ['profile', '🐱 Perfil'], ['social', '👥 Social'], ['emotes', '😺 Emotes'], ['maker', '🛠 Criar'], ['config', '⚙ Config']];
 const _o = new THREE.Vector3(), _d = new THREE.Vector3(), _n = new THREE.Vector3(), _r = new THREE.Vector3(), _u = new THREE.Vector3(), _c = new THREE.Vector3(), _hit = new THREE.Vector3();
 
 export const ui = {
@@ -46,6 +47,8 @@ export const ui = {
     on('dialog', (n) => { this.npc = n; this.line = Math.floor(Math.random() * n.lines.length); this.show('dialog'); });
     on('friendsDirty', () => G.refreshFriends()); on('partyChat', (m) => { G._log('[grupo] ' + m.n, m.x); play('msg', 0.4); });
     on('combo', (n) => { this.combo = n; });
+    on('maker', () => { if (this.open) this.dirty = true; }); on('key', (c) => { if (!(this.open && this.page === 'kb')) maker.key(c); });
+    on('makerText', (o) => this.keyboard(o.k === 'npc' ? 'NPC — escreva "Nome: fala"' : 'Texto da placa', '', 60, (t) => { if (o.k === 'npc') { const i = t.indexOf(':'); o.d = { name: (i > 0 ? t.slice(0, i) : 'Gato').trim().slice(0, 16), text: (i > 0 ? t.slice(i + 1) : t).trim() }; } else o.d = { text: t }; maker.commit(o); }, 'close'));
     addEventListener('keydown', (e) => {
       if (e.target && e.target.tagName === 'INPUT') return;
       if (this.open && this.page === 'kb') { if (e.key === 'Enter') this._kbDone(); else if (e.key === 'Backspace') { this.kb.text = this.kb.text.slice(0, -1); this.dirty = true; } else if (e.key === 'Escape') this.show(this.kb.back); else if (e.key.length === 1 && this.kb.text.length < this.kb.max) { this.kb.text += e.key; this.dirty = true; } e.preventDefault(); }
@@ -163,9 +166,9 @@ export const ui = {
     if (this.page[0] === 'q' && this.page[1] === '_') { g.fillStyle = 'rgba(24,22,44,0.95)'; roundRect(g, 214, 0, 340, H, 20); g.fill(); g.strokeStyle = '#ffd76a'; g.lineWidth = 3; roundRect(g, 216, 2, 336, H - 4, 18); g.stroke(); this['p_' + this.page](); if (this.msg) this.text(384, H - 14, this.msg, { a: 'center', c: '#ff9a8a', fs: 14 }); this.tex.needsUpdate = true; return; }
     g.fillStyle = 'rgba(24,22,44,0.94)'; roundRect(g, 0, 0, W, H, 22); g.fill(); g.strokeStyle = '#6a7cff'; g.lineWidth = 3; roundRect(g, 2, 2, W - 4, H - 4, 20); g.stroke();
     const sub2 = this.page === 'ach' || this.page === 'album' || this.page === 'perks' || this.page === 'accs';
-    const modal = this.page === 'dialog' || this.page === 'shop' || this.page === 'prof' || this.page === 'kb' || this.page === 'help' || sub2;
-    if (!modal) { TABS.forEach((t, i) => this.btn(10 + i * 107, 10, 103, 44, t[1], () => { this.page = t[0]; this.scroll = 0; this.msg = ''; if (t[0] === 'social') this._loadRooms(); }, { sel: this.page === t[0], fs: 17, bg: '#33355a' })); }
-    else this.btn(W - 60, 10, 48, 44, '✕', () => { if (this.page === 'kb') this.show(this.kb.back); else if (this.page === 'shop' || this.page === 'prof') this.page = 'dialog'; else if (sub2) this.page = 'quests'; else if (this.page === 'help') this.page = 'config'; else this.hide(); }, { bg: '#b04050' });
+    const modal = this.page === 'mk_pal' || this.page === 'dialog' || this.page === 'shop' || this.page === 'prof' || this.page === 'kb' || this.page === 'help' || sub2;
+    if (!modal) { TABS.forEach((t, i) => this.btn(8 + i * 94, 10, 91, 44, t[1], () => { this.page = t[0]; this.scroll = 0; this.msg = ''; if (t[0] === 'social') this._loadRooms(); if (t[0] === 'maker') this._mkLoad(); }, { sel: this.page === t[0], fs: 15, bg: '#33355a' })); }
+    else this.btn(W - 60, 10, 48, 44, '✕', () => { if (this.page === 'kb') this.show(this.kb.back); else if (this.page === 'shop' || this.page === 'prof') this.page = 'dialog'; else if (sub2) this.page = 'quests'; else if (this.page === 'mk_pal') this.page = 'maker'; else if (this.page === 'help') this.page = 'config'; else this.hide(); }, { bg: '#b04050' });
     this['p_' + this.page]();
     if (this.msg) { g.fillStyle = 'rgba(0,0,0,0.6)'; roundRect(g, 140, H - 44, W - 280, 34, 10); g.fill(); this.text(W / 2, H - 27, this.msg, { a: 'center', c: '#ffd76a', fs: 18 }); }
     this.tex.needsUpdate = true;
@@ -298,7 +301,7 @@ export const ui = {
     const list = G.friends; const off = this.pager(list.length, 6, 458); if (!list.length) this.text(20, 180, 'Nenhum amigo ainda. Troque códigos ou adicione pela aba Jogadores.', { fs: 17, c: '#99a', b: false });
     list.slice(off, off + 6).forEach((f, i) => { const y = 150 + i * 50, w = net.whereIs(f.id); this.text(24, y + 12, f.name + '  (Nv ' + f.level + ')', { c: f.status === 'accepted' ? '#9cf09c' : '#fff', max: 330 }); this.text(24, y + 32, f.status === 'incoming' ? 'quer ser seu amigo' : f.status === 'outgoing' ? 'pedido pendente' : w ? '● online' + (w.r ? ' — ' + (MAPS[w.m] ? MAPS[w.m].name : '') : ' — sala privada') : '○ offline', { fs: 14, b: false, c: w ? '#9cf09c' : '#99a' });
       if (f.status === 'incoming') this.btn(380, y + 4, 120, 36, 'Aceitar', () => net.rpc('rv_friend_accept', { p_other: f.id }).then(() => { net.sendTo(f.id, { k: 'faccept' }); G.refreshFriends(); }), { bg: '#3a9a5a', fs: 16 });
-      else if (f.status === 'accepted' && w && w.r) this.btn(380, y + 4, 120, 36, 'Ir até lá', () => { this.hide(); this._join(w.r, 'Sala ' + w.r, true); if (w.m && w.m !== G.mapId) { if (S.d.maps.indexOf(w.m) < 0) S.d.maps.push(w.m); G.travel(w.m); } }, { bg: '#4a5cc8', fs: 16 });
+      else if (f.status === 'accepted' && w && w.r) this.btn(380, y + 4, 120, 36, 'Ir até lá', () => { this.hide(); this._join(w.r, 'Sala ' + w.r, true); if (w.m && w.m !== G.mapId) { this._goMap(w.m); } }, { bg: '#4a5cc8', fs: 16 });
       if (f.status === 'accepted' && w) this.btn(510, y + 4, 110, 36, '✉ Msg', () => this.keyboard('Mensagem para ' + f.name, '', 60, (t) => { net.sendTo(f.id, { k: 'dm', x: t }); G._log('[para ' + f.name + ']', t); }, 'social'), { bg: '#33355a', fs: 16 });
       this.btn(630, y + 4, 118, 36, 'Remover', () => net.rpc('rv_friend_remove', { p_other: f.id }).then(() => G.refreshFriends()), { bg: '#8a4a4a', fs: 16 }); });
   },
@@ -307,7 +310,7 @@ export const ui = {
     if (G.invite) { this.text(20, 122, G.invite.name + ' convidou você para um grupo', { c: '#8fd0ff', fs: 18 }); this.btn(480, 104, 130, 36, 'Aceitar', () => { net.joinParty(G.invite.code); S.d.party = G.invite.code; S.touch(); G.invite = null; G.pushMeta(); }, { bg: '#3a9a5a', fs: 16 }); this.btn(618, 104, 130, 36, 'Recusar', () => { G.invite = null; }, { bg: '#8a4a4a', fs: 16 }); }
     if (!net.partyCode) { this.text(20, 170, 'Você não está em um grupo.', { c: '#99a' }); this.btn(20, 200, 230, 44, '+ Criar grupo', () => this._newParty(), { bg: '#3a9a5a' }); this.btn(266, 200, 260, 44, '🔑 Entrar por código', () => this.keyboard('Código do grupo', '', 5, (t) => { net.joinParty(t); S.d.party = t.toUpperCase(); S.touch(); G.pushMeta(); }, 'social'), { bg: '#33355a' }); this.text(20, 280, 'Grupos têm chat próprio, nomes em azul e você vê onde cada membro está.', { fs: 16, b: false, c: '#bfe6ff' }); return; }
     this.text(20, 160, 'Grupo ' + net.partyCode + ' — ' + net.partyMembers.length + ' membro(s)', { c: '#8fd0ff' }); this.btn(588, 142, 160, 36, 'Sair do grupo', () => { net.leaveParty(); S.d.party = ''; S.touch(); G.pushMeta(); }, { bg: '#8a4a4a', fs: 16 });
-    net.partyMembers.slice(0, 6).forEach((m, i) => { const y = 190 + i * 42; this.text(24, y + 18, (m.id === net.id ? '★ ' : '') + (m.n || 'Gato') + '  (Nv ' + (m.l || 1) + ')', { max: 300 }); this.text(340, y + 18, (MAPS[m.m] ? MAPS[m.m].name : '?') + ' — sala ' + (m.r || '?'), { fs: 15, b: false, c: '#bfe6ff', max: 250 }); if (m.id !== net.id && m.r) this.btn(608, y, 140, 36, 'Ir até lá', () => { this.hide(); net.roomGet(m.r).then((r) => { if (r) this._join(r.code, r.name, r.is_public); if (m.m && m.m !== G.mapId) { if (S.d.maps.indexOf(m.m) < 0) S.d.maps.push(m.m); G.travel(m.m); } }); }, { bg: '#4a5cc8', fs: 16 }); });
+    net.partyMembers.slice(0, 6).forEach((m, i) => { const y = 190 + i * 42; this.text(24, y + 18, (m.id === net.id ? '★ ' : '') + (m.n || 'Gato') + '  (Nv ' + (m.l || 1) + ')', { max: 300 }); this.text(340, y + 18, (MAPS[m.m] ? MAPS[m.m].name : '?') + ' — sala ' + (m.r || '?'), { fs: 15, b: false, c: '#bfe6ff', max: 250 }); if (m.id !== net.id && m.r) this.btn(608, y, 140, 36, 'Ir até lá', () => { this.hide(); net.roomGet(m.r).then((r) => { if (r) this._join(r.code, r.name, r.is_public); if (m.m && m.m !== G.mapId) { this._goMap(m.m); } }); }, { bg: '#4a5cc8', fs: 16 }); });
     this.btn(20, 452, 300, 40, '💬 Falar no grupo', () => this.keyboard('Mensagem para o grupo', '', 60, (t) => { net.partySay(t); G._log('[grupo] ' + S.name, t); }, 'social'), { bg: '#33355a', fs: 17 });
   },
   s_chat() {
@@ -315,6 +318,55 @@ export const ui = {
     log.forEach((m, i) => { this.text(20, 122 + i * 24, m.who + ':', { fs: 16, c: '#ffd76a', max: 170 }); this.text(196, 122 + i * 24, m.text, { fs: 16, b: false, max: 550 }); });
     QUICK_CHAT.forEach((q, i) => this.btn(20 + (i % 4) * 184, 280 + Math.floor(i / 4) * 44, 178, 38, q, () => { G.say(q); }, { bg: '#33355a', fs: 16 }));
     this.btn(20, 420, 360, 44, '⌨ Escrever mensagem', () => this.keyboard('Mensagem para a sala', '', 60, (t) => G.say(t), 'social'), { bg: '#4a5cc8' });
+  },
+  // ---------- Criador de Mapas ----------
+  _goMap(m) { if (!m) return; if (m.indexOf('c_') === 0) { maker.play(G, m.slice(2), false).then((e) => { if (e) S.toast(e, '#ff9a8a'); }).catch(() => S.toast('Não foi possível abrir o mapa', '#ff9a8a')); return; } if (!MAPS[m]) return; if (S.d.maps.indexOf(m) < 0) S.d.maps.push(m); G.travel(m); },
+  _mkLoad() { const k = this.mk || (this.mk = { sub: maker.playing && maker.mine ? 'ed' : 'com', sort: 'new', list: null, mine: null, err: '' }); if (!net.online) { k.err = 'Offline: só o rascunho local está disponível.'; return; }
+    maker.list(k.sort).then((l) => { k.list = l; k.err = ''; this.dirty = true; }).catch(() => { k.err = 'Comunidade indisponível: o banco ainda não tem as tabelas de mapas (rode supabase/maps.sql).'; k.list = []; this.dirty = true; }); maker.listMine().then((l) => { k.mine = l; this.dirty = true; }).catch(() => { k.mine = []; }); },
+  _mkOpen(id, edit) { this.msg = 'Carregando mapa...'; maker.play(G, id, edit).then((e) => { if (e) { this.msg = e; this.dirty = true; } else { this.hide(); if (edit) S.toast('Modo edição: aponte e aperte o gatilho para colocar. Menu > Criar para opções.', '#9cf09c'); else S.toast('Mapa da comunidade: sem recompensas permanentes aqui.', '#bfe6ff'); } }).catch(() => { this.msg = 'Erro ao abrir o mapa'; this.dirty = true; }); },
+  p_maker() {
+    const k = this.mk || (this._mkLoad(), this.mk), inEd = maker.playing && G.mapId === 'custom';
+    [['com', '🌍 Comunidade'], ['mine', '📁 Meus mapas'], ['ed', '🛠 Editor']].forEach((t, i) => this.btn(20 + i * 246, 62, 240, 36, t[1], () => { k.sub = t[0]; this.scroll = 0; this.msg = ''; if (t[0] !== 'ed') this._mkLoad(); }, { sel: k.sub === t[0], bg: '#2a2c4a', fs: 17, off: t[0] === 'ed' && !inEd }));
+    if (k.sub === 'ed' && !inEd) k.sub = 'mine';
+    if (k.sub === 'com') {
+      this.btn(20, 106, 200, 34, k.sort === 'new' ? 'Ordem: mais novos' : 'Ordem: populares', () => { k.sort = k.sort === 'new' ? 'top' : 'new'; k.list = null; this._mkLoad(); }, { bg: '#33355a', fs: 15 });
+      this.btn(228, 106, 220, 34, '🔑 Abrir por código', () => this.keyboard('Código do mapa', '', 6, (t) => this._mkOpen(t.toUpperCase(), false), 'maker'), { bg: '#33355a', fs: 15 });
+      if (k.err) this.wrap(20, 170, k.err, W - 40, 22, { fs: 16, c: '#ff9a8a', b: false }); else if (!k.list) this.text(20, 170, 'Carregando...', { c: '#99a' }); else if (!k.list.length) this.text(20, 170, 'Nenhum mapa publicado ainda. Seja o primeiro: Meus mapas > Novo mapa.', { fs: 16, c: '#99a', b: false });
+      const L = k.list || [], off = this.pager(L.length, 6, 458);
+      L.slice(off, off + 6).forEach((m, i) => { const y = 148 + i * 51, g = this.g; g.fillStyle = 'rgba(255,255,255,0.06)'; roundRect(g, 20, y, W - 40, 46, 8); g.fill(); this.text(32, y + 14, m.name, { fs: 17, max: 380 }); this.text(32, y + 34, 'por ' + m.author + '  ·  ▶ ' + m.plays + '  ·  ♥ ' + m.likes + '  ·  ' + m.objects + ' objetos  ·  código ' + m.id, { fs: 13, b: false, c: '#bfe6ff', max: 470 });
+        this.btn(W - 250, y + 5, 130, 36, '▶ Jogar', () => this._mkOpen(m.id, false), { bg: '#3a9a5a', fs: 16 }); this.btn(W - 112, y + 5, 82, 36, '♥', () => { maker.like(m.id).then((r) => { m.likes = r.likes; this.dirty = true; }).catch(() => {}); }, { bg: '#b04070', fs: 18 }); });
+    } else if (k.sub === 'mine') {
+      this.btn(20, 106, 200, 36, '＋ Novo mapa', () => this.keyboard('Nome do mapa', 'Mapa de ' + S.name, 28, (t) => { maker.open(G, maker.blank(t), null, true, true); this.hide(); S.toast('Modo edição: aponte e aperte o gatilho para colocar. Menu > Criar para opções.', '#9cf09c'); }, 'maker'), { bg: '#3a9a5a', fs: 17 });
+      const d = maker.draft(); if (d && d.map) this.btn(228, 106, 300, 36, '✎ Continuar rascunho: ' + d.map.name, () => { maker.open(G, d.map, d.id, true, true); this.hide(); }, { bg: '#4a5cc8', fs: 15 });
+      const L = k.mine || [], off = this.pager(L.length, 6, 458); if (net.online && !L.length) this.text(20, 180, k.err || 'Você ainda não salvou nenhum mapa no servidor.', { fs: 16, c: '#99a', b: false, max: W - 40 });
+      L.slice(off, off + 6).forEach((m, i) => { const y = 150 + i * 51, g = this.g; g.fillStyle = 'rgba(255,255,255,0.06)'; roundRect(g, 20, y, W - 40, 46, 8); g.fill(); this.text(32, y + 14, m.name, { fs: 17, max: 330 }); this.text(32, y + 34, (m.is_public ? '🌍 publicado' : '🔒 privado') + '  ·  código ' + m.id + '  ·  ▶ ' + m.plays + '  ♥ ' + m.likes + '  ·  ' + m.objects + ' objetos', { fs: 13, b: false, c: '#bfe6ff', max: 400 });
+        this.btn(W - 330, y + 5, 96, 36, '✎ Editar', () => this._mkOpen(m.id, true), { bg: '#4a5cc8', fs: 15 }); this.btn(W - 228, y + 5, 96, 36, '▶ Jogar', () => this._mkOpen(m.id, false), { bg: '#3a9a5a', fs: 15 }); this.btn(W - 126, y + 5, 96, 36, 'Excluir', () => { maker.remove(m.id).then(() => this._mkLoad()).catch(() => {}); }, { bg: '#8a4a4a', fs: 15 }); });
+    } else {
+      const m = maker.map, b = maker.brush, can = maker.mine, set = (fn) => () => { fn(); maker.rebuild(); }, cyc = (v, n) => (v + 1) % n;
+      this.text(20, 116, m.name + (maker.id ? '  [' + maker.id + ']' : '  [rascunho]') + '  ·  ' + m.objs.length + '/700 objetos  ·  ' + Math.round(JSON.stringify(m).length / 1024) + ' KB' + (can ? '' : '  ·  (somente jogar: mapa de outro autor)'), { fs: 15, c: '#bfe6ff', max: W - 40 });
+      if (can) {
+        const R = (i, j, label, cb, o) => this.btn(20 + i * 183, 132 + j * 44, 178, 38, label, cb, Object.assign({ bg: '#33355a', fs: 14 }, o || {}));
+        R(0, 0, '✏ Nome', () => this.keyboard('Nome do mapa', m.name, 28, (t) => { m.name = t; maker.rebuild(); }, 'maker')); R(1, 0, 'Tamanho: ' + m.size + ' m', set(() => { m.size = m.size >= 200 ? 60 : m.size + 20; })); R(2, 0, 'Céu: ' + SKIES[m.sky].n, set(() => { m.sky = cyc(m.sky, SKIES.length); })); R(3, 0, 'Chão: ' + GROUNDS[m.ground][0], set(() => { m.ground = cyc(m.ground, GROUNDS.length); }));
+        R(0, 1, 'Água: ' + (m.water ? m.water + ' m' : 'não'), set(() => { m.water = m.water >= 6 ? 0 : m.water + 1; })); R(1, 1, 'Relevo: ' + ['plano', 'suave', 'médio', 'forte'][m.hills], set(() => { m.hills = cyc(m.hills, 4); })); R(2, 1, 'Música: ' + (MAPS[MOODS[m.mood]] ? MAPS[MOODS[m.mood]].name : MOODS[m.mood]), set(() => { m.mood = cyc(m.mood, MOODS.length); })); R(3, 1, 'Partículas: ' + (AMBS[m.amb] || 'nenhuma'), set(() => { m.amb = cyc(m.amb, AMBS.length); }));
+        R(0, 2, maker.tool === 'erase' ? '🧽 Ferramenta: APAGAR' : '🖌 Ferramenta: COLOCAR', () => { maker.tool = maker.tool === 'erase' ? 'place' : 'erase'; }, { bg: maker.tool === 'erase' ? '#b04050' : '#3a9a5a' }); R(1, 2, '↶ Desfazer (' + maker.undo.length + ')', () => maker.undoLast(), { off: !maker.undo.length }); R(2, 2, 'Grade: ' + (b.grid ? 'sim' : 'não'), () => { b.grid = !b.grid; }); R(3, 2, 'Colisão: ' + (b.col ? 'sim' : 'não'), () => { b.col = !b.col; });
+        const A = (i, label, cb) => this.btn(20 + i * 91.5, 264, 87, 38, label, cb, { bg: '#2a2c4a', fs: 14 });
+        A(0, '⟲ Girar', () => { b.ry -= Math.PI / 12; }); A(1, 'Girar ⟳', () => { b.ry += Math.PI / 12; }); A(2, 'Menor', () => { b.s = Math.max(0.2, b.s / 1.2); }); A(3, 'Maior', () => { b.s = Math.min(6, b.s * 1.2); }); A(4, 'Descer', () => { b.dy -= 0.25; }); A(5, 'Subir', () => { b.dy += 0.25; });
+        this.btn(20 + 6 * 91.5, 264, 179, 38, 'Cor', () => { b.color = cyc(b.color, COLORS.length); }, { bg: '#' + ('00000' + COLORS[b.color].toString(16)).slice(-6), fg: b.color < 3 || b.color === 14 ? '#222' : '#fff', fs: 14 });
+        this.text(20, 318, 'Pincel: ' + b.key + '  ·  escala ' + b.s.toFixed(2) + '  ·  giro ' + Math.round(b.ry * 57.3) + '°  ·  altura ' + b.dy.toFixed(2), { fs: 14, c: '#9cf09c', max: W - 40 });
+        this.btn(20, 334, 360, 46, '🎨 Escolher objeto', () => { this.page = 'mk_pal'; this.scroll = 0; }, { bg: '#4a5cc8', fs: 19 }); this.btn(388, 334, 360, 46, '📁 Importar meu asset (.glb / imagem)', () => { if (G.renderer.xr.isPresenting) { this.msg = 'Saia do VR para escolher um arquivo'; return; } const f = document.getElementById('file'); if (f) f.click(); }, { bg: '#a05cc8', fs: 15 });
+        this.btn(20, 392, 178, 44, maker.editing ? '▶ Testar' : '✎ Voltar a editar', () => { maker.setEditing(!maker.editing); this.hide(); }, { bg: '#e8a030', fs: 16 }); this.btn(203, 392, 178, 44, '💾 Salvar (privado)', () => { this.msg = 'Salvando...'; maker.save(false).then((r) => { this.msg = r; this.dirty = true; }); }, { bg: '#33355a', fs: 15 });
+        this.btn(386, 392, 178, 44, '🌍 Publicar', () => { this.msg = 'Publicando...'; maker.save(true).then((r) => { this.msg = r; this.dirty = true; }); }, { bg: '#3a9a5a', fs: 16 });
+      }
+      this.btn(570, 392, 178, 44, '🚪 Sair do mapa', () => { this.hide(); G.travel('village'); }, { bg: '#8a4a4a', fs: 16 });
+      this.text(20, 452, 'PC: Z/X girar · -/= escala · PgUp/PgDn altura · G grade · Del apagar · U desfazer. Mapas criados não dão XP/moedas/itens.', { fs: 13, c: '#99a', b: false, max: W - 40 });
+    }
+  },
+  p_mk_pal() {
+    const cat = maker.catalog(), k = this.mk; k.cat = k.cat || 'Formas'; this.text(20, 34, '🎨 Escolher objeto', { fs: 22, c: '#ffd76a' });
+    CAT_ORDER.forEach((c, i) => this.btn(20 + i * 104, 62, 100, 36, c, () => { k.cat = c; this.scroll = 0; }, { sel: k.cat === c, bg: '#2a2c4a', fs: 13 }));
+    const L = k.cat === 'Meus assets' ? maker.myAssets() : cat[k.cat], off = this.pager(L.length, 24, 462);
+    if (!L.length) this.text(20, 140, 'Nenhum asset importado. Use "Importar meu asset" no Editor (.glb até 20 mil vértices, ou imagem).', { fs: 15, c: '#99a', b: false, max: W - 40 });
+    L.slice(off, off + 24).forEach((it, i) => this.btn(20 + (i % 4) * 183, 108 + Math.floor(i / 4) * 58, 178, 52, it[1], () => { maker.setBrush(it[0]); this.hide(); S.toast('Pincel: ' + it[1], '#9cf09c'); }, { sel: maker.brush.key === it[0], bg: '#33355a', fs: 14 }));
   },
   // ---------- NPC: diálogo, loja, profissão ----------
   p_dialog() {

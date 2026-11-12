@@ -150,5 +150,6 @@ renderer.setAnimationLoop((t, frame) => {
 on('look', () => { /* a cor das patas vem de S.look a cada quadro */ });
 addEventListener('beforeunload', () => { net.leave(); });
 player.handTrack = hands;
+import('./maker.js').then(({ maker }) => { self.RV.maker = maker; const f = $('file'); if (f) f.onchange = () => { const file = f.files && f.files[0]; f.value = ''; if (!file) return; S.toast('Importando ' + file.name + '...', '#bfe6ff'); maker.importFile(file).then((e) => S.toast(e || 'Asset importado! Ele já está no pincel.', e ? '#ff9a8a' : '#9cf09c')).catch((e) => S.toast('Falha ao importar: ' + (e && e.message ? e.message : e), '#ff9a8a')); }; });
 self.RV = { G, S, net, perf, player, ui, rec, music, hands }; // para depuração no console
 boot();
