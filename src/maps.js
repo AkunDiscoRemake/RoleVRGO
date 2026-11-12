@@ -418,7 +418,15 @@ export const MAPS = {
       const sx = -23, sz = -4, sy = w.heightAt(sx, sz); w.put('prim/dome', sx, sz, { s: 9, tint: [0.6, 1.3, 1.5], abs: sy - 0.3 }); E.secret('aero', sx, sy + 1.2, sz, 3.5); E.chest('z_dome', sx + 1, sy, sz + 1, 2); E.lamp(sx, sy + 3, sz, 0x80ffff);
       E.school(20, -5.5, 10, 9, 18); E.school(-12, -7, -22, 7, 14); E.school(6, -3, -24, 6, 12);
       E.chest('z_deep', 22, null, 8, 1); E.chest('z_1', -60, null, -20, 0); E.chest('z_2', 58, null, 44, 1); E.chest('z_3', 30, null, -66, 0);
-      E.bubbles(70); E.rainbow(0, -78, 64);
+      E.bubbles(80); E.rainbow(0, -78, 64); E.aero = true;
+      // ilhas flutuantes com cachoeira (suba pelos trampolins ao lado)
+      for (const [ix, iz, iy, key] of [[-50, 28, 20, 'z_sky1'], [50, -30, 27, 'z_sky2']]) {
+        w.put('prim/sphere', ix, iz, { s: [15, 9, 15], tint: [0.75, 0.62, 0.5], abs: iy - 8.6 }); w.put('prim/cyl', ix, iz, { s: [13.4, 0.9, 13.4], tint: [0.5, 1.5, 0.45], abs: iy - 0.5 }); w.addBoxC(ix, iy - 5, iz, 9.6, 5.4, 9.6);
+        const top = Object.assign(Object.create(w), { heightAt: () => iy + 0.4 });
+        w.put('nature/tree_palmDetailedTall', ix - 2.5, iz + 1, { s: 4.5, abs: iy + 0.4, tint: [0.9, 1.3, 0.9] }); w.addBoxC(ix - 2.5, iy + 0.4, iz + 1, 0.5, 5, 0.5); w.put('prim/sphere', ix + 2.6, iz - 2, { s: 1.8, tint: [0.45, 1.35, 1.6], abs: iy + 0.6 }); E.lamp(ix + 2.6, iy + 2.6, iz - 2, 0x80f0ff);
+        for (let k = 0; k < 10; k++) { const a = k * 0.63; w.put(['nature/flower_redA', 'nature/flower_yellowB', 'nature/flower_purpleC'][k % 3], ix + Math.cos(a) * 4, iz + Math.sin(a) * 4, { s: 3, abs: iy + 0.4, detail: 1 }); }
+        E.chest(key, ix, iy + 0.4, iz + 2.4, 2); E.waterfall(ix + 5.6, iy + 0.2, iz, w.heightAt(ix + 6.5, iz), 3.4); E.spring(ix - 9.5, iz, Math.sqrt(2 * 9.2 * (iy + 5))); void top;
+      }
       E.fish(0, 30, 9); E.spring(-12, 56, 16); E.spring(14, 52, 13); E.spring(46, 20, 20);
       for (let i = 0; i < 6; i++) { const a = r() * 6.28; E.ore('quartz', Math.cos(a) * 58, Math.sin(a) * 58); }
       E.npc('aqua', 'Aqua', 'Guia do Aero Paraíso', 5, 60, { fur: '#7fb7c9', fur2: '#f5f1e8', pattern: 1, eyes: '#4aa3e0', hat: 9, acc: 7 }, { quests: ['z1', 'z2', 'z3'], lines: ['Bem-vindo ao Aero Paraíso! Céu azul, grama brilhante e água cristalina.', 'O lago é fundo: mergulhe e nade. Dê braçadas com as patas ou segure o gatilho para ir na direção apontada.', 'No fundo há pérolas, corais e uma cúpula secreta.', 'Parado na água você flutua de volta à superfície.'] });

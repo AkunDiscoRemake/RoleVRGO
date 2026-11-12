@@ -58,15 +58,16 @@ const SOUNDS = {
   click: ['click_001'], hover: ['tick_001'], confirm: ['confirmation_001'], error: ['error_004'], open: ['open_001'], close: ['close_001'],
   splash: ['drop_002'], bite: ['pluck_001'], sel: ['select_001'], msg: ['bong_001'],
   levelup: ['jingles_STEEL00'], quest: ['jingles_PIZZI07'], ko: ['jingles_HIT00'], win: ['jingles_SAX07'], secret: ['jingles_NES00'], event: ['jingles_STEEL10'],
+  glass: ['glass_001', 'glass_003', 'glass_005'],
   portal: ['phaseJump1'], dodge: ['phaserUp1'], power: ['powerUp2'], heart: ['pepSound1']
 };
-let ctx = null, master = null;
+let ctx = null, master = null, lp = null, noiseBuf = null; const loops = {};
 const buffers = {};
 export let audioVolume = 0.8;
 export function audioInit() {
   if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
   const AC = self.AudioContext || self.webkitAudioContext; if (!AC) return;
-  ctx = new AC(); master = ctx.createGain(); master.gain.value = audioVolume; master.connect(ctx.destination);
+  ctx = new AC(); master = ctx.createGain(); master.gain.value = audioVolume; lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 20000; master.connect(lp); lp.connect(ctx.destination);
   const files = {};
   for (const k in SOUNDS) for (const f of SOUNDS[k]) files[f] = 1;
   Object.keys(files).forEach((f) => {
@@ -76,7 +77,27 @@ export function audioInit() {
 }
 export function audioNodes() { return ctx ? { ctx, master } : null; }
 // estouro de bolha procedural
-export function pop(vol) { if (!ctx || audioVolume <= 0) return; const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain(), f0 = 600 + Math.random() * 500; o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f0 * 2.6, t + 0.07); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.3 * (vol || 1), t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1); o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.12); }
+export function pop(vol, size) { if (!ctx || audioVolume <= 0) return; const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain(), f0 = (600 + Math.random() * 500) / (0.6 + (size || 0.6)); o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f0 * 2.6, t + 0.07); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.3 * (vol || 1), t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1); o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.12); }
+// --- efeitos procedurais (WebAudio) usados principalmente no Aero Paraíso ---
+// abafa todo o som quando a cabeça está debaixo d'água
+export function setUnder(on) { if (lp) lp.frequency.setTargetAtTime(on ? 520 : 20000, ctx.currentTime, 0.12); }
+function noise() { if (!noiseBuf) { noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; } return noiseBuf; }
+// laços de ambiente por ruído filtrado: water (marolas), fall (cachoeira), under (ronco submarino). níveis 0..1
+export function ambience(levels) {
+  if (!ctx) return;
+  const defs = { water: ['bandpass', 520, 0.6, 0.11], fall: ['highpass', 900, 0.4, 0.2], under: ['lowpass', 160, 0.8, 0.3] };
+  for (const k in defs) { const want = audioVolume > 0 ? (levels[k] || 0) : 0; let L = loops[k];
+    if (!L) { if (want <= 0.001) continue; const d = defs[k], src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); src.buffer = noise(); src.loop = true; src.playbackRate.value = k === 'under' ? 0.5 : 1; f.type = d[0]; f.frequency.value = d[1]; f.Q.value = d[2]; g.gain.value = 0; src.connect(f); f.connect(g); g.connect(master);
+      if (k === 'water') { const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 0.23; lg.gain.value = 260; lfo.connect(lg); lg.connect(f.frequency); lfo.start(); }
+      src.start(); L = loops[k] = { g, max: d[3] }; }
+    L.g.gain.setTargetAtTime(want * L.max, ctx.currentTime, 0.25); }
+}
+// sininho de vidro (pérolas, segredos, bolhas grandes)
+export function chime(step, vol) { if (!ctx || audioVolume <= 0) return; const t = ctx.currentTime, notes = [1318.5, 1568, 1760, 2093, 2637, 3136]; for (let i = 0; i < 3; i++) { const o = ctx.createOscillator(), g = ctx.createGain(), f = notes[((step || 0) + i * 2) % notes.length]; o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t + i * 0.07); g.gain.exponentialRampToValueAtTime(0.16 * (vol || 1), t + i * 0.07 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.07 + 0.9); o.connect(g); g.connect(master); o.start(t + i * 0.07); o.stop(t + i * 0.07 + 1); } }
+// espirro d'água sintetizado: ruído com filtro descendo
+export function splashSfx(vol) { if (!ctx || audioVolume <= 0) return; const t = ctx.currentTime, s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise(); f.type = 'lowpass'; f.frequency.setValueAtTime(5000, t); f.frequency.exponentialRampToValueAtTime(350, t + 0.55); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.5 * (vol || 1), t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7); s.connect(f); f.connect(g); g.connect(master); s.start(t, Math.random()); s.stop(t + 0.75); }
+// assobio de golfinho
+export function chirp(vol) { if (!ctx || audioVolume <= 0) return; const t = ctx.currentTime; for (let i = 0; i < 2; i++) { const o = ctx.createOscillator(), g = ctx.createGain(), t0 = t + i * 0.16; o.type = 'sine'; o.frequency.setValueAtTime(1500, t0); o.frequency.exponentialRampToValueAtTime(3400, t0 + 0.08); o.frequency.exponentialRampToValueAtTime(2100, t0 + 0.14); g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.12 * (vol || 1), t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.15); o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + 0.17); } }
 let recDest = null;
 export function audioStream() { if (!ctx || !ctx.createMediaStreamDestination) return null; if (!recDest) { recDest = ctx.createMediaStreamDestination(); master.connect(recDest); } return recDest.stream; }
 export function setVolume(v) { audioVolume = v; if (master) master.gain.value = v; }

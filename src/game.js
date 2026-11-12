@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { World, worldMat } from './world.js';
+import { World, worldMat, matU, glossify } from './world.js';
 import { MAPS, initPrims, PORTAL_COLORS, MAP_ICONS } from './maps.js';
-import { modelGeometry, play, playAt, meow, purr, pop } from './assets.js';
+import { modelGeometry, play, playAt, meow, purr, pop, setUnder, ambience, chime, splashSfx, chirp } from './assets.js';
 import { CatAvatar, HandPool, EMOTES } from './cat.js';
 import { FX, LabelBatch } from './fx.js';
 import { Sky } from './sky.js';
@@ -18,7 +18,10 @@ const bubbleMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: fals
   fragmentShader: 'varying vec3 vN;\nvoid main(){ vec3 n = normalize(vN); float fr = pow(1.0 - abs(n.z), 2.2); float sp = smoothstep(0.90, 0.97, dot(n, normalize(vec3(-0.45, 0.6, 0.66)))) + 0.5 * smoothstep(0.95, 0.99, dot(n, normalize(vec3(0.5, -0.5, 0.7)))); vec3 c = mix(vec3(0.55, 0.92, 1.0), vec3(1.0), fr) + vec3(0.25, 0.1, 0.3) * n.y * fr; gl_FragColor = vec4(c + sp, clamp(0.10 + fr * 0.62 + sp, 0.0, 1.0)); }' });
 const AMBIENT = { aero: 'bubble', village: 'leaf', forest: 'fire', mine: 'spark', desert: 'dust', snow: 'snow', castle: 'leaf', island: 'leaf', training: 'leaf', arena: 'dust' };
 const UP = new THREE.Vector3(0, 1, 0), ZERO = new THREE.Vector3(0, 0, 0);
-const instMat = new THREE.MeshLambertMaterial({ vertexColors: true });
+const instMat = new THREE.MeshLambertMaterial({ vertexColors: true }); glossify(instMat, 'rvinst', false);
+const jellyMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, uniforms: { uTime: matU.uTime },
+  vertexShader: 'uniform float uTime;\nvarying vec3 vN;\nvarying float vY;\nvoid main(){ vec3 p = position; float pl = 1.0 + sin(uTime * 2.4 + instanceMatrix[3][0]) * 0.14; p.xz *= pl; p.y /= pl; vY = position.y * 2.0; vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0); vN = normalize(normalMatrix * mat3(instanceMatrix) * normal); gl_Position = projectionMatrix * mv; }',
+  fragmentShader: 'varying vec3 vN;\nvarying float vY;\nvoid main(){ float fr = pow(1.0 - abs(normalize(vN).z), 1.6); vec3 c = mix(vec3(1.0, 0.45, 0.85), vec3(0.6, 0.5, 1.0), vY) + fr * 0.6; gl_FragColor = vec4(c, 0.28 + fr * 0.6); }' });
 function setInst(mesh, i, x, y, z, s, ry) { _q.setFromAxisAngle(UP, ry || 0); _m.compose(_p.set(x, y, z), _q, typeof s === 'number' ? _s.set(s, s, s) : _s.set(s[0], s[1], s[2])); mesh.setMatrixAt(i, _m); mesh.instanceMatrix.needsUpdate = true; }
 function pickTable(tab, luck, r) { let tot = 0; const w = tab.map((t, i) => { const v = t[1] * (1 + (luck || 0) * i * 1.2); tot += v; return v; }); let x = (r || Math.random)() * tot; for (let i = 0; i < tab.length; i++) { x -= w[i]; if (x <= 0) return tab[i][0]; } return tab[0][0]; }
 
@@ -54,9 +57,9 @@ export const G = {
     E.portal = (to, x, z) => E.portals.push({ to, x, z }); E.collect = (item, model, x, z, s, tint) => E.collects.push({ item, model, x, z, s: s || 2, tint });
     E.dig = (x, z) => E.digs.push({ x, z }); E.fish = (x, z, r) => E.fishes.push({ x, z, r }); E.secret = (key, x, y, z, r) => E.secrets.push({ key, x, y, z, r });
     E.dummy = (x, z) => E.dummies.push({ x, z }); E.zone = (type, x, z, r) => E.zones.push({ type, x, z, r }); E.lamp = (x, y, z, c) => E.lamps.push({ x, y, z, c: c || 0xffd890 });
-    E.sign = (text, x, y, z) => E.signs.push({ text, x, y, z }); E.board = (x, z, yaw) => E.boards.push({ x, z, yaw }); E.spring = (x, z, p) => E.springs.push({ x, z, p }); E.enemies = []; E.enemy = (type, x, z, boss) => E.enemies.push({ type, x, z, boss }); E.schools = []; E.school = (x, y, z, r, n) => E.schools.push({ x, y, z, r, n }); E.bubbleN = 0; E.bubbles = (n) => { E.bubbleN = n; }; E.rainbow = (x, z, r) => { E.rb = { x, z, r }; };
+    E.sign = (text, x, y, z) => E.signs.push({ text, x, y, z }); E.board = (x, z, yaw) => E.boards.push({ x, z, yaw }); E.spring = (x, z, p) => E.springs.push({ x, z, p }); E.enemies = []; E.enemy = (type, x, z, boss) => E.enemies.push({ type, x, z, boss }); E.schools = []; E.school = (x, y, z, r, n) => E.schools.push({ x, y, z, r, n }); E.bubbleN = 0; E.bubbles = (n) => { E.bubbleN = n; }; E.rainbow = (x, z, r) => { E.rb = { x, z, r }; }; E.falls = []; E.waterfall = (x, y1, z, y0, wd) => E.falls.push({ x, y1, z, y0, wd });
     def.build(w, E, rng(hashStr(id)));
-    w.swim = !!def.swim;
+    w.swim = !!def.swim; matU.uGloss.value = id === 'aero' ? 1 : 0; matU.uCaust.value = def.swim ? 1 : 0;
     this.world = w; this.E = E; this.def = def; this.mapId = id;
     const add = (o) => { scene.add(o); this.objs.push(o); return o; };
     const inst = (geo, n, mat) => { const m = new THREE.InstancedMesh(geo, mat || instMat, Math.max(1, n)); m.count = n; m.frustumCulled = false; m.castShadow = true; return add(m); };
@@ -124,6 +127,25 @@ export const G = {
       for (let b = 0; b < bands.length; b++) for (let s2 = 0; s2 < seg; s2++) { const p0 = b * (seg + 1) + s2, p1 = p0 + seg + 1; idx.push(p0, p1, p0 + 1, p0 + 1, p1, p1 + 1); }
       const rg = new THREE.BufferGeometry(); rg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3)); rg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colr), 3)); rg.setIndex(idx);
       const rm = add(new THREE.Mesh(rg, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.42, side: THREE.DoubleSide, depthWrite: false, fog: false }))); rm.position.set(E.rb.x, -6, E.rb.z); rm.frustumCulled = false; rm.renderOrder = -5; }
+    matU.uWaterY.value = w.waterY;
+    // --- Aero: golfinhos, águas-vivas, raios de luz, cintilação na água, aurora, cachoeiras, lens flare ---
+    this.ax = null;
+    if (E.aero) { const ax = this.ax = { dol: [], jel: [], falls: E.falls, flare: [] }, rb = rng(909);
+      ax.dolMesh = inst(modelGeometry('survival/fish'), 3); for (let i = 0; i < 3; i++) { ax.dol.push({ a: i * 2.1, t: i * 2.3, r: 20 + i * 4, up: false }); ax.dolMesh.setColorAt(i, _col.setRGB(0.55, 0.8, 1.25)); }
+      ax.jelMesh = add(new THREE.InstancedMesh(modelGeometry('prim/dome'), jellyMat, 10)); ax.jelMesh.frustumCulled = false; ax.jelMesh.renderOrder = 5;
+      for (let i = 0; i < 10; i++) { const a = rb() * 6.28, d = 14 + rb() * 20; ax.jel.push({ x: Math.cos(a) * d, z: Math.sin(a) * d, y: -3 - rb() * 6, ph: rb() * 6, s: 0.7 + rb() * 0.9 }); }
+      const rayG = new THREE.PlaneGeometry(2.6, 15); rayG.translate(0, -7.5, 0); ax.rays = add(new THREE.InstancedMesh(rayG, new THREE.MeshBasicMaterial({ color: 0xbff4ff, transparent: true, opacity: 0.11, side: THREE.DoubleSide, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }), 14)); ax.rays.frustumCulled = false; ax.rays.renderOrder = 6; ax.rayP = [];
+      for (let i = 0; i < 14; i++) { const a = rb() * 6.28, d = 12 + rb() * 24; ax.rayP.push({ x: Math.cos(a) * d, z: Math.sin(a) * d, ry: rb() * 3.14, ph: rb() * 6 }); }
+      const NG = 140, gp = new Float32Array(NG * 3), gc = new Float32Array(NG * 3); ax.glP = []; for (let i = 0; i < NG; i++) { const a = rb() * 6.28, d = 10 + rb() * 29; gp[i * 3] = Math.cos(a) * d; gp[i * 3 + 1] = 0.12; gp[i * 3 + 2] = Math.sin(a) * d; ax.glP.push(rb() * 6.28); }
+      const gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.BufferAttribute(gp, 3)); gg.setAttribute('color', new THREE.BufferAttribute(gc, 3).setUsage(THREE.DynamicDrawUsage)); ax.glints = add(new THREE.Points(gg, new THREE.PointsMaterial({ size: 0.9, map: this.fx.tex, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }))); ax.glints.frustumCulled = false; ax.glints.renderOrder = 3;
+      // faixas de aurora ("swoosh") no céu
+      ax.aur = []; for (let k = 0; k < 3; k++) { const seg = 48, pos = [], colr = [], idx = [], R = 150 + k * 22, cA = [[0.2, 1, 0.9], [0.5, 0.7, 1], [0.6, 1, 0.5]][k]; for (let i = 0; i <= seg; i++) { const a = i / seg * 2.6 - 1.3 + k * 2.1, y = 70 + k * 16 + Math.sin(i * 0.5 + k) * 9, e = Math.sin(i / seg * Math.PI); pos.push(Math.sin(a) * R, y, -Math.cos(a) * R, Math.sin(a) * R, y + 20, -Math.cos(a) * R); colr.push(cA[0] * e, cA[1] * e, cA[2] * e, 0, 0, 0); if (i < seg) { const o = i * 2; idx.push(o, o + 1, o + 2, o + 1, o + 3, o + 2); } }
+        const ag = new THREE.BufferGeometry(); ag.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3)); ag.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colr), 3)); ag.setIndex(idx); const am = add(new THREE.Mesh(ag, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.4, side: THREE.DoubleSide, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }))); am.frustumCulled = false; am.renderOrder = -6; ax.aur.push(am); }
+      // cachoeiras: plano com textura de listras rolando
+      for (const f of E.falls) { const c = document.createElement('canvas'); c.width = 32; c.height = 128; const g2 = c.getContext('2d'); g2.fillStyle = 'rgba(150,225,255,0.55)'; g2.fillRect(0, 0, 32, 128); for (let i = 0; i < 60; i++) { g2.fillStyle = 'rgba(255,255,255,' + (0.25 + Math.random() * 0.6) + ')'; g2.fillRect(Math.random() * 32, Math.random() * 128, 1 + Math.random() * 3, 8 + Math.random() * 30); }
+        const tx = new THREE.CanvasTexture(c); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.repeat.set(2, (f.y1 - f.y0) / 8); const hgt = f.y1 - f.y0, m = add(new THREE.Mesh(new THREE.PlaneGeometry(f.wd, hgt), new THREE.MeshBasicMaterial({ map: tx, transparent: true, side: THREE.DoubleSide, depthWrite: false, fog: false }))); m.position.set(f.x + 0.9, f.y0 + hgt / 2, f.z); m.rotation.y = Math.PI / 2; m.renderOrder = 2; f.tex = tx; f.mesh = m; }
+      // lens flare: 4 brilhos na linha sol -> centro da tela
+      for (let i = 0; i < 4; i++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.fx.tex, color: [0xfff2c0, 0x80e8ff, 0xffa0e0, 0xa0ffb0][i], transparent: true, opacity: 0.5, depthTest: false, depthWrite: false, fog: false, blending: THREE.AdditiveBlending })); sp.renderOrder = 12; sp.visible = false; add(sp); ax.flare.push(sp); } }
     // inimigos (um InstancedMesh por tipo)
     this.enemies = []; const eg = {}; for (const e of E.enemies) (eg[e.type] = eg[e.type] || []).push(e);
     for (const k in eg) { const def = ENEMIES[k], mesh = inst(modelGeometry(def.model), eg[k].length); eg[k].forEach((e, i) => { e.def = e.boss ? Object.assign({}, def, { n: BOSS_NAMES[k], s: def.s * 1.9, hp: def.hp * 6, dmg: Math.round(def.dmg * 1.6), sp: def.sp * 0.9, xp: def.xp * 8, coins: [def.coins[0] * 8, def.coins[1] * 8] }) : def; e.rg = e.boss ? 1.8 : 1; e.mesh = mesh; e.i = i; e.hx = e.x; e.hz = e.z; e.y = w.heightAt(e.x, e.z); e.hp = def.hp; e.state = 'idle'; e.st = 0; e.t = Math.random() * 6; e.ry = Math.random() * 6.28; e.ph = Math.random() * 6; e.tx = e.x; e.tz = e.z; e.flash = 0; e.kx = e.kz = 0; mesh.setColorAt(i, _col.setRGB(1, 1, 1)); this.enemies.push(e); }); }
@@ -157,7 +179,7 @@ export const G = {
     on('peerEvent', (e) => this._peerEvent(e));
     on('fling', () => S.stat('fling')); on('fellOut', () => { const sp = this.def.spawn; this.player.teleport(sp[0], this.world.floorAt(sp[0], 50, sp[1]) + 0.2, sp[1], sp[2]); });
     on('land', (v) => { play('thud', Math.min(1, v / 14)); }); on('handTouch', (i, h) => { const sp = h.speed; if (sp > 1.2) { play(this.world.surface === 'snow' ? 'step_snow' : this.world.surface === 'stone' ? 'step_stone' : 'step_grass', Math.min(0.8, sp / 7)); this.player.pulse(Math.min(1, sp / 6), 20); } });
-    on('splash', () => { play('splash', 0.8); const p = this.player.pos; this.fx.burst(p.x, this.world.waterY + 0.1, p.z, 0xd8f8ff, 16, 3); });
+    on('splash', (v) => { splashSfx(Math.min(1, 0.5 + (v || 0) * 0.08)); const p = this.player.pos, wy = this.world.waterY; this.fx.burst(p.x, wy + 0.1, p.z, 0xd8f8ff, 26, 4.5); this.fx.ring(p.x, wy + 0.05, p.z, 0xd8f8ff, 2.6, true, null, 0.9); this.fx.ring(p.x, wy + 0.05, p.z, 0xffffff, 1.4, true, null, 0.6); });
     on('dodge', () => play('dodge', 0.4)); on('grab', () => play('cloth', 0.35));
     on('party', () => { this.remotes.forEach((r) => { r.av.tagColor = this._tagColor(r.id, r.meta); r.av.drawTag(); }); });
     on('inbox', (m) => this._inbox(m));
@@ -269,7 +291,7 @@ export const G = {
     this._held(dt);
     const tp = P.tp; this.tpBall.visible = this.tpArc.visible = tp.show; if (tp.show) { this.tpBall.position.set(tp.x, tp.y + 0.22 + Math.sin(this.time * 6) * 0.04, tp.z); this.tpBall.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.geometry.setDrawRange(0, tp.n); this.tpArc.geometry.attributes.position.needsUpdate = true; }
     // passos
-    if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; play(P.inWater ? 'splash' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
+    if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; play(P.inWater ? 'splash' : this.E.aero && P.pos.y > 1.9 && Math.hypot(P.pos.x, P.pos.z) < 44 ? 'glass' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
     this._interact(dt, now); this._npcs(dt); this._enemies(dt); this._self(dt); this._remotes(dt); this._fishing(dt); this._events(dt, now);
     // mãos + sombras em lote
     const hp = this.hands; hp.begin(); const fur = S.look.fur;
@@ -284,8 +306,9 @@ export const G = {
     // lanternas e céu
     this.camera.getWorldPosition(_v); const under = W.swim && _v.y < W.waterY - 0.05; this.under = under;
     this.sky.update(now, this.def, P.pos, perf, under);
+    matU.uTime.value = this.time; if (under !== this._wasUnder) { this._wasUnder = under; setUnder(under); }
     this._aero(dt);
-    if (this.lampMesh) { const n = this.sky.night; this.lampMesh.material.color.setScalar(0.5 + n * 0.5); this.glow.visible = n > 0.12 && perf.particles >= 0.5; this.glow.material.opacity = n * 0.85; }
+    if (this.lampMesh) { const n = this.E.aero ? Math.max(0.5, this.sky.night) : this.sky.night; this.lampMesh.material.color.setScalar(0.5 + n * 0.5); this.glow.visible = n > 0.12 && perf.particles >= 0.5; this.glow.material.opacity = n * 0.85; }
     if (this.portalMesh) this.portalMesh.material.opacity = 0.6 + Math.sin(this.time * 3) * 0.15;
     if (this.starMesh) for (const s of this.E.secrets) if (!s.found) setInst(this.starMesh, s.i, s.x, s.y + 0.5 + Math.sin(this.time * 2) * 0.15, s.z, 1.6, this.time * 1.5);
     if (W.waterU) W.waterU.uTime.value = this.time;
@@ -382,7 +405,29 @@ export const G = {
 
   // bolhas, cardumes, natação
   _aero(dt) {
-    const P = this.player, t = this.time, W = this.world;
+    const P = this.player, t = this.time, W = this.world, ax = this.ax;
+    // ambiente sonoro: marolas perto da água, ronco submarino, cachoeira por distância
+    if (W.swim || ax) { let fall = 0; if (ax) for (const f of ax.falls) { const d = Math.hypot(P.pos.x - f.x, P.pos.z - f.z); fall = Math.max(fall, clamp(1 - d / 34, 0, 1)); } const nearW = W.heightAt(P.pos.x, P.pos.z) < W.waterY + 2.5 || P.swimming; ambience({ water: this.under ? 0 : nearW ? 1 : 0.25, under: this.under ? 1 : 0, fall: this.under ? fall * 0.3 : fall * fall }); this._amb = true; } else if (this._amb) { this._amb = false; ambience({}); }
+    // rastro de bolhas das braçadas
+    if (P.swimming) for (const h of P.hands) if (h.speed > 1.6 && Math.random() < 0.35) this.fx.burst(h.pos.x, h.pos.y, h.pos.z, 0xdff8ff, 1, 0.6, -2.2);
+    if (ax) {
+      // golfinhos saltando em arco
+      for (let i = 0; i < ax.dol.length; i++) { const d = ax.dol[i]; d.t += dt; const cyc = 7 + i * 1.7, ph = d.t % cyc, jump = ph < 1.5; if (jump && !d.up) { d.up = true; d.a += 0.9 + i; const x = Math.cos(d.a) * d.r, z = Math.sin(d.a) * d.r; this.fx.burst(x, 0.2, z, 0xe8fbff, 14, 4); this.fx.ring(x, 0.06, z, 0xffffff, 2, true, null, 0.8); _v.set(x, 0, z); if (_v.distanceTo(P.pos) < 45) { splashSfx(clamp(1 - _v.distanceTo(P.pos) / 45, 0.1, 0.8)); chirp(clamp(1 - _v.distanceTo(P.pos) / 45, 0.1, 0.8)); } }
+        if (!jump && d.up) { d.up = false; const a2 = d.a + 0.45, x = Math.cos(a2) * d.r, z = Math.sin(a2) * d.r; this.fx.burst(x, 0.2, z, 0xe8fbff, 12, 3.5); this.fx.ring(x, 0.06, z, 0xffffff, 1.8, true, null, 0.8); }
+        if (jump) { const k = ph / 1.5, a2 = d.a + k * 0.45, y = Math.sin(k * Math.PI) * 3.6 - 0.4; _q.setFromAxisAngle(UP, -a2 - Math.PI / 2); _q2.setFromAxisAngle(_v.set(0, 0, 1), (0.5 - k) * 2.2); _q.multiply(_q2); _m.compose(_p.set(Math.cos(a2) * d.r, y, Math.sin(a2) * d.r), _q, _s.set(11, 9, 14)); } else _m.makeScale(0, 0, 0).setPosition(0, -999, 0);
+        ax.dolMesh.setMatrixAt(i, _m); } ax.dolMesh.instanceMatrix.needsUpdate = true;
+      // águas-vivas pulsando
+      for (let i = 0; i < ax.jel.length; i++) { const j = ax.jel[i]; _m.makeScale(j.s, j.s * 1.1, j.s).setPosition(j.x + Math.sin(t * 0.2 + j.ph) * 2, j.y + Math.sin(t * 0.6 + j.ph) * 1.4, j.z + Math.cos(t * 0.17 + j.ph) * 2); ax.jelMesh.setMatrixAt(i, _m); } ax.jelMesh.instanceMatrix.needsUpdate = true;
+      // raios de luz só aparecem com a cabeça debaixo d'água
+      ax.rays.visible = this.under; if (this.under) { for (let i = 0; i < ax.rayP.length; i++) { const r = ax.rayP[i]; _q.setFromAxisAngle(UP, r.ry + Math.sin(t * 0.3 + r.ph) * 0.3); _q2.setFromAxisAngle(_v.set(0, 0, 1), 0.22 + Math.sin(t * 0.5 + r.ph) * 0.08); _q.multiply(_q2); _m.compose(_p.set(r.x, 0, r.z), _q, _s.set(1 + Math.sin(t * 0.7 + r.ph) * 0.3, 1, 1)); ax.rays.setMatrixAt(i, _m); } ax.rays.instanceMatrix.needsUpdate = true; ax.rays.material.opacity = 0.03 + (1 - this.sky.night) * 0.035; }
+      // cintilação do sol na superfície
+      ax.glints.visible = !this.under && perf.particles >= 0.5; if (ax.glints.visible) { const C = ax.glints.geometry.attributes.color.array; for (let i = 0; i < ax.glP.length; i++) { const v = Math.pow(Math.max(0, Math.sin(t * 2.6 + ax.glP[i] * 7)), 10) * (1 - this.sky.night * 0.7); C[i * 3] = v; C[i * 3 + 1] = v; C[i * 3 + 2] = v; } ax.glints.geometry.attributes.color.needsUpdate = true; }
+      for (let k = 0; k < ax.aur.length; k++) { const m = ax.aur[k]; m.visible = !this.under; m.rotation.y = t * 0.012 * (k % 2 ? -1 : 1); m.position.y = Math.sin(t * 0.2 + k) * 4; m.material.opacity = 0.22 + this.sky.night * 0.5 + Math.sin(t * 0.5 + k * 2) * 0.06; }
+      for (const f of ax.falls) { f.tex.offset.y = t * 0.9; if (Math.random() < 0.5 && Math.abs(f.x - P.pos.x) < 50) this.fx.burst(f.x + 0.9, f.y0 + 0.4, f.z + (Math.random() - 0.5) * f.wd, 0xe8fbff, 1, 1.6, 2); }
+      // lens flare
+      const orb = this.sky.orb; _v.copy(orb.position).project(this.camera); const on = !this.under && _v.z < 1 && Math.abs(_v.x) < 1.15 && Math.abs(_v.y) < 1.15 && perf.level >= 1 && !this.renderer.xr.isPresenting;
+      for (let i = 0; i < ax.flare.length; i++) { const sp = ax.flare[i]; sp.visible = on; if (on) { const k = [0.35, 0.7, 1.25, 1.7][i]; _v2.set(_v.x * (1 - k), _v.y * (1 - k), 0.5).unproject(this.camera); this.camera.getWorldPosition(_p); _v2.sub(_p).normalize().multiplyScalar(6).add(_p); sp.position.copy(_v2); const s = [1.1, 0.5, 1.5, 0.8][i]; sp.scale.set(s, s, 1); sp.material.opacity = 0.42 * (1 - Math.max(Math.abs(_v.x), Math.abs(_v.y)) * 0.6); } }
+    }
     if (P.swimDist >= 5) { S.stat('swim', null, Math.floor(P.swimDist)); P.swimDist -= Math.floor(P.swimDist); }
     if (this.under) { this.bubT = (this.bubT || 0) - dt; if (this.bubT <= 0) { this.bubT = 0.7; this.camera.getWorldPosition(_v); this.fx.burst(_v.x, _v.y - 0.15, _v.z, 0xe8fbff, 2, 0.5, -3); } }
     if (this.bubbleMesh) { const bm = this.bubbleMesh; for (const b of this.bubbles) {
@@ -390,7 +435,7 @@ export const G = {
       const y = b.y + Math.sin(t * 0.5 + b.ph) * 0.9, x = b.x + Math.sin(t * 0.23 + b.ph * 2) * 1.5, z = b.z + Math.cos(t * 0.19 + b.ph) * 1.5, wob = 1 + Math.sin(t * 2.3 + b.ph) * 0.05;
       _m.makeScale(b.r * wob, b.r / wob, b.r * wob).setPosition(x, y, z); bm.setMatrixAt(b.i, _m);
       if (Math.abs(x - P.pos.x) < 3 && Math.abs(z - P.pos.z) < 3) { let hit = false; for (const h of P.hands) if (h.target.distanceToSquared(_v.set(x, y, z)) < (b.r + HAND_R) * (b.r + HAND_R)) hit = true; if (!hit && _v.set(x, y, z).distanceToSquared(_v2.set(P.pos.x, P.pos.y + 0.7, P.pos.z)) < (b.r + 0.4) * (b.r + 0.4)) hit = true;
-        if (hit) { b.alive = false; b.t = t + 8 + Math.random() * 6; _m.makeScale(0, 0, 0).setPosition(0, -999, 0); bm.setMatrixAt(b.i, _m); pop(0.8); this.fx.burst(x, y, z, 0xe8fbff, 10, 2.5, 1); S.stat('pop'); if ((S.d.stats.pop || 0) % 5 === 0) S.addCoins(2); P.pulse(0.4, 20); } } }
+        if (hit) { b.alive = false; b.t = t + 8 + Math.random() * 6; _m.makeScale(0, 0, 0).setPosition(0, -999, 0); bm.setMatrixAt(b.i, _m); pop(0.8, b.r); this.fx.burst(x, y, z, 0xe8fbff, 14, 3, 1); this.fx.burst(x, y, z, 0x80e8ff, 6, 1.2, -1.5); this.fx.ring(x, y, z, 0xcff8ff, b.r * 2.2, false, this.camera.quaternion, 0.45); if (b.r > 0.85) chime(b.i, 0.5); S.stat('pop'); if ((S.d.stats.pop || 0) % 5 === 0) S.addCoins(2); P.pulse(0.4, 20); } } }
       bm.instanceMatrix.needsUpdate = true; }
     if (this.schoolMesh) for (const sc of this.E.schools) { if (Math.abs(sc.x - P.pos.x) > 70 || Math.abs(sc.z - P.pos.z) > 70) continue; for (let i = 0; i < sc.n; i++) { const a = t * (0.35 + (i % 3) * 0.08) + i * 6.283 / sc.n, rr = sc.r * (0.55 + (i % 5) * 0.11), x = sc.x + Math.cos(a) * rr, z = sc.z + Math.sin(a) * rr, y = sc.y + Math.sin(a * 2 + i) * 1.2; _q.setFromAxisAngle(UP, -a + Math.sin(t * 6 + i) * 0.25); _m.compose(_p.set(x, y, z), _q, _s.set(4, 4, 4)); this.schoolMesh.setMatrixAt(sc.i0 + i, _m); } this.schoolMesh.instanceMatrix.needsUpdate = true; }
   },
@@ -418,7 +463,7 @@ export const G = {
     // baús por toque
     for (const c of E.chests) if (!c.open && !c.hidden && Math.abs(c.x - px) < 2.5 && Math.abs(c.z - pz) < 2.5) this._handHits(c.x, c.y + 0.4, c.z, 0.55, 0, () => this.openChest(c));
     // coletáveis
-    for (const c of E.collects) { if (!c.alive) { if (t > c.respawn) { c.alive = true; setInst(c.mesh, c.i, c.x, c.y, c.z, c.s, c.ry); } continue; } const dx = c.x - px, dz = c.z - pz; if (dx * dx + dz * dz > 6) continue; let got = dx * dx + dz * dz < 0.5 && Math.abs(c.y - py) < 1.2; if (!got) this._handHits(c.x, c.y + 0.25, c.z, 0.5, 0, () => { got = true; }); if (got) { c.alive = false; c.respawn = t + 100; setInst(c.mesh, c.i, 0, -999, 0, 0, 0); S.addItem(c.item, 1); S.addXp(3); S.stat('forage', c.item); play('pickup', 0.7); this.fx.burst(c.x, c.y + 0.4, c.z, 0x9cf09c, 6, 2); } }
+    for (const c of E.collects) { if (!c.alive) { if (t > c.respawn) { c.alive = true; setInst(c.mesh, c.i, c.x, c.y, c.z, c.s, c.ry); } continue; } const dx = c.x - px, dz = c.z - pz; if (dx * dx + dz * dz > 6) continue; let got = dx * dx + dz * dz < 0.5 && Math.abs(c.y - py) < 1.2; if (!got) this._handHits(c.x, c.y + 0.25, c.z, 0.5, 0, () => { got = true; }); if (got) { c.alive = false; c.respawn = t + 100; setInst(c.mesh, c.i, 0, -999, 0, 0, 0); if (c.item === 'pearl' || c.item === 'coral') { chime(c.i, 0.9); this.fx.burst(c.x, c.y + 0.4, c.z, 0xffffff, 14, 2.5, -1); this.fx.ring(c.x, c.y + 0.4, c.z, 0xbff6ff, 1.2, false, this.camera.quaternion, 0.6); } S.addItem(c.item, 1); S.addXp(3); S.stat('forage', c.item); play('pickup', 0.7); this.fx.burst(c.x, c.y + 0.4, c.z, 0x9cf09c, 6, 2); } }
     // tesouros enterrados
     for (const d of E.digs) { if (!d.alive) { if (t > d.respawn) { d.alive = true; d.hp = 4; setInst(this.digMesh, d.i, d.x, d.y + 0.05, d.z, 1, d.i); } continue; } if (Math.abs(d.x - px) > 3 || Math.abs(d.z - pz) > 3) continue; this._handHits(d.x, d.y, d.z, 0.7, 1.2, () => { if (t - (d.last || 0) < 0.25) return; d.last = t; d.hp--; play('dig', 0.7); this.fx.burst(d.x, d.y + 0.2, d.z, 0xd8b070, 8, 2.5); P.pulse(0.6, 30); if (d.hp <= 0) { d.alive = false; d.respawn = t + 300; setInst(this.digMesh, d.i, 0, -999, 0, 0, 0); const id = pickTable(TREASURE_TABLE, S.profBonus('explorer') ? 0.3 : 0); S.addItem(id, 1); const c = 10 + Math.floor(Math.random() * 30); S.addCoins(c); S.addXp(20); S.stat('dig'); play('chest', 0.7); this.fx.burst(d.x, d.y + 0.5, d.z, 0xffd040, 20, 3.5); } }); }
     // bonecos de treino

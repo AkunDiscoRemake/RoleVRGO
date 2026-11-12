@@ -36,7 +36,7 @@ As mãos são duas bolinhas flutuantes (sem braços): uma segue a rotação do c
 
 ## Conteúdo
 
-- **Mapas:** Vila, Floresta, Mina, Deserto, Montanhas Nevadas, Arena, Castelo, Cidade, Ilha, Campo de Treino e **Aero Paraíso** (estética Frutiger Aero: lago fundo para nadar e mergulhar, bolhas brilhantes estouráveis, cúpulas e torres de vidro, arco-íris, cardumes, pérolas) — cada um com NPCs, baús, segredo, minérios e atividades próprias.
+- **Mapas:** Vila, Floresta, Mina, Deserto, Montanhas Nevadas, Arena, Castelo, Cidade, Ilha, Campo de Treino e **Aero Paraíso** (estética Frutiger Aero: lago fundo para nadar e mergulhar, bolhas brilhantes estouráveis, cúpulas e torres de vidro com acabamento brilhante, arco-íris, aurora, lens flare, ilhas flutuantes com cachoeiras, golfinhos, águas-vivas, cáusticas e raios de luz debaixo d'água, cardumes, pérolas; sons de água, cachoeira e áudio abafado ao mergulhar) — cada um com NPCs, baús, segredo, minérios e atividades próprias.
 - **Luta:** socos por velocidade da pata, combos, bloqueio, esquiva, zonas de PvP, bonecos e um NPC de sparring (identificado como NPC).
 - **Mineração, pesca, coleta, tesouros enterrados**, lojas, 5 profissões, missões de NPC e diárias, conquistas, XP/níveis, inventário e economia.
 - **Longa duração:** talentos (1 ponto por nível), contratos infinitos com recompensa que cresce com o nível, álbum de coleção, chefes em 6 mapas, sequência diária, títulos e **acessórios conquistáveis** (liberados por feitos, não comprados).

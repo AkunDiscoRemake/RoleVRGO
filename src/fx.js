@@ -13,6 +13,9 @@ export class FX {
     this.points = new THREE.Points(g, new THREE.PointsMaterial({ size: 0.34, map: this.tex, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true }));
     this.points.frustumCulled = false; this.points.renderOrder = 4; scene.add(this.points);
     this.texts = []; this._c = new THREE.Color(); this.next = 0;
+    // anéis que se expandem (splash na água, estouro de bolha)
+    this.rings = []; const rg = new THREE.RingGeometry(0.82, 1, 28);
+    for (let i = 0; i < 8; i++) { const m = new THREE.Mesh(rg, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, fog: false, blending: THREE.AdditiveBlending })); m.visible = false; m.renderOrder = 7; scene.add(m); this.rings.push({ m, life: 0, max: 1, grow: 1 }); }
     // partículas de ambiente (neve, vaga-lumes, folhas, poeira, faíscas): 1 draw call, presas a uma caixa em volta do jogador
     const NA = 90; this.aN = NA; this.aPos = new Float32Array(NA * 3); this.aSeed = new Float32Array(NA * 3); for (let i = 0; i < NA * 3; i++) this.aSeed[i] = Math.random();
     const ag = new THREE.BufferGeometry(); ag.setAttribute('position', new THREE.BufferAttribute(this.aPos, 3).setUsage(THREE.DynamicDrawUsage));
@@ -31,6 +34,11 @@ export class FX {
       this.pos[i * 3] = x; this.pos[i * 3 + 1] = y; this.pos[i * 3 + 2] = z; this.vel[i * 3] = Math.cos(a) * r * sp; this.vel[i * 3 + 1] = Math.abs(u) * sp + 0.5; this.vel[i * 3 + 2] = Math.sin(a) * r * sp;
       this.col[i * 3] = this._c.r; this.col[i * 3 + 1] = this._c.g; this.col[i * 3 + 2] = this._c.b; this.life[i] = 0.5 + Math.random() * 0.5; this.grav[i] = grav == null ? 5 : grav;
     }
+  }
+  // flat=true: deitado (superfície da água); senão, de frente para a câmera (quat)
+  ring(x, y, z, color, size, flat, quat, dur) {
+    let r = this.rings[0]; for (const k of this.rings) if (k.life <= 0) { r = k; break; } else if (k.life < r.life) r = k;
+    r.m.position.set(x, y, z); if (flat) r.m.rotation.set(-Math.PI / 2, 0, 0); else if (quat) r.m.quaternion.copy(quat); r.m.material.color.set(color); r.m.scale.setScalar(0.1); r.m.visible = true; r.max = r.life = dur || 0.7; r.grow = size || 1.5;
   }
   text(x, y, z, str, color) {
     let o = this.texts[0]; for (const t of this.texts) if (t.life <= 0) { o = t; break; } else if (t.life < o.life) o = t;
@@ -52,6 +60,7 @@ export class FX {
     const P = this.pos, V = this.vel, L = this.life; let any = false;
     for (let i = 0; i < MAXP; i++) { if (L[i] <= 0) continue; any = true; L[i] -= dt; if (L[i] <= 0) { P[i * 3 + 1] = -9999; continue; } V[i * 3 + 1] -= this.grav[i] * dt; P[i * 3] += V[i * 3] * dt; P[i * 3 + 1] += V[i * 3 + 1] * dt; P[i * 3 + 2] += V[i * 3 + 2] * dt; }
     if (any || this._was) { this.points.geometry.attributes.position.needsUpdate = true; this.points.geometry.attributes.color.needsUpdate = true; } this._was = any; this.points.visible = any;
+    for (const r of this.rings) if (r.life > 0) { r.life -= dt; const k = 1 - Math.max(0, r.life) / r.max; r.m.scale.setScalar(0.1 + r.grow * Math.sqrt(k)); r.m.material.opacity = (1 - k) * 0.85; if (r.life <= 0) r.m.visible = false; }
     for (const t of this.texts) if (t.life > 0) { t.life -= dt; t.s.position.y += dt * 0.9; t.s.material.opacity = Math.min(1, t.life * 2.5); if (t.life <= 0) t.s.visible = false; }
   }
 }
