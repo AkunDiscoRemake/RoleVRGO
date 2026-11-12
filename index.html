@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>RoleVRGO — Mundo VR de Gatos</title>
+<meta name="description" content="RoleVRGO: mundo multiplayer VR de gatos com Gorilla Locomotion, luta, mineração e roleplay. Feito para Oculus Go (WebXR).">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1830; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #fff; }
+  #c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  #lobby { position: fixed; inset: 0; overflow-y: auto; display: flex; align-items: flex-start; justify-content: flex-start; padding: 16px; box-sizing: border-box; }
+  .card { background: rgba(24, 22, 44, 0.9); border: 2px solid #6a7cff; border-radius: 18px; padding: 18px 20px; width: 100%; max-width: 520px; box-sizing: border-box; }
+  h1 { margin: 0 0 2px; font-size: 30px; } h1 span { color: #ffd76a; }
+  .sub { color: #bfe6ff; font-size: 14px; margin-bottom: 12px; }
+  label { display: block; font-size: 13px; color: #aab; margin: 10px 0 4px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  input { width: 100%; box-sizing: border-box; padding: 11px 12px; border-radius: 10px; border: 2px solid #44466a; background: #0e0d1c; color: #fff; font-size: 17px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .sw { width: 32px; height: 32px; border-radius: 8px; border: 3px solid transparent; cursor: pointer; padding: 0; }
+  .sw.on { border-color: #fff; }
+  .chip, .room, .mini { background: #33355a; color: #fff; border: 2px solid transparent; border-radius: 10px; padding: 8px 11px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .chip.on, .room.on { border-color: #ffd76a; background: #4a5cc8; }
+  .room { display: block; width: 100%; text-align: left; margin-bottom: 6px; }
+  .big { display: block; width: 100%; padding: 15px; margin-top: 10px; border: 0; border-radius: 12px; font-size: 19px; font-weight: 800; color: #fff; background: #3a9a5a; cursor: pointer; }
+  .big.vr { background: #e8a030; } .big:disabled { background: #44466a; color: #99a; cursor: default; }
+  #status { margin-top: 10px; font-size: 14px; color: #ffd76a; min-height: 18px; }
+  #online { font-size: 13px; color: #9cf09c; }
+  #hint { display: none; position: fixed; left: 0; right: 0; bottom: 6px; text-align: center; font-size: 12px; color: rgba(255,255,255,.75); pointer-events: none; text-shadow: 0 1px 3px #000; }
+  #vr2 { display: none; position: fixed; top: 10px; right: 10px; z-index: 5; padding: 10px 14px; border: 0; border-radius: 10px; background: #e8a030; color: #fff; font-weight: 800; font-size: 15px; cursor: pointer; }
+  small { color: #99a; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="lobby"><div class="card">
+  <h1>Role<span>VR</span>GO</h1>
+  <div class="sub">Mundo multiplayer VR de gatos — Gorilla Locomotion, luta, mineração e roleplay. Feito para Oculus Go.</div>
+  <label for="name">Nome do seu gato</label>
+  <input id="name" maxlength="16" autocomplete="off">
+  <label>Pelagem</label><div class="row" id="fur"></div>
+  <label>Cor de detalhe</label><div class="row" id="fur2"></div>
+  <label>Olhos</label><div class="row" id="eyes"></div>
+  <label>Padrão</label><div class="row" id="pattern"></div>
+  <div id="roomsBox">
+    <label>Sala</label>
+    <div id="rooms"></div>
+    <div class="row"><input id="code" maxlength="5" placeholder="Código de sala privada" style="flex:1;min-width:150px;text-transform:uppercase"><button class="mini" id="joinCode">Entrar</button><button class="mini" id="newPriv">+ Criar privada</button></div>
+    <div id="online"></div>
+  </div>
+  <button class="big vr" id="vr" disabled>Verificando VR...</button>
+  <button class="big" id="play" disabled>🖥 Jogar no navegador (sem VR)</button>
+  <div id="status">Carregando...</div>
+  <small>Sem cadastro: seu progresso fica ligado a este aparelho. Assets e sons: Kenney.nl (CC0).</small>
+</div></div>
+<button id="vr2">🥽 Entrar em VR</button>
+<div id="hint">Clique para controlar · WASD andar · Mouse mira as patas · Clique = gatilho · M = menu · B = menu rápido · Enter = chat · Q/E esquiva · F bloquear</div>
+<script>
+// polyfills mínimos para o navegador antigo do Oculus Go
+if (typeof globalThis === 'undefined') { self.globalThis = self; }
+if (!Object.fromEntries) Object.fromEntries = function (it) { var o = {}; Array.from(it).forEach(function (e) { o[e[0]] = e[1]; }); return o; };
+if (!Array.prototype.flat) Array.prototype.flat = function (d) { d = d === undefined ? 1 : d; return this.reduce(function (a, v) { return a.concat(Array.isArray(v) && d > 0 ? v.flat(d - 1) : [v]); }, []); };
+if (!Promise.allSettled) Promise.allSettled = function (ps) { return Promise.all(Array.from(ps).map(function (p) { return Promise.resolve(p).then(function (v) { return { status: 'fulfilled', value: v }; }, function (r) { return { status: 'rejected', reason: r }; }); })); };
+if (!self.queueMicrotask) self.queueMicrotask = function (f) { Promise.resolve().then(f); };
+if (!String.prototype.padStart) String.prototype.padStart = function (n, c) { var s = String(this); c = c || ' '; while (s.length < n) s = c + s; return s; };
+</script>
+<script src="dist/game.js"></script>
+</body>
+</html>

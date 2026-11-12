@@ -1,0 +1,407 @@
+import * as THREE from 'three';
+import { World, worldMat } from './world.js';
+import { MAPS, initPrims, PORTAL_COLORS, MAP_ICONS } from './maps.js';
+import { modelGeometry, play, playAt, meow, purr } from './assets.js';
+import { CatAvatar, HandPool, EMOTES } from './cat.js';
+import { FX, LabelBatch } from './fx.js';
+import { Sky } from './sky.js';
+import { perf } from './perf.js';
+import { net } from './net.js';
+import { S } from './state.js';
+import { ITEMS, ORES, PICKS, GLOVES, RODS, FISH_TABLE, TREASURE_TABLE, RARITY, QUESTS, currentEvent, HELD, PROPS } from './data.js';
+import { rng, hashStr, clamp, emit, on, angDiff } from './util.js';
+import { EYE, HAND_R } from './config.js';
+
+const _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(), _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _col = new THREE.Color(), _col2 = new THREE.Color(), _q2 = new THREE.Quaternion();
+const UP = new THREE.Vector3(0, 1, 0), ZERO = new THREE.Vector3(0, 0, 0);
+const instMat = new THREE.MeshLambertMaterial({ vertexColors: true });
+function setInst(mesh, i, x, y, z, s, ry) { _q.setFromAxisAngle(UP, ry || 0); _m.compose(_p.set(x, y, z), _q, typeof s === 'number' ? _s.set(s, s, s) : _s.set(s[0], s[1], s[2])); mesh.setMatrixAt(i, _m); mesh.instanceMatrix.needsUpdate = true; }
+function pickTable(tab, luck, r) { let tot = 0; const w = tab.map((t, i) => { const v = t[1] * (1 + (luck || 0) * i * 1.2); tot += v; return v; }); let x = (r || Math.random)() * tot; for (let i = 0; i < tab.length; i++) { x -= w[i]; if (x <= 0) return tab[i][0]; } return tab[0][0]; }
+
+export const G = {
+  props: new Map(), propSeq: 0, fireT: 0,
+  ready: false, mapId: null, def: null, world: null, E: null, objs: [], npcs: [], remotes: new Map(), sids: {}, sid: Math.random().toString(36).slice(2, 6),
+  room: 'PRACA', roomName: 'Praça Central', roomPublic: true, chatLog: [], friends: [], fishing: null, spar: null, lastHurt: 0, netT: 0, evBlock: -1, evT: 0, fade: 0, pending: null, time: 0, stepT: 0, combo: 0, comboT: 0,
+
+  init(scene, camera, renderer, player) {
+    this.scene = scene; this.camera = camera; this.renderer = renderer; this.player = player;
+    initPrims();
+    this.sky = new Sky(scene); this.fx = new FX(scene); this.hands = new HandPool(scene, 96);
+    this.laser = new THREE.Line(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3)), new THREE.LineBasicMaterial({ color: 0x9fe8ff, transparent: true, opacity: 0.8 })); this.laser.frustumCulled = false; this.laser.visible = false; scene.add(this.laser);
+    this.fadeMesh = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 6), new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false })); this.fadeMesh.renderOrder = 999; this.fadeMesh.visible = false; camera.add(this.fadeMesh);
+    this.bobber = new THREE.Mesh(new THREE.IcosahedronGeometry(0.09, 0), new THREE.MeshBasicMaterial({ color: 0xff4040 })); this.bobber.visible = false; scene.add(this.bobber);
+    this.line = new THREE.Line(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3)), new THREE.LineBasicMaterial({ color: 0xffffff })); this.line.frustumCulled = false; this.line.visible = false; scene.add(this.line);
+    player.onTrigger = () => this.onTrigger();
+    this.heldMesh = new THREE.Mesh(modelGeometry('survival/tool-pickaxe'), instMat); this.heldMesh.visible = false; this.heldMesh.frustumCulled = false; scene.add(this.heldMesh);
+    this._bindEvents(); this.ready = true;
+  },
+
+  // ================= carregamento de mapa =================
+  travel(id) { if (this.pending || !MAPS[id] || id === this.mapId) return; this.pending = id; this.fade = 0.001; play('portal', 0.6); },
+  loadMap(id) {
+    const scene = this.scene; this._disposeMap();
+    const def = MAPS[id], w = new World(scene, def.size); w.surface = def.surface;
+    const E = { npcs: [], ores: [], chests: [], portals: [], collects: [], digs: [], fishes: [], secrets: [], dummies: [], zones: [], lamps: [], signs: [], boards: [], springs: [] };
+    E.npc = (nid, name, role, x, z, look, o) => E.npcs.push(Object.assign({ id: nid, name, role, x, z, look }, o));
+    E.ore = (type, x, z) => E.ores.push({ type, x, z }); E.chest = (key, x, y, z, tier) => E.chests.push({ key, x, y, z, tier });
+    E.portal = (to, x, z) => E.portals.push({ to, x, z }); E.collect = (item, model, x, z, s, tint) => E.collects.push({ item, model, x, z, s: s || 2, tint });
+    E.dig = (x, z) => E.digs.push({ x, z }); E.fish = (x, z, r) => E.fishes.push({ x, z, r }); E.secret = (key, x, y, z, r) => E.secrets.push({ key, x, y, z, r });
+    E.dummy = (x, z) => E.dummies.push({ x, z }); E.zone = (type, x, z, r) => E.zones.push({ type, x, z, r }); E.lamp = (x, y, z, c) => E.lamps.push({ x, y, z, c: c || 0xffd890 });
+    E.sign = (text, x, y, z) => E.signs.push({ text, x, y, z }); E.board = (x, z, yaw) => E.boards.push({ x, z, yaw }); E.spring = (x, z, p) => E.springs.push({ x, z, p });
+    def.build(w, E, rng(hashStr(id)));
+    this.world = w; this.E = E; this.def = def; this.mapId = id;
+    const add = (o) => { scene.add(o); this.objs.push(o); return o; };
+    const inst = (geo, n, mat) => { const m = new THREE.InstancedMesh(geo, mat || instMat, Math.max(1, n)); m.count = n; m.frustumCulled = false; m.castShadow = true; return add(m); };
+    this.labels = new LabelBatch(scene);
+    // portais
+    const sp = def.spawn;
+    for (const p of E.portals) {
+      p.y = w.heightAt(p.x, p.z); p.yaw = Math.atan2(sp[0] - p.x, sp[1] - p.z); if (id === 'village') p.yaw = Math.atan2(-p.x, -p.z);
+      w.put('nature/statue_ring', p.x, p.z, { s: 4, ry: p.yaw, tint: [1.15, 1.15, 1.2] });
+      const cs = Math.cos(p.yaw), sn = Math.sin(p.yaw); w.addBoxC(p.x - cs * 1.1, p.y, p.z + sn * 1.1, 0.5, 3, 0.5); w.addBoxC(p.x + cs * 1.1, p.y, p.z - sn * 1.1, 0.5, 3, 0.5);
+      this.labels.add(MAP_ICONS[p.to] + ' ' + MAPS[p.to].name, p.x, p.y + 3.5, p.z, p.yaw, 3, '#fff', 'rgba(20,18,30,0.8)');
+    }
+    if (E.portals.length) {
+      const dg = new THREE.CircleGeometry(0.95, 14); this.portalMesh = add(new THREE.InstancedMesh(dg, new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.75, side: THREE.DoubleSide, depthWrite: false }), E.portals.length)); this.portalMesh.frustumCulled = false;
+      E.portals.forEach((p, i) => { setInst(this.portalMesh, i, p.x, p.y + 1.45, p.z, 1, p.yaw); this.portalMesh.setColorAt(i, _col.setHex(PORTAL_COLORS[p.to])); });
+    }
+    for (const s of E.springs) { s.y = w.heightAt(s.x, s.z); w.put('plat/spring', s.x, s.z, { s: 2.4 }); }
+    for (const s of E.signs) this.labels.add(s.text, s.x, s.y, s.z, Math.atan2(sp[0] - s.x, sp[1] - s.z), 3.2);
+    for (const f of E.fishes) this.labels.add('🎣 Ponto de pesca', f.x, w.waterY + 1.6, f.z, Math.atan2(sp[0] - f.x, sp[1] - f.z), 2.6, '#bfe6ff');
+    for (const z of E.zones) this.labels.add('⚔ Zona de luta (PvP)', z.x, w.heightAt(z.x, z.z) + 4.4, z.z + 0.01, Math.atan2(sp[0] - z.x, sp[1] - z.z), 3.4, '#ffb0a0');
+    this.labels.build();
+    // minérios (+8 vagas para o evento Chuva de Cristais)
+    const nOre = E.ores.length + 8;
+    this.oreMesh = inst(modelGeometry('survival/rock-b'), nOre); this.gemMesh = inst(modelGeometry('plat/jewel'), nOre);
+    for (let i = 0; i < 8; i++) E.ores.push({ type: 'star', x: 0, z: 0, ev: true, alive: false });
+    E.ores.forEach((o, i) => { o.i = i; o.y = w.heightAt(o.x, o.z); o.hp = ORES[o.type].hp; if (o.alive == null) o.alive = true; o.ry = (i * 2.4) % 6.28; o.sc = 1.25 + (i % 3) * 0.2; this._oreVis(o); });
+    // baús (+1 vaga para o Baú Dourado)
+    E.chests.push({ key: 'ev', x: 0, y: -999, z: 0, tier: 3, ev: true, hidden: true });
+    this.chestMesh = inst(modelGeometry('plat/chest'), E.chests.length);
+    E.chests.forEach((c, i) => { c.i = i; if (c.y == null) c.y = w.heightAt(c.x, c.z); c.ry = Math.atan2(sp[0] - c.x, sp[1] - c.z); this._chestVis(c); });
+    // coletáveis por modelo
+    const groups = {}; for (const c of E.collects) (groups[c.model] = groups[c.model] || []).push(c);
+    for (const k in groups) { const mesh = inst(modelGeometry(k), groups[k].length); groups[k].forEach((c, i) => { c.mesh = mesh; c.i = i; c.y = w.heightAt(c.x, c.z); c.alive = true; c.ry = i * 1.7; setInst(mesh, i, c.x, c.y, c.z, c.s, c.ry); mesh.setColorAt(i, c.tint ? _col.setRGB(c.tint[0], c.tint[1], c.tint[2]) : _col.setRGB(1.25, 1.25, 1.25)); }); }
+    // tesouros enterrados (X)
+    if (E.digs.length) { const a = new THREE.BoxGeometry(1.1, 0.06, 0.22), b = new THREE.BoxGeometry(0.22, 0.06, 1.1); a.rotateY(0.785); b.rotateY(0.785); const pos = new Float32Array(72 * 3), nr = new Float32Array(72 * 3); const an = a.toNonIndexed(), bn = b.toNonIndexed(); pos.set(an.attributes.position.array); pos.set(bn.attributes.position.array, 108); nr.set(an.attributes.normal.array); nr.set(bn.attributes.normal.array, 108); const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nr, 3));
+      this.digMesh = inst(g, E.digs.length, new THREE.MeshLambertMaterial({ color: 0xc03a2a })); E.digs.forEach((d, i) => { d.i = i; d.y = w.heightAt(d.x, d.z); d.hp = 4; d.alive = true; setInst(this.digMesh, i, d.x, d.y + 0.05, d.z, 1, i); }); }
+    // segredos (estrela flutuante até serem achados)
+    if (E.secrets.length) { this.starMesh = inst(modelGeometry('plat/star'), E.secrets.length); E.secrets.forEach((s, i) => { s.i = i; s.found = S.d.secrets.indexOf(s.key) >= 0; this.starMesh.setColorAt(i, _col.setRGB(1.3, 1.2, 0.6)); setInst(this.starMesh, i, s.x, s.y + 0.3, s.z, s.found ? 0 : 1.6, 0); }); }
+    // bonecos de treino
+    if (E.dummies.length) { this.dummyMesh = inst(modelGeometry('arena/character-soldier'), E.dummies.length); E.dummies.forEach((d, i) => { d.i = i; d.y = w.heightAt(d.x, d.z); d.wob = 0; d.ry = Math.atan2(sp[0] - d.x, sp[1] - d.z); setInst(this.dummyMesh, i, d.x, d.y, d.z, 1.7, d.ry); this.dummyMesh.setColorAt(i, _col.setRGB(1, 1, 1)); w.put('prim/cyl', d.x, d.z, { s: [0.9, 0.12, 0.9], tint: [0.5, 0.4, 0.3] }); }); }
+    // lanternas
+    if (E.lamps.length) {
+      this.lampMesh = inst(new THREE.IcosahedronGeometry(0.17, 0), E.lamps.length, new THREE.MeshBasicMaterial({ fog: false })); this.lampMesh.castShadow = false;
+      const gp = new Float32Array(E.lamps.length * 3), gc = new Float32Array(E.lamps.length * 3);
+      E.lamps.forEach((l, i) => { setInst(this.lampMesh, i, l.x, l.y, l.z, 1, 0); _col.setHex(l.c); this.lampMesh.setColorAt(i, _col); gp[i * 3] = l.x; gp[i * 3 + 1] = l.y; gp[i * 3 + 2] = l.z; gc[i * 3] = _col.r; gc[i * 3 + 1] = _col.g; gc[i * 3 + 2] = _col.b; });
+      const gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.BufferAttribute(gp, 3)); gg.setAttribute('color', new THREE.BufferAttribute(gc, 3));
+      this.glow = add(new THREE.Points(gg, new THREE.PointsMaterial({ size: 3.4, map: this.fx.tex, vertexColors: true, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }))); this.glow.frustumCulled = false; this.glow.renderOrder = 3;
+    }
+    // placares
+    for (const b of E.boards) { const c = document.createElement('canvas'); c.width = 512; c.height = 512; const t = new THREE.CanvasTexture(c); t.minFilter = THREE.LinearFilter; t.generateMipmaps = false; const m = add(new THREE.Mesh(new THREE.PlaneGeometry(3, 3), new THREE.MeshBasicMaterial({ map: t }))); const y = w.heightAt(b.x, b.z); m.position.set(b.x, y + 2.3, b.z); m.rotation.y = b.yaw; b.canvas = c; b.tex = t; w.put('prim/box', b.x, b.z, { s: [3.3, 4, 0.2], ry: b.yaw, tint: [0.35, 0.25, 0.2], y: 0, col: 'box' }); m.position.x += Math.sin(b.yaw) * 0.12; m.position.z += Math.cos(b.yaw) * 0.12; }
+    this._boards();
+    // NPCs
+    for (const n of E.npcs) {
+      const av = new CatAvatar(n.look, n.name, { npc: true, sub: n.role, tagColor: '#ffe9a8' }); n.y = w.heightAt(n.x, n.z); n.hx = n.x; n.hz = n.z; n.yaw = n.yaw || Math.atan2(sp[0] - n.x, sp[1] - n.z) + Math.PI; n.av = av; n.t = Math.random() * 5; n.wander = n.wander == null ? (n.shop || n.spar ? 0 : 1.6) : n.wander; n.tx = n.x; n.tz = n.z;
+      av.root.position.set(n.x, n.y, n.z); av.root.rotation.y = n.yaw; scene.add(av.root); this.npcs.push(n);
+      if (n.spar) { n.hpMax = 120; n.hp = 120; n.state = 'idle'; n.st = 0; n.zone = E.zones.find((z) => Math.hypot(z.x - n.x, z.z - n.z) < z.r + 8); }
+    }
+    this._npcMarks();
+    w.buildGrid();
+    this.player.teleport(sp[0], w.floorAt(sp[0], 50, sp[1]) + 0.1, sp[1], sp[2]);
+    for (let i = 0; i < 12; i++) w.update(sp[0], sp[1], perf);
+    this.fishing = null; this.bobber.visible = this.line.visible = false; this.spar = null; this.evBlock = -1; this.evT = 0;
+    S.visit(id); S.hp = S.maxHp(); emit('hp'); emit('map', id);
+    if (net.online) { net.join(this.room, id, this.roomPublic); this.pushMeta(); }
+  },
+  _disposeMap() {
+    for (const o of this.objs) { this.scene.remove(o); if (o.geometry && !o.geometry.userData.shared) { /* geometrias de modelo ficam em cache */ } if (o.material && o.material !== instMat && o.material !== worldMat) { if (o.material.map && o.material.map !== this.fx.tex) o.material.map.dispose(); o.material.dispose(); } if (o.isInstancedMesh) o.dispose(); }
+    this.props.forEach((p) => this.scene.remove(p.mesh)); this.props.clear();
+    this.objs.length = 0; for (const n of this.npcs) n.av.dispose(); this.npcs.length = 0;
+    if (this.labels) this.labels.dispose(); if (this.world) this.world.dispose();
+    this.world = null; this.portalMesh = this.oreMesh = this.gemMesh = this.chestMesh = this.digMesh = this.starMesh = this.dummyMesh = this.lampMesh = this.glow = null;
+  },
+  _oreVis(o) { const d = ORES[o.type], on = o.alive; _col.set(d.c); if (d.gem) { setInst(this.oreMesh, o.i, o.x, o.y - 0.1, o.z, on ? o.sc * 0.9 : 0, o.ry); this.oreMesh.setColorAt(o.i, _col2.copy(_col).multiplyScalar(0.35).addScalar(0.4)); setInst(this.gemMesh, o.i, o.x, o.y + 0.25, o.z, on ? [2.3, 2.9, 2.3] : 0, o.ry); this.gemMesh.setColorAt(o.i, _col.set(d.c).multiplyScalar(1.5)); } else { setInst(this.oreMesh, o.i, o.x, o.y - 0.08, o.z, on ? o.sc * 1.5 : 0, o.ry); this.oreMesh.setColorAt(o.i, _col.multiplyScalar(1.6)); setInst(this.gemMesh, o.i, 0, -999, 0, 0, 0); } this.oreMesh.instanceColor.needsUpdate = true; if (this.gemMesh.instanceColor) this.gemMesh.instanceColor.needsUpdate = true; },
+  _chestVis(c) { const open = !c.ev && S.chestOpen(this.mapId + ':' + c.key); c.open = open; setInst(this.chestMesh, c.i, c.x, c.hidden ? -999 : c.y, c.z, c.ev ? 2.6 : 1.9, c.ry); this.chestMesh.setColorAt(c.i, c.ev ? _col.setRGB(2, 1.6, 0.4) : open ? _col.setRGB(0.35, 0.35, 0.4) : c.tier >= 2 ? _col.setRGB(1.3, 1.1, 1.6) : _col.setRGB(1.1, 1.1, 1.1)); this.chestMesh.instanceColor.needsUpdate = true; },
+  _npcMarks() { for (const n of this.npcs) { let mark = ''; if (n.quests) for (const q of n.quests) { const st = S.questState(q); if (st === 'ready') { mark = '❓ '; break; } if (st === 'open' && !mark) mark = '❗ '; } n.av.setName(mark + n.name, n.role); } },
+  _boards() { if (!this.E || !this.E.boards.length) return; const draw = (lb) => { for (const b of this.E.boards) { const g = b.canvas.getContext('2d'); g.fillStyle = '#1c1830'; g.fillRect(0, 0, 512, 512); g.fillStyle = '#ffd76a'; g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.fillText('🏆 Ranking da Arena', 256, 46); g.font = 'bold 24px sans-serif'; g.textAlign = 'left'; const rows = lb ? lb.wins : []; if (!lb) { g.fillStyle = '#aaa'; g.fillText(net.online ? 'Carregando...' : 'Offline', 40, 110); } else if (!rows.length) { g.fillStyle = '#aaa'; g.fillText('Ninguém venceu ainda. Seja o primeiro!', 30, 110); } rows.forEach((r, i) => { g.fillStyle = i === 0 ? '#ffd76a' : i < 3 ? '#e8e8f0' : '#aab'; g.fillText((i + 1) + '. ' + r.name, 30, 100 + i * 38); g.textAlign = 'right'; g.fillText(r.wins + ' vitórias  Nv ' + r.level, 490, 100 + i * 38); g.textAlign = 'left'; }); b.tex.needsUpdate = true; } }; draw(null); if (net.online) net.leaderboard().then(draw).catch(() => {}); },
+  pushMeta() { net.setMeta({ name: S.name, look: S.look, level: S.d.level, sid: this.sid, prof: S.d.prof, party: net.partyCode, fc: net.friendCode, held: S.d.hand }); },
+
+  // ================= eventos de rede e de jogo =================
+  _bindEvents() {
+    on('peerJoin', (id, meta) => { if (!meta || this.remotes.has(id)) return; const av = new CatAvatar(meta.look, meta.name || 'Gato', { sub: 'Nv ' + (meta.level || 1), tagColor: this._tagColor(id, meta) }); av.root.visible = false; this.scene.add(av.root); const r = { id, av, meta, has: false, x: 0, y: 0, z: 0, yaw: 0, hy: 0, hp: 0, h: [0, 0.6, -0.4, 0, 0.6, -0.4], flags: 1, life: 100, px: 0, pz: 0, hit: [0, 0], patT: 0 }; this.remotes.set(id, r); if (meta.sid) this.sids[meta.sid] = r; this._remoteHeld(r); setTimeout(() => this.props.forEach((p) => { if (p.owner === net.id) net.send('prop', { id: p.id, k: p.k, x: p.x, y: p.y, z: p.z, ry: p.ry }); }), 1500); emit('toast', meta.name + ' entrou', '#bfe6ff'); emit('players'); });
+    on('peerMeta', (id, meta) => { const r = this.remotes.get(id); if (!r || !meta) return; if (JSON.stringify(meta.look) !== JSON.stringify(r.meta.look)) r.av.setLook(meta.look); r.meta = meta; this._remoteHeld(r); r.av.tagColor = this._tagColor(id, meta); r.av.setName(meta.name || 'Gato', 'Nv ' + (meta.level || 1)); if (meta.sid) this.sids[meta.sid] = r; emit('players'); });
+    on('peerLeave', (id) => { const r = this.remotes.get(id); if (!r) return; if (r.heldMesh) this.scene.remove(r.heldMesh); this.props.forEach((p, k) => { if (p.owner === id) this._delProp(k); }); r.av.dispose(); this.remotes.delete(id); for (const k in this.sids) if (this.sids[k] === r) delete this.sids[k]; emit('players'); });
+    on('peerState', (p) => { const r = this.sids[p[0]]; if (!r) return; r.x = p[1]; r.y = p[2]; r.z = p[3]; r.yaw = p[4]; r.hy = p[5]; r.hp = p[6]; for (let i = 0; i < 6; i++) r.h[i] = p[7 + i]; const fl = p[13]; const em = fl >> 4; if (em !== r.av.emote) { r.av.setEmote(em); if (em === 7) playAt('click', r.av.root.position, this.camera, 0), meow(0.5, 1.1); } r.flags = fl; r.life = p[14]; if (!r.has) { r.has = true; r.av.root.position.set(r.x, r.y, r.z); r.av.root.visible = true; } });
+    on('peerEvent', (e) => this._peerEvent(e));
+    on('fling', () => S.stat('fling')); on('fellOut', () => { const sp = this.def.spawn; this.player.teleport(sp[0], this.world.floorAt(sp[0], 50, sp[1]) + 0.2, sp[1], sp[2]); });
+    on('land', (v) => { play('thud', Math.min(1, v / 14)); }); on('handTouch', (i, h) => { const sp = h.speed; if (sp > 1.2) { play(this.world.surface === 'snow' ? 'step_snow' : this.world.surface === 'stone' ? 'step_stone' : 'step_grass', Math.min(0.8, sp / 7)); this.player.pulse(Math.min(1, sp / 6), 20); } });
+    on('dodge', () => play('dodge', 0.4)); on('grab', () => play('cloth', 0.35));
+    on('party', () => { this.remotes.forEach((r) => { r.av.tagColor = this._tagColor(r.id, r.meta); r.av.drawTag(); }); });
+    on('inbox', (m) => this._inbox(m));
+    on('meta', () => { if (net.online) this.pushMeta(); }); on('levelup', () => { if (net.online) this.pushMeta(); const p = this.player.pos; this.fx.burst(p.x, p.y + 1, p.z, 0xffd76a, 40, 4, 3); });
+  },
+  _tagColor(id, meta) { if (meta && meta.party && meta.party === net.partyCode && net.partyCode) return '#8fd0ff'; if (this.friends.some((f) => f.id === id && f.status === 'accepted')) return '#9cf09c'; return '#ffffff'; },
+  _peerEvent(e) {
+    const r = this.remotes.get(e.f), P = this.player;
+    if (e.t === 'chat') { if (r) { r.av.say(e.x, 6); this._log(r.meta.name, e.x); play('msg', 0.4); } }
+    else if (e.t === 'ore') { const o = this.E.ores[e.i]; if (o && o.alive) { o.alive = false; o.respawn = e.u; this._oreVis(o); } }
+    else if (e.t === 'hit' && e.to === net.id) {
+      if (!P.fightZone || S.hp <= 0) return;
+      const now = this.time; let d = clamp(e.d, 1, 60), blocked = false, dodged = P.iframes > 0;
+      if (!dodged) {
+        if (P.block && r) { const a = Math.atan2(-(r.av.root.position.x - P.pos.x), -(r.av.root.position.z - P.pos.z)); if (Math.abs(angDiff(P.headYaw, a)) < 1.2) { blocked = true; d = Math.ceil(d * (S.held().block || 0.2)); P.stamina = Math.max(0, P.stamina - 12); S.stat('blocked'); } }
+        S.hp = Math.max(0, S.hp - d); this.lastHurt = now; P.vel.x += e.x * (blocked ? 1.5 : 4); P.vel.z += e.z * (blocked ? 1.5 : 4); if (!blocked) P.vel.y += 1.5;
+        play(blocked ? 'block' : 'punch_heavy', 0.9); P.pulse(1, 60); emit('hp'); emit('hurt', blocked);
+      }
+      const ko = S.hp <= 0 && !dodged; net.send('hr', { a: e.f, d: dodged ? 0 : d, b: blocked ? 1 : 0, dg: dodged ? 1 : 0, ko: ko ? 1 : 0 });
+      if (ko) this._knockedOut(r ? r.meta.name : 'alguém');
+    }
+    else if (e.t === 'hr') { // resultado de um golpe (visto por todos)
+      const victim = r; if (!victim) return; const vp = victim.av.root.position;
+      if (e.dg) this.fx.text(vp.x, vp.y + 1.5, vp.z, 'Esquivou!', '#bfe6ff'); else { victim.av.flash = 0.3; this.fx.burst(vp.x, vp.y + 0.8, vp.z, e.b ? 0x9fd0ff : 0xffb040, e.b ? 6 : 12, 3); }
+      if (e.a === net.id) {
+        if (e.dg) { this.combo = 0; return; }
+        this.fx.text(vp.x, vp.y + 1.6, vp.z, e.b ? 'Bloqueado ' + e.d : '-' + e.d, e.b ? '#9fd0ff' : '#ffd040'); S.stat('hit'); this._combo();
+        if (e.ko) { const ev = currentEvent(net.now()), dbl = ev.active && ev.ev.id === 'doublexp' && ev.map === this.mapId; S.toast('🥊 Você nocauteou ' + victim.meta.name + '!', '#ffd76a'); play('win', 0.7); S.stat('ko'); S.addXp(dbl ? 160 : 80); S.addCoins(40); if (dbl) S.stat('event'); emit('saveNow'); }
+      } else playAt(e.b ? 'block' : 'punch', vp, this.camera, 0.7);
+    }
+    else if (e.t === 'pat' && e.to === net.id) { purr(0.8); this.fx.burst(P.pos.x, P.pos.y + 1.3, P.pos.z, 0xff6090, 6, 1.2, -1); if (r) S.toast(r.meta.name + ' fez carinho em você ❤', '#ff9ab8'); }
+    else if (e.t === 'prop') { if (e.x > -500 && e.x < 500 && this.props.size < 60) this._addProp(e.f + ':' + e.id, e.f, e.k, e.x, e.y, e.z, e.ry); }
+    else if (e.t === 'propdel') this._delProp(e.f + ':' + e.id);
+    else if (e.t === 'fx') { this.fx.burst(e.x, e.y, e.z, e.c, e.n || 10, 3); }
+  },
+  _inbox(m) {
+    if (m.k === 'friend') { S.toast('👋 ' + m.name + ' quer ser seu amigo (menu Social)', '#9cf09c'); play('msg', 0.6); emit('friendsDirty'); }
+    else if (m.k === 'faccept') { S.toast('✔ ' + m.name + ' aceitou sua amizade', '#9cf09c'); emit('friendsDirty'); }
+    else if (m.k === 'party') { this.invite = m; S.toast('👥 ' + m.name + ' convidou você para o grupo (menu Social)', '#8fd0ff'); play('msg', 0.6); emit('party'); }
+    else if (m.k === 'dm') { this._log('[privado] ' + m.name, m.x); S.toast('✉ ' + m.name + ': ' + m.x, '#ffe9a8'); play('msg', 0.6); }
+  },
+  _log(who, text) { this.chatLog.push({ who, text }); if (this.chatLog.length > 30) this.chatLog.shift(); emit('chat'); },
+  say(text) { text = String(text).slice(0, 80); if (!text) return; this._log(S.name, text); net.send('chat', { x: text }); emit('selfSay', text); },
+  emote(id) { const P = this.player; this.myEmote = id; this.emoteT = id === 3 || id === 4 ? 9999 : 3; if (id === 1) P.emoteWave = 2.5; if (id === 7) meow(1); if (id === 6) this.fx.burst(P.pos.x, P.pos.y + 1.4, P.pos.z, 0xff5080, 8, 1.2, -1); const e = EMOTES.find((x) => x.id === id); if (e) emit('selfSay', e.icon); S.stat('emote'); P.frozen = id === 3 || id === 4; },
+  async refreshFriends() { if (!net.online) return; try { this.friends = await net.rpc('rv_friends'); S.setStat('friends', this.friends.filter((f) => f.status === 'accepted').length); this.remotes.forEach((r) => { r.av.tagColor = this._tagColor(r.id, r.meta); r.av.drawTag(); }); emit('friends'); } catch (e) { /* offline */ } },
+  _combo() { this.combo = this.comboT > 0 ? this.combo + 1 : 1; this.comboT = 1.6; if (this.combo === 5) { S.stat('combo'); S.toast('🔥 COMBO x5!', '#ff9a40'); play('power', 0.5); } emit('combo', this.combo); },
+  _knockedOut(by) { S.toast('💫 Você foi nocauteado por ' + by, '#ff8a8a'); play('ko', 0.7); this.player.frozen = true; this.koT = 2.2; this.fade = 0.001; this.pending = '__respawn'; },
+
+  // ================= interação por gatilho =================
+  aim() { // alvo sob o "laser" do controle
+    const P = this.player, O = P.aimPos, D = P.aimDir; let best = null, bt = 7;
+    const test = (x, y, z, r, obj, max) => { _v.set(x - O.x, y - O.y, z - O.z); const t = _v.dot(D); if (t < 0 || t > (max || 7) || t > bt) return; if (_v.lengthSq() - t * t < r * r) { bt = t; best = obj; } };
+    for (const n of this.npcs) test(n.av.root.position.x, n.y + 0.7, n.av.root.position.z, 0.6, { npc: n });
+    for (const c of this.E.chests) if (!c.hidden && !c.open) test(c.x, c.y + 0.4, c.z, 0.6, { chest: c }, 4);
+    this.aimT = bt; return best;
+  },
+  onTrigger() {
+    if (!this.world || this.pending) return true;
+    if (this.uiClick && this.uiClick()) return true;
+    if (this.fishing) { this._reel(true); return true; }
+    if (this.myEmote === 3 || this.myEmote === 4) { this.myEmote = 0; this.emoteT = 0; this.player.frozen = false; return true; }
+    const a = this.aim();
+    if (a && a.npc) { this.talk(a.npc); return true; }
+    if (a && a.chest) { this.openChest(a.chest); return true; }
+    const P = this.player, O = P.aimPos, D = P.aimDir, w = this.world;
+    if (D.y < -0.08 && this.E.fishes.length && !P.hands[0].touch) { const t = (w.waterY - O.y) / D.y; if (t > 1.5 && t < 24) { const x = O.x + D.x * t, z = O.z + D.z * t; if (w.heightAt(x, z) < w.waterY - 0.15) for (const f of this.E.fishes) if (Math.hypot(x - f.x, z - f.z) < f.r) { this._cast(x, z); return true; } } }
+    return false;
+  },
+  talk(n) { play('book', 0.6); S.stat('talk'); n.av.say(n.lines[Math.floor(Math.random() * n.lines.length)].slice(0, 22) + '…', 2); emit('dialog', n); },
+  openChest(c) {
+    if (c.open || c.hidden) return; const key = this.mapId + ':' + c.key;
+    if (c.ev) { if (S.chestOpen('ev' + this.evBlock)) return; S.markChest('ev' + this.evBlock); c.hidden = true; S.stat('event'); }
+    else S.markChest(key);
+    const mult = (c.tier + 1) * (S.profBonus('explorer') ? 1.5 : 1), coins = Math.round((12 + Math.random() * 22) * mult);
+    S.addCoins(coins); S.toast('Baú: +' + coins + ' moedas', '#ffd76a'); S.addXp(10 + c.tier * 10); S.stat('chest');
+    const r = Math.random(); if (c.tier >= 3) { S.addItem('star', 2); S.addItem('relic', 1); } else if (c.tier === 2) S.addItem(r < 0.4 ? 'relic' : r < 0.7 ? 'emerald' : 'amethyst', 1); else if (c.tier === 1) { if (r < 0.7) S.addItem(r < 0.3 ? 'silver' : r < 0.5 ? 'quartz' : 'oldcoin', 1); } else if (r < 0.5) S.addItem(r < 0.25 ? 'snack' : 'copper', 1);
+    play('chest', 0.8); play('coin', 0.6); this.fx.burst(c.x, c.y + 0.6, c.z, 0xffd040, 24, 3.5); net.send('fx', { x: c.x, y: c.y + 0.6, z: c.z, c: 0xffd040, n: 14 }); this._chestVis(c); this.player.pulse(0.8, 60);
+  },
+  // ---------- pesca ----------
+  _cast(x, z) { const rod = RODS[S.d.equip.rod].p, ev = currentEvent(net.now()), shoal = ev.active && ev.ev.id === 'shoal' && ev.map === this.mapId; this.fishing = { x, z, phase: 'wait', t: 0, shoal, biteAt: (2.5 + Math.random() * 5) * (S.profBonus('fisher') ? 0.6 : 1) * (shoal ? 0.6 : 1) * (1 - rod * 0.5) }; this.bobber.position.set(x, this.world.waterY + 0.04, z); this.bobber.visible = this.line.visible = true; play('splash', 0.7); S.toast('Linha lançada... puxe quando a boia afundar!', '#bfe6ff'); },
+  _reel(byTrigger) {
+    const f = this.fishing; if (!f) return;
+    if (f.phase === 'bite') {
+      const luck = RODS[S.d.equip.rod].p + (S.profBonus('fisher') ? 0.15 : 0) + (f.shoal ? 0.35 : 0), id = pickTable(FISH_TABLE, luck);
+      S.addItem(id, 1); S.addXp(8 + ITEMS[id].r * 14); S.stat('fish'); if (f.shoal) S.stat('event'); play('pickup', 0.9); play('splash', 0.5); this.fx.burst(f.x, this.world.waterY + 0.2, f.z, 0x9fe0ff, 16, 3); this.player.pulse(1, 80);
+    } else if (byTrigger) S.toast('Linha recolhida', '#aaa');
+    this.fishing = null; this.bobber.visible = this.line.visible = false;
+  },
+
+  // ================= atualização por quadro =================
+  update(dt) {
+    const P = this.player, w = this.world; if (!w) return; this.time += dt; const now = net.now();
+    // fade / troca de mapa
+    if (this.fade > 0) {
+      this.fadeMesh.visible = true;
+      if (this.pending) { this.fade = Math.min(1, this.fade + dt * 3); if (this.fade >= 1) { if (this.pending === '__respawn') { if ((this.koT -= dt) <= 0) { const sp = this.def.spawn; P.teleport(sp[0], w.floorAt(sp[0], 50, sp[1]) + 0.1, sp[1], sp[2]); S.hp = S.maxHp(); P.frozen = false; this.pending = null; emit('hp'); } } else { const id = this.pending; this.pending = null; this.loadMap(id); } } }
+      else { this.fade -= dt * 2; if (this.fade <= 0) { this.fade = 0; this.fadeMesh.visible = false; } }
+      this.fadeMesh.material.opacity = clamp(this.fade, 0, 1);
+      if (!this.world) return;
+    }
+    // zona de luta
+    let fz = false; for (const z of this.E.zones) if (Math.hypot(P.pos.x - z.x, P.pos.z - z.z) < z.r) fz = true; if (fz !== P.fightZone) { P.fightZone = fz; S.toast(fz ? '⚔ Você entrou na zona de luta!' : 'Você saiu da zona de luta', fz ? '#ffb0a0' : '#bfe6ff'); emit('hp'); }
+    P.update(dt, this.world);
+    const W = this.world; W.update(P.pos.x, P.pos.z, perf);
+    // vida / emote / combo
+    if (S.hp > 0 && S.hp < S.maxHp() && (!fz || this.time - this.lastHurt > 5)) { S.hp = Math.min(S.maxHp(), S.hp + (fz ? 3 : 12) * (S.held().regen || 1) * dt); this._hpT = (this._hpT || 0) + dt; if (this._hpT > 0.5) { this._hpT = 0; emit('hp'); } }
+    if (this.emoteT > 0 && (this.emoteT -= dt) <= 0) { this.myEmote = 0; P.frozen = false; }
+    if (this.comboT > 0 && (this.comboT -= dt) <= 0) { this.combo = 0; emit('combo', 0); }
+    this._held(dt);
+    // passos
+    if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; play(P.inWater ? 'splash' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
+    this._interact(dt, now); this._npcs(dt); this._remotes(dt); this._fishing(dt); this._events(dt, now);
+    // mãos + sombras em lote
+    const hp = this.hands; hp.begin(); const fur = S.look.fur;
+    for (let i = 0; i < 2; i++) { const h = P.hands[i]; hp.hand(h.pos.x, h.pos.y, h.pos.z, HAND_R, P.block ? '#ffd0a0' : fur); }
+    if (perf.shadows) hp.blob(P.pos.x, W.floorAt(P.pos.x, P.pos.y + 0.3, P.pos.z), P.pos.z, 0.34);
+    this.remotes.forEach((r) => { if (!r.has || !r.av.root.visible) return; const p = r.av.root.position; if (r.near) { hp.hand(p.x + r.h[0], p.y + r.h[1], p.z + r.h[2], HAND_R, r.av.look.fur); hp.hand(p.x + r.h[3], p.y + r.h[4], p.z + r.h[5], HAND_R, r.av.look.fur); } if (perf.shadows && r.near) hp.blob(p.x, W.floorAt(p.x, p.y + 0.3, p.z), p.z, 0.34); });
+    for (const n of this.npcs) { if (!n.near) continue; const p = n.av.root.position, c = Math.cos(n.av.root.rotation.y), s = Math.sin(n.av.root.rotation.y); let fwd = 0.12, up = 0.5 + Math.sin(this.time * 2 + n.t) * 0.03; if (n.spar && n.state === 'windup') { up = 1.15; fwd = -0.1; } else if (n.spar && n.state === 'strike') { up = 0.85; fwd = 0.75; } else if (n.spar && n.state !== 'idle') { up = 0.8; fwd = 0.3; } for (const sd of [-1, 1]) hp.hand(p.x + c * 0.3 * sd - s * fwd, p.y + up, p.z - s * 0.3 * sd - c * fwd, HAND_R, n.av.look.fur); if (perf.shadows) hp.blob(p.x, n.y, p.z, 0.34); }
+    hp.end(perf.shadows > 0);
+    // lanternas e céu
+    this.sky.update(now, this.def, P.pos, perf);
+    if (this.lampMesh) { const n = this.sky.night; this.lampMesh.material.color.setScalar(0.5 + n * 0.5); this.glow.visible = n > 0.12 && perf.particles >= 0.5; this.glow.material.opacity = n * 0.85; }
+    if (this.portalMesh) this.portalMesh.material.opacity = 0.6 + Math.sin(this.time * 3) * 0.15;
+    if (this.starMesh) for (const s of this.E.secrets) if (!s.found) setInst(this.starMesh, s.i, s.x, s.y + 0.5 + Math.sin(this.time * 2) * 0.15, s.z, 1.6, this.time * 1.5);
+    this.fx.update(dt);
+    // laser de mira
+    const a = this.uiOpen ? null : this.aim(); const show = this.uiOpen || !!a; this.laser.visible = show && !P.hands[0].touch && !P.desktop;
+    if (this.laser.visible) { const arr = this.laser.geometry.attributes.position.array, O = P.hands[0].target, D = P.aimDir, len = this.uiOpen ? (this.uiDist || 2) : this.aimT; arr[0] = O.x; arr[1] = O.y; arr[2] = O.z; arr[3] = O.x + D.x * len; arr[4] = O.y + D.y * len; arr[5] = O.z + D.z * len; this.laser.geometry.attributes.position.needsUpdate = true; }
+    // rede: envia estado
+    this.netT -= dt; if (this.netT <= 0 && net.status === 'online') { const hz = this.remotes.size > 6 ? Math.min(perf.netHz, 6) : perf.netHz; this.netT = 1 / hz; const h = P.hands, x = P.pos.x, y = P.pos.y, z = P.pos.z, f2 = (v) => Math.round(v * 100) / 100; const flags = (P.grounded ? 1 : 0) | (P.block ? 2 : 0) | (fz ? 4 : 0) | (P.iframes > 0 ? 8 : 0) | ((this.myEmote || 0) << 4); net.sendState([this.sid, f2(x), f2(y), f2(z), f2(P.bodyYaw), f2(angDiff(P.bodyYaw, P.headYaw)), f2(P.headPitch), f2(h[0].pos.x - x), f2(h[0].pos.y - y), f2(h[0].pos.z - z), f2(h[1].pos.x - x), f2(h[1].pos.y - y), f2(h[1].pos.z - z), flags, Math.round(S.hp)]); }
+  },
+
+  // ---------- item na pata (visual + bônus) ----------
+  _held(dt) {
+    const P = this.player, h = S.held(); P.speedMul = h.speed || 1;
+    if (this.heldId !== h.id) { this.heldId = h.id; if (h.model) { this.heldMesh.geometry = modelGeometry(h.model); this.heldMesh.scale.setScalar(h.s); } }
+    this.heldMesh.visible = !!h.model && !P.block;
+    if (this.heldMesh.visible) { this.heldMesh.position.copy(P.hands[0].pos); _q.setFromUnitVectors(UP, _v.copy(P.ctrlDir).multiplyScalar(0.75).add(_v2.set(0, 0.66, 0)).normalize()); this.heldMesh.quaternion.copy(_q); }
+    this.remotes.forEach((r) => { if (!r.heldMesh) return; r.heldMesh.visible = r.has && r.near && r.av.root.visible; if (r.heldMesh.visible) { const p = r.av.root.position; r.heldMesh.position.set(p.x + r.h[0], p.y + r.h[1], p.z + r.h[2]); r.heldMesh.rotation.set(-0.7, r.av.root.rotation.y, 0, 'YXZ'); } });
+    // trampolins e fogueiras colocados por jogadores
+    this.fireT -= dt; const fire = this.fireT <= 0; if (fire) this.fireT = 0.25;
+    this.props.forEach((p) => { const d = p.def; if (d.spring && Math.abs(P.pos.x - p.x) < 0.9 && Math.abs(P.pos.z - p.z) < 0.9 && P.pos.y - p.y < 1.1 && P.pos.y - p.y > -0.3 && P.vel.y <= 0.5) { P.vel.y = d.spring; P.grounded = false; play('power', 0.5, 0, 1.4); this.fx.burst(p.x, p.y + 0.8, p.z, 0x80ffb0, 10, 2); } if (d.fire && fire && Math.abs(P.pos.x - p.x) < 25 && Math.abs(P.pos.z - p.z) < 25) this.fx.burst(p.x, p.y + 0.3, p.z, 0xff8a30, 2, 0.8, -2.5); });
+  },
+  _remoteHeld(r) { const h = HELD.find((x) => x.id === (r.meta && r.meta.held)); if (!h || !h.model) { if (r.heldMesh) { this.scene.remove(r.heldMesh); r.heldMesh = null; } return; } if (!r.heldMesh) { r.heldMesh = new THREE.Mesh(modelGeometry(h.model), instMat); r.heldMesh.frustumCulled = false; this.scene.add(r.heldMesh); } r.heldMesh.geometry = modelGeometry(h.model); r.heldMesh.scale.setScalar(h.s); },
+  // ---------- objetos colocados no mundo (sincronizados por broadcast) ----------
+  _addProp(key, owner, k, x, y, z, ry) {
+    const def = PROPS.find((p) => p.id === k); if (!def || !this.world) return; this._delProp(key);
+    const geo = modelGeometry(def.model), mesh = new THREE.Mesh(geo, instMat); mesh.position.set(x, y, z); mesh.rotation.y = ry || 0; mesh.scale.setScalar(def.s); mesh.castShadow = true; this.scene.add(mesh);
+    let box = null; if (!def.nocol) { if (!geo.boundingBox) geo.computeBoundingBox(); const b = geo.boundingBox, hw = Math.max(b.max.x - b.min.x, b.max.z - b.min.z) * def.s * 0.5; box = [x - hw, y, z - hw, x + hw, y + b.max.y * def.s, z + hw]; this.world.dyn.push(box); }
+    this.props.set(key, { id: key.split(':')[1], owner, k, x, y, z, ry, mesh, box, def });
+  },
+  _delProp(key) { const p = this.props.get(key); if (!p) return; this.scene.remove(p.mesh); if (p.box && this.world) { const i = this.world.dyn.indexOf(p.box); if (i >= 0) this.world.dyn.splice(i, 1); } this.props.delete(key); },
+  spawnProp(k) {
+    const P = this.player, def = PROPS.find((p) => p.id === k); if (!def || !this.world) return;
+    const mine = []; this.props.forEach((p, key) => { if (p.owner === (net.id || 'me')) mine.push(key); });
+    if (mine.length >= 8) { const old = mine[0]; net.send('propdel', { id: this.props.get(old).id }); this._delProp(old); }
+    const x = P.pos.x - Math.sin(P.headYaw) * 1.8, z = P.pos.z - Math.cos(P.headYaw) * 1.8, y = this.world.floorAt(x, P.pos.y + 1, z), id = 'p' + (++this.propSeq), ry = P.headYaw + Math.PI;
+    this._addProp((net.id || 'me') + ':' + id, net.id || 'me', k, x, y, z, ry); net.send('prop', { id, k, x: Math.round(x * 100) / 100, y: Math.round(y * 100) / 100, z: Math.round(z * 100) / 100, ry: Math.round(ry * 100) / 100 });
+    play('wood', 0.7); this.fx.burst(x, y + 0.5, z, 0xffffff, 10, 2.5); S.toast('Colocado: ' + def.n, '#bfe6ff'); S.stat('spawn');
+  },
+  clearProps() { const me = net.id || 'me'; this.props.forEach((p, key) => { if (p.owner === me) { net.send('propdel', { id: p.id }); this._delProp(key); } }); S.toast('Seus objetos foram removidos', '#bfe6ff'); },
+
+  _handHits(x, y, z, r, minSpeed, fn) { const P = this.player; for (let i = 0; i < 2; i++) { const h = P.hands[i]; if (h.speed < minSpeed) continue; const t = h.target; const dx = t.x - x, dy = t.y - y, dz = t.z - z; if (dx * dx + dy * dy + dz * dz < (r + HAND_R) * (r + HAND_R)) fn(h, i); } },
+  _interact(dt, now) {
+    const P = this.player, E = this.E, px = P.pos.x, py = P.pos.y, pz = P.pos.z, t = this.time;
+    // portais
+    for (const p of E.portals) if (Math.abs(px - p.x) < 1.1 && Math.abs(pz - p.z) < 1.1 && Math.abs(py - p.y) < 2.5) { this.travel(p.to); return; }
+    // trampolins
+    for (const s of E.springs) if (Math.abs(px - s.x) < 1 && Math.abs(pz - s.z) < 1 && py - s.y < 1.2 && P.vel.y <= 0.5) { P.vel.y = s.p; P.grounded = false; play('power', 0.5, 0, 1.4); this.fx.burst(s.x, s.y + 0.8, s.z, 0x80ffb0, 10, 2); }
+    // segredos
+    for (const s of E.secrets) if (!s.found && Math.abs(px - s.x) < s.r && Math.abs(pz - s.z) < s.r && Math.abs(py - s.y) < 3) { s.found = true; S.secret(this.mapId + ':' + s.key, s.key); setInst(this.starMesh, s.i, 0, -999, 0, 0, 0); this.fx.burst(s.x, s.y + 1, s.z, 0xc080ff, 40, 4, 2); }
+    // minérios
+    const pick = PICKS[S.d.equip.pick], miner = S.profBonus('miner');
+    for (const o of E.ores) {
+      if (!o.alive) { if (!o.ev && o.respawn && now > o.respawn) { o.alive = true; o.hp = ORES[o.type].hp; o.respawn = 0; this._oreVis(o); } continue; }
+      if (Math.abs(o.x - px) > 3 || Math.abs(o.z - pz) > 3) continue;
+      this._handHits(o.x, o.y + 0.45, o.z, 0.72, 1.3, (h, i) => {
+        if (t - (o.last || 0) < 0.22) return; o.last = t; const d = ORES[o.type];
+        if (pick.p < 1 + d.tier * 0.6 && d.tier > S.d.equip.pick) { S.toast('Precisa de uma picareta melhor (' + PICKS[d.tier].n + ')', '#ff9a8a'); play('block', 0.5); this.fx.burst(o.x, o.y + 0.5, o.z, 0xaaaaaa, 3, 2); return; }
+        o.hp -= pick.p * (S.held().mine || 1) * (miner ? 1.25 : 1) * clamp(h.speed / 3, 0.6, 1.8); play('mine', 0.7); P.pulse(0.7, 30); this.fx.burst(o.x, o.y + 0.6, o.z, d.c, 5, 2.5);
+        if (o.hp <= 0) { o.alive = false; o.respawn = now + (o.ev ? 9e9 : 45000 + ORES[o.type].tier * 15000); this._oreVis(o); const n = 1 + (miner && Math.random() < 0.25 ? 1 : 0) + (d.gem ? 0 : Math.random() < 0.3 ? 1 : 0); S.addItem(o.type, n); S.addXp(d.xp); S.stat('mine', o.type); if (o.ev) S.stat('event'); play('mine_break', 0.6); this.fx.burst(o.x, o.y + 0.6, o.z, d.c, 18, 4); if (!o.ev) net.send('ore', { i: o.i, u: o.respawn }); }
+      });
+    }
+    // baús por toque
+    for (const c of E.chests) if (!c.open && !c.hidden && Math.abs(c.x - px) < 2.5 && Math.abs(c.z - pz) < 2.5) this._handHits(c.x, c.y + 0.4, c.z, 0.55, 0, () => this.openChest(c));
+    // coletáveis
+    for (const c of E.collects) { if (!c.alive) { if (t > c.respawn) { c.alive = true; setInst(c.mesh, c.i, c.x, c.y, c.z, c.s, c.ry); } continue; } const dx = c.x - px, dz = c.z - pz; if (dx * dx + dz * dz > 6) continue; let got = dx * dx + dz * dz < 0.5 && Math.abs(c.y - py) < 1.2; if (!got) this._handHits(c.x, c.y + 0.25, c.z, 0.5, 0, () => { got = true; }); if (got) { c.alive = false; c.respawn = t + 100; setInst(c.mesh, c.i, 0, -999, 0, 0, 0); S.addItem(c.item, 1); S.addXp(3); S.stat('forage', c.item); play('pickup', 0.7); this.fx.burst(c.x, c.y + 0.4, c.z, 0x9cf09c, 6, 2); } }
+    // tesouros enterrados
+    for (const d of E.digs) { if (!d.alive) { if (t > d.respawn) { d.alive = true; d.hp = 4; setInst(this.digMesh, d.i, d.x, d.y + 0.05, d.z, 1, d.i); } continue; } if (Math.abs(d.x - px) > 3 || Math.abs(d.z - pz) > 3) continue; this._handHits(d.x, d.y, d.z, 0.7, 1.2, () => { if (t - (d.last || 0) < 0.25) return; d.last = t; d.hp--; play('dig', 0.7); this.fx.burst(d.x, d.y + 0.2, d.z, 0xd8b070, 8, 2.5); P.pulse(0.6, 30); if (d.hp <= 0) { d.alive = false; d.respawn = t + 300; setInst(this.digMesh, d.i, 0, -999, 0, 0, 0); const id = pickTable(TREASURE_TABLE, S.profBonus('explorer') ? 0.3 : 0); S.addItem(id, 1); const c = 10 + Math.floor(Math.random() * 30); S.addCoins(c); S.addXp(20); S.stat('dig'); play('chest', 0.7); this.fx.burst(d.x, d.y + 0.5, d.z, 0xffd040, 20, 3.5); } }); }
+    // bonecos de treino
+    for (const d of E.dummies) { if (d.wob > 0) { d.wob -= dt; _q.setFromAxisAngle(_v.set(Math.cos(d.ry), 0, -Math.sin(d.ry)), Math.sin(d.wob * 22) * d.wob * 0.9); _q.multiply(_q2.setFromAxisAngle(UP, d.ry)); _m.compose(_p.set(d.x, d.y, d.z), _q, _s.set(1.7, 1.7, 1.7)); this.dummyMesh.setMatrixAt(d.i, _m); this.dummyMesh.instanceMatrix.needsUpdate = true; } if (Math.abs(d.x - px) > 3 || Math.abs(d.z - pz) > 3) continue; this._handHits(d.x, d.y + 0.8, d.z, 0.5, 1.5, (h) => { if (t - (d.last || 0) < 0.25) return; d.last = t; const dmg = this._damage(h); d.wob = 0.5; play(dmg > 14 ? 'punch_heavy' : 'punch', 0.8); P.pulse(0.9, 40); this.fx.text(d.x, d.y + 1.8, d.z, '-' + dmg, '#ffd040'); this.fx.burst(d.x, d.y + 0.9, d.z, 0xffb040, 6, 2.5); S.stat('hit'); this._combo(); S.addXp(1); }); }
+  },
+  _damage(h) { return Math.round((5 + clamp(h.speed, 0, 9) * 2.2) * (S.held().dmg || 1) * GLOVES[S.d.equip.glove].p * (S.profBonus('fighter') ? 1.15 : 1) * (1 + Math.min(this.combo, 5) * 0.12)); },
+
+  _npcs(dt) {
+    const P = this.player, w = this.world;
+    for (const n of this.npcs) {
+      const av = n.av, p = av.root.position, dx = P.pos.x - p.x, dz = P.pos.z - p.z, d = Math.hypot(dx, dz); n.near = d < perf.animDist;
+      if (d > perf.drawDist) { av.root.visible = false; continue; } av.root.visible = true; if (av.tag) av.tag.visible = d < perf.tagDist;
+      if (n.spar) this._spar(n, dt, d, dx, dz);
+      else {
+        n.t -= dt; let sp = 0;
+        if (d < 5) { const want = Math.atan2(-dx, -dz); av.root.rotation.y += angDiff(av.root.rotation.y, want) * Math.min(1, dt * 4); av.headPitch = clamp(Math.atan2(P.pos.y + EYE - p.y - 0.95, d) * -1, -0.5, 0.5) * -1; }
+        else if (n.wander) { if (n.t <= 0) { n.t = 3 + Math.random() * 5; const a = Math.random() * 6.28, r = Math.random() * n.wander; n.tx = n.hx + Math.cos(a) * r; n.tz = n.hz + Math.sin(a) * r; } const ex = n.tx - p.x, ez = n.tz - p.z, ed = Math.hypot(ex, ez); if (ed > 0.15) { sp = 0.9; p.x += ex / ed * sp * dt; p.z += ez / ed * sp * dt; p.y = w.heightAt(p.x, p.z); n.y = p.y; av.root.rotation.y += angDiff(av.root.rotation.y, Math.atan2(-ex, -ez)) * Math.min(1, dt * 5); } av.headPitch = 0; }
+        av.speed = sp; av.grounded = true;
+      }
+      av.update(dt, !n.near);
+    }
+  },
+  // NPC de treino (claramente identificado como NPC): persegue, arma o golpe (pisca), ataca; dá para bloquear/esquivar.
+  _spar(n, dt, d, dx, dz) {
+    const P = this.player, av = n.av, p = av.root.position, z = n.zone, t = this.time; n.st -= dt;
+    const inZone = z && Math.hypot(P.pos.x - z.x, P.pos.z - z.z) < z.r;
+    const face = () => { av.root.rotation.y += angDiff(av.root.rotation.y, Math.atan2(-dx, -dz)) * Math.min(1, dt * 8); };
+    if (n.state !== 'ko' && n.state !== 'idle' && (!inZone || S.hp <= 0)) { n.state = 'idle'; n.hp = n.hpMax; av.setName(n.name, n.role); }
+    if (n.state !== 'ko' && d < 2.5) this._handHits(p.x, p.y + 0.75, p.z, 0.45, 1.5, (h) => {
+      if (t - (n.last || 0) < 0.25 || !inZone) { if (!inZone && t - (n.warn || 0) > 3) { n.warn = t; S.toast('Entre no ringue para lutar com o Mestre', '#ffb0a0'); } return; } n.last = t;
+      const dmg = this._damage(h); n.hp -= dmg; av.flash = 0.3; play(dmg > 14 ? 'punch_heavy' : 'punch', 0.9); P.pulse(1, 40); this.fx.text(p.x, p.y + 1.7, p.z, '-' + dmg, '#ffd040'); this.fx.burst(p.x, p.y + 0.9, p.z, 0xffb040, 8, 3); S.stat('hit'); this._combo(); av.setName(n.name, 'Vida ' + Math.max(0, Math.round(n.hp)) + '/' + n.hpMax);
+      if (n.state === 'idle') { n.state = 'chase'; n.st = 0.6; }
+      if (n.hp <= 0) { n.state = 'ko'; n.st = 6; av.setEmote(4); const ev = currentEvent(net.now()), dbl = ev.active && ev.ev.id === 'doublexp' && ev.map === this.mapId; S.toast('🥊 Você venceu o Mestre!', '#ffd76a'); play('win', 0.7); S.stat('ko'); S.addXp(dbl ? 120 : 60); S.addCoins(30); if (dbl) S.stat('event'); }
+    });
+    let sp = 0;
+    if (n.state === 'idle') { if (d < 6) face(); }
+    else if (n.state === 'chase') { face(); if (d > 1.25) { sp = 2.4; p.x += dx / d * sp * dt; p.z += dz / d * sp * dt; if (z) { const zx = p.x - z.x, zz = p.z - z.z, zd = Math.hypot(zx, zz); if (zd > z.r - 0.6) { p.x = z.x + zx / zd * (z.r - 0.6); p.z = z.z + zz / zd * (z.r - 0.6); } } p.y = this.world.floorAt(p.x, p.y + 1, p.z); } else if (n.st <= 0) { n.state = 'windup'; n.st = 0.55; av.flash = 0.55; play('cloth', 0.5); } }
+    else if (n.state === 'windup') { face(); if (n.st <= 0) { n.state = 'strike'; n.st = 0.18; if (d < 1.7 && Math.abs(P.pos.y - p.y) < 1.2) { if (P.iframes > 0) this.fx.text(P.pos.x, P.pos.y + 1.5, P.pos.z, 'Esquivou!', '#bfe6ff'); else { let dmg = 12; const a = Math.atan2(-(p.x - P.pos.x), -(p.z - P.pos.z)), blocked = P.block && Math.abs(angDiff(P.headYaw, a)) < 1.2; if (blocked) { dmg = S.held().block ? 1 : 2; S.stat('blocked'); P.stamina = Math.max(0, P.stamina - 10); } S.hp = Math.max(0, S.hp - dmg); this.lastHurt = t; P.vel.x -= dx / d * (blocked ? 1.5 : 4.5); P.vel.z -= dz / d * (blocked ? 1.5 : 4.5); play(blocked ? 'block' : 'punch_heavy', 0.9); P.pulse(1, 70); emit('hp'); emit('hurt', blocked); if (S.hp <= 0) this._knockedOut(n.name); } } } }
+    else if (n.state === 'strike') { if (n.st <= 0) { n.state = 'chase'; n.st = 0.7 + Math.random() * 0.6; } }
+    else if (n.state === 'ko') { if (n.st <= 0) { n.state = 'idle'; n.hp = n.hpMax; av.setEmote(0); av.setName(n.name, n.role); p.set(n.hx, n.y, n.hz); } }
+    av.speed = sp; av.grounded = true;
+  },
+
+  _remotes(dt) {
+    const P = this.player, k = Math.min(1, dt * 12), t = this.time;
+    this.remotes.forEach((r) => {
+      if (!r.has) return; const av = r.av, p = av.root.position;
+      const ox = p.x, oz = p.z; if (Math.abs(r.x - p.x) > 12 || Math.abs(r.z - p.z) > 12) p.set(r.x, r.y, r.z); else { p.x += (r.x - p.x) * k; p.y += (r.y - p.y) * k; p.z += (r.z - p.z) * k; }
+      av.root.rotation.y += angDiff(av.root.rotation.y, r.yaw) * k; av.headYaw = r.hy; av.headPitch = r.hp;
+      av.speed = av.speed * 0.8 + Math.hypot(p.x - ox, p.z - oz) / Math.max(dt, 0.001) * 0.2; av.grounded = !!(r.flags & 1); av.blocking = !!(r.flags & 2);
+      const dx = p.x - P.pos.x, dz = p.z - P.pos.z, d = Math.hypot(dx, dz); r.near = d < perf.animDist; av.root.visible = d < perf.drawDist; if (av.tag) av.tag.visible = d < perf.tagDist;
+      av.update(dt, !r.near);
+      if (d > 2.6) return;
+      // socos (somente na zona de luta) e carinho (fora dela)
+      if (P.fightZone && (r.flags & 4) && S.hp > 0) {
+        this._handHits(p.x, p.y + 0.62, p.z, 0.4, 1.6, (h, i) => { if (t - r.hit[i] < 0.32) return; r.hit[i] = t; const dmg = this._damage(h), l = Math.hypot(h.vel.x, h.vel.z) || 1; net.send('hit', { to: r.id, d: dmg, x: h.vel.x / l, z: h.vel.z / l }); play('punch', 0.8); P.pulse(1, 40); });
+        this._handHits(p.x, p.y + 0.98, p.z, 0.34, 1.6, (h, i) => { if (t - r.hit[i] < 0.32) return; r.hit[i] = t; const dmg = Math.round(this._damage(h) * 1.3), l = Math.hypot(h.vel.x, h.vel.z) || 1; net.send('hit', { to: r.id, d: dmg, x: h.vel.x / l, z: h.vel.z / l }); play('punch_heavy', 0.8); P.pulse(1, 50); });
+      } else if (!P.fightZone && t - r.patT > 4) {
+        for (const h of P.hands) { const dy = h.target.y - (p.y + 1.15); if (h.speed < 1.4 && h.speed > 0.15 && Math.abs(dy) < 0.22 && Math.hypot(h.target.x - p.x, h.target.z - p.z) < 0.34) { r.patT = t; net.send('pat', { to: r.id }); purr(0.7); S.stat('pat'); this.fx.burst(p.x, p.y + 1.4, p.z, 0xff6090, 6, 1.2, -1); S.toast('Você fez carinho em ' + r.meta.name + ' ❤', '#ff9ab8'); break; } }
+      }
+    });
+  },
+  _fishing(dt) {
+    const f = this.fishing; if (!f) return; const P = this.player, wy = this.world.waterY; f.t += dt;
+    if (Math.hypot(P.pos.x - f.x, P.pos.z - f.z) > 26) { this._reel(false); return; }
+    if (f.phase === 'wait') { this.bobber.position.y = wy + 0.04 + Math.sin(f.t * 3) * 0.02; if (f.t > f.biteAt) { f.phase = 'bite'; f.t = 0; play('bite', 1); play('splash', 0.5); P.pulse(1, 120); this.fx.burst(f.x, wy + 0.1, f.z, 0xffffff, 8, 2); } else if (f.t > 0.8 && P.flickUp > 3.2) { S.toast('Cedo demais!', '#ff9a8a'); this._reel(false); return; } }
+    else { this.bobber.position.y = wy - 0.12 + Math.sin(f.t * 30) * 0.03; if (P.flickUp > 1.6) { this._reel(false); return; } if (f.t > 1.3) { S.toast('O peixe escapou...', '#ff9a8a'); f.phase = 'wait'; f.t = 0; f.biteAt = 2 + Math.random() * 4; } }
+    const a = this.line.geometry.attributes.position.array, h = P.hands[0].pos; a[0] = h.x; a[1] = h.y; a[2] = h.z; a[3] = f.x; a[4] = this.bobber.position.y; a[5] = f.z; this.line.geometry.attributes.position.needsUpdate = true;
+  },
+  // eventos mundiais (determinísticos pelo relógio sincronizado)
+  _events(dt, now) {
+    this.evT -= dt; if (this.evT > 0) return; this.evT = 2; S.rollDaily();
+    const ev = currentEvent(now), E = this.E, here = ev.active && ev.map === this.mapId;
+    if (ev.active && this.annBlock !== ev.block) { this.annBlock = ev.block; S.toast('🌟 Evento: ' + ev.ev.n + ' — ' + ev.ev.d + ' ' + MAPS[ev.map].name + '!', '#ffe070'); play('event', 0.6); emit('event'); }
+    if (here && this.evBlock !== ev.block) {
+      this.evBlock = ev.block; const r = rng(ev.block * 7919 + hashStr(this.mapId)), sp = this.def.spawn;
+      const spot = () => { for (let i = 0; i < 30; i++) { const a = r() * 6.28, d = 8 + r() * 26, x = sp[0] + Math.cos(a) * d, z = sp[1] + Math.sin(a) * d; if (Math.abs(x) < this.world.half - 6 && Math.abs(z) < this.world.half - 6 && this.world.heightAt(x, z) > this.world.waterY + 0.2) return [x, z]; } return [sp[0] + 4, sp[1] + 4]; };
+      if (ev.ev.id === 'crystal') for (const o of E.ores) if (o.ev) { const s = spot(); o.x = s[0]; o.z = s[1]; o.y = this.world.heightAt(o.x, o.z); o.alive = true; o.hp = ORES.star.hp; this._oreVis(o); this.fx.burst(o.x, o.y + 1, o.z, 0xfff27a, 10, 3); }
+      if (ev.ev.id === 'goldchest' && !S.chestOpen('ev' + ev.block)) { const c = E.chests[E.chests.length - 1], s = spot(); c.x = s[0]; c.z = s[1]; c.y = this.world.heightAt(c.x, c.z); c.hidden = false; this._chestVis(c); }
+    } else if (!here && this.evBlock !== -1) { this.evBlock = -1; for (const o of E.ores) if (o.ev && o.alive) { o.alive = false; this._oreVis(o); } const c = E.chests[E.chests.length - 1]; if (!c.hidden) { c.hidden = true; this._chestVis(c); } }
+  }
+};
