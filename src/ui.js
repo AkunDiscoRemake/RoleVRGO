@@ -6,6 +6,7 @@ import { perf } from './perf.js';
 import { MAPS, MAP_ORDER, MAP_ICONS } from './maps.js';
 import { ITEMS, RARITY, QUESTS, ACHIEVEMENTS, PROFS, SHOPS, PICKS, GLOVES, RODS, QUICK_CHAT, currentEvent, HELD, PROPS, RECIPES, ACCS, PERKS, ALBUM } from './data.js';
 import { music } from './music.js';
+import { hands } from './hands.js';
 import { rec } from './rec.js';
 import { FUR_COLORS, EYE_COLORS, PATTERNS, HATS, EMOTES, roundRect } from './cat.js';
 import { play, setVolume, audioVolume } from './assets.js';
@@ -41,7 +42,7 @@ export const ui = {
     on('toast', (t, c) => { this.toasts.push({ t, c: c || '#fff', life: 4.5 }); if (this.toasts.length > 3) this.toasts.shift(); this.hudDirty = true; });
     for (const ev of ['hp', 'xp', 'coins', 'net', 'combo', 'map', 'event', 'rec']) on(ev, () => { this.hudDirty = true; });
     on('view', (m) => { S.toast('📷 Câmera: ' + ['1ª pessoa', '2ª pessoa', '3ª pessoa'][m - 1], '#bfe6ff'); this.dirty = true; });
-    for (const ev of ['inv', 'coins', 'players', 'friends', 'party', 'chat', 'lobby', 'map', 'meta']) on(ev, () => { if (this.open) this.dirty = true; });
+    for (const ev of ['inv', 'coins', 'players', 'friends', 'party', 'chat', 'lobby', 'map', 'meta', 'hands']) on(ev, () => { if (this.open) this.dirty = true; });
     on('dialog', (n) => { this.npc = n; this.line = Math.floor(Math.random() * n.lines.length); this.show('dialog'); });
     on('friendsDirty', () => G.refreshFriends()); on('partyChat', (m) => { G._log('[grupo] ' + m.n, m.x); play('msg', 0.4); });
     on('combo', (n) => { this.combo = n; });
@@ -253,14 +254,16 @@ export const ui = {
     this.btn(20, 330, 230, 44, '❓ Como jogar', () => { this.page = 'help'; }, { bg: '#33355a' });
     this.btn(266, 330, 230, 44, '💾 Salvar agora', () => { emit('saveNow'); this.msg = net.online ? 'Progresso salvo no servidor' : 'Offline: salvo só neste aparelho'; }, { bg: '#33355a' });
     if (G.renderer.xr.isPresenting) this.btn(512, 330, 236, 44, '🚪 Sair do VR', () => { const s = G.renderer.xr.getSession(); if (s) s.end(); }, { bg: '#b04050' });
-    this.text(270, 400, 'Nadar: braçadas com as patas ou gatilho (WASD/Espaço/C no PC).', { fs: 14, c: '#bfe6ff', b: false });
-    this.text(20, 440, 'RoleVRGO v' + VERSION + '  ·  Assets: Kenney.nl (CC0)  ·  Multiplayer: Supabase Realtime', { fs: 15, c: '#99a', b: false });
-    this.text(20, 462, 'ID temporário deste aparelho: ' + (net.id ? net.id.slice(0, 8) : '—') + '  ·  ' + (net.online ? 'conectado' : 'OFFLINE (jogo solo, sem salvar na nuvem)'), { fs: 15, c: net.online ? '#9cf09c' : '#ff9a8a', b: false });
+    this.btn(266, 380, 300, 40, '✋ Mãos pela câmera: ' + (hands.loading ? '...' : hands.on ? 'SIM' : 'NÃO'), () => { if (hands.on) hands.stop(); else hands.start(); }, { bg: hands.on ? '#3a9a5a' : '#33355a', fs: 15, off: hands.loading });
+    if (self.RVcard && self.RVcard.on) { this.btn(574, 380, 174, 40, 'Sair do VR Box', () => { self.RVcard.exit(); this.hide(); }, { bg: '#b04050', fs: 15 }); this.btn(574, 330, 174, 44, '🧭 Recentralizar', () => this.player.recenter(), { bg: '#33355a', fs: 15 }); }
+    this.text(20, 428, 'Mãos: ' + hands.status + (hands.on ? ' (' + hands.fps.toFixed(0) + ' Hz)' : '') + '  ·  Gamepad/Joy-Con: ' + (this.player.gpFound ? 'conectado' : 'não detectado (aperte um botão)'), { fs: 13, c: '#bfe6ff', b: false, max: W - 40 });
+    this.text(20, 446, 'RoleVRGO v' + VERSION + '  ·  Assets: Kenney.nl (CC0)  ·  Multiplayer: Supabase Realtime', { fs: 15, c: '#99a', b: false });
+    this.text(20, 466, 'ID temporário deste aparelho: ' + (net.id ? net.id.slice(0, 8) : '—') + '  ·  ' + (net.online ? 'conectado' : 'OFFLINE (jogo solo, sem salvar na nuvem)'), { fs: 15, c: net.online ? '#9cf09c' : '#ff9a8a', b: false });
   },
   p_help() {
     this.text(20, 34, '❓ Como jogar', { fs: 24, c: '#ffd76a' }); let y = 74;
-    const L = this.player.desktop ? ['Mouse: olhar e apontar as patas · WASD: andar · Espaço: pular · Shift: correr', 'Clique: gatilho (agarrar superfícies, falar com NPC, abrir baú, pescar)', 'Olhe para o chão e mova o mouse para empurrar com as patas (impulso).', 'M/Tab: menu · B: menu rápido · V: câmera 1ª/2ª/3ª pessoa · R: gravar vídeo · Enter: chat · Q/E: esquiva · F: bloquear', 'Socos: mova as patas rápido contra o alvo (bonecos, Mestre, jogadores na zona de luta).']
-      : ['IMPULSO: aponte o controle para o chão até as patas encostarem e varra para trás.', 'ESCALAR: encoste as patas numa parede, SEGURE o gatilho, puxe para baixo e solte.', 'ANDAR: segure o gatilho com as patas no ar — você anda na direção apontada.', 'TOUCHPAD: centro = menu · cima (ou botão Back) = menu rápido · lados = girar/esquiva · baixo = bloquear.', 'APONTAR + GATILHO: falar com NPCs, abrir baús, lançar a linha de pesca na água.', 'SOCAR / MINERAR / CAVAR: bata com as patas rápido no alvo. Mais velocidade = mais dano.'];
+    const L = this.player.desktop ? ['Mouse: olhar e apontar as patas · WASD: andar · Espaço: pular · Shift: correr', 'Clique: gatilho (agarrar superfícies, falar com NPC, abrir baú, pescar)', 'Olhe para o chão e mova o mouse para empurrar com as patas (impulso).', 'M/Tab: menu · B: menu rápido · V: câmera · R: gravar · T (segurar): teleporte · Enter: chat · Q/E: esquiva · F: bloquear', 'Socos: mova as patas rápido contra o alvo (bonecos, Mestre, jogadores na zona de luta).']
+      : ['IMPULSO: aponte o controle para o chão até as patas encostarem e varra para trás.', 'ESCALAR: encoste as patas numa parede, SEGURE o gatilho, puxe para baixo e solte.', 'ANDAR: segure o gatilho com as patas no ar — você anda na direção apontada.', 'TOUCHPAD: toque no centro = menu · SEGURAR o centro = mira de teleporte (solte para ir) · cima = menu rápido · lados = girar · baixo = bloquear.', 'APONTAR + GATILHO: falar com NPCs, abrir baús, lançar a linha de pesca na água.', 'SOCAR / MINERAR / CAVAR: bata com as patas rápido no alvo. Mais velocidade = mais dano.'];
     for (const l of L) { y = this.wrap(24, y, '• ' + l, W - 50, 24, { fs: 17, b: false }) + 8; }
     this.wrap(24, y + 6, 'As duas patas são bolinhas flutuantes: uma segue o controle e a outra espelha o movimento. O Oculus Go só rastreia a rotação do controle (3DoF), então tudo foi pensado para girar o pulso.', W - 50, 22, { fs: 15, b: false, c: '#bfe6ff' });
   },

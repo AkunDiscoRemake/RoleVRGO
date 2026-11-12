@@ -11,6 +11,7 @@ import { CatAvatar, defaultLook, cleanLook, FUR_COLORS, EYE_COLORS, PATTERNS } f
 import { store, emit, on } from './util.js';
 import { rec } from './rec.js';
 import { music } from './music.js';
+import { hands } from './hands.js';
 
 THREE.ColorManagement.enabled = false; // pipeline em espaço gama: mais leve no Adreno 530 do Oculus Go
 const $ = (id) => document.getElementById(id);
@@ -23,7 +24,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.05, 400);
 const player = new Player(scene, camera, renderer);
 const basePR = Math.min(devicePixelRatio || 1, 2);
-function resize() { if (renderer.xr.isPresenting) return; renderer.setPixelRatio(basePR * perf.scale); renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+function resize() { if (renderer.xr.isPresenting) return; renderer.setPixelRatio(basePR * perf.scale); renderer.setSize(innerWidth, innerHeight, false); camera.fov = 72; camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize);
 
 // aplica o nível de qualidade escolhido pelo controlador
@@ -72,7 +73,7 @@ async function boot() {
     console.warn(e); S.load(saved ? saved.d : null); net.online = false;
     st.textContent = '⚠ Sem conexão com o servidor — modo solo offline (progresso salvo só neste aparelho).'; $('roomsBox').style.display = 'none';
   }
-  $('play').disabled = false;
+  $('play').disabled = false; $('card').disabled = false;
   if (navigator.xr && navigator.xr.isSessionSupported) navigator.xr.isSessionSupported('immersive-vr').then((ok) => { if (ok) { $('vr').disabled = false; $('vr').textContent = '🥽 Entrar em VR'; $('vr2').style.display = 'block'; } else $('vr').textContent = 'VR não disponível neste navegador'; }).catch(() => { $('vr').textContent = 'VR não disponível'; });
   else $('vr').textContent = 'VR não disponível neste navegador';
 }
@@ -104,6 +105,21 @@ async function enterVR() {
   } catch (e) { $('status').textContent = 'Não foi possível iniciar o VR: ' + e.message; }
 }
 $('play').onclick = start; $('vr').onclick = enterVR; $('vr2').onclick = enterVR;
+// ---------- VR Box / Cardboard: tela dividida + giroscópio do celular (sem WebXR) ----------
+let cardboard = false; const stereo = new THREE.StereoCamera(); stereo.eyeSep = 0.064;
+async function enterCardboard() {
+  let noGyro = false;
+  try { if (typeof DeviceOrientationEvent !== 'undefined' && DeviceOrientationEvent.requestPermission) { const r = await DeviceOrientationEvent.requestPermission(); if (r !== 'granted') noGyro = true; } } catch (e) { /* navegadores sem pedido de permissão */ }
+  // tela cheia e trava de paisagem são opcionais: não esperamos por elas (alguns navegadores nunca respondem)
+  const el = document.documentElement; try { const f = el.requestFullscreen ? el.requestFullscreen() : el.webkitRequestFullscreen ? el.webkitRequestFullscreen() : null; if (f && f.then) f.then(() => { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); }).catch(() => {}); } catch (e) { /* tela cheia opcional */ }
+  try { if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(() => {}); } catch (e) { /* sem wake lock */ }
+  cardboard = true; player.enableCardboard(); if (!store.get('profile', null)) store.set('profile', 'performance');
+  start(); $('hint').style.display = 'none'; $('vr2').style.display = 'none'; if ($('ht').checked) hands.start();
+  setTimeout(() => S.toast('VR Box: toque na tela = gatilho · segure para andar · olhe para mirar', '#bfe6ff'), 2500);
+  setTimeout(() => { if (noGyro || !player.devOK) S.toast('Sem sensor de movimento: arraste o dedo na tela para olhar', '#ff9a8a'); }, 6000);
+}
+$('card').onclick = enterCardboard;
+self.RVcard = { exit() { cardboard = false; player.card = false; renderer.setScissorTest(false); resize(); if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen(); }, get on() { return cardboard; }, enter: enterCardboard };
 
 // ---------- loop ----------
 let last = 0, recFlip = false; const recCam = new THREE.PerspectiveCamera(80, 16 / 9, 0.05, 400); scene.add(recCam);
@@ -114,7 +130,15 @@ renderer.setAnimationLoop((t, frame) => {
   perf.tick(raw);
   // resolução dinâmica dentro do VR (quando o navegador suporta viewport scaling)
   if (frame && renderer.xr.isPresenting) { const ref = renderer.xr.getReferenceSpace(), pose = ref && frame.getViewerPose(ref); if (pose) for (const v of pose.views) if (v.requestViewportScale) v.requestViewportScale(Math.max(0.5, perf.scale)); }
+  if (hands.on && hands.tick(performance.now())) { if (hands.pinch) player._press(); else player._release(); }
   G.update(dt); ui.update(dt); rec.tick();
+  if (cardboard && !renderer.xr.isPresenting) { // dois olhos lado a lado
+    const w = canvas.width, h = canvas.height, hw = Math.floor(w / 2); if (camera.aspect !== hw / h) { camera.aspect = hw / h; camera.fov = 86; camera.updateProjectionMatrix(); }
+    scene.updateMatrixWorld(); camera.updateMatrixWorld(); stereo.aspect = 1; stereo.update(camera); stereo.cameraL.projectionMatrix.copy(camera.projectionMatrix); stereo.cameraR.projectionMatrix.copy(camera.projectionMatrix);
+    renderer.setScissorTest(true); renderer.setScissor(0, 0, hw / renderer.getPixelRatio(), h / renderer.getPixelRatio()); renderer.setViewport(0, 0, hw / renderer.getPixelRatio(), h / renderer.getPixelRatio()); renderer.render(scene, stereo.cameraL);
+    renderer.setScissor(hw / renderer.getPixelRatio(), 0, hw / renderer.getPixelRatio(), h / renderer.getPixelRatio()); renderer.setViewport(hw / renderer.getPixelRatio(), 0, hw / renderer.getPixelRatio(), h / renderer.getPixelRatio()); renderer.render(scene, stereo.cameraR);
+    renderer.setScissorTest(false);
+  } else
   renderer.render(scene, camera);
   // gravando dentro do VR: o canvas da página não recebe a imagem dos olhos, então desenhamos nele uma visão extra (a cada 2 quadros)
   if (rec.on && renderer.xr.isPresenting && (recFlip = !recFlip)) {
@@ -125,5 +149,6 @@ renderer.setAnimationLoop((t, frame) => {
 });
 on('look', () => { /* a cor das patas vem de S.look a cada quadro */ });
 addEventListener('beforeunload', () => { net.leave(); });
-self.RV = { G, S, net, perf, player, ui, rec, music }; // para depuração no console
+player.handTrack = hands;
+self.RV = { G, S, net, perf, player, ui, rec, music, hands }; // para depuração no console
 boot();

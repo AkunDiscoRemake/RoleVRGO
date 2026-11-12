@@ -36,6 +36,9 @@ export const G = {
     this.bobber = new THREE.Mesh(new THREE.IcosahedronGeometry(0.09, 0), new THREE.MeshBasicMaterial({ color: 0xff4040 })); this.bobber.visible = false; scene.add(this.bobber);
     this.line = new THREE.Line(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3)), new THREE.LineBasicMaterial({ color: 0xffffff })); this.line.frustumCulled = false; this.line.visible = false; scene.add(this.line);
     player.onTrigger = () => this.onTrigger();
+    this.tpBall = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22, 1), new THREE.MeshBasicMaterial({ color: 0x60e8ff, transparent: true, opacity: 0.85, fog: false })); this.tpBall.visible = false; this.tpBall.renderOrder = 8; scene.add(this.tpBall);
+    this.tpArc = new THREE.Line(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(player.tp.pts, 3).setUsage(THREE.DynamicDrawUsage)), new THREE.LineBasicMaterial({ color: 0x60e8ff, transparent: true, opacity: 0.9, fog: false })); this.tpArc.frustumCulled = false; this.tpArc.visible = false; scene.add(this.tpArc);
+    on('teleported', () => { play('portal', 0.45, 0, 1.5); const p = player.pos; this.fx.burst(p.x, p.y + 0.6, p.z, 0x60e8ff, 18, 3, 1); });
     this.heldMesh = new THREE.Mesh(modelGeometry('survival/tool-pickaxe'), instMat); this.heldMesh.visible = false; this.heldMesh.frustumCulled = false; scene.add(this.heldMesh);
     this._bindEvents(); this.ready = true;
   },
@@ -264,6 +267,7 @@ export const G = {
     if (this.emoteT > 0 && (this.emoteT -= dt) <= 0) { this.myEmote = 0; P.frozen = false; P.emoteId = 0; }
     if (this.comboT > 0 && (this.comboT -= dt) <= 0) { this.combo = 0; emit('combo', 0); }
     this._held(dt);
+    const tp = P.tp; this.tpBall.visible = this.tpArc.visible = tp.show; if (tp.show) { this.tpBall.position.set(tp.x, tp.y + 0.22 + Math.sin(this.time * 6) * 0.04, tp.z); this.tpBall.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.geometry.setDrawRange(0, tp.n); this.tpArc.geometry.attributes.position.needsUpdate = true; }
     // passos
     if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; play(P.inWater ? 'splash' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
     this._interact(dt, now); this._npcs(dt); this._enemies(dt); this._self(dt); this._remotes(dt); this._fishing(dt); this._events(dt, now);

@@ -28,6 +28,10 @@ export class Player {
     this.keys = {}; this.desktop = true; this.locked = false; this.padWas = false;
     this.onTrigger = null; this.onRelease = null; this.onMenu = null; this.onBack = null; // callbacks do jogo
     this.speedMul = 1; this.jumpMul = 1; this.backWas = false; this.swimming = false; this.swimDist = 0;
+    // VR Box / Cardboard (giroscópio do celular), gamepads/Joy-Cons, rastreamento de mãos e teleporte
+    this.card = false; this.devQ = new THREE.Quaternion(); this.devOK = false; this._yaw0 = 0; this.gpMove = { x: 0, y: 0 }; this.gpAim = { x: 0, y: 0 }; this._gb = []; this._gbPrev = []; this.gpTrig = false; this.gpBlock = false; this.gpFound = false;
+    this.handTrack = null; this.tracked = false; this.tpHeld = false; this.tpWas = false; this.tpCd = 0; this.padT = 0; this.padCenter = false; this.xrTp = false;
+    this.tp = { show: false, valid: false, x: 0, y: 0, z: 0, n: 0, pts: new Float32Array(40 * 3) };
     this.viewMode = 1; this.viewYaw = 0; this.emoteId = 0; this.emoteTime = 0; // câmera: 1 = 1ª pessoa, 2 = 2ª (de frente), 3 = 3ª (por trás)
     this.controllers = [];
     for (let i = 0; i < 2; i++) {
@@ -53,6 +57,10 @@ export class Player {
       emit('key', e.code);
     });
     addEventListener('keyup', (e) => { this.keys[e.code] = false; });
+    // toque na tela = gatilho (o botão do VR Box/Cardboard toca a tela)
+    el.addEventListener('touchstart', (e) => { if (this.renderer.xr.isPresenting) return; e.preventDefault(); const t = e.touches[0]; this._tx = t.clientX; this._ty = t.clientY; this._press(); }, { passive: false });
+    el.addEventListener('touchmove', (e) => { if (this.renderer.xr.isPresenting) return; e.preventDefault(); const t = e.touches[0]; if (!(this.card && this.devOK)) { this.yaw += (t.clientX - this._tx) * 0.005; this.pitch = clamp(this.pitch + (t.clientY - this._ty) * 0.005, -1.5, 1.5); } this._tx = t.clientX; this._ty = t.clientY; }, { passive: false }); // sem giroscópio: arrastar o dedo olha em volta
+    el.addEventListener('touchend', (e) => { if (this.renderer.xr.isPresenting) return; e.preventDefault(); this._release(); }, { passive: false });
     el.addEventListener('mousedown', (e) => {
       if (this.renderer.xr.isPresenting) return;
       if (!this.locked && el.requestPointerLock) { el.requestPointerLock(); }
@@ -76,6 +84,36 @@ export class Player {
     this.iframes = 0.38; this.dodgeCd = 1.0; this.stamina -= 20; emit('dodge');
   }
   // direção de visão no plano
+  // liga o modo VR Box: a cabeça segue o giroscópio/bússola do CELULAR (não o do controle)
+  enableCardboard() {
+    if (this.card) return; this.card = true;
+    const zee = new THREE.Vector3(0, 0, 1), q1 = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)), q0 = new THREE.Quaternion(), eu = new THREE.Euler(), qy = new THREE.Quaternion(), R = Math.PI / 180;
+    addEventListener('deviceorientation', (e) => {
+      if (e.alpha == null || !this.card) return; const o = ((screen.orientation && screen.orientation.angle) || window.orientation || 0) * R;
+      eu.set(e.beta * R, e.alpha * R, -e.gamma * R, 'YXZ'); this.devQ.setFromEuler(eu).multiply(q1).multiply(q0.setFromAxisAngle(zee, -o));
+      if (!this.devOK) { _e.setFromQuaternion(this.devQ, 'YXZ'); this._yaw0 = _e.y; this.devOK = true; }
+      this.devQ.premultiply(qy.setFromAxisAngle(UP, -this._yaw0));
+    });
+  }
+  recenter() { this.devOK = false; }
+  // Gamepads / Joy-Cons pela Gamepad API: só botões e direcionais (nenhum giroscópio de controle é lido)
+  _pollPads() {
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [], B = this._gb, prev = this._gbPrev; for (let i = 0; i < 18; i++) { prev[i] = B[i]; B[i] = false; }
+    let mx = 0, my = 0, ax = 0, ay = 0, found = false, lone = [];
+    for (let k = 0; k < gps.length; k++) { const gp = gps[k]; if (!gp || !gp.connected) continue; found = true;
+      for (let i = 0; i < Math.min(18, gp.buttons.length); i++) if (gp.buttons[i] && gp.buttons[i].pressed) B[i] = true;
+      if (gp.axes.length >= 4) { mx += gp.axes[0]; my += gp.axes[1]; ax += gp.axes[2]; ay += gp.axes[3]; } else if (gp.axes.length >= 2) lone.push(gp); }
+    if (lone.length) { lone.sort((a, b) => (/\(R\)|right/i.test(a.id) ? 1 : 0) - (/\(R\)|right/i.test(b.id) ? 1 : 0)); mx += lone[0].axes[0]; my += lone[0].axes[1]; if (lone[1]) { ax += lone[1].axes[0]; ay += lone[1].axes[1]; } }
+    const dz = (v) => (Math.abs(v) < 0.18 ? 0 : clamp(v, -1, 1));
+    this.gpMove.x = dz(mx); this.gpMove.y = dz(my); this.gpAim.x += (dz(ax) - this.gpAim.x) * 0.5; this.gpAim.y += (dz(ay) - this.gpAim.y) * 0.5; this.gpFound = found; if (!found) return;
+    const down = (i) => B[i] && !prev[i];
+    const trig = !!(B[7] || B[0]); if (trig !== this.gpTrig) { this.gpTrig = trig; if (trig) this._press(); else this._release(); }
+    this.gpBlock = !!B[6];
+    if (down(1) && this.grounded && !this.frozen && !this.swimming) { this.vel.y = 4.6; this.grounded = false; emit('jump'); }
+    if (down(2)) this.cycleView();
+    if (down(4)) { if (this.fightZone) this.dodge(-1); else this.yaw += Math.PI / 6; } if (down(5)) { if (this.fightZone) this.dodge(1); else this.yaw -= Math.PI / 6; }
+    if (down(9) && this.onMenu) this.onMenu(); if (down(8) && this.onBack) this.onBack();
+  }
   cycleView() { this.viewMode = this.viewMode % 3 + 1; emit('view', this.viewMode); }
   forward(out) { return out.set(-Math.sin(this.headYaw), 0, -Math.cos(this.headYaw)); }
   headPos(out) { return this.camera.getWorldPosition(out); }
@@ -93,15 +131,16 @@ export class Player {
       for (let f = 0.2; f <= 1.001; f += 0.2) { _b.set(this.pos.x + ox * f, this.pos.y + EYE + oy * f, this.pos.z + oz * f); if (this._w.collide(_b, 0.22, _n)) { k = Math.max(0.12, f - 0.2); break; } }
       this.camK = k < (this.camK || 1) ? k : (this.camK || 1) + (k - (this.camK || 1)) * Math.min(1, dt * 4); H.position.z *= this.camK; H.position.y = EYE + oy * this.camK; } else this.camK = 1;
     this.rig.rotation.y = this.yaw; this.rig.updateMatrixWorld(true);
-    if (!xr) { this.camera.rotation.set(this.pitch, 0, 0, 'YXZ'); this.camera.position.set(0, 0, 0); this.camera.updateMatrixWorld(true); }
+    if (!xr) { if (this.card && this.devOK) this.camera.quaternion.copy(this.devQ); else this.camera.rotation.set(this.pitch, 0, 0, 'YXZ'); this.camera.position.set(0, 0, 0); this.camera.updateMatrixWorld(true); }
     // cabeça
     const cam = xr ? this.renderer.xr.getCamera() : this.camera;
     if (xr) { cam.matrixWorld.decompose(_a, _q, _b); } else this.camera.getWorldQuaternion(_q);
-    _e.setFromQuaternion(_q, 'YXZ'); this.viewYaw = _e.y; this.headYaw = vm === 2 ? _e.y - Math.PI : _e.y; this.headPitch = vm === 1 ? _e.x : 0;
+    _e.setFromQuaternion(_q, 'YXZ'); const eX = _e.x; this.viewYaw = _e.y; this.headYaw = vm === 2 ? _e.y - Math.PI : _e.y; this.headPitch = vm === 1 ? _e.x : 0;
     this.rawDir.set(0, 0, -1).applyQuaternion(_q);
     let d = this.headYaw - this.bodyYaw; d = Math.atan2(Math.sin(d), Math.cos(d)); this.bodyYaw += d * Math.min(1, dt * 6);
     // controle
     let pad = false, px = 0, py = 0;
+    if (!xr) this._pollPads(); else { this.gpMove.x = this.gpMove.y = 0; this.gpBlock = false; }
     if (xr) {
       const c = this.active && this.active.userData.src ? this.active : this.controllers.find((k) => k.userData.src);
       if (c) {
@@ -124,7 +163,7 @@ export class Player {
     this.ctrlDir.set(0, 0, -1).applyQuaternion(this.ctrlQuat);
     // mira: no VR é o "laser" do controle; no desktop é o centro da tela e as patas ficam um pouco abaixo
     if (xr) { this.aimDir.copy(vm === 1 ? this.ctrlDir : this.rawCtrl); }
-    else { this.aimDir.copy(this.rawDir); _e.set(clamp(this.pitch - 0.38, -1.55, 1.5), this.yaw, 0, 'YXZ'); this.ctrlDir.set(0, 0, -1).applyEuler(_e); }
+    else { this.aimDir.copy(this.rawDir); _e.set(clamp(eX - 0.38 - this.gpAim.y * 1.15, -1.55, 1.5), this.headYaw - this.gpAim.x * 0.9, 0, 'YXZ'); this.ctrlDir.set(0, 0, -1).applyEuler(_e); } // direcional direito do gamepad move as patas (sem giroscópio)
     // "puxão" para cima do controle (usado na pesca)
     this.flickUp = (this.ctrlDir.y - this.prevDir.y) / Math.max(dt, 0.001); this.prevDir.copy(this.ctrlDir);
     // cliques do touchpad por zona: cima/centro = menu, lados = girar (ou esquiva em luta), baixo = bloquear
@@ -132,10 +171,13 @@ export class Player {
       if (py > 0.45 && Math.abs(px) < 0.6) { /* bloqueio: tratado como hold */ }
       else if (Math.abs(px) > 0.5) { if (this.fightZone) this.dodge(px > 0 ? 1 : -1); else { this.yaw -= Math.sign(px) * Math.PI / 6; emit('turn'); } }
       else if (py < -0.45 && this.onBack) this.onBack(); // topo do touchpad = menu rápido
-      else if (this.onMenu) this.onMenu();
+      else { this.padCenter = true; this.padT = 0; } // centro: toque curto = menu, segurar = mira de teleporte
     }
+    this.xrTp = false;
+    if (this.padCenter) { if (pad) { this.padT += dt; if (this.padT > 0.3) this.xrTp = true; } else { this.padCenter = false; if (this.padT <= 0.3 && this.onMenu) this.onMenu(); } }
     this.padWas = pad;
-    this.blockInput = !!(this.guardHold || this.blockKey);
+    this.tpHeld = this.xrTp || (!xr && (!!this.keys.KeyT || !!this._gb[3] || !!this._gb[10] || !!this._gb[11]));
+    this.blockInput = !!(this.guardHold || this.blockKey || this.gpBlock);
   }
 
   update(dt, world) {
@@ -168,6 +210,20 @@ export class Player {
     // a câmera externa não entra no chão
     if (this.viewMode !== 1) { this.camera.getWorldPosition(_b); const fl = world.heightAt(_b.x, _b.z) + 0.4; this.camLift = Math.max(0, (this.camLift || 0) + (fl - _b.y)) * 0.9; } else this.camLift = 0;
     if (this.emoteId) this.emoteTime += dt;
+    // rastreamento de mãos pela câmera (MediaPipe): posições reais das mãos substituem os alvos (6DoF)
+    this.tracked = false; const HT = this.handTrack;
+    if (HT && HT.on && !this.block && !this.emoteId && !this.renderer.xr.isPresenting) { const now = performance.now(); this.camera.getWorldPosition(_b); this.camera.getWorldQuaternion(_q); let n = 0;
+      for (let i = 0; i < 2; i++) { const d = HT.data[i]; if (!d || now - d.t > 450) continue; this.hands[i].target.set(d.x, d.y, d.z).applyQuaternion(_q).add(_b); n |= 1 << i; }
+      if (n === 1 || n === 2) { const a = this.hands[n === 1 ? 0 : 1].target, o = this.hands[n === 1 ? 1 : 0].target, lx2 = (a.x - P.x) * cb - (a.z - P.z) * sb; o.set(a.x - 2 * lx2 * cb, a.y, a.z + 2 * lx2 * sb); }
+      if (n) { this.tracked = true; _a.copy(this.hands[n & 1 ? 0 : 1].target).sub(_b); _a.y += 0.2; if (_a.lengthSq() > 0.01) this.ctrlDir.copy(_a.normalize()); } }
+    // mira de teleporte: arco a partir da pata (ou do olhar); soltar teleporta
+    const T = this.tp; this.tpCd -= dt; T.show = false;
+    if (this.tpHeld && !this.frozen && this.tpCd <= 0) {
+      const xr2 = this.renderer.xr.isPresenting; if (xr2 && this.viewMode === 1) { _a.copy(this.hands[0].target); _n.copy(this.ctrlDir); } else { _a.copy(this.aimPos); _n.copy(this.aimDir); }
+      let vx = _n.x * 10, vy = _n.y * 10 + 1.5, vz = _n.z * 10; T.n = 0; T.valid = false; T.show = true;
+      for (let k = 0; k < 40; k++) { T.pts[k * 3] = _a.x; T.pts[k * 3 + 1] = _a.y; T.pts[k * 3 + 2] = _a.z; T.n = k + 1; if (k > 1) { _b.copy(_a); if (world.collide(_b, 0.12, _q)) { if (_q.y > 0.6 && _b.y - 0.12 - P.y < 2.8 && !this.fightZone && !(world.swim ? false : _b.y < world.waterY)) { T.valid = true; } T.x = _b.x; T.y = _b.y - 0.12; T.z = _b.z; break; } } vy -= GRAVITY * 0.05; _a.x += vx * 0.05; _a.y += vy * 0.05; _a.z += vz * 0.05; }
+    } else if (this.tpWas && T.valid && this.tpCd <= 0 && !this.frozen) { this.teleport(T.x, T.y + 0.05, T.z); this.tpCd = 0.5; T.valid = false; emit('teleported'); }
+    this.tpWas = this.tpHeld;
 
     // ---- solver das mãos (âncoras) ----
     let touching = 0; _a.set(0, 0, 0);
@@ -227,7 +283,8 @@ export class Player {
         if (this.walkHeld) { const l = Math.hypot(dir.x, dir.z); if (l > 0.2) { wx = dir.x / l; wz = dir.z / l; } }
         if (this.desktop) {
           const f = (this.keys.KeyW || this.keys.ArrowUp ? 1 : 0) - (this.keys.KeyS || this.keys.ArrowDown ? 1 : 0), r = (this.keys.KeyD || this.keys.ArrowRight ? 1 : 0) - (this.keys.KeyA || this.keys.ArrowLeft ? 1 : 0);
-          if (f || r) { const c = Math.cos(this.yaw), s = Math.sin(this.yaw); wx = -s * f + c * r; wz = -c * f - s * r; const l = Math.hypot(wx, wz); wx /= l; wz /= l; }
+          const gf = f - this.gpMove.y, gr = r + this.gpMove.x;
+          if (gf || gr) { const c = Math.cos(this.headYaw), s = Math.sin(this.headYaw); wx = -s * gf + c * gr; wz = -c * gf - s * gr; const l = Math.hypot(wx, wz); if (l > 1) { wx /= l; wz /= l; } }
         }
       }
       const sp = WALK_SPEED * this.speedMul * (this.block ? 0.45 : 1) * (this.inWater ? 0.55 : 1) * (this.keys.ShiftLeft ? 1.5 : 1);

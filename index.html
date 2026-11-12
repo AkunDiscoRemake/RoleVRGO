@@ -32,7 +32,7 @@
 <body>
 <canvas id="c"></canvas>
 <div id="lobby"><div class="card">
-  <h1>Role<span>VR</span>GO</h1>
+  <h1>Role<span>VR</span>GO <small style="font-size:14px;background:#e8a030;color:#fff;border-radius:8px;padding:2px 8px;vertical-align:middle">BETA</small></h1>
   <div class="sub">Mundo multiplayer VR de gatos — Gorilla Locomotion, luta, mineração e roleplay. Feito para Oculus Go.</div>
   <label for="name">Nome do seu gato</label>
   <input id="name" maxlength="16" autocomplete="off">
@@ -48,11 +48,13 @@
   </div>
   <button class="big vr" id="vr" disabled>Verificando VR...</button>
   <button class="big" id="play" disabled>🖥 Jogar no navegador (sem VR)</button>
+  <button class="big" id="card" style="background:#4a5cc8" disabled>📱 VR Box / Cardboard (celular)</button>
+  <label style="text-transform:none;font-size:14px;color:#dde;display:flex;gap:8px;align-items:center"><input type="checkbox" id="ht" style="width:22px;height:22px"> Rastrear minhas mãos pela câmera (MediaPipe) no VR Box</label>
   <div id="status">Carregando...</div>
   <small>Sem cadastro: seu progresso fica ligado a este aparelho. Assets e sons: Kenney.nl (CC0).</small>
 </div></div>
 <button id="vr2">🥽 Entrar em VR</button>
-<div id="hint">Clique para controlar · WASD andar · Mouse mira as patas · Clique = gatilho · M = menu · B = menu rápido · V = câmera · R = gravar · Enter = chat · Q/E esquiva · F bloquear</div>
+<div id="hint">Clique para controlar · WASD andar · Mouse mira as patas · Clique = gatilho · M = menu · B = menu rápido · V = câmera · R = gravar · T = teleporte · Enter = chat · Q/E esquiva · F bloquear</div>
 <script>
 // polyfills mínimos para o navegador antigo do Oculus Go
 if (typeof globalThis === 'undefined') { self.globalThis = self; }
