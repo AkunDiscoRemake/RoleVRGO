@@ -219,7 +219,7 @@ export const G = {
     if (e.t === 'home') { home.remote(e); return; }
     if (e.t === 'vc') { voice.signal(e); return; }
     if (e.t === 'nk') { infect.onNet(e); return; }
-    if (e.t === 'zap') { if ([e.x, e.y, e.z].every((v) => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) < 2000)) { this._bolt(e.x, e.y, e.z, false); const r = this.remotes.get(e.f); if (r) this._log('⚡', r.meta.name + ' foi atingido por um raio!'); } return; }
+    if (e.t === 'zap') { if ([e.x, e.y, e.z].every((v) => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) < 2000)) { this._bolt(e.x, e.y, e.z, false); const r = this.remotes.get(e.f); if (r) this._log('⚡', r.meta.name + ' foi atingido por um raio!'); if (r) r.burntT = 25; } return; }
     if (e.t === 'chat') { if (r && !this.muted(e.f)) { const tx = String(e.x == null ? '' : e.x).slice(0, 80); r.av.say(tx, 6); this._log(r.meta.name, tx); play('msg', 0.4); } }
     else if (e.t === 'tree') { const tr = this.E.trees[e.i | 0]; if (tr && tr.alive) this._fell(tr, Math.min(Number(e.u) || 0, net.now() + 180000), 0, 1); }
     else if (e.t === 'ore') { const o = this.E.ores[e.i | 0]; if (o && o.alive && !o.ev) { o.alive = false; o.respawn = Math.min(Number(e.u) || 0, net.now() + 180000); this._oreVis(o); } }
@@ -260,13 +260,13 @@ export const G = {
   async refreshFriends() { if (!net.online) return; try { this.friends = await net.rpc('rv_friends'); S.setStat('friends', this.friends.filter((f) => f.status === 'accepted').length); this.remotes.forEach((r) => { r.av.tagColor = this._tagColor(r.id, r.meta); r.av.drawTag(); }); emit('friends'); } catch (e) { /* offline */ } },
   _combo() { this.combo = this.comboT > 0 ? this.combo + 1 : 1; this.comboT = 1.6; if (this.combo === 5) { S.stat('combo'); S.toast('🔥 COMBO x5!', '#ff9a40'); play('power', 0.5); } emit('combo', this.combo); },
   // ⚡ easter egg secreto: a cada segundo de jogo há 0,001% de chance de levar um raio na cabeça
-  _zapRoll(dt) { if (!this.world || this.pending || S.hp <= 0 || this.uiOpen) return; this.zapT = (this.zapT || 0) + dt; if (this.zapT < 1) return; this.zapT = 0; if (Math.random() < 0.00001) this._zap(); },
+  // chance de 0,001% POR MILISSEGUNDO (≈ um raio a cada 1min40s de jogo, em média)
+  _zapRoll(dt) { if (!this.world || this.pending || this.uiOpen) return; if (Math.random() < 1 - Math.pow(1 - 0.00001, Math.min(dt, 0.1) * 1000)) this._zap(); },
   _zap() {
     const P = this.player, x = P.pos.x, y = P.pos.y, z = P.pos.z; this._bolt(x, y, z, true); if (net.online) net.send('zap', { x, y, z });
     if (!this.zapFlash) { this.zapFlash = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.BackSide, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false })); this.zapFlash.renderOrder = 998; this.camera.add(this.zapFlash); }
-    this.zapFlash.material.opacity = 0.95; this.zapK = 0.95; P.pulse(1, 400); P.frozen = true; S.hp = 0; emit('hp');
-    S.toast('⚡ Você levou um RAIO na cabeça!', '#fff27a'); S.setStat('lightning', (S.d.stats.lightning || 0) + 1);
-    setTimeout(() => this._knockedOut('um raio ⚡'), 900);
+    this.zapFlash.material.opacity = 0.95; this.zapK = 0.95; P.pulse(1, 400); this.burntT = 25; this.player.vel.y = Math.max(this.player.vel.y, 3); // não morre: só fica torrado (e dá um pulinho do susto)
+    S.toast('⚡ Você levou um RAIO e ficou todo torrado!', '#fff27a'); S.setStat('lightning', (S.d.stats.lightning || 0) + 1);
   },
   // raio visível: zigue-zague do céu até a cabeça, clarão, faíscas, fumaça e trovão alto
   _bolt(x, y, z, me) {
@@ -352,7 +352,7 @@ export const G = {
     if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; if (P.speed > 3 && !P.inWater && perf.particles >= 0.5) this.fx.burst(P.pos.x, P.pos.y + 0.05, P.pos.z, { snow: 0xffffff, sand: 0xe8d098 }[W.surface] || 0xbcae90, 2, 0.8, 3); play(P.inWater ? 'splash' : this.E.aero && P.pos.y > 1.9 && Math.hypot(P.pos.x, P.pos.z) < 44 ? 'glass' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
     this._interact(dt, now); this._npcs(dt); this._enemies(dt); this._self(dt); this._remotes(dt); this._fishing(dt); this._events(dt, now);
     // mãos + sombras em lote
-    const hp = this.hands; hp.begin(); const fur = this.infFur || S.look.fur;
+    const hp = this.hands; hp.begin(); const fur = this.burntT > 0 ? '#2a2420' : this.infFur || S.look.fur;
     for (let i = 0; i < 2; i++) { const h = P.hands[i]; hp.hand(h.pos.x, h.pos.y, h.pos.z, HAND_R, P.block ? '#ffd0a0' : this.pawColor || fur); }
     if (perf.shadows) hp.blob(P.pos.x, W.floorAt(P.pos.x, P.pos.y + 0.3, P.pos.z), P.pos.z, 0.34);
     this.remotes.forEach((r) => { if (!r.has || !r.av.root.visible) return; const p = r.av.root.position; if (r.near) { hp.hand(p.x + r.h[0], p.y + r.h[1], p.z + r.h[2], HAND_R, r.av.look.fur); hp.hand(p.x + r.h[3], p.y + r.h[4], p.z + r.h[5], HAND_R, r.av.look.fur); } if (perf.shadows && r.near) hp.blob(p.x, W.floorAt(p.x, p.y + 0.3, p.z), p.z, 0.34); });
@@ -378,6 +378,9 @@ export const G = {
     if (this.portalMesh) this.portalMesh.material.opacity = 0.6 + Math.sin(this.time * 3) * 0.15;
     if (this.starMesh) for (const s of this.E.secrets) if (!s.found) setInst(this.starMesh, s.i, s.x, s.y + 0.5 + Math.sin(this.time * 2) * 0.15, s.z, 1.6, this.time * 1.5);
     if (W.waterU) W.waterU.uTime.value = this.time;
+    // ⚡ torrados: o seu gato e os remotos ficam pretos, arrepiados e soltando fumaça por 25 s
+    if (this.burntT > 0) { this.burntT -= dt; if (this.selfCat) this.selfCat.setBurnt(this.burntT > 0); this.smokeT = (this.smokeT || 0) - dt; if (this.smokeT <= 0) { this.smokeT = 0.3; this.fx.burst(P.pos.x, P.pos.y + 1.25, P.pos.z, 0x3a3a3a, 2, 0.7, -1); } }
+    this.remotes.forEach((r) => { if (!r.burntT) return; r.burntT = Math.max(0, r.burntT - dt); r.av.setBurnt(r.burntT > 0); if (r.has && Math.random() < dt * 3) { const q = r.av.root.position; this.fx.burst(q.x, q.y + 1.25, q.z, 0x3a3a3a, 2, 0.7, -1); } });
     this._zapRoll(dt); if (this.zapK > 0) { this.zapK = Math.max(0, this.zapK - dt * 2.5); this.zapFlash.material.opacity = this.zapK; }
     this.fx.ambient(this.under ? 'bubble' : this.def.custom ? this.def.ambId : AMBIENT[this.mapId] || '', P.pos, this.time, this.sky.night);
     this.fx.update(dt);

@@ -16,7 +16,7 @@
   - pelo doente, corpo maior e curvado, espasmos na cabeça e patas esverdeadas;
   - **+5% de velocidade**.
 - **Escolha ao entrar:** 🤖 **com bots** (5 bots que fogem e caçam, numa sala só sua) ou 👥 **multiplayer real** (todos da sala no mapa, mínimo de 2). No multiplayer, o anfitrião controla as rodadas e confirma as infecções; se ele sair, outro jogador assume.
-- ⚡ Um easter egg secreto muito raro… e uma conquista secreta que só aparece para quem tiver (muito) azar.
+- ⚡ Um easter egg secreto… que pode deixar você meio tostado. E uma conquista secreta para quem tiver azar (ou sorte).
 - Conquistas novas: **Paciente Zero** (infecte 25) e **Imune** (sobreviva a 5 rodadas). A conquista Viajante agora pede os 14 mapas.
 
 ## 0.0.2 — Casas e roleplay
