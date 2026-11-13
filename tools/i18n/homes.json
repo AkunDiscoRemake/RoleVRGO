@@ -938,5 +938,20 @@
 "Created by hark  ·  Coded with Claude (Anthropic) 🤖💛",
 "Creado por hark  ·  Programado con Claude (Anthropic) 🤖💛",
 "Автор: hark  ·  Код написан вместе с Claude (Anthropic) 🤖💛"
+],
+"🐾 Patas no mouse: LIGADO (H desliga) · rodinha = alcance": [
+"🐾 Paws on mouse: ON (H turns off) · wheel = reach",
+"🐾 Patas con el ratón: ACTIVADO (H desactiva) · rueda = alcance",
+"🐾 Лапы на мыши: ВКЛ (H — выкл.) · колёсико = дальность"
+],
+"🐾 Patas no mouse: desligado (mouse volta a olhar)": [
+"🐾 Paws on mouse: off (mouse looks around again)",
+"🐾 Patas con el ratón: desactivado (el ratón vuelve a mirar)",
+"🐾 Лапы на мыши: выкл. (мышь снова вращает камеру)"
+],
+"• PC: H liga \"patas no mouse\" (ou segure o botão do meio): o mouse move as patas e a câmera fica parada. Encoste no chão, segure o clique e arraste o mouse para trás para se impulsionar, como no Gorilla Tag. Rodinha = alcance.": [
+"• PC: H turns on \"paws on mouse\" (or hold the middle button): the mouse moves the paws and the camera stays still. Touch the ground, hold click and drag the mouse back to push yourself, like Gorilla Tag. Wheel = reach.",
+"• PC: H activa \"patas con el ratón\" (o mantén el botón central): el ratón mueve las patas y la cámara se queda quieta. Toca el suelo, mantén el clic y arrastra el ratón hacia atrás para impulsarte, como en Gorilla Tag. Rueda = alcance.",
+"• ПК: H включает «лапы на мыши» (или зажми среднюю кнопку): мышь двигает лапы, камера стоит на месте. Коснись земли, зажми клик и тяни мышь назад, чтобы оттолкнуться, как в Gorilla Tag. Колёсико = дальность."
 ]
 }

@@ -15,6 +15,8 @@
 - **Olhos de laser** em 5 cores.
 - **Avatares prontos** (no menu e no lobby): família, escola, doutor, fazendeiro e o easter egg **Trio da Ceia 🎄**, os três gatos natalinos de suéter, gorro e olhos de laser (homenagem a @frostyresenha). Na loja de móveis há a Mesa da Ceia 🦃 e o Globo de laser 🪩 para montar a cena.
 
+- **Patas no mouse (PC)**, a pedido de um tester: a tecla **H** liga e desliga, e segurar o botão do meio do mouse ativa enquanto estiver apertado. O mouse move as patas e a câmera fica parada. Encoste no chão, segure o clique e arraste para se impulsionar, como no Gorilla Tag de PC. A rodinha muda o alcance.
+
 ### Correções
 - Mudanças de visual feitas dentro do jogo (chapéu, acessório...) agora ficam guardadas ao reabrir o jogo.
 

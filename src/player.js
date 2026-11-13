@@ -25,7 +25,7 @@ export class Player {
     this.bodyYaw = 0; this.headYaw = 0; this.headPitch = 0; this.side = 1; // 1 = controle na mão direita
     this.trigger = false; this.walkHeld = false; this.block = false; this.blockInput = false; this.iframes = 0; this.dodgeCd = 0; this.stamina = 100;
     this.frozen = false; this.fightZone = false; this.emoteWave = 0; this.guardHold = false;
-    this.keys = {}; this.desktop = true; this.locked = false; this.padWas = false;
+    this.pawMode = false; this.pawHold = false; this.pawX = 0; this.pawY = 0; this.reachMul = 1; this.keys = {}; this.desktop = true; this.locked = false; this.padWas = false;
     this.onTrigger = null; this.onRelease = null; this.onMenu = null; this.onBack = null; // callbacks do jogo
     this.snapA = Math.PI / 6; this.smoothTurn = false; this.speedMul = 1; this.jumpMul = 1; this.gravMul = 1; this.fly = false; this.backWas = false; this.swimming = false; this.swimDist = 0;
     // VR Box / Cardboard (giroscópio do celular), gamepads/Joy-Cons, rastreamento de mãos e teleporte
@@ -56,12 +56,13 @@ export class Player {
       if (e.code === 'Tab' || e.code === 'KeyM') { e.preventDefault(); if (this.onMenu) this.onMenu(); }
       if (e.code === 'KeyB' || e.key === 'BrowserBack' || e.key === 'GoBack') { e.preventDefault(); if (this.onBack) this.onBack(); }
       if (e.code === 'KeyV') this.cycleView();
+      if (e.code === 'KeyH') { this.pawMode = !this.pawMode; emit('toast', this.pawMode ? '🐾 Patas no mouse: LIGADO (H desliga) · rodinha = alcance' : '🐾 Patas no mouse: desligado (mouse volta a olhar)', '#9cf09c'); }
       if (e.code === 'KeyQ') this.dodge(-1); if (e.code === 'KeyE') this.dodge(1);
       if (e.code === 'Space' && this.grounded && !this.frozen && !this.swimming) { this.vel.y = 4.6 * this.jumpMul; this.grounded = false; emit('jump'); }
       emit('key', e.code);
     });
     addEventListener('keyup', (e) => { this.keys[e.code] = false; });
-    addEventListener('blur', () => { this.keys = {}; if (this.trigger) this._release(); this.guardHold = false; });
+    addEventListener('blur', () => { this.keys = {}; this.pawHold = false; if (this.trigger) this._release(); this.guardHold = false; });
     // toque na tela = gatilho (o botão do VR Box/Cardboard toca a tela)
     el.addEventListener('touchstart', (e) => { if (this.renderer.xr.isPresenting) return; e.preventDefault(); const t = e.touches[0]; this._tx = t.clientX; this._ty = t.clientY; this._press(); }, { passive: false });
     el.addEventListener('touchmove', (e) => { if (this.renderer.xr.isPresenting) return; e.preventDefault(); const t = e.touches[0]; if (!(this.card && this.devOK)) { this.yaw += (t.clientX - this._tx) * 0.005; this.pitch = clamp(this.pitch + (t.clientY - this._ty) * 0.005, -1.5, 1.5); } this._tx = t.clientX; this._ty = t.clientY; }, { passive: false }); // sem giroscópio: arrastar o dedo olha em volta
@@ -69,13 +70,15 @@ export class Player {
     el.addEventListener('mousedown', (e) => {
       if (this.renderer.xr.isPresenting) return;
       if (!this.locked && el.requestPointerLock) { el.requestPointerLock(); }
-      if (e.button === 0) this._press(); else if (e.button === 2) this.guardHold = true;
+      if (e.button === 0) this._press(); else if (e.button === 2) this.guardHold = true; else if (e.button === 1) { e.preventDefault(); this.pawHold = true; }
     });
-    addEventListener('mouseup', (e) => { if (this.renderer.xr.isPresenting) return; if (e.button === 0) this._release(); else if (e.button === 2) this.guardHold = false; });
+    el.addEventListener('wheel', (e) => { if (this.renderer.xr.isPresenting || !(this.pawMode || this.pawHold)) return; e.preventDefault(); this.reachMul = clamp(this.reachMul - e.deltaY * 0.0008, 0.5, 1.35); }, { passive: false });
+    addEventListener('mouseup', (e) => { if (this.renderer.xr.isPresenting) return; if (e.button === 0) this._release(); else if (e.button === 2) this.guardHold = false; else if (e.button === 1) this.pawHold = false; });
     el.addEventListener('contextmenu', (e) => e.preventDefault());
     document.addEventListener('pointerlockchange', () => { this.locked = document.pointerLockElement === el; });
     addEventListener('mousemove', (e) => {
       if (!this.locked || this.renderer.xr.isPresenting) return;
+      if (this.pawMode || this.pawHold) { this.pawX = clamp(this.pawX + e.movementX * 0.003, -1.3, 1.3); this.pawY = clamp(this.pawY - e.movementY * 0.003, -1.1, 1.5); return; } // patas no mouse (estilo Gorilla Tag de PC): a câmera fica parada
       this.yaw -= e.movementX * 0.0024; this.pitch = clamp(this.pitch - e.movementY * 0.0024, -1.5, 1.5);
     });
   }
@@ -190,7 +193,7 @@ export class Player {
     this.ctrlDir.set(0, 0, -1).applyQuaternion(this.ctrlQuat);
     // mira: no VR é o "laser" do controle; no desktop é o centro da tela e as patas ficam um pouco abaixo
     if (xr) { this.aimDir.copy(vm === 1 && !this.sixAny ? this.ctrlDir : this.rawCtrl); }
-    else { this.aimDir.copy(this.rawDir); _e.set(clamp(eX - 0.38 - this.gpAim.y * 1.15, -1.55, 1.5), this.headYaw - this.gpAim.x * 0.9, 0, 'YXZ'); this.ctrlDir.set(0, 0, -1).applyEuler(_e); } // direcional direito do gamepad move as patas (sem giroscópio)
+    else { if (!this.pawMode && !this.pawHold) { const k = Math.exp(-dt * 6); this.pawX *= k; this.pawY *= k; this.reachMul += (1 - this.reachMul) * Math.min(1, dt * 4); } this.aimDir.copy(this.rawDir); _e.set(clamp(eX - 0.38 - this.gpAim.y * 1.15 + this.pawY, -1.55, 1.5), this.headYaw - this.gpAim.x * 0.9 - this.pawX, 0, 'YXZ'); this.ctrlDir.set(0, 0, -1).applyEuler(_e); } // direcional direito do gamepad move as patas (sem giroscópio)
     // "puxão" para cima do controle (usado na pesca)
     this.flickUp = (this.ctrlDir.y - this.prevDir.y) / Math.max(dt, 0.001); this.prevDir.copy(this.ctrlDir);
     // cliques do touchpad por zona: cima/centro = menu, lados = girar (ou esquiva em luta), baixo = bloquear
@@ -230,8 +233,8 @@ export class Player {
       else if (this.emoteId) { const et = this.emoteTime, e = this.emoteId, sg = i === 0 ? 1 : -1; let u = 0.9, f = 0.18, sd = 0.36;
         if (e === 2) u = 0.9 + Math.sin(et * 7.5) * 0.35 * sg; else if (e === 8) { u = 1.3 + Math.abs(Math.sin(et * 6)) * 0.2; sd = 0.4; } else if (e === 10) { sd = 0.55; } else if (e === 11) { u = 0.5; f = 0.45; sd = 0.12; } else if (e === 12) { u = 0.8 + Math.round(Math.sin(et * 5) * 2) / 2 * 0.3 * sg; f = 0.3; } else if (e === 6) { u = 0.82; f = 0.34; sd = 0.07; } else if (e === 5) { u = 0.78; f = 0.28; sd = 0.14; }
         t.set(P.x + cb * sd * s - sb * f, P.y + u, P.z - sb * sd * s - cb * f); }
-      else if (i === 0) t.addScaledVector(dir, REACH);
-      else { t.x += mx * REACH; t.y += dir.y * REACH; t.z += mz * REACH; }
+      else if (i === 0) t.addScaledVector(dir, REACH * this.reachMul);
+      else { const R = REACH * this.reachMul; t.x += mx * R; t.y += dir.y * R; t.z += mz * R; }
     }
     if (this.emoteWave > 0) this.emoteWave -= dt;
     if (this.desktop) this.camera.getWorldPosition(this.aimPos); else if (this.sixAny && this.active) this.active.getWorldPosition(this.aimPos); else if (this.viewMode === 1) this.aimPos.copy(this.hands[0].target); else { this.camera.getWorldPosition(this.aimPos); this.aimPos.y -= 0.25; }
