@@ -105,5 +105,7 @@ const extra = { 'Oi!': ['Hi!', '¡Hola!', 'Привет!'], 'Miau!': ['Meow!', '
   "Poeira nos passos e aterrissagens e contorno de luz nos gatos.": ["Dust on steps and landings, and rim light on the cats.", "Polvo en los pasos y aterrizajes, y contorno de luz en los gatos.", "Пыль от шагов и приземлений, контурный свет на котах."],
 };
 for (const k in extra) if (!dict[k]) dict[k] = extra[k];
+// casas, idades, roupas e avatares prontos
+const homes = JSON.parse(fs.readFileSync('tools/i18n/homes.json', 'utf8')); for (const k in homes) if (!dict[k]) dict[k] = homes[k];
 fs.writeFileSync('src/i18n-dict.json', JSON.stringify(dict));
 console.log(Object.keys(dict).length, 'textos traduzidos');

@@ -12,7 +12,8 @@ import { admin, EFFECTS, EVENTS_ADM } from './admin.js';
 import { ENEMIES, BOSS_NAMES, PETS } from './data.js';
 import { maker, SKIES, GROUNDS, MOODS, AMBS, COLORS, CAT_ORDER } from './maker.js';
 import { rec } from './rec.js';
-import { FUR_COLORS, EYE_COLORS, PATTERNS, HATS, EMOTES, roundRect } from './cat.js';
+import { FUR_COLORS, EYE_COLORS, PATTERNS, HATS, EMOTES, roundRect, AGES, OUTFITS, LASERS, PRESETS } from './cat.js';
+import { home, HOUSES, FURN, FCATS, FURN_BY, WALLS, FLOORS, COLS, COL_NAMES } from './home.js';
 import { play, setVolume, audioVolume } from './assets.js';
 import { on, emit, store, clamp } from './util.js';
 import { VERSION } from './config.js';
@@ -56,7 +57,7 @@ export const ui = {
     on('dialog', (n) => { this.npc = n; this.line = Math.floor(Math.random() * n.lines.length); this.show('dialog'); });
     on('friendsDirty', () => G.refreshFriends()); on('partyChat', (m) => { G._log('[grupo] ' + m.n, m.x); play('msg', 0.4); });
     on('combo', (n) => { this.combo = n; });
-    on('maker', () => { if (this.open) this.dirty = true; }); on('key', (c) => { if (!(this.open && this.page === 'kb')) maker.key(c); });
+    on('maker', () => { if (this.open) this.dirty = true; }); on('key', (c) => { if (!(this.open && this.page === 'kb')) { if (!home.key(c)) maker.key(c); } }); on('home', () => { if (this.open) this.dirty = true; });
     on('makerText', (o) => this.keyboard(o.k === 'npc' ? 'NPC — escreva "Nome: fala"' : 'Texto da placa', '', 60, (t) => { if (o.k === 'npc') { const i = t.indexOf(':'); o.d = { name: (i > 0 ? t.slice(0, i) : 'Gato').trim().slice(0, 16), text: (i > 0 ? t.slice(i + 1) : t).trim() }; } else o.d = { text: t }; maker.commit(o); }, 'close'));
     addEventListener('keydown', (e) => {
       if (e.target && e.target.tagName === 'INPUT') return;
@@ -74,12 +75,12 @@ export const ui = {
   qhead(title, root) { this.text(384, 34, title, { a: 'center', fs: 22, c: '#ffd76a' }); if (!root) this.btn(224, 14, 70, 38, '◀', () => { this.page = 'q_root'; this.scroll = 0; this.msg = ''; }, { bg: '#33355a' }); this.btn(474, 14, 70, 38, '✕', () => this.hide(), { bg: '#b04050' }); },
   qpager(n, per) { const pages = Math.max(1, Math.ceil(n / per)); this.scroll = clamp(this.scroll, 0, pages - 1); if (pages > 1) { this.btn(224, 462, 90, 40, '▲', () => { this.scroll--; }, { off: this.scroll <= 0, bg: '#33355a' }); this.text(384, 482, (this.scroll + 1) + '/' + pages, { a: 'center' }); this.btn(454, 462, 90, 40, '▼', () => { this.scroll++; }, { off: this.scroll >= pages - 1, bg: '#33355a' }); } return this.scroll * per; },
   p_q_root() {
-    this.qhead('Menu rápido', true); const h = S.held(), P = this.player, pet = PETS.find((x) => x.id === S.d.pet) || PETS[0], R = (i, label, cb, o) => this.btn(224, 58 + i * 37, 320, 34, label, cb, Object.assign({ bg: '#4a5cc8', fs: 16 }, o || {}));
-    [['🐱 Avatar', 'q_avatar'], ['🗡 Itens na pata: ' + h.n, 'q_items'], ['🐾 Bichinho: ' + pet.n, 'q_pets'], ['🔨 Fabricar itens', 'q_craft'], ['📦 Colocar objetos', 'q_spawn'], ['😺 Emotes', 'q_emotes'], ['🗺 Viajar', 'q_travel'], ['🍖 Consumíveis', 'q_use']].forEach((r, i) => R(i, r[0], () => { this.page = r[1]; this.scroll = 0; }));
-    R(8, '📷 Câmera: ' + ['1ª pessoa', '2ª pessoa (de frente)', '3ª pessoa (por trás)'][P.viewMode - 1], () => P.cycleView(), { bg: '#33355a' });
-    R(9, '📸 Tirar foto', () => { this.hide(); setTimeout(() => self.RVphoto && self.RVphoto(), 120); }, { bg: '#33355a' });
-    R(10, rec.on ? '⏹ Parar e baixar vídeo (' + Math.floor(rec.seconds()) + 's)' : '⏺ Gravar vídeo', () => { const m = rec.toggle(G.renderer.domElement); if (m) this.msg = m; else if (rec.on) this.hide(); }, { bg: rec.on ? '#b04050' : '#33355a', off: !rec.supported() });
-    R(11, '📜 Menu completo', () => { this.page = 'map'; }, { bg: '#33355a' });
+    this.qhead('Menu rápido', true); const h = S.held(), P = this.player, pet = PETS.find((x) => x.id === S.d.pet) || PETS[0], R = (i, label, cb, o) => this.btn(224, 58 + i * 34, 320, 31, label, cb, Object.assign({ bg: '#4a5cc8', fs: 15 }, o || {}));
+    [['🐱 Avatar', 'q_avatar'], ['🏠 Casa' + (home.mine() && home.editing ? ' (decorando)' : ''), 'q_home'], ['🗡 Itens na pata: ' + h.n, 'q_items'], ['🐾 Bichinho: ' + pet.n, 'q_pets'], ['🔨 Fabricar itens', 'q_craft'], ['📦 Colocar objetos', 'q_spawn'], ['😺 Emotes', 'q_emotes'], ['🗺 Viajar', 'q_travel'], ['🍖 Consumíveis', 'q_use']].forEach((r, i) => R(i, r[0], () => { this.page = r[1]; this.scroll = 0; }));
+    R(9, '📷 Câmera: ' + ['1ª pessoa', '2ª pessoa (de frente)', '3ª pessoa (por trás)'][P.viewMode - 1], () => P.cycleView(), { bg: '#33355a' });
+    R(10, '📸 Tirar foto', () => { this.hide(); setTimeout(() => self.RVphoto && self.RVphoto(), 120); }, { bg: '#33355a' });
+    R(11, rec.on ? '⏹ Parar e baixar vídeo (' + Math.floor(rec.seconds()) + 's)' : '⏺ Gravar vídeo', () => { const m = rec.toggle(G.renderer.domElement); if (m) this.msg = m; else if (rec.on) this.hide(); }, { bg: rec.on ? '#b04050' : '#33355a', off: !rec.supported() });
+    R(12, '📜 Menu completo', () => { this.page = 'map'; }, { bg: '#33355a' });
   },
   p_q_pets() {
     this.qhead('🐾 Bichinhos'); const off = this.qpager(PETS.length, 6);
@@ -100,11 +101,51 @@ export const ui = {
     row(0, 'Pelagem', '', L.fur, () => cyc(FUR_COLORS, 'fur', -1), () => cyc(FUR_COLORS, 'fur', 1));
     row(1, 'Cor de detalhe', '', L.fur2, () => cyc(FUR_COLORS, 'fur2', -1), () => cyc(FUR_COLORS, 'fur2', 1));
     row(2, 'Olhos', '', L.eyes, () => cyc(EYE_COLORS, 'eyes', -1), () => cyc(EYE_COLORS, 'eyes', 1));
+    if (this.scroll >= 1) { this.qpager(2, 1);
+      row(0, 'Idade (roleplay)', AGES[L.age | 0], null, () => { L.age = ((L.age | 0) + 2) % 3; this._look(); }, () => { L.age = ((L.age | 0) + 1) % 3; this._look(); });
+      row(1, 'Roupa', OUTFITS[L.outfit | 0], null, () => { L.outfit = ((L.outfit | 0) + OUTFITS.length - 1) % OUTFITS.length; this._look(); }, () => { L.outfit = ((L.outfit | 0) + 1) % OUTFITS.length; this._look(); });
+      row(2, 'Olhos de laser', LASERS[L.laser | 0][0], null, () => { L.laser = ((L.laser | 0) + LASERS.length - 1) % LASERS.length; this._look(); }, () => { L.laser = ((L.laser | 0) + 1) % LASERS.length; this._look(); });
+      this.qrow(3, '✨ Avatares prontos', 'Família, escola, Trio da Ceia 🎄...', () => { this.page = 'q_presets'; this.scroll = 0; }, { bg: '#3a9a5a' });
+      this.qrow(4, '✏ Nome: ' + S.name, null, () => this.keyboard('Seu nome', S.name, 16, (t) => { if (/^hark/i.test(t.trim()) && !admin.is) { S.toast('Nome reservado ao admin', '#ff9a8a'); return; } S.name = t.trim() || S.name; S.touch(); G.pushMeta(); emit('saveNow'); }, 'q_avatar'), { bg: '#33355a', fs: 17 });
+      this.text(384, 400, 'Filhotes e adolescentes são menores e veem o mundo mais de baixo.', { a: 'center', fs: 13, c: '#99a', b: false, max: 330 }); return; }
+    this.qpager(2, 1);
     row(3, 'Padrão', PATTERNS[L.pattern], null, () => { L.pattern = (L.pattern + PATTERNS.length - 1) % PATTERNS.length; this._look(); }, () => { L.pattern = (L.pattern + 1) % PATTERNS.length; this._look(); });
     const hi = Math.max(0, d.hats.indexOf(L.hat)); row(4, 'Chapéu (' + d.hats.length + ' seus)', HATS[L.hat], null, () => { L.hat = d.hats[(hi + d.hats.length - 1) % d.hats.length]; this._look(); }, () => { L.hat = d.hats[(hi + 1) % d.hats.length]; this._look(); });
-    this.qrow(5, '✏ Nome: ' + S.name, null, () => this.keyboard('Seu nome', S.name, 16, (t) => { if (/^hark/i.test(t.trim()) && !admin.is) { S.toast('Nome reservado ao admin', '#ff9a8a'); return; } S.name = t.trim() || S.name; S.touch(); G.pushMeta(); emit('saveNow'); }, 'q_avatar'), { bg: '#33355a', fs: 17 });
-    const own = ACCS.map((a, i) => i).filter((i) => S.accOk(i)), ai = Math.max(0, own.indexOf(L.acc || 0)); row(6, 'Acessório (' + (own.length - 1) + '/' + (ACCS.length - 1) + ' conquistados)', ACCS[L.acc || 0].n, null, () => { L.acc = own[(ai + own.length - 1) % own.length]; this._look(); }, () => { L.acc = own[(ai + 1) % own.length]; this._look(); });
-    this.text(384, 484, 'Veja como conquistar em Missões > Acessórios.', { a: 'center', fs: 13, c: '#99a', b: false });
+    const own = ACCS.map((a, i) => i).filter((i) => S.accOk(i)), ai = Math.max(0, own.indexOf(L.acc || 0)); row(5, 'Acessório (' + (own.length - 1) + '/' + (ACCS.length - 1) + ' conquistados)', ACCS[L.acc || 0].n, null, () => { L.acc = own[(ai + own.length - 1) % own.length]; this._look(); }, () => { L.acc = own[(ai + 1) % own.length]; this._look(); });
+    this.text(384, 424, '▼ Idade, roupa, laser e avatares prontos', { a: 'center', fs: 13, c: '#ffd76a', b: false });
+  },
+  p_q_presets() {
+    this.qhead('✨ Avatares prontos'); const off = this.qpager(PRESETS.length, 6);
+    PRESETS.slice(off, off + 6).forEach((p, i) => { const L = p.look; this.qrow(i, p.n, AGES[L.age] + ' · ' + OUTFITS[L.outfit] + (L.laser ? ' · laser ' + LASERS[L.laser][0].toLowerCase() : ''), () => {
+      const keep = S.look.acc || 0; S.look = Object.assign({}, L, { acc: keep }); if (L.hat && S.d.hats.indexOf(L.hat) < 0) S.d.hats.push(L.hat); if (p.egg) { S.toast('🎄 Easter egg: Trio da Ceia (homenagem a @frostyresenha)', '#ffd76a'); play('secret', 0.6); } this._look(); }, { bg: p.egg ? '#a03a4a' : '#4a5cc8' }); });
+    this.text(384, 446, 'Seu acessório conquistado continua. Ajuste depois em Avatar.', { a: 'center', fs: 13, c: '#99a', b: false, max: 330 });
+  },
+  // ---------- casa ----------
+  p_q_home() {
+    this.qhead('🏠 Casa'); const hm = home.my(), hs = HOUSES.find((x) => x.id === hm.t) || HOUSES[0], mine = home.mine(), l = home.cur();
+    if (!mine) { this.qrow(0, '🏠 Ir para minha casa', hs.icon + ' ' + hs.n + ' · ' + l.it.length + ' móveis', () => { this.hide(); home.goMine(G); }, { bg: '#3a9a5a' });
+      this.qrow(1, '🏡 Trocar / comprar casa', HOUSES.filter((x) => hm.has.indexOf(x.id) >= 0).length + '/' + HOUSES.length + ' casas', () => { this.page = 'q_houses'; this.scroll = 0; }, { bg: '#4a5cc8' });
+      this.qrow(2, '🔒 Visitas: ' + ['Todos', 'Só amigos', 'Trancada'][hm.lock], 'Quem pode entrar na sua casa', () => home.setLock((hm.lock + 1) % 3), { bg: '#33355a' });
+      this.text(384, 270, G.mapId === 'home' ? 'Você está visitando: ' + home.ownerName : 'Visite amigos em Social (botão 🏠).', { a: 'center', fs: 14, c: '#bfe6ff', b: false, max: 330 }); return; }
+    this.qrow(0, home.editing ? '✏ Decorar: LIGADO' : '✏ Decorar: desligado', home.editing ? (home.brush ? (home.tool === 'erase' ? 'Guardando móveis' : 'Colocando: ' + FURN_BY[home.brush].n) : 'Escolha um móvel') : 'Liga o modo de colocar móveis', () => home.setEditing(!home.editing), { sel: home.editing, bg: '#3a9a5a' });
+    this.qrow(1, '🛋 Catálogo de móveis', FURN.length + ' móveis · 💰 ' + S.d.coins, () => { this.page = 'q_hcat'; this.scroll = 0; }, { bg: '#4a5cc8' });
+    const B = (x, y, w, label, cb, o) => this.btn(x, y, w, 46, label, cb, Object.assign({ bg: '#33355a', fs: 15 }, o || {}));
+    B(224, 182, 104, '⟲ Girar', () => { home.rot = (home.rot + 7) % 8; }); B(332, 182, 104, '⟳ Girar', () => { home.rot = (home.rot + 1) % 8; }); B(440, 182, 104, home.tool === 'erase' ? '📦 Guardar ✔' : '📦 Guardar', () => { home.tool = home.tool === 'erase' ? 'place' : 'erase'; home.setEditing(true); }, { sel: home.tool === 'erase' });
+    B(224, 234, 104, '↩ Desfazer', () => home.undoLast(), { off: !home.undo.length }); B(332, 234, 212, '🎨 Cor: ' + COL_NAMES[home.color], () => { home.color = (home.color + 1) % COLS.length; });
+    B(224, 286, 60, '◀', () => home.setWall(-1)); this.text(384, 309, '🧱 Parede', { a: 'center', fs: 15 }); { const g = this.g; g.fillStyle = '#' + ('00000' + WALLS[l.w].toString(16)).slice(-6); roundRect(g, 424, 298, 50, 22, 6); g.fill(); } B(484, 286, 60, '▶', () => home.setWall(1));
+    B(224, 338, 60, '◀', () => home.setFloor(-1)); this.text(384, 361, '🪵 Chão', { a: 'center', fs: 15 }); { const g = this.g; g.fillStyle = '#' + ('00000' + FLOORS[l.f].toString(16)).slice(-6); roundRect(g, 424, 350, 50, 22, 6); g.fill(); } B(484, 338, 60, '▶', () => home.setFloor(1));
+    B(224, 390, 160, '🏡 Casas', () => { this.page = 'q_houses'; this.scroll = 0; }); B(388, 390, 156, '🔒 ' + ['Todos', 'Amigos', 'Trancada'][hm.lock], () => home.setLock((hm.lock + 1) % 3));
+    B(224, 442, 160, '🧹 Guardar tudo', () => home.clearAll(), { bg: '#8a4a4a', off: !l.it.length }); B(388, 442, 156, '🚪 Ir à Vila', () => { this.hide(); G.travel('village'); });
+  },
+  p_q_hcat() { this.qhead('🛋 Catálogo'); FCATS.forEach((c, i) => { const n = FURN.filter((f) => f.cat === c).length; this.btn(224 + (i % 2) * 162, 64 + Math.floor(i / 2) * 64, 156, 58, c + ' (' + n + ')', () => { this.hcat = c; this.page = 'q_hitems'; this.scroll = 0; }, { bg: c === 'Festa e Natal' ? '#a03a4a' : '#4a5cc8', fs: 16 }); }); this.text(384, 340, 'Compre uma vez e recoloque à vontade. Guardar devolve o móvel ao estoque.', { a: 'center', fs: 13, c: '#99a', b: false, max: 320 }); this.btn(224, 14, 70, 38, '◀', () => { this.page = 'q_home'; }, { bg: '#33355a' }); },
+  p_q_hitems() {
+    this.qhead('🛋 ' + (this.hcat || '')); this.btn(224, 14, 70, 38, '◀', () => { this.page = 'q_hcat'; this.scroll = 0; }, { bg: '#33355a' }); const list = FURN.filter((f) => f.cat === this.hcat), off = this.qpager(list.length, 6);
+    list.slice(off, off + 6).forEach((f, i) => { const sp = home.spare(f.id), pl = home.placed(f.id); this.qrow(i, (home.brush === f.id ? '✔ ' : '') + f.n, sp > 0 ? 'No estoque: ' + sp + ' (grátis)' : f.price + ' 💰' + (pl ? ' · ' + pl + ' colocado(s)' : '') + (S.d.coins < f.price ? ' · moedas insuficientes' : ''), () => { if (!home.mine()) { this.msg = 'Vá para sua casa para decorar'; return; } home.setBrush(f.id); this.hide(); }, { sel: home.brush === f.id, bg: sp > 0 ? '#3a9a5a' : '#4a5cc8', off: sp <= 0 && S.d.coins < f.price }); });
+    this.text(384, 446, '💰 ' + S.d.coins + ' · mire no chão (ou na parede) e aperte o gatilho', { a: 'center', fs: 13, c: '#ffd76a', b: false, max: 330 });
+  },
+  p_q_houses() {
+    this.qhead('🏡 Casas'); this.btn(224, 14, 70, 38, '◀', () => { this.page = 'q_home'; }, { bg: '#33355a' }); const hm = home.my(), off = this.qpager(HOUSES.length, 6);
+    HOUSES.slice(off, off + 6).forEach((h, i) => { const has = hm.has.indexOf(h.id) >= 0, on = hm.t === h.id, pr = S.buyPrice(h.price); this.qrow(i, (on ? '✔ ' : '') + h.icon + ' ' + h.n, on ? 'Sua casa atual' : has ? 'Toque para morar aqui (os móveis de cada casa ficam salvos)' : pr + ' 💰 · ' + h.W + '×' + h.D + ' m', () => { this.msg = home.buyHouse(h.id); if (!this.msg && G.mapId !== 'home') { this.hide(); home.goMine(G); } }, { sel: on, off: !has && S.d.coins < pr, bg: has ? '#4a5cc8' : '#3a9a5a' }); });
   },
   p_q_items() {
     this.qhead('🗡 Itens na pata'); const off = this.qpager(HELD.length, 6);
@@ -256,7 +297,7 @@ export const ui = {
     const s = d.stats; this.text(20, 438, 'Minérios ' + (s.mine || 0) + ' · Golpes ' + (s.hit || 0) + ' · Vitórias ' + (s.ko || 0) + ' · Peixes ' + (s.fish || 0) + ' · Baús ' + (s.chest || 0) + ' · Segredos ' + d.secrets.length, { fs: 15, c: '#9cf09c' });
     this.text(20, 466, 'A aparência aparece para os outros jogadores (você vê suas patas na cor da pelagem).', { fs: 14, c: '#99a', b: false });
   },
-  _look() { S.touch(); G.pushMeta(); emit('look'); emit('saveNow'); },
+  _look() { S.touch(); store.set('look', S.look); G.pushMeta(); emit('look'); emit('saveNow'); }, // guarda também no aparelho: o lobby abre com o visual de verdade
   p_emotes() {
     this.text(20, 80, 'Emotes e gestos — os outros jogadores veem a animação', { c: '#bfe6ff', fs: 18 });
     EMOTES.forEach((e, i) => this.btn(40 + (i % 3) * 235, 100 + Math.floor(i / 3) * 74, 220, 64, e.icon + ' ' + e.name, () => { G.emote(e.id); this.hide(); }, { fs: 22, bg: '#4a5cc8' }));
@@ -286,8 +327,8 @@ export const ui = {
   },
   p_news() {
     this.text(20, 34, '📰 Novidades — versão ' + VERSION, { fs: 24, c: '#ffd76a' }); let y = 74;
-    for (const l of ['Versão estável! Obrigado a todos que testaram a Beta.', 'Bichinhos de estimação que seguem você (Menu rápido > Bichinho).', 'Modo foto: botão no Menu rápido ou tecla P; a imagem vai para Downloads.', 'Conforto no VR: giro de 30°, 45° ou suave e vinheta em movimento rápido (Config).', 'Silenciar jogadores na aba Social > Jogadores.', 'Inimigos não atravessam mais paredes e casas.', 'Muito mais leve: menos gravações no aparelho e sem vazamento de memória ao trocar de mapa.', 'Correções no chat (o gato não anda mais enquanto você digita) e nos marcadores de missão.', 'Poeira nos passos e aterrissagens e contorno de luz nos gatos.'])
-      y = this.wrap(24, y, '• ' + l, W - 50, 24, { fs: 17, b: false }) + 6;
+    for (const l of ['🏠 CASAS: 8 estilos para morar, 53 móveis, cor de parede e chão (Menu rápido > Casa).', 'Visite a casa dos amigos pelo botão 🏠 em Social (aberta, só amigos ou trancada).', 'Idades para roleplay: adulto, adolescente e filhote, e 10 roupas novas.', 'Avatares prontos, incluindo o Trio da Ceia 🎄 com olhos de laser (easter egg).', 'Versão estável! Obrigado a todos que testaram a Beta.', 'Bichinhos de estimação que seguem você (Menu rápido > Bichinho).', 'Modo foto: botão no Menu rápido ou tecla P; a imagem vai para Downloads.', 'Conforto no VR: giro de 30°, 45° ou suave e vinheta em movimento rápido (Config).', 'Silenciar jogadores na aba Social > Jogadores.', 'Inimigos não atravessam mais paredes e casas.', 'Muito mais leve: menos gravações no aparelho e sem vazamento de memória ao trocar de mapa.', 'Correções no chat (o gato não anda mais enquanto você digita) e nos marcadores de missão.', 'Poeira nos passos e aterrissagens e contorno de luz nos gatos.'])
+      y = this.wrap(24, y, '• ' + l, W - 50, 22, { fs: 16, b: false }) + 4;
   },
   p_help() {
     this.text(20, 34, '❓ Como jogar', { fs: 24, c: '#ffd76a' }); let y = 74;
@@ -318,7 +359,7 @@ export const ui = {
   s_players() {
     const list = Array.from(G.remotes.values()); this.text(20, 122, 'Jogadores reais neste mapa e sala: ' + (list.length + 1), { fs: 17, c: '#bfe6ff' }); const off = this.pager(list.length, 7, 458);
     if (!list.length) this.text(20, 170, 'Só você por aqui agora. Convide amigos com o código da sala!', { fs: 17, c: '#99a', b: false });
-    list.slice(off, off + 7).forEach((r, i) => { const y = 142 + i * 44, fr = G.friends.find((f) => f.id === r.id); this.text(24, y + 19, r.meta.name + '  (Nv ' + (r.meta.level || 1) + ')', { c: r.av.tagColor, max: 300 });
+    list.slice(off, off + 7).forEach((r, i) => { const y = 142 + i * 44, fr = G.friends.find((f) => f.id === r.id); this.text(24, y + 19, r.meta.name + '  (Nv ' + (r.meta.level || 1) + ')', { c: r.av.tagColor, max: 226 }); this.btn(254, y, 70, 36, '🏠', () => this._visit(r.id, r.meta.name), { bg: '#3a6a8a', fs: 16 });
       const mu = G.muted(r.id); this.btn(662, y, 86, 36, mu ? '🔈 Ouvir' : '🔇 Mudo', () => { const a = S.d.muted || (S.d.muted = []); if (mu) a.splice(a.indexOf(r.id), 1); else a.push(r.id); S.touch(); S.toast(mu ? r.meta.name + ' pode falar com você de novo' : r.meta.name + ' silenciado', '#bfe6ff'); }, { bg: mu ? '#8a4a4a' : '#2a2c4a', fs: 13 });
       this.btn(330, y, 150, 36, fr ? (fr.status === 'accepted' ? '✔ Amigo' : fr.status === 'incoming' ? 'Aceitar amizade' : 'Pedido enviado') : '+ Amigo', () => { if (fr && fr.status === 'incoming') net.rpc('rv_friend_accept', { p_other: r.id }).then(() => { net.sendTo(r.id, { k: 'faccept' }); G.refreshFriends(); }); else if (r.meta.fc) net.rpc('rv_friend_add', { p_code: r.meta.fc }).then((x) => { if (x.ok) { net.sendTo(r.id, { k: x.status === 'accepted' ? 'faccept' : 'friend' }); S.toast(x.status === 'accepted' ? 'Agora vocês são amigos!' : 'Pedido de amizade enviado', '#9cf09c'); G.refreshFriends(); } }); }, { off: !!fr && fr.status !== 'incoming', bg: '#3a9a5a', fs: 16 });
       this.btn(486, y, 170, 36, '👥 Convidar p/ grupo', () => { if (!net.partyCode) this._newParty(); net.sendTo(r.id, { k: 'party', code: net.partyCode }); S.toast('Convite de grupo enviado', '#8fd0ff'); }, { bg: '#33355a', fs: 16 }); });
@@ -326,7 +367,7 @@ export const ui = {
   s_friends() {
     this.text(20, 122, 'Seu código de amigo: ' + net.friendCode, { fs: 18, c: '#ffd76a' }); this.btn(480, 104, 268, 36, '+ Adicionar por código', () => this.keyboard('Código do amigo', '', 6, (t) => { net.rpc('rv_friend_add', { p_code: t }).then((x) => { if (x.ok) { net.sendTo(x.id, { k: x.status === 'accepted' ? 'faccept' : 'friend' }); S.toast('Pedido enviado para ' + x.name, '#9cf09c'); G.refreshFriends(); } else S.toast('Código não encontrado', '#ff9a8a'); }).catch(() => S.toast('Erro ao adicionar', '#ff9a8a')); }, 'social'), { bg: '#3a9a5a', fs: 16 });
     const list = G.friends; const off = this.pager(list.length, 6, 458); if (!list.length) this.text(20, 180, 'Nenhum amigo ainda. Troque códigos ou adicione pela aba Jogadores.', { fs: 17, c: '#99a', b: false });
-    list.slice(off, off + 6).forEach((f, i) => { const y = 150 + i * 50, w = net.whereIs(f.id); this.text(24, y + 12, f.name + '  (Nv ' + f.level + ')', { c: f.status === 'accepted' ? '#9cf09c' : '#fff', max: 330 }); this.text(24, y + 32, f.status === 'incoming' ? 'quer ser seu amigo' : f.status === 'outgoing' ? 'pedido pendente' : w ? '● online' + (w.r ? ' — ' + (MAPS[w.m] ? MAPS[w.m].name : '') : ' — sala privada') : '○ offline', { fs: 14, b: false, c: w ? '#9cf09c' : '#99a' });
+    list.slice(off, off + 6).forEach((f, i) => { const y = 150 + i * 50, w = net.whereIs(f.id); this.text(24, y + 12, f.name + '  (Nv ' + f.level + ')', { c: f.status === 'accepted' ? '#9cf09c' : '#fff', max: 290 }); if (f.status === 'accepted') this.btn(318, y + 4, 56, 36, '🏠', () => this._visit(f.id, f.name), { bg: '#3a6a8a', fs: 16 }); this.text(24, y + 32, f.status === 'incoming' ? 'quer ser seu amigo' : f.status === 'outgoing' ? 'pedido pendente' : w ? '● online' + (w.r ? ' — ' + (MAPS[w.m] ? MAPS[w.m].name : '') : ' — sala privada') : '○ offline', { fs: 14, b: false, c: w ? '#9cf09c' : '#99a' });
       if (f.status === 'incoming') this.btn(380, y + 4, 120, 36, 'Aceitar', () => net.rpc('rv_friend_accept', { p_other: f.id }).then(() => { net.sendTo(f.id, { k: 'faccept' }); G.refreshFriends(); }), { bg: '#3a9a5a', fs: 16 });
       else if (f.status === 'accepted' && w && w.r) this.btn(380, y + 4, 120, 36, 'Ir até lá', () => { this.hide(); this._join(w.r, 'Sala ' + w.r, true); if (w.m && w.m !== G.mapId) { this._goMap(w.m); } }, { bg: '#4a5cc8', fs: 16 });
       if (f.status === 'accepted' && w) this.btn(510, y + 4, 110, 36, '✉ Msg', () => this.keyboard('Mensagem para ' + f.name, '', 60, (t) => { net.sendTo(f.id, { k: 'dm', x: t }); G._log('[para ' + f.name + ']', t); }, 'social'), { bg: '#33355a', fs: 16 });
@@ -398,7 +439,8 @@ export const ui = {
     }
   },
   // ---------- Criador de Mapas ----------
-  _goMap(m) { if (!m) return; if (m.indexOf('c_') === 0) { maker.play(G, m.slice(2), false).then((e) => { if (e) S.toast(e, '#ff9a8a'); }).catch(() => S.toast('Não foi possível abrir o mapa', '#ff9a8a')); return; } if (!MAPS[m]) return; if (S.d.maps.indexOf(m) < 0) S.d.maps.push(m); G.travel(m); },
+  _visit(id, name) { this.hide(); home.visit(G, id, name).then((e) => { if (e) S.toast(e, '#ff9a8a'); }).catch(() => S.toast('Não foi possível abrir a casa', '#ff9a8a')); },
+  _goMap(m) { if (!m) return; if (m.indexOf('h_') === 0) { this._visit(m.slice(2)); return; } if (m.indexOf('c_') === 0) { maker.play(G, m.slice(2), false).then((e) => { if (e) S.toast(e, '#ff9a8a'); }).catch(() => S.toast('Não foi possível abrir o mapa', '#ff9a8a')); return; } if (!MAPS[m]) return; if (S.d.maps.indexOf(m) < 0) S.d.maps.push(m); G.travel(m); },
   _mkLoad() { const k = this.mk || (this.mk = { sub: maker.playing && maker.mine ? 'ed' : 'com', sort: 'new', list: null, mine: null, err: '' }); if (!net.online) { k.err = 'Offline: só o rascunho local está disponível.'; return; }
     maker.list(k.sort).then((l) => { k.list = l; k.err = ''; this.dirty = true; }).catch(() => { k.err = 'Comunidade indisponível: o banco ainda não tem as tabelas de mapas (rode supabase/maps.sql).'; k.list = []; this.dirty = true; }); maker.listMine().then((l) => { k.mine = l; this.dirty = true; }).catch(() => { k.mine = []; }); },
   _mkOpen(id, edit) { this.msg = 'Carregando mapa...'; maker.play(G, id, edit).then((e) => { if (e) { this.msg = e; this.dirty = true; } else { this.hide(); if (edit) S.toast('Modo edição: aponte e aperte o gatilho para colocar. Menu > Criar para opções.', '#9cf09c'); else S.toast('Mapa da comunidade: sem recompensas permanentes aqui.', '#bfe6ff'); } }).catch(() => { this.msg = 'Erro ao abrir o mapa'; this.dirty = true; }); },

@@ -15,7 +15,7 @@ const UP = new THREE.Vector3(0, 1, 0);
 export class Player {
   constructor(scene, camera, renderer) {
     this.scene = scene; this.camera = camera; this.renderer = renderer;
-    this.rig = new THREE.Group(); this.head = new THREE.Group(); this.head.position.y = EYE;
+    this.eye = EYE; this.rig = new THREE.Group(); this.head = new THREE.Group(); this.head.position.y = this.eye;
     this.rig.add(this.head); this.head.add(camera); scene.add(this.rig);
     this.pos = this.rig.position; this.vel = V(); this.yaw = 0; this.pitch = 0;
     this.grounded = false; this.inWater = false; this.speed = 0; this.surfaceN = V();
@@ -127,14 +127,14 @@ export class Player {
     const xr = this.renderer.xr.isPresenting; this.desktop = !xr;
     // posição da câmera conforme o modo de visão (no VR o deslocamento é fixo, para não enjoar)
     const vm = this.viewMode, H = this.head;
-    if (vm === 1) { H.position.set(0, EYE, 0); H.rotation.y = 0; }
-    else if (vm === 3) { const pc = xr ? -0.15 : this.pitch; H.position.set(0, Math.max(0.35, EYE + 0.45 - Math.sin(pc) * 3.0), Math.cos(pc) * 3.0); H.rotation.y = 0; }
-    else { const pc = xr ? -0.1 : this.pitch; H.position.set(0, Math.max(0.35, EYE + 0.15 - Math.sin(pc) * 2.6), -Math.cos(pc) * 2.6); H.rotation.y = Math.PI; }
+    if (vm === 1) { H.position.set(0, this.eye, 0); H.rotation.y = 0; }
+    else if (vm === 3) { const pc = xr ? -0.15 : this.pitch; H.position.set(0, Math.max(0.35, this.eye + 0.45 - Math.sin(pc) * 3.0), Math.cos(pc) * 3.0); H.rotation.y = 0; }
+    else { const pc = xr ? -0.1 : this.pitch; H.position.set(0, Math.max(0.35, this.eye + 0.15 - Math.sin(pc) * 2.6), -Math.cos(pc) * 2.6); H.rotation.y = Math.PI; }
     if (this.camLift) H.position.y += this.camLift;
     // câmera externa: se algo estiver entre o gato e a câmera, ela se aproxima (não atravessa paredes)
-    if (vm !== 1 && this._w) { const c = Math.cos(this.yaw), s = Math.sin(this.yaw), ox = H.position.z * s, oz = H.position.z * c, oy = H.position.y - EYE; let k = 1;
-      for (let f = 0.2; f <= 1.001; f += 0.2) { _b.set(this.pos.x + ox * f, this.pos.y + EYE + oy * f, this.pos.z + oz * f); if (this._w.collide(_b, 0.22, _n)) { k = Math.max(0.12, f - 0.2); break; } }
-      this.camK = k < (this.camK || 1) ? k : (this.camK || 1) + (k - (this.camK || 1)) * Math.min(1, dt * 4); H.position.z *= this.camK; H.position.y = EYE + oy * this.camK; } else this.camK = 1;
+    if (vm !== 1 && this._w) { const c = Math.cos(this.yaw), s = Math.sin(this.yaw), ox = H.position.z * s, oz = H.position.z * c, oy = H.position.y - this.eye; let k = 1;
+      for (let f = 0.2; f <= 1.001; f += 0.2) { _b.set(this.pos.x + ox * f, this.pos.y + this.eye + oy * f, this.pos.z + oz * f); if (this._w.collide(_b, 0.22, _n)) { k = Math.max(0.12, f - 0.2); break; } }
+      this.camK = k < (this.camK || 1) ? k : (this.camK || 1) + (k - (this.camK || 1)) * Math.min(1, dt * 4); H.position.z *= this.camK; H.position.y = this.eye + oy * this.camK; } else this.camK = 1;
     this.rig.rotation.y = this.yaw; this.rig.updateMatrixWorld(true);
     if (!xr) { if (this.card && this.devOK) this.camera.quaternion.copy(this.devQ); else this.camera.rotation.set(this.pitch, 0, 0, 'YXZ'); this.camera.position.set(0, 0, 0); this.camera.updateMatrixWorld(true); }
     // cabeça
@@ -216,7 +216,7 @@ export class Player {
     this.stamina = clamp(this.stamina + (this.block ? -6 : 14) * dt, 0, 100);
 
     // ---- alvos das mãos ----
-    const sy = P.y + EYE - 0.22, cb = Math.cos(this.bodyYaw), sb = Math.sin(this.bodyYaw);
+    const sy = P.y + this.eye - 0.22, cb = Math.cos(this.bodyYaw), sb = Math.sin(this.bodyYaw);
     const dir = this.ctrlDir;
     // direção espelhada no plano sagital do corpo
     const lx = dir.x * cb - dir.z * sb, lz = dir.x * sb + dir.z * cb; // para o espaço do corpo
@@ -225,8 +225,8 @@ export class Player {
       const h = this.hands[i], s = (i === 0 ? 1 : -1) * this.side, t = h.target;
       t.set(P.x + cb * 0.17 * s, sy, P.z - sb * 0.17 * s);
       if (this.six[i] && !this.emoteId) t.copy(this.sixPos[i]);
-      else if (this.block) { t.set(P.x - Math.sin(this.headYaw) * 0.36 + cb * 0.11 * s, P.y + EYE - 0.06, P.z - Math.cos(this.headYaw) * 0.36 - sb * 0.11 * s); }
-      else if (i === 1 && this.emoteWave > 0) { t.set(P.x + cb * 0.3 * s + Math.sin(this.emoteWave * 12) * 0.12 * cb, P.y + EYE + 0.32, P.z - sb * 0.3 * s - Math.sin(this.emoteWave * 12) * 0.12 * sb); }
+      else if (this.block) { t.set(P.x - Math.sin(this.headYaw) * 0.36 + cb * 0.11 * s, P.y + this.eye - 0.06, P.z - Math.cos(this.headYaw) * 0.36 - sb * 0.11 * s); }
+      else if (i === 1 && this.emoteWave > 0) { t.set(P.x + cb * 0.3 * s + Math.sin(this.emoteWave * 12) * 0.12 * cb, P.y + this.eye + 0.32, P.z - sb * 0.3 * s - Math.sin(this.emoteWave * 12) * 0.12 * sb); }
       else if (this.emoteId) { const et = this.emoteTime, e = this.emoteId, sg = i === 0 ? 1 : -1; let u = 0.9, f = 0.18, sd = 0.36;
         if (e === 2) u = 0.9 + Math.sin(et * 7.5) * 0.35 * sg; else if (e === 8) { u = 1.3 + Math.abs(Math.sin(et * 6)) * 0.2; sd = 0.4; } else if (e === 10) { sd = 0.55; } else if (e === 11) { u = 0.5; f = 0.45; sd = 0.12; } else if (e === 12) { u = 0.8 + Math.round(Math.sin(et * 5) * 2) / 2 * 0.3 * sg; f = 0.3; } else if (e === 6) { u = 0.82; f = 0.34; sd = 0.07; } else if (e === 5) { u = 0.78; f = 0.28; sd = 0.14; }
         t.set(P.x + cb * sd * s - sb * f, P.y + u, P.z - sb * sd * s - cb * f); }

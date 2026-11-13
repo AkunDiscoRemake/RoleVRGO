@@ -7,6 +7,25 @@ export const PATTERNS = ['Liso', 'Barriga clara', 'Siamês', 'Tigrado', 'Malhado
 export const HATS = ['Nenhum', 'Cartola', 'Coroa', 'Laço', 'Chapéu de palha', 'Capacete de minerador', 'Gorro', 'Bandana pirata', 'Chapéu de mago', 'Auréola'];
 export const FUR_COLORS = ['#f2a65a', '#3b3b45', '#f5f1e8', '#8a8f98', '#c9793d', '#6b4a36', '#e8c27a', '#b8b0d8', '#7fb7c9', '#e39ab0', '#5d8f5a', '#d9d9d9'];
 export const EYE_COLORS = ['#58c26a', '#4aa3e0', '#e0b030', '#c86a2a', '#9b6ad6', '#e0e0e0'];
+// idades para roleplay: tamanho geral e proporção da cabeça (filhote = cabeção fofo)
+export const AGES = ['Adulto', 'Adolescente', 'Filhote'];
+export const AGE_SCALE = [1, 0.8, 0.6], AGE_HEAD = [1, 1.12, 1.32], AGE_EYE = [1, 0.86, 0.68];
+export const OUTFITS = ['Nenhuma', 'Suéter de flocos', 'Suéter listrado', 'Suéter natalino', 'Moletom', 'Camiseta', 'Vestido', 'Macacão', 'Jaleco', 'Uniforme escolar', 'Pijama'];
+export const LASERS = [['Nenhum', null], ['Rosa', [255, 70, 220]], ['Azul', [70, 160, 255]], ['Verde', [90, 255, 120]], ['Vermelho', [255, 60, 60]], ['Dourado', [255, 215, 80]]];
+// avatares prontos (o Trio da Ceia é um easter egg: os gatos natalinos de suéter e olhos de laser)
+export const PRESETS = [
+  { n: '🎄 Laranjinha da Ceia', egg: 1, look: { fur: '#e09a5a', fur2: '#f5f1e8', pattern: 3, eyes: '#e0b030', hat: 6, acc: 0, age: 0, outfit: 1, laser: 1 } },
+  { n: '🎄 Frajola da Ceia', egg: 1, look: { fur: '#2a2a32', fur2: '#f5f1e8', pattern: 1, eyes: '#4aa3e0', hat: 6, acc: 0, age: 0, outfit: 2, laser: 2 } },
+  { n: '🎄 Rajado da Ceia', egg: 1, look: { fur: '#9a968e', fur2: '#e8e4da', pattern: 3, eyes: '#58c26a', hat: 6, acc: 0, age: 0, outfit: 3, laser: 3 } },
+  { n: '🍼 Filhote Laranja', look: { fur: '#f2a65a', fur2: '#f5f1e8', pattern: 1, eyes: '#4aa3e0', hat: 0, acc: 0, age: 2, outfit: 10, laser: 0 } },
+  { n: '🍼 Filhote Siamês', look: { fur: '#f5f1e8', fur2: '#6b4a36', pattern: 2, eyes: '#4aa3e0', hat: 0, acc: 0, age: 2, outfit: 0, laser: 0 } },
+  { n: '🎒 Adolescente Estudante', look: { fur: '#8a8f98', fur2: '#f5f1e8', pattern: 3, eyes: '#58c26a', hat: 0, acc: 0, age: 1, outfit: 9, laser: 0 } },
+  { n: '🛹 Adolescente de Moletom', look: { fur: '#3b3b45', fur2: '#f5f1e8', pattern: 5, eyes: '#e0b030', hat: 0, acc: 0, age: 1, outfit: 4, laser: 0 } },
+  { n: '👗 Mamãe Gata', look: { fur: '#e39ab0', fur2: '#f5f1e8', pattern: 1, eyes: '#9b6ad6', hat: 3, acc: 0, age: 0, outfit: 6, laser: 0 } },
+  { n: '👔 Papai Gato', look: { fur: '#6b4a36', fur2: '#e8c27a', pattern: 4, eyes: '#c86a2a', hat: 0, acc: 0, age: 0, outfit: 4, laser: 0 } },
+  { n: '🩺 Doutor Gato', look: { fur: '#d9d9d9', fur2: '#3b3b45', pattern: 4, eyes: '#4aa3e0', hat: 0, acc: 0, age: 0, outfit: 8, laser: 0 } },
+  { n: '🧰 Gato Fazendeiro', look: { fur: '#c9793d', fur2: '#f5f1e8', pattern: 3, eyes: '#58c26a', hat: 4, acc: 0, age: 0, outfit: 7, laser: 0 } }
+];
 export const EMOTES = [
   { id: 1, name: 'Acenar', icon: '👋' }, { id: 2, name: 'Dançar', icon: '💃' }, { id: 3, name: 'Sentar', icon: '🪑' }, { id: 4, name: 'Dormir', icon: '💤' },
   { id: 5, name: 'Rir', icon: '😹' }, { id: 6, name: 'Coração', icon: '❤' }, { id: 7, name: 'Miar', icon: '🐱' }, { id: 8, name: 'Comemorar', icon: '🎉' }, { id: 9, name: 'Bravo', icon: '😾' },
@@ -19,18 +38,18 @@ export function defaultLook(seed) {
 export function cleanLook(l) {
   const d = defaultLook(0.3); l = l || {};
   const hex = (v, f) => (typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v) ? v : f);
-  return { fur: hex(l.fur, d.fur), fur2: hex(l.fur2, d.fur2), pattern: clamp(l.pattern | 0, 0, PATTERNS.length - 1), eyes: hex(l.eyes, d.eyes), hat: clamp(l.hat | 0, 0, HATS.length - 1), acc: clamp(l.acc | 0, 0, 11) };
+  return { fur: hex(l.fur, d.fur), fur2: hex(l.fur2, d.fur2), pattern: clamp(l.pattern | 0, 0, PATTERNS.length - 1), eyes: hex(l.eyes, d.eyes), hat: clamp(l.hat | 0, 0, HATS.length - 1), acc: clamp(l.acc | 0, 0, 11), age: clamp(l.age | 0, 0, 2), outfit: clamp(l.outfit | 0, 0, OUTFITS.length - 1), laser: clamp(l.laser | 0, 0, LASERS.length - 1) };
 }
 
 const _c = new THREE.Color();
 function rgb(hex, mul) { _c.set(hex); const m = mul == null ? 1 : mul; return [Math.min(255, _c.r * 255 * m), Math.min(255, _c.g * 255 * m), Math.min(255, _c.b * 255 * m)]; }
 
 class Builder {
-  constructor() { this.pos = []; this.nrm = []; this.col = []; this.part = []; this.piv = []; this.idx = []; }
+  constructor(hs) { this.hs = hs || 1; this.pos = []; this.nrm = []; this.col = []; this.part = []; this.piv = []; this.idx = []; }
   add(geo, c, part, pivot, weight) {
     const g = geo.index ? geo.toNonIndexed() : geo; const p = g.attributes.position, n = g.attributes.normal, base = this.pos.length / 3;
     for (let i = 0; i < p.count; i++) {
-      this.pos.push(p.getX(i), p.getY(i), p.getZ(i)); this.nrm.push(n.getX(i), n.getY(i), n.getZ(i)); this.col.push(c[0], c[1], c[2]);
+      if (this.hs !== 1 && (part === 1 || part === 5)) { const k = this.hs; this.pos.push(pivot[0] + (p.getX(i) - pivot[0]) * k, pivot[1] + (p.getY(i) - pivot[1]) * k, pivot[2] + (p.getZ(i) - pivot[2]) * k); } else this.pos.push(p.getX(i), p.getY(i), p.getZ(i)); this.nrm.push(n.getX(i), n.getY(i), n.getZ(i)); this.col.push(c[0], c[1], c[2]);
       let w = weight == null ? 1 : weight;
       if (weight === 'tail') w = clamp((p.getZ(i) - pivot[2]) / 0.34 + (p.getY(i) - pivot[1]) / 0.5, 0, 1.4);
       this.part.push(part, w); this.piv.push(pivot[0], pivot[1], pivot[2]); this.idx.push(base + i);
@@ -42,14 +61,14 @@ class Builder {
   }
   cone(r, h, seg, x, y, z, c, part, pivot, ry) { const g = new THREE.ConeGeometry(r, h, seg); if (ry) g.rotateY(ry); g.translate(x, y, z); this.add(g, c, part || 0, pivot || [0, 0, 0]); }
   cyl(rt, rb, h, seg, x, y, z, c, part, pivot) { const g = new THREE.CylinderGeometry(rt, rb, h, seg); g.translate(x, y, z); this.add(g, c, part || 0, pivot || [0, 0, 0]); }
-  build() {
+  build(big) {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(this.pos), 3));
     g.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(this.nrm), 3));
     g.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(this.col), 3, true));
     g.setAttribute('aPart', new THREE.BufferAttribute(new Float32Array(this.part), 2));
     g.setAttribute('aPivot', new THREE.BufferAttribute(new Float32Array(this.piv), 3));
-    g.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0.6, 0), 1.1);
+    g.boundingSphere = big ? new THREE.Sphere(new THREE.Vector3(0, 1.5, -2), 6) : new THREE.Sphere(new THREE.Vector3(0, 0.6, 0), 1.1);
     return g;
   }
 }
@@ -57,7 +76,7 @@ class Builder {
 // O gato olha para -Z. Partes: 0 tronco, 1 cabeça, 2 perna esq., 3 perna dir., 4 cauda.
 export function buildCatGeometry(look) {
   look = cleanLook(look);
-  const b = new Builder(), pt = look.pattern;
+  const b = new Builder(AGE_HEAD[look.age]), pt = look.pattern, LZ = LASERS[look.laser][1];
   const fur = rgb(look.fur), dark = rgb(look.fur, 0.72), f2 = rgb(look.fur2), pink = [236, 140, 160], eye = rgb(look.eyes), black = [30, 28, 34];
   const legC = pt === 2 ? rgb(look.fur2, 0.55) : fur, pawC = pt === 1 || pt === 5 ? f2 : pt === 2 ? rgb(look.fur2, 0.45) : dark;
   const tailC = pt === 2 ? rgb(look.fur2, 0.55) : fur, earC = pt === 2 ? rgb(look.fur2, 0.55) : fur;
@@ -67,14 +86,19 @@ export function buildCatGeometry(look) {
   if (pt === 1) b.box(0.24, 0.3, 0.02, 0, 0.5, -0.145, f2, 0);
   if (pt === 3) for (let i = 0; i < 3; i++) b.box(0.37, 0.045, 0.2, 0, 0.42 + i * 0.11, 0.05, dark, 0);
   if (pt === 4) { b.box(0.16, 0.16, 0.02, 0.1, 0.6, 0.145, f2, 0); b.box(0.02, 0.18, 0.14, 0.185, 0.5, -0.02, rgb('#3b3b45'), 0); b.box(0.02, 0.14, 0.12, -0.185, 0.58, 0.04, f2, 0); }
+  outfit(b, look.outfit);
   // coleira
   b.box(0.3, 0.035, 0.26, 0, 0.745, 0, [200, 60, 70], 0); b.box(0.05, 0.05, 0.03, 0, 0.72, -0.14, [240, 200, 60], 0);
   // cabeça
   b.box(0.44, 0.36, 0.36, 0, 0.94, -0.02, fur, 1, NECK);
   b.box(0.2, 0.12, 0.05, 0, 0.86, -0.21, pt === 1 || pt === 4 ? f2 : pt === 2 ? rgb(look.fur2, 0.5) : rgb(look.fur, 1.12), 1, NECK);
   b.box(0.05, 0.035, 0.02, 0, 0.9, -0.24, pink, 1, NECK);
-  b.box(0.075, 0.09, 0.02, -0.11, 0.99, -0.205, eye, 1, NECK); b.box(0.075, 0.09, 0.02, 0.11, 0.99, -0.205, eye, 1, NECK);
-  b.box(0.03, 0.075, 0.02, -0.11, 0.99, -0.215, black, 1, NECK); b.box(0.03, 0.075, 0.02, 0.11, 0.99, -0.215, black, 1, NECK);
+  if (LZ) { // olhos de laser: olhos brilhando (parte 5 = acompanha a cabeça e não recebe sombra) + feixes
+    b.box(0.09, 0.1, 0.02, -0.11, 0.99, -0.205, LZ, 5, NECK); b.box(0.09, 0.1, 0.02, 0.11, 0.99, -0.205, LZ, 5, NECK);
+    for (const sx of [-1, 1]) { const L = 5, g = new THREE.BoxGeometry(0.035, 0.035, L); g.translate(0, 0, -L / 2); g.rotateX(0.42); g.rotateY(-sx * 0.32); g.translate(sx * 0.11, 0.99, -0.22); b.add(g, LZ, 5, NECK);
+      const g2 = new THREE.BoxGeometry(0.012, 0.012, L); g2.translate(0, 0, -L / 2); g2.rotateX(0.42); g2.rotateY(-sx * 0.32); g2.translate(sx * 0.11, 0.99, -0.225); b.add(g2, [255, 255, 255], 5, NECK); }
+  } else { b.box(0.075, 0.09, 0.02, -0.11, 0.99, -0.205, eye, 1, NECK); b.box(0.075, 0.09, 0.02, 0.11, 0.99, -0.205, eye, 1, NECK); }
+  if (!LZ) { b.box(0.03, 0.075, 0.02, -0.11, 0.99, -0.215, black, 1, NECK); b.box(0.03, 0.075, 0.02, 0.11, 0.99, -0.215, black, 1, NECK); }
   if (pt === 3) { b.box(0.05, 0.02, 0.2, -0.09, 1.125, -0.05, dark, 1, NECK); b.box(0.05, 0.02, 0.2, 0, 1.125, -0.05, dark, 1, NECK); b.box(0.05, 0.02, 0.2, 0.09, 1.125, -0.05, dark, 1, NECK); }
   if (pt === 4) b.box(0.2, 0.2, 0.02, 0.12, 1.02, 0.165, rgb('#3b3b45'), 1, NECK);
   // orelhas
@@ -114,7 +138,27 @@ export function buildCatGeometry(look) {
   else if (A === 9) { const g = new THREE.TorusGeometry(0.36, 0.03, 4, 12); g.rotateX(Math.PI / 2); g.translate(0, 0.5, 0); b.add(g, [255, 225, 90], 0, [0, 0, 0]); const g2 = new THREE.TorusGeometry(0.3, 0.02, 4, 12); g2.rotateX(Math.PI / 2); g2.translate(0, 0.28, 0); b.add(g2, [255, 240, 150], 0, [0, 0, 0]); }
   else if (A === 10) { for (let i = 0; i < 9; i++) { const a = -1.9 + i * 0.475; b.box(0.045, 0.045, 0.045, Math.sin(a) * 0.19, 0.71 - Math.cos(a) * 0.03, -Math.cos(a) * 0.16, white, 0); } }
   else if (A === 11) { b.cone(0.05, 0.2, 5, -0.2, 1.2, -0.12, [150, 30, 40], 1, NECK); b.cone(0.05, 0.2, 5, 0.2, 1.2, -0.12, [150, 30, 40], 1, NECK); }
-  return b.build();
+  return b.build(!!LZ);
+}
+
+// roupas (presas ao tronco; macacão e pijama cobrem as pernas também)
+function outfit(b, o) {
+  if (!o) return;
+  const W = [245, 245, 248], R = [200, 40, 52], Gn = [36, 132, 70], HL = [-0.1, 0.34, 0], HR = [0.1, 0.34, 0];
+  const body = (c, top, bot) => { const t = top || 0.74, bo = bot || 0.32, h = t - bo; b.box(0.39, h, 0.31, 0, bo + h / 2, 0, c, 0); };
+  const band = (c, y) => b.box(0.4, 0.045, 0.32, 0, y, 0, c, 0);
+  const legs = (c, y0) => { const yy = y0 == null ? 0.1 : y0, h = 0.34 - yy; b.box(0.145, h, 0.165, -0.1, yy + h / 2, 0, c, 2, HL); b.box(0.145, h, 0.165, 0.1, yy + h / 2, 0, c, 3, HR); };
+  if (o === 1) { body(R); band(W, 0.73); band(W, 0.345); // suéter vermelho com flocos brancos
+    for (let r = 0; r < 2; r++) for (let i = 0; i < 4; i++) { const x = -0.135 + i * 0.09 + (r ? 0.045 : 0), y = 0.47 + r * 0.13; if (x > 0.17) continue; b.box(0.05, 0.015, 0.01, x, y, -0.158, W, 0); b.box(0.015, 0.05, 0.01, x, y, -0.158, W, 0); b.box(0.05, 0.015, 0.01, x, y, 0.158, W, 0); } }
+  else if (o === 2) { body(Gn); band(R, 0.73); band([20, 70, 40], 0.345); for (let i = 0; i < 3; i++) { b.box(0.3, 0.045, 0.012, -0.03 + (i - 1) * 0.05, 0.43 + i * 0.12, -0.158, R, 0, null, null, 0, 0.55); b.box(0.3, 0.045, 0.012, 0.03 - (i - 1) * 0.05, 0.43 + i * 0.12, 0.158, R, 0, null, null, 0, -0.55); } }
+  else if (o === 3) { body(R); band(Gn, 0.73); band(Gn, 0.345); for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) if ((i + j) % 2) b.box(0.085, 0.09, 0.012, -0.135 + i * 0.09, 0.44 + j * 0.1, -0.158, Gn, 0); b.box(0.06, 0.06, 0.016, 0.09, 0.64, -0.16, [250, 225, 120], 0, null, null, 0, 0.785); }
+  else if (o === 4) { body([90, 110, 150]); band([70, 85, 120], 0.345); b.box(0.22, 0.09, 0.012, 0, 0.45, -0.158, [70, 85, 120], 0); b.box(0.34, 0.16, 0.08, 0, 0.74, 0.15, [90, 110, 150], 0); b.box(0.012, 0.12, 0.01, -0.04, 0.66, -0.158, W, 0); b.box(0.012, 0.12, 0.01, 0.04, 0.66, -0.158, W, 0); }
+  else if (o === 5) { body([90, 190, 230], 0.74, 0.5); b.box(0.12, 0.08, 0.012, 0, 0.62, -0.158, [255, 230, 120], 0); }
+  else if (o === 6) { body([240, 120, 170], 0.74, 0.5); b.box(0.5, 0.2, 0.42, 0, 0.42, 0, [240, 120, 170], 0); b.box(0.52, 0.04, 0.44, 0, 0.33, 0, W, 0); b.box(0.4, 0.04, 0.32, 0, 0.52, 0, W, 0); }
+  else if (o === 7) { const J = [60, 100, 170]; b.box(0.39, 0.22, 0.31, 0, 0.43, 0, J, 0); b.box(0.24, 0.16, 0.012, 0, 0.6, -0.158, J, 0); b.box(0.04, 0.22, 0.32, -0.12, 0.62, 0, J, 0); b.box(0.04, 0.22, 0.32, 0.12, 0.62, 0, J, 0); b.box(0.03, 0.03, 0.01, -0.1, 0.66, -0.165, [240, 200, 60], 0); b.box(0.03, 0.03, 0.01, 0.1, 0.66, -0.165, [240, 200, 60], 0); legs(J, 0.12); }
+  else if (o === 8) { body(W, 0.74, 0.26); b.box(0.012, 0.42, 0.01, 0, 0.5, -0.158, [200, 200, 210], 0); b.box(0.07, 0.07, 0.012, 0.1, 0.62, -0.16, [80, 160, 230], 0); b.box(0.02, 0.06, 0.01, 0.1, 0.62, -0.168, [230, 60, 60], 0); b.box(0.06, 0.02, 0.01, 0.1, 0.62, -0.168, [230, 60, 60], 0); }
+  else if (o === 9) { body([40, 50, 100]); band(W, 0.73); b.box(0.045, 0.2, 0.012, 0, 0.6, -0.16, [200, 40, 52], 0); b.box(0.07, 0.06, 0.012, -0.1, 0.62, -0.158, [255, 215, 80], 0); }
+  else if (o === 10) { const P = [170, 200, 255]; body(P); for (let i = 0; i < 4; i++) b.box(0.4, 0.03, 0.32, 0, 0.38 + i * 0.1, 0, [255, 255, 255], 0); legs(P, 0.1); }
 }
 
 function makeCatMaterial() {
@@ -123,11 +167,12 @@ function makeCatMaterial() {
   m.userData.u = u;
   m.onBeforeCompile = (sh) => {
     sh.uniforms.uLegs = u.uLegs; sh.uniforms.uHead = u.uHead; sh.uniforms.uTail = u.uTail;
-    sh.vertexShader = 'attribute vec2 aPart;\nattribute vec3 aPivot;\nuniform vec2 uLegs;\nuniform vec2 uHead;\nuniform float uTail;\n' + sh.vertexShader.replace('#include <begin_vertex>', [
+    sh.vertexShader = 'attribute vec2 aPart;\nvarying float vGlow;\nattribute vec3 aPivot;\nuniform vec2 uLegs;\nuniform vec2 uHead;\nuniform float uTail;\n' + sh.vertexShader.replace('#include <begin_vertex>', [
       '#include <begin_vertex>',
+      'vGlow = step(4.5, aPart.x);',
       'vec3 pv = transformed - aPivot;',
       'if (aPart.x > 0.5) {',
-      '  if (aPart.x < 1.5) { float c = cos(uHead.y), s = sin(uHead.y); pv = vec3(pv.x, pv.y * c - pv.z * s, pv.y * s + pv.z * c); c = cos(uHead.x); s = sin(uHead.x); pv = vec3(pv.x * c + pv.z * s, pv.y, -pv.x * s + pv.z * c); }',
+      '  if (aPart.x < 1.5 || aPart.x > 4.5) { float c = cos(uHead.y), s = sin(uHead.y); pv = vec3(pv.x, pv.y * c - pv.z * s, pv.y * s + pv.z * c); c = cos(uHead.x); s = sin(uHead.x); pv = vec3(pv.x * c + pv.z * s, pv.y, -pv.x * s + pv.z * c); }',
       '  else if (aPart.x < 3.5) { float a = aPart.x < 2.5 ? uLegs.x : uLegs.y; float c = cos(a), s = sin(a); pv = vec3(pv.x, pv.y * c - pv.z * s, pv.y * s + pv.z * c); }',
       '  else { float a = uTail * aPart.y; float c = cos(a), s = sin(a); pv = vec3(pv.x * c + pv.z * s, pv.y, -pv.x * s + pv.z * c); }',
       '}',
@@ -135,7 +180,7 @@ function makeCatMaterial() {
     ].join('\n'));
   };
   m.customProgramCacheKey = () => 'rvcat';
-  const prev = m.onBeforeCompile; m.onBeforeCompile = (sh) => { prev(sh); sh.fragmentShader = sh.fragmentShader.replace('#include <opaque_fragment>', 'float rim = pow(1.0 - clamp(dot(normalize(vNormal), normalize(vViewPosition)), 0.0, 1.0), 3.0);\noutgoingLight += rim * 0.3 * vec3(1.0, 0.95, 0.85);\n#include <opaque_fragment>'); }; // contorno de luz: destaca os gatos em qualquer cenário
+  const prev = m.onBeforeCompile; m.onBeforeCompile = (sh) => { prev(sh); sh.fragmentShader = 'varying float vGlow;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', 'outgoingLight = mix(outgoingLight, vColor * 1.5 + 0.12, vGlow);\nfloat rim = pow(1.0 - clamp(dot(normalize(vNormal), normalize(vViewPosition)), 0.0, 1.0), 3.0);\noutgoingLight += rim * 0.3 * vec3(1.0, 0.95, 0.85) * (1.0 - vGlow);\n#include <opaque_fragment>'); }; // contorno de luz: destaca os gatos em qualquer cenário
   return m;
 }
 
@@ -173,9 +218,9 @@ export class CatAvatar {
     this.look = cleanLook(look); this.name = name || 'Gato'; this.isNPC = !!opts.npc; this.tagColor = opts.tagColor || '#ffffff';
     this.root = new THREE.Group();
     this.mat = makeCatMaterial(); this.u = this.mat.userData.u;
-    this.mesh = new THREE.Mesh(buildCatGeometry(this.look), this.mat); this.mesh.castShadow = true;
+    this.mesh = new THREE.Mesh(buildCatGeometry(this.look), this.mat); this.mesh.castShadow = !this.look.laser;
     this.root.add(this.mesh);
-    this.scale = opts.scale || 1; this.root.scale.setScalar(this.scale);
+    this.baseScale = opts.scale || 1; this.scale = this.baseScale * AGE_SCALE[this.look.age]; this.root.scale.setScalar(this.scale);
     this.h1 = new THREE.Vector3(); this.h2 = new THREE.Vector3(); this.handsVisible = true;
     this.t = Math.random() * 10; this.walk = 0; this.emote = 0; this.emoteT = 0; this.bubble = ''; this.bubbleT = 0; this.sub = opts.sub || '';
     this.speed = 0; this.grounded = true; this.blocking = false; this.headYaw = 0; this.headPitch = 0; this.flash = 0;
@@ -203,7 +248,7 @@ export class CatAvatar {
     if (this.sub) { g.font = 'bold 16px sans-serif'; g.fillStyle = this.isNPC ? '#ffd76a' : '#bfe6ff'; g.strokeStyle = 'rgba(0,0,0,0.7)'; g.lineWidth = 3; g.strokeText(this.sub, 128, 84); g.fillText(this.sub, 128, 84); }
     this.tag.material.map.needsUpdate = true;
   }
-  setLook(look) { this.look = cleanLook(look); this.mesh.geometry.dispose(); this.mesh.geometry = buildCatGeometry(this.look); }
+  setLook(look) { this.look = cleanLook(look); this.mesh.geometry.dispose(); this.mesh.geometry = buildCatGeometry(this.look); this.mesh.castShadow = !this.look.laser; this.scale = this.baseScale * AGE_SCALE[this.look.age]; this.root.scale.setScalar(this.scale); }
   setName(name, sub) { this.name = name; if (sub != null) this.sub = sub; this.drawTag(); }
   say(text, secs) { this.bubble = text; this.bubbleT = secs || 5; this.drawTag(); }
   setEmote(id) { this.emote = id; this.emoteT = 0; const e = EMOTES.find((x) => x.id === id); if (e && id !== 3 && id !== 4) this.say(e.icon, 2.5); }

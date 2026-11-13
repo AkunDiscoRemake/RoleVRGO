@@ -7,7 +7,8 @@ import { net } from './net.js';
 import { S } from './state.js';
 import { perf } from './perf.js';
 import { worldMat } from './world.js';
-import { CatAvatar, defaultLook, cleanLook, FUR_COLORS, EYE_COLORS, PATTERNS } from './cat.js';
+import { home } from './home.js';
+import { CatAvatar, defaultLook, cleanLook, FUR_COLORS, EYE_COLORS, PATTERNS, AGES, PRESETS } from './cat.js'; // eslint-disable-line
 import { store, emit, on } from './util.js';
 import { rec, downloadBlob, stamp } from './rec.js';
 import { admin } from './admin.js';
@@ -50,6 +51,8 @@ function buildLobby() {
   $('name').value = store.get('name', '') || 'Gato' + Math.floor(100 + Math.random() * 900);
   swatches($('fur'), FUR_COLORS, 'fur'); swatches($('fur2'), FUR_COLORS, 'fur2'); swatches($('eyes'), EYE_COLORS, 'eyes');
   const pt = $('pattern'); pt.innerHTML = ''; PATTERNS.forEach((p, i) => { const b = document.createElement('button'); b.className = 'chip' + (look.pattern === i ? ' on' : ''); b.textContent = p; b.onclick = () => { look.pattern = i; store.set('look', look); setPreview(); buildLobby(); }; pt.appendChild(b); });
+  const ag = $('age'); if (ag) { ag.innerHTML = ''; AGES.forEach((n, i) => { const b = document.createElement('button'); b.className = 'chip' + ((look.age | 0) === i ? ' on' : ''); b.textContent = ['🐈 ', '🎒 ', '🍼 '][i] + n; b.onclick = () => { look.age = i; store.set('look', look); setPreview(); buildLobby(); }; ag.appendChild(b); }); }
+  const pr = $('presets'); if (pr) { pr.innerHTML = ''; PRESETS.forEach((p) => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = p.n; b.onclick = () => { look = cleanLook(Object.assign({}, p.look, { acc: look.acc || 0, hat: p.look.hat })); if (p.look.hat) { const sv = store.get('save', null); if (sv && sv.d && Array.isArray(sv.d.hats) && sv.d.hats.indexOf(p.look.hat) < 0) { sv.d.hats.push(p.look.hat); store.set('save', sv); } look._gift = p.look.hat; } store.set('look', look); setPreview(); buildLobby(); }; pr.appendChild(b); }); }
 }
 function drawRooms(list) {
   const el = $('rooms'), counts = net.roomCounts(); el.innerHTML = '';
@@ -100,7 +103,7 @@ async function gate() {
 }
 function start() {
   if (started) return; started = true;
-  S.name = ($('name').value || 'Gato').trim().slice(0, 16) || 'Gato'; S.look = look; store.set('name', S.name); store.set('look', look); store.set('room', chosen);
+  S.name = ($('name').value || 'Gato').trim().slice(0, 16) || 'Gato'; if (look._gift != null) { if (S.d && S.d.hats.indexOf(look._gift) < 0) S.d.hats.push(look._gift); delete look._gift; } S.look = look; store.set('name', S.name); store.set('look', look); store.set('room', chosen);
   $('lobby').style.display = 'none'; $('hint').style.display = 'block';
   audioInit(); setVolume(store.get('vol', 0.8)); player.side = store.get('side', player.side); const tm = store.get('turn', 30); player.smoothTurn = tm === 0; player.snapA = (tm || 30) * Math.PI / 180;
   perf.setProfile(store.get('profile', 'balanced'));
@@ -183,5 +186,5 @@ on('look', () => { /* a cor das patas vem de S.look a cada quadro */ });
 addEventListener('beforeunload', () => { net.leave(); });
 player.handTrack = hands;
 import('./maker.js').then(({ maker }) => { self.RV.maker = maker; const f = $('file'); if (f) f.onchange = () => { const file = f.files && f.files[0]; f.value = ''; if (!file) return; S.toast('Importando ' + file.name + '...', '#bfe6ff'); maker.importFile(file).then((e) => S.toast(e || 'Asset importado! Ele já está no pincel.', e ? '#ff9a8a' : '#9cf09c')).catch((e) => S.toast('Falha ao importar: ' + (e && e.message ? e.message : e), '#ff9a8a')); }; });
-self.RV = { G, S, net, perf, player, ui, rec, music, hands, admin }; // para depuração no console
+self.RV = { G, S, net, perf, player, ui, rec, music, hands, admin, home, CatAvatar, PRESETS }; // para depuração no console
 boot();

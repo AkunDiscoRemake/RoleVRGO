@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { World, worldMat, matU, glossify } from './world.js';
 import { MAPS, initPrims, PORTAL_COLORS, MAP_ICONS } from './maps.js';
 import { modelGeometry, play, playAt, meow, purr, pop, setUnder, ambience, chime, splashSfx, chirp, thunder } from './assets.js';
-import { CatAvatar, HandPool, EMOTES } from './cat.js';
+import { CatAvatar, HandPool, EMOTES, AGE_EYE } from './cat.js';
 import { FX, LabelBatch } from './fx.js';
 import { Sky } from './sky.js';
 import { perf } from './perf.js';
@@ -12,6 +12,7 @@ import { ITEMS, ORES, PICKS, GLOVES, RODS, FISH_TABLE, TREASURE_TABLE, RARITY, Q
 import { rng, hashStr, clamp, emit, on, angDiff } from './util.js';
 import { EYE, HAND_R } from './config.js';
 import { maker } from './maker.js';
+import { home } from './home.js';
 import { admin } from './admin.js';
 import { DAY_LENGTH } from './config.js';
 
@@ -52,10 +53,10 @@ export const G = {
   },
 
   // ================= carregamento de mapa =================
-  travel(id) { if (this.pending || (!MAPS[id] && id !== 'custom') || id === this.mapId) return; this.pending = id; this.fade = 0.001; play('portal', 0.6); },
+  travel(id) { if (this.pending || (!MAPS[id] && id !== 'custom' && id !== 'home') || (id === this.mapId && id !== 'home')) return; this.pending = id; this.fade = 0.001; play('portal', 0.6); },
   loadMap(id, keep) {
     const scene = this.scene; this._disposeMap();
-    const def = id === 'custom' ? this.customDef : MAPS[id], w = new World(scene, def.size); w.surface = def.surface;
+    const def = id === 'custom' ? this.customDef : id === 'home' ? this.homeDef : MAPS[id], w = new World(scene, def.size); w.surface = def.surface;
     if (id !== 'custom' && maker.playing) maker.close(); S._sbChests = [];
     const E = { npcs: [], ores: [], chests: [], portals: [], collects: [], digs: [], fishes: [], secrets: [], dummies: [], zones: [], lamps: [], signs: [], boards: [], springs: [] };
     E.npc = (nid, name, role, x, z, look, o) => E.npcs.push(Object.assign({ id: nid, name, role, x, z, look }, o));
@@ -184,7 +185,7 @@ export const G = {
   // ================= eventos de rede e de jogo =================
   _bindEvents() {
     on('questReady', () => this._npcMarks()); on('inv', () => { if (this.npcs.length) this._npcMarks(); });
-    on('peerJoin', (id, meta) => { if (!meta || this.remotes.has(id)) return; meta.name = cleanName(meta.name); const av = new CatAvatar(meta.look, (admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), { sub: 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1), tagColor: this._tagColor(id, meta) }); av.root.visible = false; this.scene.add(av.root); const r = { id, av, meta, has: false, x: 0, y: 0, z: 0, yaw: 0, hy: 0, hp: 0, h: [0, 0.6, -0.4, 0, 0.6, -0.4], flags: 1, life: 100, px: 0, pz: 0, hit: [0, 0], patT: 0 }; this.remotes.set(id, r); if (meta.sid) this.sids[meta.sid] = r; this._remoteHeld(r); setTimeout(() => this.props.forEach((p) => { if (p.owner === net.id) net.send('prop', { id: p.id, k: p.k, x: p.x, y: p.y, z: p.z, ry: p.ry }); }), 1500); emit('toast', meta.name + ' entrou', '#bfe6ff'); emit('players'); });
+    on('peerJoin', (id, meta) => { if (!meta || this.remotes.has(id)) return; meta.name = cleanName(meta.name); const av = new CatAvatar(meta.look, (admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), { sub: 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1), tagColor: this._tagColor(id, meta) }); av.root.visible = false; this.scene.add(av.root); const r = { id, av, meta, has: false, x: 0, y: 0, z: 0, yaw: 0, hy: 0, hp: 0, h: [0, 0.6, -0.4, 0, 0.6, -0.4], flags: 1, life: 100, px: 0, pz: 0, hit: [0, 0], patT: 0 }; this.remotes.set(id, r); if (meta.sid) this.sids[meta.sid] = r; this._remoteHeld(r); setTimeout(() => this.props.forEach((p) => { if (p.owner === net.id) net.send('prop', { id: p.id, k: p.k, x: p.x, y: p.y, z: p.z, ry: p.ry }); }), 1500); emit('toast', meta.name + (this.mapId === 'home' && home.mine() ? ' veio te visitar! 🏠' : ' entrou'), '#bfe6ff'); if (home.mine()) setTimeout(() => home.share(), 1200); emit('players'); });
     on('peerMeta', (id, meta) => { const r = this.remotes.get(id); if (!r || !meta) return; meta.name = cleanName(meta.name); if (JSON.stringify(meta.look) !== JSON.stringify(r.meta.look)) r.av.setLook(meta.look); r.meta = meta; this._remoteHeld(r); r.av.tagColor = this._tagColor(id, meta); r.av.setName((admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1)); if (meta.sid) this.sids[meta.sid] = r; emit('players'); });
     on('peerLeave', (id) => { const r = this.remotes.get(id); if (!r) return; if (r.pet && r.pet.av) r.pet.av.dispose(); if (r.heldMesh) this.scene.remove(r.heldMesh); this.props.forEach((p, k) => { if (p.owner === id) this._delProp(k); }); r.av.dispose(); this.remotes.delete(id); for (const k in this.sids) if (this.sids[k] === r) delete this.sids[k]; emit('players'); });
     on('peerState', (p) => { if (!Array.isArray(p) || p.length < 15) return; for (let i = 1; i < 15; i++) if (typeof p[i] !== 'number' || !Number.isFinite(p[i]) || Math.abs(p[i]) > 2000) return; const r = this.sids[p[0]]; if (!r) return; r.x = p[1]; r.y = p[2]; r.z = p[3]; r.yaw = p[4]; r.hy = p[5]; r.hp = p[6]; for (let i = 0; i < 6; i++) r.h[i] = p[7 + i]; const fl = p[13]; const em = (fl >> 4) & 15; r.tool = (fl >> 8) & 7; if (em !== r.av.emote) { r.av.setEmote(em); if (em === 7) playAt('click', r.av.root.position, this.camera, 0), meow(0.5, 1.1); } r.flags = fl; r.life = p[14]; if (!r.has) { r.has = true; r.av.root.position.set(r.x, r.y, r.z); r.av.root.visible = true; } });
@@ -210,6 +211,7 @@ export const G = {
   _tagColor(id, meta) { if (admin.ids.has(id)) return '#ffd040'; if (meta && meta.party && meta.party === net.partyCode && net.partyCode) return '#8fd0ff'; if (this.friends.some((f) => f.id === id && f.status === 'accepted')) return '#9cf09c'; return '#ffffff'; },
   _peerEvent(e) {
     const r = this.remotes.get(e.f), P = this.player;
+    if (e.t === 'home') { home.remote(e); return; }
     if (e.t === 'chat') { if (r && !this.muted(e.f)) { const tx = String(e.x == null ? '' : e.x).slice(0, 80); r.av.say(tx, 6); this._log(r.meta.name, tx); play('msg', 0.4); } }
     else if (e.t === 'tree') { const tr = this.E.trees[e.i | 0]; if (tr && tr.alive) this._fell(tr, Math.min(Number(e.u) || 0, net.now() + 180000), 0, 1); }
     else if (e.t === 'ore') { const o = this.E.ores[e.i | 0]; if (o && o.alive && !o.ev) { o.alive = false; o.respawn = Math.min(Number(e.u) || 0, net.now() + 180000); this._oreVis(o); } }
@@ -263,11 +265,13 @@ export const G = {
     if (!this.world || this.pending) return true;
     if (this.uiClick && this.uiClick()) return true;
     if (maker.editing && this.mapId === 'custom') { maker.act(); return true; }
+    if (home.editing && home.mine()) { home.act(); return true; }
     if (this.fishing) { this._reel(true); return true; }
     if (this.myEmote === 3 || this.myEmote === 4) { this.myEmote = 0; this.emoteT = 0; this.player.frozen = false; this.player.emoteId = 0; return true; }
     const a = this.aim();
     if (a && a.npc) { this.talk(a.npc); return true; }
     if (a && a.chest) { this.openChest(a.chest); return true; }
+    if (home.interact(this)) return true;
     const P = this.player, O = P.aimPos, D = P.aimDir, w = this.world;
     if (D.y < -0.08 && this.E.fishes.length && !P.hands[0].touch) { const t = (w.waterY - O.y) / D.y; if (t > 1.5 && t < 24) { const x = O.x + D.x * t, z = O.z + D.z * t; if (w.heightAt(x, z) < w.waterY - 0.15) for (const f of this.E.fishes) if (Math.hypot(x - f.x, z - f.z) < f.r) { this._cast(x, z); return true; } } }
     return false;
@@ -312,7 +316,7 @@ export const G = {
     if (S.hp > 0 && S.hp < S.maxHp() && (this.time - this.lastHurt > (fz ? 5 : 3.5))) { S.hp = Math.min(S.maxHp(), S.hp + (fz ? 3 : 12) * (S.held().regen || 1) * (1 + S.perk('regen') * 0.3) * dt); this._hpT = (this._hpT || 0) + dt; if (this._hpT > 0.5) { this._hpT = 0; emit('hp'); } }
     if (this.emoteT > 0 && (this.emoteT -= dt) <= 0) { this.myEmote = 0; P.frozen = false; P.emoteId = 0; }
     if (this.comboT > 0 && (this.comboT -= dt) <= 0) { this.combo = 0; emit('combo', 0); }
-    this._held(dt); maker.update(this); this._adminFx(dt); this._pets(dt);
+    this._held(dt); maker.update(this); home.update(this); if (this.def && this.def.tick) this.def.tick(dt, this); this._adminFx(dt); this._pets(dt);
     const tp = P.tp; this.tpBall.visible = this.tpArc.visible = tp.show; if (tp.show) { this.tpBall.position.set(tp.x, tp.y + 0.22 + Math.sin(this.time * 6) * 0.04, tp.z); this.tpBall.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.geometry.setDrawRange(0, tp.n); this.tpArc.geometry.attributes.position.needsUpdate = true; }
     // passos
     if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; if (P.speed > 3 && !P.inWater && perf.particles >= 0.5) this.fx.burst(P.pos.x, P.pos.y + 0.05, P.pos.z, { snow: 0xffffff, sand: 0xe8d098 }[W.surface] || 0xbcae90, 2, 0.8, 3); play(P.inWater ? 'splash' : this.E.aero && P.pos.y > 1.9 && Math.hypot(P.pos.x, P.pos.z) < 44 ? 'glass' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
@@ -378,6 +382,7 @@ export const G = {
   // ---------- seu próprio gato (visível em 2ª e 3ª pessoa) ----------
   _self(dt) {
     const P = this.player; if (!this.selfCat) { this.selfCat = new CatAvatar(S.look, S.name, { noTag: true }); this.scene.add(this.selfCat.root); on('look', () => this.selfCat.setLook(S.look)); }
+    P.eye = EYE * AGE_EYE[clamp(S.look.age | 0, 0, 2)]; // filhotes e adolescentes enxergam mais baixo
     const av = this.selfCat; av.root.visible = P.viewMode !== 1; if (!av.root.visible) return;
     av.root.position.copy(P.pos); av.root.rotation.y = P.bodyYaw; av.speed = av.speed * 0.8 + P.speed * 0.2; av.grounded = P.grounded || P.wasTouching; av.blocking = P.block; av.headYaw = angDiff(P.bodyYaw, P.headYaw); av.headPitch = 0;
     if (av.emote !== (this.myEmote || 0)) { av.emote = this.myEmote || 0; av.emoteT = 0; } av.update(dt, false);

@@ -1,6 +1,6 @@
 // Extrai os textos em português do código-fonte (literais entre aspas simples) para traduzir.
 import fs from 'node:fs';
-const files = ['data.js', 'maps.js', 'ui.js', 'game.js', 'state.js', 'maker.js', 'cat.js', 'main.js', 'hands.js', 'rec.js', 'fx.js'];
+const files = ['data.js', 'maps.js', 'ui.js', 'game.js', 'state.js', 'maker.js', 'cat.js', 'main.js', 'hands.js', 'rec.js', 'fx.js', 'home.js'];
 const out = new Set();
 for (const f of files) {
   const s = fs.readFileSync('src/' + f, 'utf8'); const re = /'((?:[^'\\\n]|\\.)*)'/g; let m;
