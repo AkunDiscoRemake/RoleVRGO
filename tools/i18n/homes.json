@@ -958,5 +958,125 @@
 "💬 Chat",
 "💬 Chat",
 "💬 Чат"
+],
+"🎙 Voz: ": [
+"🎙 Voice: ",
+"🎙 Voz: ",
+"🎙 Голос: "
+],
+"microfone ligado": [
+"mic on",
+"micrófono activado",
+"микрофон вкл."
+],
+"só ouvindo": [
+"listening only",
+"solo escuchando",
+"только слушаю"
+],
+"desligada": [
+"off",
+"apagada",
+"выкл."
+],
+"🎙 Chat de voz": [
+"🎙 Voice chat",
+"🎙 Chat de voz",
+"🎙 Голосовой чат"
+],
+"Este navegador não tem chat de voz.": [
+"This browser has no voice chat.",
+"Este navegador no tiene chat de voz.",
+"В этом браузере нет голосового чата."
+],
+"Este navegador não tem chat de voz": [
+"This browser has no voice chat",
+"Este navegador no tiene chat de voz",
+"В этом браузере нет голосового чата"
+],
+"🎙 Microfone: LIGADO": [
+"🎙 Microphone: ON",
+"🎙 Micrófono: ACTIVADO",
+"🎙 Микрофон: ВКЛ"
+],
+"🎙 Microfone: desligado": [
+"🎙 Microphone: off",
+"🎙 Micrófono: apagado",
+"🎙 Микрофон: выкл."
+],
+"Todos perto de você ouvem · toque para desligar": [
+"Everyone near you can hear · tap to turn off",
+"Todos cerca de ti te oyen · toca para apagar",
+"Тебя слышат все рядом · нажми, чтобы выключить"
+],
+"Toque para falar com quem está perto": [
+"Tap to talk to people nearby",
+"Toca para hablar con quien está cerca",
+"Нажми, чтобы говорить с теми, кто рядом"
+],
+"🔊 Ouvir vozes: ligado": [
+"🔊 Hear voices: on",
+"🔊 Oír voces: activado",
+"🔊 Слышать голоса: вкл."
+],
+"🔇 Ouvir vozes: desligado": [
+"🔇 Hear voices: off",
+"🔇 Oír voces: apagado",
+"🔇 Слышать голоса: выкл."
+],
+"Desligar também fecha o seu microfone": [
+"Turning off also closes your mic",
+"Apagar también cierra tu micrófono",
+"Выключение также закрывает микрофон"
+],
+"👥 Com quem: ": [
+"👥 With: ",
+"👥 Con quién: ",
+"👥 С кем: "
+],
+"Só amigos e grupo": [
+"Friends and party only",
+"Solo amigos y grupo",
+"Только друзья и группа"
+],
+"Toque para trocar": [
+"Tap to change",
+"Toca para cambiar",
+"Нажми, чтобы сменить"
+],
+"Conectados por voz: ": [
+"Voice connected: ",
+"Conectados por voz: ",
+"На голосовой связи: "
+],
+"  (sem microfone)": [
+"  (no mic)",
+"  (sin micrófono)",
+"  (без микрофона)"
+],
+"Nunca diga seu endereço, telefone ou senhas.": [
+"Never share your address, phone number or passwords.",
+"Nunca digas tu dirección, teléfono o contraseñas.",
+"Никогда не называй адрес, телефон или пароли."
+],
+"Microfone bloqueado: permita o acesso ao microfone no navegador": [
+"Microphone blocked: allow microphone access in the browser",
+"Micrófono bloqueado: permite el acceso al micrófono en el navegador",
+"Микрофон заблокирован: разреши доступ к микрофону в браузере"
+],
+"🎙 Microfone ligado (N desliga)": [
+"🎙 Microphone on (N turns off)",
+"🎙 Micrófono activado (N apaga)",
+"🎙 Микрофон вкл. (N — выкл.)"
+],
+"🎙 Microfone desligado": [
+"🎙 Microphone off",
+"🎙 Micrófono apagado",
+"🎙 Микрофон выкл."
+],
+"Mais perto = mais alto. Silenciar: Social > Jogadores.": [
+"Closer = louder. Mute: Social > Players.",
+"Más cerca = más alto. Silenciar: Social > Jugadores.",
+"Ближе = громче. Заглушить: Общение > Игроки."
 ]
 }

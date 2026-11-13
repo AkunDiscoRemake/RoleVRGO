@@ -13,6 +13,7 @@ import { ENEMIES, BOSS_NAMES, PETS } from './data.js';
 import { maker, SKIES, GROUNDS, MOODS, AMBS, COLORS, CAT_ORDER } from './maker.js';
 import { rec } from './rec.js';
 import { FUR_COLORS, EYE_COLORS, PATTERNS, HATS, EMOTES, roundRect, AGES, OUTFITS, LASERS, PRESETS } from './cat.js';
+import { voice } from './voice.js';
 import { home, HOUSES, FURN, FCATS, FURN_BY, WALLS, FLOORS, COLS, COL_NAMES } from './home.js';
 import { play, setVolume, audioVolume } from './assets.js';
 import { on, emit, store, clamp } from './util.js';
@@ -59,7 +60,7 @@ export const ui = {
     on('toast', (t, c) => { this.toasts.push({ t, c: c || '#fff', life: 4.5 }); if (this.toasts.length > 3) this.toasts.shift(); this.hudDirty = true; });
     for (const ev of ['hp', 'xp', 'coins', 'net', 'combo', 'map', 'event', 'rec']) on(ev, () => { this.hudDirty = true; });
     on('view', (m) => { S.toast('📷 Câmera: ' + ['1ª pessoa', '2ª pessoa', '3ª pessoa'][m - 1], '#bfe6ff'); this.dirty = true; });
-    for (const ev of ['inv', 'coins', 'players', 'friends', 'party', 'chat', 'lobby', 'map', 'meta', 'hands']) on(ev, () => { if (this.open) this.dirty = true; });
+    for (const ev of ['inv', 'coins', 'players', 'friends', 'party', 'chat', 'lobby', 'map', 'meta', 'hands', 'voice', 'talking']) on(ev, () => { if (this.open) this.dirty = true; });
     on('dialog', (n) => { this.npc = n; this.line = Math.floor(Math.random() * n.lines.length); this.show('dialog'); });
     on('friendsDirty', () => G.refreshFriends()); on('partyChat', (m) => { G._log('[grupo] ' + m.n, m.x); play('msg', 0.4); });
     on('combo', (n) => { this.combo = n; });
@@ -71,6 +72,7 @@ export const ui = {
       else if (e.code === 'Enter' && !this.open) { this.keyboard('Mensagem para a sala', '', 60, (t) => { G.say(t); }, 'close'); }
       else if (e.code === 'Escape' && this.open) this.hide();
       else if (e.code === 'Backspace') { e.preventDefault(); this.quick(); }
+      else if (e.code === 'KeyN' && !this.open) { voice.setMic(!voice.mic).then((m) => S.toast(m || (voice.mic ? '🎙 Microfone ligado (N desliga)' : '🎙 Microfone desligado'), m ? '#ff9a8a' : '#9cf09c')); }
       else if (!this.open && /^Digit[1-9]$/.test(e.code)) G.emote(+e.code.slice(5));
     });
   },
@@ -81,12 +83,24 @@ export const ui = {
   qhead(title, root) { this.text(384, 34, title, { a: 'center', fs: 22, c: '#ffd76a' }); if (!root) this.btn(224, 14, 70, 38, '◀', () => { this.page = 'q_root'; this.scroll = 0; this.msg = ''; }, { bg: '#33355a' }); this.btn(474, 14, 70, 38, '✕', () => this.hide(), { bg: '#b04050' }); },
   qpager(n, per) { const pages = Math.max(1, Math.ceil(n / per)); this.scroll = clamp(this.scroll, 0, pages - 1); if (pages > 1) { this.btn(224, 462, 90, 40, '▲', () => { this.scroll--; }, { off: this.scroll <= 0, bg: '#33355a' }); this.text(384, 482, (this.scroll + 1) + '/' + pages, { a: 'center' }); this.btn(454, 462, 90, 40, '▼', () => { this.scroll++; }, { off: this.scroll >= pages - 1, bg: '#33355a' }); } return this.scroll * per; },
   p_q_root() {
-    this.qhead('Menu rápido', true); const h = S.held(), P = this.player, pet = PETS.find((x) => x.id === S.d.pet) || PETS[0], R = (i, label, cb, o) => this.btn(224, 58 + i * 32, 320, 29, label, cb, Object.assign({ bg: '#4a5cc8', fs: 15 }, o || {}));
-    [['💬 Chat', 'q_chat'], ['🐱 Avatar', 'q_avatar'], ['🏠 Casa' + (home.mine() && home.editing ? ' (decorando)' : ''), 'q_home'], ['🗡 Itens na pata: ' + h.n, 'q_items'], ['🐾 Bichinho: ' + pet.n, 'q_pets'], ['🔨 Fabricar itens', 'q_craft'], ['📦 Colocar objetos', 'q_spawn'], ['😺 Emotes', 'q_emotes'], ['🗺 Viajar', 'q_travel'], ['🍖 Consumíveis', 'q_use']].forEach((r, i) => R(i, r[0], () => { this.page = r[1]; this.scroll = 0; }));
-    R(10, '📷 Câmera: ' + ['1ª pessoa', '2ª pessoa (de frente)', '3ª pessoa (por trás)'][P.viewMode - 1], () => P.cycleView(), { bg: '#33355a' });
-    R(11, '📸 Tirar foto', () => { this.hide(); setTimeout(() => self.RVphoto && self.RVphoto(), 120); }, { bg: '#33355a' });
-    R(12, rec.on ? '⏹ Parar e baixar vídeo (' + Math.floor(rec.seconds()) + 's)' : '⏺ Gravar vídeo', () => { const m = rec.toggle(G.renderer.domElement); if (m) this.msg = m; else if (rec.on) this.hide(); }, { bg: rec.on ? '#b04050' : '#33355a', off: !rec.supported() });
-    R(13, '📜 Menu completo', () => { this.page = 'map'; }, { bg: '#33355a' });
+    this.qhead('Menu rápido', true); const h = S.held(), P = this.player, pet = PETS.find((x) => x.id === S.d.pet) || PETS[0], R = (i, label, cb, o) => this.btn(224, 56 + i * 30, 320, 27, label, cb, Object.assign({ bg: '#4a5cc8', fs: 14 }, o || {}));
+    [['💬 Chat', 'q_chat'], ['🎙 Voz: ' + (voice.mic ? 'microfone ligado' : voice.on ? 'só ouvindo' : 'desligada'), 'q_voice'], ['🐱 Avatar', 'q_avatar'], ['🏠 Casa' + (home.mine() && home.editing ? ' (decorando)' : ''), 'q_home'], ['🗡 Itens na pata: ' + h.n, 'q_items'], ['🐾 Bichinho: ' + pet.n, 'q_pets'], ['🔨 Fabricar itens', 'q_craft'], ['📦 Colocar objetos', 'q_spawn'], ['😺 Emotes', 'q_emotes'], ['🗺 Viajar', 'q_travel'], ['🍖 Consumíveis', 'q_use']].forEach((r, i) => R(i, r[0], () => { this.page = r[1]; this.scroll = 0; }));
+    R(11, '📷 Câmera: ' + ['1ª pessoa', '2ª pessoa (de frente)', '3ª pessoa (por trás)'][P.viewMode - 1], () => P.cycleView(), { bg: '#33355a' });
+    R(12, '📸 Tirar foto', () => { this.hide(); setTimeout(() => self.RVphoto && self.RVphoto(), 120); }, { bg: '#33355a' });
+    R(13, rec.on ? '⏹ Parar e baixar vídeo (' + Math.floor(rec.seconds()) + 's)' : '⏺ Gravar vídeo', () => { const m = rec.toggle(G.renderer.domElement); if (m) this.msg = m; else if (rec.on) this.hide(); }, { bg: rec.on ? '#b04050' : '#33355a', off: !rec.supported() });
+    R(14, '📜 Menu completo', () => { this.page = 'map'; }, { bg: '#33355a' });
+  },
+  p_q_voice() {
+    this.qhead('🎙 Chat de voz'); if (!voice.supported()) { this.text(384, 120, 'Este navegador não tem chat de voz.', { a: 'center', fs: 16, c: '#ff9a8a' }); return; }
+    this.qrow(0, voice.mic ? '🎙 Microfone: LIGADO' : '🎙 Microfone: desligado', voice.mic ? 'Todos perto de você ouvem · toque para desligar' : 'Toque para falar com quem está perto', () => { voice.setMic(!voice.mic).then((m) => { if (m) S.toast(m, '#ff9a8a'); }); }, { sel: voice.mic, bg: '#3a9a5a' });
+    if (voice.mic) { const g = this.g, lv = Math.min(1, voice.level * 4); g.fillStyle = 'rgba(0,0,0,0.4)'; roundRect(g, 234, 121, 300, 6, 3); g.fill(); g.fillStyle = lv > 0.25 ? '#6fd26f' : '#8a88a0'; roundRect(g, 234, 121, Math.max(6, 300 * lv), 6, 3); g.fill(); this.dirty = true; }
+    this.qrow(1, voice.on ? '🔊 Ouvir vozes: ligado' : '🔇 Ouvir vozes: desligado', 'Desligar também fecha o seu microfone', () => voice.setOn(!voice.on), { sel: voice.on, bg: '#4a5cc8' });
+    this.qrow(2, '👥 Com quem: ' + ['Todos', 'Só amigos e grupo'][voice.who], 'Toque para trocar', () => voice.setWho(voice.who ? 0 : 1), { bg: '#33355a' });
+    const list = Array.from(voice.peers.keys()).map((id) => G.remotes.get(id)).filter(Boolean); this.text(234, 260, 'Conectados por voz: ' + list.length, { fs: 15, c: '#bfe6ff' });
+    list.slice(0, 5).forEach((r, i) => this.text(244, 288 + i * 24, (r.talking ? '🔊 ' : '· ') + r.meta.name + (r.meta.mic ? '' : '  (sem microfone)'), { fs: 14, b: false, max: 290, c: r.talking ? '#9cf09c' : '#dfe6ff' }));
+    this.text(384, 420, 'Mais perto = mais alto. Silenciar: Social > Jogadores.', { a: 'center', fs: 12, c: '#99a', b: false, max: 320 });
+    this.text(384, 442, 'Nunca diga seu endereço, telefone ou senhas.', { a: 'center', fs: 12, c: '#ffb0a0', b: false, max: 320 });
+    if (voice.err) this.text(384, 470, voice.err, { a: 'center', fs: 12, c: '#ff9a8a', b: false, max: 320 });
   },
   p_q_chat() {
     this.qhead('💬 Chat'); const g = this.g, log = G.chatLog.slice(-5); g.fillStyle = 'rgba(255,255,255,0.07)'; roundRect(g, 224, 58, 320, 136, 10); g.fill();
@@ -561,6 +575,7 @@ export const ui = {
     const hp = S.hp / S.maxHp(); g.fillStyle = 'rgba(0,0,0,0.5)'; roundRect(g, 222, 127, 110, 14, 7); g.fill(); g.fillStyle = hp > 0.5 ? '#4ac86a' : hp > 0.25 ? '#e8a030' : '#e05050'; roundRect(g, 222, 127, Math.max(14, 110 * hp), 14, 7); g.fill();
     g.fillStyle = '#ffd76a'; g.fillText('💰' + d.coins, 344, 134);
     g.fillStyle = !net.online ? '#e05050' : net.status === 'online' ? '#4ac86a' : '#e8a030'; g.beginPath(); g.arc(466, 134, 7, 0, 6.3); g.fill();
+    if (voice.mic) { g.textAlign = 'left'; g.font = 'bold 20px sans-serif'; g.fillStyle = voice.level > 0.06 ? '#6fd26f' : '#ffffff'; g.fillText('🎙', 424, 134); this.hudDirty = true; }
     if (rec.on) { g.textAlign = 'left'; g.font = 'bold 20px sans-serif'; g.fillStyle = '#ff5050'; g.fillText('● REC ' + Math.floor(rec.seconds()) + 's', 30, 14); this.hudDirty = true; }
     if (G.adminLabel) { g.textAlign = 'center'; g.font = 'bold 18px sans-serif'; let s2 = G.adminLabel; while (s2.length > 4 && g.measureText(s2).width > 480) s2 = s2.slice(0, -2); const w2 = g.measureText(s2).width + 18; g.fillStyle = 'rgba(120,70,10,0.82)'; roundRect(g, 256 - w2 / 2, 2, w2, 24, 8); g.fill(); g.fillStyle = '#ffe9a8'; g.fillText(s2, 256, 15); }
     if (this.combo > 1) { g.textAlign = 'center'; g.font = 'bold 22px sans-serif'; g.fillStyle = '#ff9a40'; g.fillText('COMBO x' + this.combo, 256, G.adminLabel ? 40 : 14); }

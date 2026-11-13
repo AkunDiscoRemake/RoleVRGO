@@ -17,6 +17,14 @@
 
 - **Patas no mouse (PC)**, a pedido de um tester: a tecla **H** liga e desliga, e segurar o botão do meio do mouse ativa enquanto estiver apertado. O mouse move as patas e a câmera fica parada. Encoste no chão, segure o clique e arraste para se impulsionar, como no Gorilla Tag de PC. A rodinha muda o alcance.
 
+- **Chat de voz** (Menu rápido > 🎙 Voz, ou tecla **N** no PC).
+  - Conexão direta entre os jogadores do mesmo mapa e sala (WebRTC), combinada pelo Supabase Realtime.
+  - Som **posicional**: mais alto quando o gato está perto, até sumir a 28 m, e vindo do lado certo.
+  - Ouvir vem ligado. O microfone só liga quando você pede, e o navegador pede permissão.
+  - Dá para falar com todos ou só com amigos e grupo. Jogadores silenciados também ficam mudos na voz.
+  - Quem fala ganha um 🔊 sobre a cabeça, e o seu microfone aparece como 🎙 na visão.
+  - Até 8 conexões de voz ao mesmo tempo.
+
 ### Correções
 - **Chat no VR:** agora é o primeiro item do menu rápido (botão Back no Go, X no Quest), com as últimas mensagens, 12 frases rápidas e o teclado. As mensagens também aparecem por alguns segundos no canto inferior esquerdo da visão, no VR e no PC.
 - Mudanças de visual feitas dentro do jogo (chapéu, acessório...) agora ficam guardadas ao reabrir o jogo.
