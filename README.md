@@ -83,3 +83,11 @@ O nome **hark** é reservado. No lobby, ao digitar esse nome aparece o campo de 
 ## Supabase
 
 O esquema está em `supabase/schema.sql` (tabelas `rv_players`, `rv_friends`, `rv_rooms` com RLS e sem policies; acesso só por funções `rv_*`). Não há cadastro: cada aparelho gera um id temporário + segredo guardados no `localStorage`. A URL e a chave publicável ficam em `src/config.js`.
+
+## Créditos
+
+- **Criação e direção:** hark
+- **Programação:** Claude, a IA da [Anthropic](https://www.anthropic.com), via [Claude Code](https://claude.ai/code). Escreveu o código do jogo, o multiplayer, o banco de dados, as traduções e a página de lançamento, a partir das ideias do hark.
+- **Modelos 3D e sons:** [Kenney.nl](https://kenney.nl) (CC0)
+- **Tecnologia:** Three.js, WebXR, Supabase, MediaPipe, GitHub Pages
+- **Easter egg do Trio da Ceia:** homenagem aos gatos natalinos de @frostyresenha

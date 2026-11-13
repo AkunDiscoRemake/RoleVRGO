@@ -322,7 +322,7 @@ export const ui = {
     this.btn(266, 380, 300, 40, '✋ Mãos pela câmera: ' + (hands.loading ? '...' : hands.on ? 'SIM' : 'NÃO'), () => { if (hands.on) hands.stop(); else hands.start(); }, { bg: hands.on ? '#3a9a5a' : '#33355a', fs: 15, off: hands.loading });
     if (self.RVcard && self.RVcard.on) { this.btn(574, 380, 174, 40, 'Sair do VR Box', () => { self.RVcard.exit(); this.hide(); }, { bg: '#b04050', fs: 15 }); }
     this.text(20, 428, 'Mãos: ' + hands.status + (hands.on ? ' (' + hands.fps.toFixed(0) + ' Hz)' : '') + '  ·  Gamepad/Joy-Con: ' + (this.player.gpFound ? 'conectado' : 'não detectado (aperte um botão)'), { fs: 13, c: '#bfe6ff', b: false, max: W - 40 });
-    this.text(20, 446, 'RoleVRGO v' + VERSION + '  ·  Assets: Kenney.nl (CC0)  ·  Multiplayer: Supabase Realtime', { fs: 15, c: '#99a', b: false });
+    this.text(20, 440, 'RoleVRGO v' + VERSION + '  ·  Assets: Kenney.nl (CC0)  ·  Multiplayer: Supabase Realtime', { fs: 14, c: '#99a', b: false }); this.text(20, 460, 'Criado por hark  ·  Programado com Claude (Anthropic) 🤖💛', { fs: 14, c: '#c8b8ff', b: false });
     this.text(20, 466, 'ID temporário deste aparelho: ' + (net.id ? net.id.slice(0, 8) : '—') + '  ·  ' + (net.online ? 'conectado' : 'OFFLINE (jogo solo, sem salvar na nuvem)'), { fs: 15, c: net.online ? '#9cf09c' : '#ff9a8a', b: false });
   },
   p_news() {
