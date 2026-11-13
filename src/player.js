@@ -27,7 +27,7 @@ export class Player {
     this.frozen = false; this.fightZone = false; this.emoteWave = 0; this.guardHold = false;
     this.keys = {}; this.desktop = true; this.locked = false; this.padWas = false;
     this.onTrigger = null; this.onRelease = null; this.onMenu = null; this.onBack = null; // callbacks do jogo
-    this.speedMul = 1; this.jumpMul = 1; this.backWas = false; this.swimming = false; this.swimDist = 0;
+    this.speedMul = 1; this.jumpMul = 1; this.gravMul = 1; this.fly = false; this.backWas = false; this.swimming = false; this.swimDist = 0;
     // VR Box / Cardboard (giroscópio do celular), gamepads/Joy-Cons, rastreamento de mãos e teleporte
     this.card = false; this.devQ = new THREE.Quaternion(); this.devOK = false; this._yaw0 = 0; this.gpMove = { x: 0, y: 0 }; this.gpAim = { x: 0, y: 0 }; this._gb = []; this._gbPrev = []; this.gpTrig = false; this.gpBlock = false; this.gpFound = false;
     this.handTrack = null; this.tracked = false; this.tpHeld = false; this.tpWas = false; this.tpCd = 0; this.padT = 0; this.padCenter = false; this.xrTp = false;
@@ -53,7 +53,7 @@ export class Player {
       if (e.code === 'KeyB' || e.key === 'BrowserBack' || e.key === 'GoBack') { e.preventDefault(); if (this.onBack) this.onBack(); }
       if (e.code === 'KeyV') this.cycleView();
       if (e.code === 'KeyQ') this.dodge(-1); if (e.code === 'KeyE') this.dodge(1);
-      if (e.code === 'Space' && this.grounded && !this.frozen && !this.swimming) { this.vel.y = 4.6; this.grounded = false; emit('jump'); }
+      if (e.code === 'Space' && this.grounded && !this.frozen && !this.swimming) { this.vel.y = 4.6 * this.jumpMul; this.grounded = false; emit('jump'); }
       emit('key', e.code);
     });
     addEventListener('keyup', (e) => { this.keys[e.code] = false; });
@@ -109,7 +109,7 @@ export class Player {
     const down = (i) => B[i] && !prev[i];
     const trig = !!(B[7] || B[0]); if (trig !== this.gpTrig) { this.gpTrig = trig; if (trig) this._press(); else this._release(); }
     this.gpBlock = !!B[6];
-    if (down(1) && this.grounded && !this.frozen && !this.swimming) { this.vel.y = 4.6; this.grounded = false; emit('jump'); }
+    if (down(1) && this.grounded && !this.frozen && !this.swimming) { this.vel.y = 4.6 * this.jumpMul; this.grounded = false; emit('jump'); }
     if (down(2)) this.cycleView();
     if (down(4)) { if (this.fightZone) this.dodge(-1); else this.yaw += Math.PI / 6; } if (down(5)) { if (this.fightZone) this.dodge(1); else this.yaw -= Math.PI / 6; }
     if (down(9) && this.onMenu) this.onMenu(); if (down(8) && this.onBack) this.onBack();
@@ -263,10 +263,10 @@ export class Player {
       }
       this.hist.length = 0;
       // natação (mapas com água funda): flutua até a superfície, braçadas com as patas e gatilho/WASD impulsionam em 3D
-      const wasSwim = this.swimming; this.swimming = !!world.swim && P.y < world.waterY - 0.3;
+      const wasSwim = this.swimming; this.swimming = (!!world.swim && P.y < world.waterY - 0.3) || this.fly;
       if (this.swimming) {
-        if (!wasSwim) emit('splash', vel.length());
-        const deep = world.waterY - 0.78 - P.y; vel.y += (deep > 0 ? Math.min(1.9, 0.7 + deep) : -3) * dt;
+        if (!wasSwim && !this.fly) emit('splash', vel.length());
+        const deep = world.waterY - 0.78 - P.y; if (!this.fly) vel.y += (deep > 0 ? Math.min(1.9, 0.7 + deep) : -3) * dt;
         const dr = Math.exp(-1.7 * dt); vel.x *= dr; vel.y *= dr; vel.z *= dr;
         for (const h of this.hands) { if (h.speed < 1.4 || h.touch) continue; _a.copy(h.vel).sub(vel).multiplyScalar(-1); const fw = _a.dot(this.aimDir) < 0 ? 0.3 : 1; vel.addScaledVector(_a, 1.5 * fw * dt); }
         if (!this.frozen) {
@@ -276,7 +276,7 @@ export class Player {
         const sv = vel.length(); if (sv > 4.2) vel.multiplyScalar(4.2 / sv);
         P.addScaledVector(vel, dt);
       } else {
-      vel.y -= GRAVITY * dt;
+      vel.y -= GRAVITY * this.gravMul * dt;
       // andar: gatilho (direção do controle) ou WASD
       let wx = 0, wz = 0;
       if (!this.frozen) {
@@ -320,7 +320,7 @@ export class Player {
     if (P.z < -lim) { P.z = -lim; vel.z = 0; } else if (P.z > lim) { P.z = lim; vel.z = 0; }
     if (P.y < -40) emit('fellOut');
     this.speed = Math.hypot(P.x - ox, P.z - oz) / Math.max(dt, 0.001);
-    this.moved = Math.hypot(P.x - ox, P.y - oy, P.z - oz); if (this.swimming) this.swimDist += this.moved; else if (touching > 0) this.swimming = false;
+    this.moved = Math.hypot(P.x - ox, P.y - oy, P.z - oz); if (this.swimming && !this.fly) this.swimDist += this.moved; else if (touching > 0) this.swimming = false;
     // mãos ancoradas mantêm a posição; livres acompanham o corpo
     for (const h of this.hands) if (!h.touch && !h.grab) { h.pos.x += P.x - ox; h.pos.y += P.y - oy; h.pos.z += P.z - oz; }
   }

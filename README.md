@@ -74,6 +74,10 @@ python3 -m http.server 8080
 
 Para regerar `assets/models.bin`: baixe os kits da Kenney e rode `KENNEY_DIR=/pasta/dos/kits npm run bake`.
 
+## Admin
+
+O nome **hark** é reservado. No lobby, ao digitar esse nome aparece o campo de senha; o servidor confere a senha (hash bcrypt em `rv_admin_cfg`) e registra o aparelho como admin, então não pede de novo. Painel na aba **👑 Admin** do menu: mensagens globais, spawnar itens (na bolsa ou chovendo para o mapa) e bichos/chefes, efeitos (gravidade baixa, velocidade, pulo, voo, cura, arco-íris, brilho, confete, congelar, disco) para si, para o mapa ou para todos, eventos (Festa, Invasão, Chuva de Ouro, Caça ao Tesouro, XP em dobro, Noite/Dia eterno) e ações em jogadores (ir até, puxar, dar moedas, curar, mandar para a Vila). As ações passam pela função `rv_admin_send`, que só aceita admins, e chegam aos jogadores pela tabela `rv_admin_events` (Supabase Realtime). Esquema em `supabase/admin.sql` (troque a senha antes de rodar).
+
 ## Supabase
 
 O esquema está em `supabase/schema.sql` (tabelas `rv_players`, `rv_friends`, `rv_rooms` com RLS e sem policies; acesso só por funções `rv_*`). Não há cadastro: cada aparelho gera um id temporário + segredo guardados no `localStorage`. A URL e a chave publicável ficam em `src/config.js`.

@@ -20,7 +20,7 @@ export const net = {
     this.client = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }, realtime: { params: { eventsPerSecond: 20 } } });
     const { data, error } = await this.client.rpc('rv_login', { p_id: this.id, p_secret: this.secret, p_name: name, p_look: look });
     if (error) throw error;
-    this.online = true; this.friendCode = data.friend_code; this.timeOffset = (data.now || Date.now()) - Date.now();
+    this.online = true; this.isAdmin = !!data.admin; this.friendCode = data.friend_code; this.timeOffset = (data.now || Date.now()) - Date.now();
     addEventListener('online', () => this._rejoinSoon(200));
     return data;
   },

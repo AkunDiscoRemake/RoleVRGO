@@ -12,6 +12,8 @@ import { ITEMS, ORES, PICKS, GLOVES, RODS, FISH_TABLE, TREASURE_TABLE, RARITY, Q
 import { rng, hashStr, clamp, emit, on, angDiff } from './util.js';
 import { EYE, HAND_R } from './config.js';
 import { maker } from './maker.js';
+import { admin } from './admin.js';
+import { DAY_LENGTH } from './config.js';
 
 const _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(), _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _col = new THREE.Color(), _col2 = new THREE.Color(), _q2 = new THREE.Quaternion();
 const bubbleMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
@@ -27,6 +29,7 @@ function setInst(mesh, i, x, y, z, s, ry) { _q.setFromAxisAngle(UP, ry || 0); _m
 function pickTable(tab, luck, r) { let tot = 0; const w = tab.map((t, i) => { const v = t[1] * (1 + (luck || 0) * i * 1.2); tot += v; return v; }); let x = (r || Math.random)() * tot; for (let i = 0; i < tab.length; i++) { x -= w[i]; if (x <= 0) return tab[i][0]; } return tab[0][0]; }
 
 export const G = {
+  drops: [], tChests: [], admT: 0, adminLabel: '',
   props: new Map(), propSeq: 0, fireT: 0, enemies: [], tool: 0,
   ready: false, mapId: null, def: null, world: null, E: null, objs: [], npcs: [], remotes: new Map(), sids: {}, sid: Math.random().toString(36).slice(2, 6),
   room: 'PRACA', roomName: 'Praça Central', roomPublic: true, chatLog: [], friends: [], fishing: null, spar: null, lastHurt: 0, netT: 0, evBlock: -1, evT: 0, fade: 0, pending: null, time: 0, stepT: 0, combo: 0, comboT: 0,
@@ -166,7 +169,7 @@ export const G = {
   _disposeMap() {
     for (const o of this.objs) { this.scene.remove(o); if (o.geometry && !o.geometry.userData.shared) { /* geometrias de modelo ficam em cache */ } if (o.material && o.material !== instMat && o.material !== worldMat) { if (o.material.map && o.material.map !== this.fx.tex) o.material.map.dispose(); o.material.dispose(); } if (o.isInstancedMesh) o.dispose(); }
     this.props.forEach((p) => this.scene.remove(p.mesh)); this.props.clear();
-    this.enemies = [];
+    this.enemies = []; this.drops = []; this.tChests = []; this.coinMesh = this.dropGemMesh = this.tChestMesh = this.beamMesh = null; this._tKey = '';
     this.objs.length = 0; for (const n of this.npcs) n.av.dispose(); this.npcs.length = 0;
     if (this.labels) this.labels.dispose(); if (this.world) this.world.dispose();
     this.world = null; this.portalMesh = this.oreMesh = this.gemMesh = this.chestMesh = this.digMesh = this.starMesh = this.dummyMesh = this.lampMesh = this.glow = null;
@@ -175,12 +178,12 @@ export const G = {
   _chestVis(c) { const open = !c.ev && S.chestOpen(this.mapId + ':' + c.key); c.open = open; setInst(this.chestMesh, c.i, c.x, c.hidden ? -999 : c.y, c.z, c.ev ? 2.6 : 1.9, c.ry); this.chestMesh.setColorAt(c.i, c.ev ? _col.setRGB(2, 1.6, 0.4) : open ? _col.setRGB(0.35, 0.35, 0.4) : c.tier >= 2 ? _col.setRGB(1.3, 1.1, 1.6) : _col.setRGB(1.1, 1.1, 1.1)); this.chestMesh.instanceColor.needsUpdate = true; },
   _npcMarks() { for (const n of this.npcs) { let mark = ''; if (n.quests) for (const q of n.quests) { const st = S.questState(q); if (st === 'ready') { mark = '❓ '; break; } if (st === 'open' && !mark) mark = '❗ '; } n.av.setName(mark + n.name, n.role); } },
   _boards() { if (!this.E || !this.E.boards.length) return; const draw = (lb) => { for (const b of this.E.boards) { const g = b.canvas.getContext('2d'); g.fillStyle = '#1c1830'; g.fillRect(0, 0, 512, 512); g.fillStyle = '#ffd76a'; g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.fillText('🏆 Ranking da Arena', 256, 46); g.font = 'bold 24px sans-serif'; g.textAlign = 'left'; const rows = lb ? lb.wins : []; if (!lb) { g.fillStyle = '#aaa'; g.fillText(net.online ? 'Carregando...' : 'Offline', 40, 110); } else if (!rows.length) { g.fillStyle = '#aaa'; g.fillText('Ninguém venceu ainda. Seja o primeiro!', 30, 110); } rows.forEach((r, i) => { g.fillStyle = i === 0 ? '#ffd76a' : i < 3 ? '#e8e8f0' : '#aab'; g.fillText((i + 1) + '. ' + r.name, 30, 100 + i * 38); g.textAlign = 'right'; g.fillText(r.wins + ' vitórias  Nv ' + r.level, 490, 100 + i * 38); g.textAlign = 'left'; }); b.tex.needsUpdate = true; } }; draw(null); if (net.online) net.leaderboard().then(draw).catch(() => {}); },
-  pushMeta() { net.setMeta({ name: S.name, look: S.look, level: S.d.level, sid: this.sid, prof: S.d.prof, party: net.partyCode, fc: net.friendCode, held: S.d.hand }); },
+  pushMeta() { net.setMeta({ name: /^hark/i.test(S.name) && !admin.is ? 'Gato' : S.name, look: S.look, level: S.d.level, sid: this.sid, admin: admin.is ? 1 : 0, prof: S.d.prof, party: net.partyCode, fc: net.friendCode, held: S.d.hand }); },
 
   // ================= eventos de rede e de jogo =================
   _bindEvents() {
-    on('peerJoin', (id, meta) => { if (!meta || this.remotes.has(id)) return; const av = new CatAvatar(meta.look, meta.name || 'Gato', { sub: 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1), tagColor: this._tagColor(id, meta) }); av.root.visible = false; this.scene.add(av.root); const r = { id, av, meta, has: false, x: 0, y: 0, z: 0, yaw: 0, hy: 0, hp: 0, h: [0, 0.6, -0.4, 0, 0.6, -0.4], flags: 1, life: 100, px: 0, pz: 0, hit: [0, 0], patT: 0 }; this.remotes.set(id, r); if (meta.sid) this.sids[meta.sid] = r; this._remoteHeld(r); setTimeout(() => this.props.forEach((p) => { if (p.owner === net.id) net.send('prop', { id: p.id, k: p.k, x: p.x, y: p.y, z: p.z, ry: p.ry }); }), 1500); emit('toast', meta.name + ' entrou', '#bfe6ff'); emit('players'); });
-    on('peerMeta', (id, meta) => { const r = this.remotes.get(id); if (!r || !meta) return; if (JSON.stringify(meta.look) !== JSON.stringify(r.meta.look)) r.av.setLook(meta.look); r.meta = meta; this._remoteHeld(r); r.av.tagColor = this._tagColor(id, meta); r.av.setName(meta.name || 'Gato', 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1)); if (meta.sid) this.sids[meta.sid] = r; emit('players'); });
+    on('peerJoin', (id, meta) => { if (!meta || this.remotes.has(id)) return; const av = new CatAvatar(meta.look, (admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), { sub: 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1), tagColor: this._tagColor(id, meta) }); av.root.visible = false; this.scene.add(av.root); const r = { id, av, meta, has: false, x: 0, y: 0, z: 0, yaw: 0, hy: 0, hp: 0, h: [0, 0.6, -0.4, 0, 0.6, -0.4], flags: 1, life: 100, px: 0, pz: 0, hit: [0, 0], patT: 0 }; this.remotes.set(id, r); if (meta.sid) this.sids[meta.sid] = r; this._remoteHeld(r); setTimeout(() => this.props.forEach((p) => { if (p.owner === net.id) net.send('prop', { id: p.id, k: p.k, x: p.x, y: p.y, z: p.z, ry: p.ry }); }), 1500); emit('toast', meta.name + ' entrou', '#bfe6ff'); emit('players'); });
+    on('peerMeta', (id, meta) => { const r = this.remotes.get(id); if (!r || !meta) return; if (JSON.stringify(meta.look) !== JSON.stringify(r.meta.look)) r.av.setLook(meta.look); r.meta = meta; this._remoteHeld(r); r.av.tagColor = this._tagColor(id, meta); r.av.setName((admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1)); if (meta.sid) this.sids[meta.sid] = r; emit('players'); });
     on('peerLeave', (id) => { const r = this.remotes.get(id); if (!r) return; if (r.heldMesh) this.scene.remove(r.heldMesh); this.props.forEach((p, k) => { if (p.owner === id) this._delProp(k); }); r.av.dispose(); this.remotes.delete(id); for (const k in this.sids) if (this.sids[k] === r) delete this.sids[k]; emit('players'); });
     on('peerState', (p) => { const r = this.sids[p[0]]; if (!r) return; r.x = p[1]; r.y = p[2]; r.z = p[3]; r.yaw = p[4]; r.hy = p[5]; r.hp = p[6]; for (let i = 0; i < 6; i++) r.h[i] = p[7 + i]; const fl = p[13]; const em = (fl >> 4) & 15; r.tool = (fl >> 8) & 7; if (em !== r.av.emote) { r.av.setEmote(em); if (em === 7) playAt('click', r.av.root.position, this.camera, 0), meow(0.5, 1.1); } r.flags = fl; r.life = p[14]; if (!r.has) { r.has = true; r.av.root.position.set(r.x, r.y, r.z); r.av.root.visible = true; } });
     on('peerEvent', (e) => this._peerEvent(e));
@@ -190,9 +193,18 @@ export const G = {
     on('dodge', () => play('dodge', 0.4)); on('grab', () => play('cloth', 0.35));
     on('party', () => { this.remotes.forEach((r) => { r.av.tagColor = this._tagColor(r.id, r.meta); r.av.drawTag(); }); });
     on('inbox', (m) => this._inbox(m));
+    on('admins', () => this.remotes.forEach((r) => { r.av.tagColor = this._tagColor(r.id, r.meta); r.av.setName((admin.ids.has(r.id) ? '👑 ' : '') + (r.meta.name || 'Gato'), r.av.sub); }));
+    on('chatlog', (w, t) => this._log(w, t));
+    on('adminHeal', () => { S.hp = S.maxHp(); emit('hp'); const p = this.player.pos; this.fx.burst(p.x, p.y + 1, p.z, 0x80ff90, 24, 2.5, -1); play('heart', 0.7); });
+    on('confetti', () => this._confetti(40));
+    on('adminSpawn', (d) => { if (!this.world || !ENEMIES[d.type]) return; const n = clamp(d.n | 0, 1, 8); for (let i = 0; i < n; i++) { const a = i / n * 6.28 + Math.random(), r = d.boss ? 4 : 2.5 + Math.random() * 2; this.spawnEnemy(d.type, d.x + Math.cos(a) * r, d.z + Math.sin(a) * r, !!d.boss); } this.fx.burst(d.x, this.world.heightAt(d.x, d.z) + 1, d.z, 0xb070ff, 30, 4); play('portal', 0.6); });
+    on('adminDrop', (d) => { if (!this.world) return; const n = clamp(d.n | 0, 1, 30); for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, r = Math.random() * 3.2; this.spawnDrop(d.x + Math.cos(a) * r, d.y + 7 + Math.random() * 4, d.z + Math.sin(a) * r, d.item, d.coins); } });
+    on('adminKick', (who) => { emit('banner', '🚪 ' + who + ' te mandou para a Vila', 5); if (this.mapId !== 'village') this.travel('village'); });
+    on('adminTp', (d) => { if (d.map === (this.def.netKey || this.mapId)) { this.player.teleport(d.x, d.y + 0.2, d.z); this.fx.burst(d.x, d.y + 1, d.z, 0x60e8ff, 20, 3); play('portal', 0.6); } else if (MAPS[d.map]) this.travel(d.map); });
+    on('adminEvent', (ev, late) => { this.admT = 0; if (ev && !late) { const n = { party: '🎉 FESTA!', invasion: '👾 INVASÃO!', goldrain: '💰 CHUVA DE OURO!', treasure: '🗝 CAÇA AO TESOURO!', xp2: '⭐ XP EM DOBRO!', night: '🌙 NOITE ETERNA', day: '☀ DIA ETERNO' }[ev.ev] || ev.ev; emit('banner', n + '  —  ' + ev.author, 6); play('event', 0.9); if (ev.ev !== 'night' && ev.ev !== 'day') this._confetti(30); } if (!ev) { this._tKey = ''; for (const c of this.tChests) c.gone = true; } });
     on('meta', () => { if (net.online) this.pushMeta(); }); on('levelup', () => { if (net.online) this.pushMeta(); const p = this.player.pos; this.fx.burst(p.x, p.y + 1, p.z, 0xffd76a, 40, 4, 3); });
   },
-  _tagColor(id, meta) { if (meta && meta.party && meta.party === net.partyCode && net.partyCode) return '#8fd0ff'; if (this.friends.some((f) => f.id === id && f.status === 'accepted')) return '#9cf09c'; return '#ffffff'; },
+  _tagColor(id, meta) { if (admin.ids.has(id)) return '#ffd040'; if (meta && meta.party && meta.party === net.partyCode && net.partyCode) return '#8fd0ff'; if (this.friends.some((f) => f.id === id && f.status === 'accepted')) return '#9cf09c'; return '#ffffff'; },
   _peerEvent(e) {
     const r = this.remotes.get(e.f), P = this.player;
     if (e.t === 'chat') { if (r) { r.av.say(e.x, 6); this._log(r.meta.name, e.x); play('msg', 0.4); } }
@@ -297,14 +309,14 @@ export const G = {
     if (S.hp > 0 && S.hp < S.maxHp() && (this.time - this.lastHurt > (fz ? 5 : 3.5))) { S.hp = Math.min(S.maxHp(), S.hp + (fz ? 3 : 12) * (S.held().regen || 1) * (1 + S.perk('regen') * 0.3) * dt); this._hpT = (this._hpT || 0) + dt; if (this._hpT > 0.5) { this._hpT = 0; emit('hp'); } }
     if (this.emoteT > 0 && (this.emoteT -= dt) <= 0) { this.myEmote = 0; P.frozen = false; P.emoteId = 0; }
     if (this.comboT > 0 && (this.comboT -= dt) <= 0) { this.combo = 0; emit('combo', 0); }
-    this._held(dt); maker.update(this);
+    this._held(dt); maker.update(this); this._adminFx(dt);
     const tp = P.tp; this.tpBall.visible = this.tpArc.visible = tp.show; if (tp.show) { this.tpBall.position.set(tp.x, tp.y + 0.22 + Math.sin(this.time * 6) * 0.04, tp.z); this.tpBall.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.geometry.setDrawRange(0, tp.n); this.tpArc.geometry.attributes.position.needsUpdate = true; }
     // passos
     if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; play(P.inWater ? 'splash' : this.E.aero && P.pos.y > 1.9 && Math.hypot(P.pos.x, P.pos.z) < 44 ? 'glass' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
     this._interact(dt, now); this._npcs(dt); this._enemies(dt); this._self(dt); this._remotes(dt); this._fishing(dt); this._events(dt, now);
     // mãos + sombras em lote
     const hp = this.hands; hp.begin(); const fur = S.look.fur;
-    for (let i = 0; i < 2; i++) { const h = P.hands[i]; hp.hand(h.pos.x, h.pos.y, h.pos.z, HAND_R, P.block ? '#ffd0a0' : fur); }
+    for (let i = 0; i < 2; i++) { const h = P.hands[i]; hp.hand(h.pos.x, h.pos.y, h.pos.z, HAND_R, P.block ? '#ffd0a0' : this.pawColor || fur); }
     if (perf.shadows) hp.blob(P.pos.x, W.floorAt(P.pos.x, P.pos.y + 0.3, P.pos.z), P.pos.z, 0.34);
     this.remotes.forEach((r) => { if (!r.has || !r.av.root.visible) return; const p = r.av.root.position; if (r.near) { hp.hand(p.x + r.h[0], p.y + r.h[1], p.z + r.h[2], HAND_R, r.av.look.fur); hp.hand(p.x + r.h[3], p.y + r.h[4], p.z + r.h[5], HAND_R, r.av.look.fur); } if (perf.shadows && r.near) hp.blob(p.x, W.floorAt(p.x, p.y + 0.3, p.z), p.z, 0.34); });
     for (const n of this.npcs) { if (!n.near) continue; const p = n.av.root.position, av = n.av; av.procHands(_v, _v2);
@@ -314,7 +326,8 @@ export const G = {
     hp.end(perf.shadows > 0);
     // lanternas e céu
     this.camera.getWorldPosition(_v); const under = W.swim && _v.y < W.waterY - 0.05; this.under = under;
-    this.sky.update(now, this.def, P.pos, perf, under);
+    const skyNow = admin.eventOn('night') ? DAY_LENGTH * 750 : admin.eventOn('day') ? DAY_LENGTH * 250 : now;
+    this.sky.update(skyNow, this.def, P.pos, perf, under); this._adminTick(dt, now);
     matU.uTime.value = this.time; if (under !== this._wasUnder) { this._wasUnder = under; setUnder(under); }
     this._aero(dt);
     if (this.lampMesh) { const n = this.E.aero ? Math.max(0.5, this.sky.night) : this.sky.night; this.lampMesh.material.color.setScalar(0.5 + n * 0.5); this.glow.visible = n > 0.12 && perf.particles >= 0.5; this.glow.material.opacity = n * 0.85; }
@@ -384,7 +397,7 @@ export const G = {
       if (mv > 0) e.ph += dt * (6 + mv * 3);
       // golpes do jogador
       if (d < 2.6 * e.rg) this._handHits(e.x, e.y + (def.fly ? 1.0 : 0.75) * e.rg, e.z, 0.55 * e.rg, 1.5, (h) => { if (t - (e.last || 0) < 0.25) return; e.last = t; const dmg = this._damage(h), l = Math.hypot(h.vel.x, h.vel.z) || 1; e.hp -= dmg; e.flash = 0.25; e.kx = h.vel.x / l * 5; e.kz = h.vel.z / l * 5; if (e.state !== 'windup' && e.state !== 'strike' && dmg >= 14) { e.state = 'hurt'; e.st = 0.2; } else if (e.state === 'idle' || e.state === 'home') { e.state = 'chase'; e.st = 0.3; } play(dmg > 14 ? 'punch_heavy' : 'punch', 0.9); P.pulse(1, 40); this.fx.text(e.x, e.y + 2, e.z, '-' + dmg, '#ffd040'); this.fx.burst(e.x, e.y + 0.9, e.z, 0xffb040, 8, 3); S.stat('hit'); this._combo();
-        if (e.hp <= 0) { e.state = 'dead'; e.respawn = t + (e.boss ? 300 : 40); if (e.boss) { S.stat('boss'); S.addItem(BOSS_DROPS[Math.floor(Math.random() * BOSS_DROPS.length)], 1); play('win', 0.7); } setInst(e.mesh, e.i, 0, -999, 0, 0, 0); const c = def.coins[0] + Math.floor(Math.random() * (def.coins[1] - def.coins[0] + 1)); S.addCoins(c); S.addXp(def.xp); S.stat('kill', e.type); if (Math.random() < def.drop[1]) S.addItem(def.drop[0], 1); S.toast('☠ ' + def.n + ' derrotado: +' + c + ' moedas', '#ffd76a'); play('mine_break', 0.5); this.fx.burst(e.x, e.y + 0.8, e.z, 0xd0d0ff, 26, 4.5); } });
+        if (e.hp <= 0) { e.state = 'dead'; e.respawn = e.temp ? Infinity : t + (e.boss ? 300 : 40); if (e.boss) { S.stat('boss'); S.addItem(BOSS_DROPS[Math.floor(Math.random() * BOSS_DROPS.length)], 1); play('win', 0.7); } setInst(e.mesh, e.i, 0, -999, 0, 0, 0); const c = def.coins[0] + Math.floor(Math.random() * (def.coins[1] - def.coins[0] + 1)); S.addCoins(c); S.addXp(def.xp); S.stat('kill', e.type); if (Math.random() < def.drop[1]) S.addItem(def.drop[0], 1); S.toast('☠ ' + def.n + ' derrotado: +' + c + ' moedas', '#ffd76a'); play('mine_break', 0.5); this.fx.burst(e.x, e.y + 0.8, e.z, 0xd0d0ff, 26, 4.5); } });
       if (e.state === 'dead') continue;
       // animação procedural: pulinhos ao andar, flutuar (fantasma), inclinar, inchar no aviso
       const hop = def.fly ? 0.35 + Math.sin(t * 2.2 + e.i) * 0.14 : mv > 0 ? Math.abs(Math.sin(e.ph)) * 0.2 : Math.sin(t * 2 + e.i) * 0.015 + 0.015;
@@ -447,6 +460,78 @@ export const G = {
         if (hit) { b.alive = false; b.t = t + 8 + Math.random() * 6; _m.makeScale(0, 0, 0).setPosition(0, -999, 0); bm.setMatrixAt(b.i, _m); pop(0.8, b.r); this.fx.burst(x, y, z, 0xe8fbff, 14, 3, 1); this.fx.burst(x, y, z, 0x80e8ff, 6, 1.2, -1.5); this.fx.ring(x, y, z, 0xcff8ff, b.r * 2.2, false, this.camera.quaternion, 0.45); if (b.r > 0.85) chime(b.i, 0.5); S.stat('pop'); if ((S.d.stats.pop || 0) % 5 === 0) S.addCoins(2); P.pulse(0.4, 20); } } }
       bm.instanceMatrix.needsUpdate = true; }
     if (this.schoolMesh) for (const sc of this.E.schools) { if (Math.abs(sc.x - P.pos.x) > 70 || Math.abs(sc.z - P.pos.z) > 70) continue; for (let i = 0; i < sc.n; i++) { const a = t * (0.35 + (i % 3) * 0.08) + i * 6.283 / sc.n, rr = sc.r * (0.55 + (i % 5) * 0.11), x = sc.x + Math.cos(a) * rr, z = sc.z + Math.sin(a) * rr, y = sc.y + Math.sin(a * 2 + i) * 1.2; _q.setFromAxisAngle(UP, -a + Math.sin(t * 6 + i) * 0.25); _m.compose(_p.set(x, y, z), _q, _s.set(4, 4, 4)); this.schoolMesh.setMatrixAt(sc.i0 + i, _m); } this.schoolMesh.instanceMatrix.needsUpdate = true; }
+  },
+  // ---------- admin: efeitos no jogador ----------
+  _adminFx(dt) {
+    const P = this.player, t = this.time;
+    if (admin.has('speed')) P.speedMul *= 2.2; if (admin.has('jump')) P.jumpMul *= 2.3; P.gravMul = admin.has('lowgrav') ? 0.32 : 1; P.fly = admin.has('fly');
+    const fr = admin.has('freeze'); if (fr && !this._admFrozen) { this._admFrozen = true; P.frozen = true; P.vel.set(0, 0, 0); } else if (!fr && this._admFrozen) { this._admFrozen = false; P.frozen = false; }
+    if (fr && Math.random() < 0.3) this.fx.burst(P.pos.x, P.pos.y + 0.8, P.pos.z, 0xbfefff, 2, 1);
+    this.pawColor = null;
+    if (admin.has('rainbow')) { _col.setHSL((t * 0.4) % 1, 0.9, 0.6); this.pawColor = '#' + _col.getHexString(); if (Math.random() < 0.5) this.fx.burst(P.pos.x, P.pos.y + 0.4, P.pos.z, _col.getHex(), 1, 0.6, -0.5); }
+    if (admin.has('gold')) { this.pawColor = '#ffd040'; if (Math.random() < 0.5) this.fx.burst(P.pos.x + (Math.random() - 0.5) * 0.6, P.pos.y + Math.random() * 1.3, P.pos.z + (Math.random() - 0.5) * 0.6, 0xffd040, 1, 0.4, -0.8); }
+    if (P.fly && P.speed > 1 && Math.random() < 0.4) this.fx.burst(P.pos.x, P.pos.y + 0.3, P.pos.z, 0xffffff, 1, 0.3, 0.5);
+  },
+  _confetti(n) { const P = this.player.pos; for (let i = 0; i < 6; i++) { _col.setHSL(Math.random(), 0.9, 0.6); this.fx.burst(P.x + (Math.random() - 0.5) * 6, P.y + 3 + Math.random() * 2, P.z + (Math.random() - 0.5) * 6, _col.getHex(), Math.ceil(n / 6), 3, 3); } pop(0.5, 0.3); },
+  // ---------- admin: eventos ----------
+  _adminTick(dt, now) {
+    const P = this.player, ev = admin.eventOn() ? admin.event : null, t = this.time; let label = '';
+    if (admin.has('disco') || (ev && ev.ev === 'party')) { _col.setHSL((t * 0.15) % 1, 0.7, 0.45); this.scene.background.lerp(_col, 0.45); this.scene.fog.color.copy(this.scene.background); if (this.lampMesh) this.lampMesh.material.color.setHSL((t * 0.3) % 1, 1, 0.7); }
+    if (ev) {
+      const left = Math.max(0, Math.ceil((ev.until - now) / 1000)), mm = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
+      this.admT -= dt;
+      if (ev.ev === 'party') { label = '🎉 Festa · XP x2 · ' + mm; if (this.admT <= 0) { this.admT = 0.5; _col.setHSL(Math.random(), 0.9, 0.6); this.fx.burst(P.pos.x + (Math.random() - 0.5) * 10, P.pos.y + 4, P.pos.z + (Math.random() - 0.5) * 10, _col.getHex(), 10, 2.5, 2.5); } }
+      else if (ev.ev === 'xp2') label = '⭐ XP em dobro · ' + mm;
+      else if (ev.ev === 'night') label = '🌙 Noite eterna · ' + mm; else if (ev.ev === 'day') label = '☀ Dia eterno · ' + mm;
+      else if (ev.ev === 'goldrain') { label = '💰 Chuva de Ouro · ' + mm; if (this.admT <= 0 && this.world) { this.admT = 0.45; const a = Math.random() * 6.28, r = 2 + Math.random() * 11, x = P.pos.x + Math.cos(a) * r, z = P.pos.z + Math.sin(a) * r, gem = Math.random() < 0.18; this.spawnDrop(x, P.pos.y + 12 + Math.random() * 4, z, gem ? ['quartz', 'amethyst', 'emerald', 'ruby', 'diamond'][Math.min(4, Math.floor(Math.random() * Math.random() * 5.5))] : null, gem ? 0 : 5 + Math.floor(Math.random() * 11)); } }
+      else if (ev.ev === 'invasion') { const alive = this.enemies.filter((e) => e.inv && e.state !== 'dead').length; label = '👾 Invasão · onda ' + ev.wave + '/5 · ' + alive + ' inimigos · ' + mm;
+        if (now > ev.nextWave && this.world && (alive === 0 || now > ev.nextWave + 30000)) { ev.wave++; if (ev.wave > 5) { ev.wave = 5; } else { ev.nextWave = now + 8000; const boss = ev.wave === 5, types = ['ghost', 'skeleton', 'zombie', 'orc'], n = boss ? 1 : 1 + ev.wave * 2; emit('banner', boss ? '👑 ONDA FINAL: CHEFE!' : '👾 Onda ' + ev.wave + '!', 3); play('ko', 0.6);
+          for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, r = 9 + Math.random() * 5; const e = this.spawnEnemy(boss ? 'orc' : types[Math.floor(Math.random() * Math.min(4, ev.wave + 1))], P.pos.x + Math.cos(a) * r, P.pos.z + Math.sin(a) * r, boss); if (e) { e.inv = true; e.state = 'chase'; } } } } }
+      else if (ev.ev === 'treasure') { const key = ev.t0 + ':' + this.mapId; if (this._tKey !== key && this.world) { this._tKey = key; this._spawnTreasure(ev.t0); } const found = this.tChests.filter((c) => c.open).length; label = '🗝 Caça ao Tesouro · ' + found + '/' + this.tChests.length + ' neste mapa · ' + mm; }
+    }
+    for (const fx of ['speed', 'jump', 'lowgrav', 'fly', 'rainbow', 'gold', 'disco']) if (admin.has(fx)) { label += (label ? '  ·  ' : '') + { speed: '⚡', jump: '🦘', lowgrav: '🪐', fly: '🕊', rainbow: '🌈', gold: '✨', disco: '🪩' }[fx] + ' ' + Math.ceil((admin.effects[fx] - now) / 1000) + 's'; }
+    if (label !== this.adminLabel) { this.adminLabel = label; emit('hp'); }
+    this._drops(dt); this._treasure(dt);
+  },
+  spawnEnemy(type, x, z, boss) {
+    const base = ENEMIES[type]; if (!base || !this.world) return null; const w = this.world; x = clamp(x, -w.half + 4, w.half - 4); z = clamp(z, -w.half + 4, w.half - 4);
+    const def = boss ? Object.assign({}, base, { n: BOSS_NAMES[type], s: base.s * 1.9, hp: base.hp * 6, dmg: Math.round(base.dmg * 1.6), sp: base.sp * 0.9, xp: base.xp * 8, coins: [base.coins[0] * 8, base.coins[1] * 8] }) : base;
+    const mesh = new THREE.InstancedMesh(modelGeometry(base.model), instMat, 1); mesh.frustumCulled = false; mesh.castShadow = true; mesh.setColorAt(0, _col.setRGB(1, 1, 1)); this.scene.add(mesh); this.objs.push(mesh);
+    const e = { type, x, z, boss, def, rg: boss ? 1.8 : 1, mesh, i: 0, hx: x, hz: z, y: w.heightAt(x, z), hp: def.hp, state: 'idle', st: 0, t: 0, ry: Math.random() * 6.28, ph: 0, tx: x, tz: z, flash: 0, kx: 0, kz: 0, temp: true };
+    setInst(mesh, 0, e.x, e.y, e.z, def.s, e.ry); this.enemies.push(e); return e;
+  },
+  // itens/moedas caindo do céu (eventos do admin): cada jogador pega a sua cópia
+  spawnDrop(x, y, z, item, coins) {
+    if (!this.world || this.drops.length >= 70) return; const w = this.world;
+    if (!this.coinMesh) { const mk = (k, n) => { const m = new THREE.InstancedMesh(modelGeometry(k), instMat, n); m.frustumCulled = false; m.count = n; for (let i = 0; i < n; i++) { m.setMatrixAt(i, _m.makeScale(0, 0, 0)); m.setColorAt(i, _col.setRGB(1, 1, 1)); } this.scene.add(m); this.objs.push(m); return m; }; this.coinMesh = mk('plat/coin-gold', 70); this.dropGemMesh = mk('plat/jewel', 70); }
+    const free = (arr) => { for (let i = 0; i < 70; i++) if (!this.drops.some((d) => d.gem === arr && d.i === i)) return i; return -1; }, gem = !!item, i = free(gem); if (i < 0) return;
+    const d = { x: clamp(x, -w.half + 3, w.half - 3), y, z: clamp(z, -w.half + 3, w.half - 3), vy: 0, item, coins, gem, i, t: 0, land: false };
+    d.gy = w.floorAt(d.x, y, d.z); if (gem && ITEMS[item]) this.dropGemMesh.setColorAt(i, _col.set(ORES[item] ? ORES[item].c : RARITY[ITEMS[item].r].c).multiplyScalar(1.4)); if (gem) this.dropGemMesh.instanceColor.needsUpdate = true; this.drops.push(d);
+  },
+  _drops(dt) {
+    if (!this.drops.length) return; const P = this.player, t = this.time;
+    for (let k = this.drops.length - 1; k >= 0; k--) { const d = this.drops[k], mesh = d.gem ? this.dropGemMesh : this.coinMesh; d.t += dt;
+      if (!d.land) { d.vy -= 14 * dt; d.y += d.vy * dt; if (d.y <= d.gy + 0.05) { d.y = d.gy + 0.05; if (d.vy < -4) { d.vy = -d.vy * 0.35; this.fx.burst(d.x, d.y + 0.2, d.z, d.gem ? 0xbff6ff : 0xffd040, 3, 1.5); } else { d.land = true; } } }
+      let got = Math.abs(d.x - P.pos.x) < 1.1 && Math.abs(d.z - P.pos.z) < 1.1 && Math.abs(d.y - P.pos.y - 0.5) < 1.4; if (!got) for (const h of P.hands) if (h.target.distanceToSquared(_v.set(d.x, d.y + 0.3, d.z)) < 0.25) got = true;
+      if (got || d.t > 90) { if (got) { if (d.coins) { S.addCoins(d.coins); this.fx.text(d.x, d.y + 1, d.z, '+' + d.coins + ' 💰', '#ffd040'); play('coin', 0.6); } if (d.item) { S.addItem(d.item, 1); chime(d.i, 0.7); } this.fx.burst(d.x, d.y + 0.4, d.z, d.gem ? 0xbff6ff : 0xffd040, 10, 2.5); P.pulse(0.5, 20); } mesh.setMatrixAt(d.i, _m.makeScale(0, 0, 0)); mesh.instanceMatrix.needsUpdate = true; this.drops.splice(k, 1); continue; }
+      _q.setFromAxisAngle(UP, t * 3 + d.i); _m.compose(_p.set(d.x, d.y + (d.land ? Math.sin(t * 3 + d.i) * 0.08 : 0), d.z), _q, _s.setScalar(d.gem ? 1.8 : 1.6)); mesh.setMatrixAt(d.i, _m); mesh.instanceMatrix.needsUpdate = true; }
+  },
+  // baús dourados da Caça ao Tesouro: mesmas posições para todos (sorteio pela hora do evento + mapa)
+  _spawnTreasure(seed) {
+    const w = this.world, r = rng((seed % 1e9) + hashStr(this.mapId)); for (const c of this.tChests) c.gone = true; this.tChests = [];
+    if (!this.tChestMesh) { this.tChestMesh = new THREE.InstancedMesh(modelGeometry('plat/chest'), instMat, 5); this.tChestMesh.frustumCulled = false; this.scene.add(this.tChestMesh); this.objs.push(this.tChestMesh);
+      const bg = new THREE.CylinderGeometry(0.35, 0.35, 40, 8, 1, true); bg.translate(0, 20, 0); this.beamMesh = new THREE.InstancedMesh(bg, new THREE.MeshBasicMaterial({ color: 0xffd040, transparent: true, opacity: 0.28, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide }), 5); this.beamMesh.frustumCulled = false; this.scene.add(this.beamMesh); this.objs.push(this.beamMesh); }
+    for (let i = 0; i < 5; i++) { let x = 0, z = 0; for (let k = 0; k < 40; k++) { x = (r() - 0.5) * (w.half * 1.6); z = (r() - 0.5) * (w.half * 1.6); if (w.heightAt(x, z) > w.waterY + 0.3) break; }
+      const y = w.floorAt(x, 80, z); this.tChests.push({ i, x, y, z, open: false }); setInst(this.tChestMesh, i, x, y, z, 2.6, r() * 6.28); this.tChestMesh.setColorAt(i, _col.setRGB(2, 1.6, 0.4)); setInst(this.beamMesh, i, x, y, z, 1, 0); }
+    this.tChestMesh.instanceColor.needsUpdate = true;
+  },
+  _treasure() {
+    if (!this.tChests.length) return; const P = this.player, ev = admin.event;
+    for (const c of this.tChests) { if (c.gone && !c.open) { c.open = true; setInst(this.tChestMesh, c.i, 0, -999, 0, 0, 0); setInst(this.beamMesh, c.i, 0, -999, 0, 0, 0); continue; } if (c.open) continue;
+      let hit = Math.abs(c.x - P.pos.x) < 1.4 && Math.abs(c.z - P.pos.z) < 1.4 && Math.abs(c.y - P.pos.y) < 1.6; if (!hit) for (const h of P.hands) if (h.target.distanceToSquared(_v.set(c.x, c.y + 0.5, c.z)) < 0.5) hit = true;
+      if (hit) { c.open = true; setInst(this.tChestMesh, c.i, 0, -999, 0, 0, 0); setInst(this.beamMesh, c.i, 0, -999, 0, 0, 0); const coins = 60 + Math.floor(Math.random() * 90); S.addCoins(coins); S.addItem(['emerald', 'ruby', 'amethyst', 'relic', 'diamond'][Math.floor(Math.random() * 5)], 1); S.addXp(40); S.stat('chest'); S.stat('event');
+        S.toast('🗝 Tesouro encontrado! +' + coins + ' moedas', '#ffd76a'); play('chest', 0.9); play('win', 0.5); this.fx.burst(c.x, c.y + 1, c.z, 0xffd040, 40, 5, 2); this._confetti(20); } }
+    if (ev && ev.ev === 'treasure' && this.tChests.every((c) => c.open) && !this._tDone) { this._tDone = true; emit('banner', '🗝 Você achou todos os tesouros deste mapa!', 4); } if (!this.tChests.some((c) => !c.open)) this._tDone = this._tDone || false;
   },
   _handHits(x, y, z, r, minSpeed, fn) { const P = this.player; for (let i = 0; i < 2; i++) { const h = P.hands[i]; if (h.speed < minSpeed) continue; const t = h.target; const dx = t.x - x, dy = t.y - y, dz = t.z - z; if (dx * dx + dy * dy + dz * dz < (r + HAND_R) * (r + HAND_R)) fn(h, i); } },
   _interact(dt, now) {

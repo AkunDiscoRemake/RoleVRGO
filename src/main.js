@@ -10,6 +10,7 @@ import { worldMat } from './world.js';
 import { CatAvatar, defaultLook, cleanLook, FUR_COLORS, EYE_COLORS, PATTERNS } from './cat.js';
 import { store, emit, on } from './util.js';
 import { rec } from './rec.js';
+import { admin } from './admin.js';
 import { LANG, LANGS, setLang, translateDOM } from './i18n.js';
 import { music } from './music.js';
 import { hands } from './hands.js';
@@ -70,6 +71,7 @@ async function boot() {
     S.load(prof.data && Object.keys(prof.data).length ? prof.data : (saved ? saved.d : null));
     if (prof.name && !store.get('name', '')) $('name').value = prof.name;
     if (prof.look && prof.look.fur && !store.get('look', null)) { look = cleanLook(prof.look); buildLobby(); setPreview(); }
+    if (net.isAdmin) { admin.is = true; admin.ids.add(net.id); } admin.start(); refreshAdm();
     net.joinLobby(); on('lobby', () => { drawRooms(roomList); $('online').textContent = net.onlineCount() + ' gato(s) online agora'; });
     roomList = await net.rooms(); drawRooms(roomList);
     st.textContent = 'Conectado ✔  Seu código de amigo: ' + net.friendCode;
@@ -84,6 +86,18 @@ async function boot() {
 $('joinCode').onclick = async () => { const c = $('code').value.trim().toUpperCase(); if (!c || !net.online) return; try { const r = await net.roomGet(c); if (r) { chosen = { code: r.code, name: r.name, pub: r.is_public }; drawRooms(roomList); $('status').textContent = 'Sala encontrada: ' + r.name; } else $('status').textContent = 'Sala "' + c + '" não encontrada.'; } catch (e) { $('status').textContent = 'Erro ao buscar a sala.'; } };
 $('newPriv').onclick = async () => { if (!net.online) return; try { const r = await net.rpc('rv_room_create', { p_name: 'Sala de ' + $('name').value, p_public: false }); chosen = { code: r.code, name: r.name, pub: false }; drawRooms(roomList); $('status').textContent = 'Sala privada criada! Código para os amigos: ' + r.code; } catch (e) { $('status').textContent = 'Não foi possível criar a sala.'; } };
 
+// nome "hark" é reservado ao admin: pede a senha uma vez; depois o aparelho fica registrado no servidor
+const isHark = () => /^hark/i.test(($('name').value || '').trim());
+function refreshAdm() { $('admRow').style.display = isHark() && !admin.is ? 'block' : 'none'; }
+$('name').addEventListener('input', refreshAdm);
+async function gate() {
+  if (!isHark() || admin.is) return true;
+  const m = $('admMsg'); if (!net.online) { m.textContent = 'Sem conexão com o servidor: não dá para entrar como admin agora.'; return false; }
+  const pw = $('admPw').value; if (!pw) { m.textContent = 'Digite a senha de admin, ou escolha outro nome.'; $('admPw').focus(); return false; }
+  m.textContent = 'Conferindo...';
+  try { const r = await admin.login(pw); if (r.ok) { m.textContent = '✔ Admin confirmado neste aparelho'; $('admPw').value = ''; return true; } m.textContent = r.wait ? 'Muitas tentativas. Espere 15 minutos.' : 'Senha incorreta.'; return false; }
+  catch (e) { m.textContent = /rv_admin|PGRST202|schema cache/.test(e.message || '') ? 'O banco ainda não tem o admin (rode supabase/admin.sql).' : 'Erro: ' + (e.message || e); return false; }
+}
 function start() {
   if (started) return; started = true;
   S.name = ($('name').value || 'Gato').trim().slice(0, 16) || 'Gato'; S.look = look; store.set('name', S.name); store.set('look', look); store.set('room', chosen);
@@ -98,6 +112,7 @@ function start() {
   if (!(S.d.stats.fling > 0)) setTimeout(() => S.toast('Fale com a Mimi (❗) à sua frente. Menu: touchpad / tecla M', '#bfe6ff'), 1500);
 }
 async function enterVR() {
+  if (!(await gate())) return;
   if (!navigator.xr) return;
   try {
     renderer.xr.setFramebufferScaleFactor(perf.fbScale());
@@ -108,10 +123,11 @@ async function enterVR() {
     session.addEventListener('end', () => { perf.target = 60; resize(); $('hint').style.display = 'block'; });
   } catch (e) { $('status').textContent = 'Não foi possível iniciar o VR: ' + e.message; }
 }
-$('play').onclick = start; $('vr').onclick = enterVR; $('vr2').onclick = enterVR;
+$('play').onclick = async () => { if (await gate()) start(); }; $('vr').onclick = enterVR; $('vr2').onclick = enterVR;
 // ---------- VR Box / Cardboard: tela dividida + giroscópio do celular (sem WebXR) ----------
 let cardboard = false; const stereo = new THREE.StereoCamera(); stereo.eyeSep = 0.064;
 async function enterCardboard() {
+  if (!(await gate())) return;
   let noGyro = false;
   try { if (typeof DeviceOrientationEvent !== 'undefined' && DeviceOrientationEvent.requestPermission) { const r = await DeviceOrientationEvent.requestPermission(); if (r !== 'granted') noGyro = true; } } catch (e) { /* navegadores sem pedido de permissão */ }
   // tela cheia e trava de paisagem são opcionais: não esperamos por elas (alguns navegadores nunca respondem)
@@ -155,5 +171,5 @@ on('look', () => { /* a cor das patas vem de S.look a cada quadro */ });
 addEventListener('beforeunload', () => { net.leave(); });
 player.handTrack = hands;
 import('./maker.js').then(({ maker }) => { self.RV.maker = maker; const f = $('file'); if (f) f.onchange = () => { const file = f.files && f.files[0]; f.value = ''; if (!file) return; S.toast('Importando ' + file.name + '...', '#bfe6ff'); maker.importFile(file).then((e) => S.toast(e || 'Asset importado! Ele já está no pincel.', e ? '#ff9a8a' : '#9cf09c')).catch((e) => S.toast('Falha ao importar: ' + (e && e.message ? e.message : e), '#ff9a8a')); }; });
-self.RV = { G, S, net, perf, player, ui, rec, music, hands }; // para depuração no console
+self.RV = { G, S, net, perf, player, ui, rec, music, hands, admin }; // para depuração no console
 boot();

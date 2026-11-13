@@ -8,6 +8,8 @@ import { ITEMS, RARITY, QUESTS, ACHIEVEMENTS, PROFS, SHOPS, PICKS, GLOVES, RODS,
 import { music } from './music.js';
 import { hands } from './hands.js';
 import { LANG, LANGS, setLang, langName } from './i18n.js';
+import { admin, EFFECTS, EVENTS_ADM } from './admin.js';
+import { ENEMIES, BOSS_NAMES } from './data.js';
 import { maker, SKIES, GROUNDS, MOODS, AMBS, COLORS, CAT_ORDER } from './maker.js';
 import { rec } from './rec.js';
 import { FUR_COLORS, EYE_COLORS, PATTERNS, HATS, EMOTES, roundRect } from './cat.js';
@@ -36,6 +38,11 @@ export const ui = {
     this.hc = document.createElement('canvas'); this.hc.width = 512; this.hc.height = 160; this.hg = this.hc.getContext('2d');
     this.htex = new THREE.CanvasTexture(this.hc); this.htex.minFilter = THREE.LinearFilter; this.htex.generateMipmaps = false;
     this.hud = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.28), new THREE.MeshBasicMaterial({ map: this.htex, transparent: true, fog: false, depthTest: false, depthWrite: false })); this.hud.renderOrder = 15; this.hud.position.set(0, -0.36, -1.15); this.hud.rotation.x = -0.25; camera.add(this.hud);
+    // faixa de anúncio (mensagens globais e eventos do admin)
+    this.bc = document.createElement('canvas'); this.bc.width = 768; this.bc.height = 96; this.btex = new THREE.CanvasTexture(this.bc); this.btex.minFilter = THREE.LinearFilter; this.btex.generateMipmaps = false;
+    this.banner = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.15), new THREE.MeshBasicMaterial({ map: this.btex, transparent: true, fog: false, depthTest: false, depthWrite: false })); this.banner.renderOrder = 16; this.banner.position.set(0, 0.3, -1.2); this.banner.visible = false; camera.add(this.banner); this.bannerT = 0;
+    on('banner', (txt, secs) => { const g = this.bc.getContext('2d'); g.clearRect(0, 0, 768, 96); const grd = g.createLinearGradient(0, 0, 768, 0); grd.addColorStop(0, 'rgba(120,70,10,0.0)'); grd.addColorStop(0.12, 'rgba(120,70,10,0.9)'); grd.addColorStop(0.88, 'rgba(120,70,10,0.9)'); grd.addColorStop(1, 'rgba(120,70,10,0.0)'); g.fillStyle = grd; g.fillRect(0, 10, 768, 76);
+      g.strokeStyle = '#ffd76a'; g.lineWidth = 3; g.beginPath(); g.moveTo(60, 12); g.lineTo(708, 12); g.moveTo(60, 84); g.lineTo(708, 84); g.stroke(); g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; let t = String(txt); while (t.length > 4 && g.measureText(t).width > 680) t = t.slice(0, -2); if (t !== String(txt)) t += '…'; g.fillStyle = '#fff6d0'; g.fillText(t, 384, 49); this.btex.needsUpdate = true; this.banner.visible = true; this.bannerT = secs || 5; });
     // mira (desktop)
     this.cross = new THREE.Mesh(new THREE.RingGeometry(0.004, 0.007, 12), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.7, fog: false, depthTest: false })); this.cross.position.z = -0.6; this.cross.renderOrder = 30; camera.add(this.cross);
     player.onMenu = () => this.toggle();
@@ -88,7 +95,7 @@ export const ui = {
     row(2, 'Olhos', '', L.eyes, () => cyc(EYE_COLORS, 'eyes', -1), () => cyc(EYE_COLORS, 'eyes', 1));
     row(3, 'Padrão', PATTERNS[L.pattern], null, () => { L.pattern = (L.pattern + PATTERNS.length - 1) % PATTERNS.length; this._look(); }, () => { L.pattern = (L.pattern + 1) % PATTERNS.length; this._look(); });
     const hi = Math.max(0, d.hats.indexOf(L.hat)); row(4, 'Chapéu (' + d.hats.length + ' seus)', HATS[L.hat], null, () => { L.hat = d.hats[(hi + d.hats.length - 1) % d.hats.length]; this._look(); }, () => { L.hat = d.hats[(hi + 1) % d.hats.length]; this._look(); });
-    this.qrow(5, '✏ Nome: ' + S.name, null, () => this.keyboard('Seu nome', S.name, 16, (t) => { S.name = t.trim() || S.name; S.touch(); G.pushMeta(); emit('saveNow'); }, 'q_avatar'), { bg: '#33355a', fs: 17 });
+    this.qrow(5, '✏ Nome: ' + S.name, null, () => this.keyboard('Seu nome', S.name, 16, (t) => { if (/^hark/i.test(t.trim()) && !admin.is) { S.toast('Nome reservado ao admin', '#ff9a8a'); return; } S.name = t.trim() || S.name; S.touch(); G.pushMeta(); emit('saveNow'); }, 'q_avatar'), { bg: '#33355a', fs: 17 });
     const own = ACCS.map((a, i) => i).filter((i) => S.accOk(i)), ai = Math.max(0, own.indexOf(L.acc || 0)); row(6, 'Acessório (' + (own.length - 1) + '/' + (ACCS.length - 1) + ' conquistados)', ACCS[L.acc || 0].n, null, () => { L.acc = own[(ai + own.length - 1) % own.length]; this._look(); }, () => { L.acc = own[(ai + 1) % own.length]; this._look(); });
     this.text(384, 484, 'Veja como conquistar em Missões > Acessórios.', { a: 'center', fs: 13, c: '#99a', b: false });
   },
@@ -139,6 +146,7 @@ export const ui = {
     for (const t of this.toasts) t.life -= dt; if (this.toasts.length && this.toasts[0].life <= 0) { this.toasts.shift(); this.hudDirty = true; }
     this.hudT -= dt; if (this.hudDirty && this.hudT <= 0) { this.hudDirty = false; this.hudT = 0.2; this.drawHud(); }
     this.cross.visible = this.player.desktop;
+    if (this.bannerT > 0) { this.bannerT -= dt; this.banner.material.opacity = Math.min(1, this.bannerT * 2); this.banner.scale.setScalar(1 + Math.max(0, this.bannerT - (this.bannerT > 0 ? 0 : 0)) * 0); if (this.bannerT <= 0) this.banner.visible = false; }
     if (!this.open) return;
     if (this.page === 'config' || this.page === 'map') { this.cfgT = (this.cfgT || 0) - dt; if (this.cfgT <= 0) { this.cfgT = 1; this.dirty = true; } }
     if (this.dirty) { this.dirty = false; this.draw(); }
@@ -167,8 +175,9 @@ export const ui = {
     if (this.page[0] === 'q' && this.page[1] === '_') { g.fillStyle = 'rgba(24,22,44,0.95)'; roundRect(g, 214, 0, 340, H, 20); g.fill(); g.strokeStyle = '#ffd76a'; g.lineWidth = 3; roundRect(g, 216, 2, 336, H - 4, 18); g.stroke(); this['p_' + this.page](); if (this.msg) this.text(384, H - 14, this.msg, { a: 'center', c: '#ff9a8a', fs: 14 }); this.tex.needsUpdate = true; return; }
     g.fillStyle = 'rgba(24,22,44,0.94)'; roundRect(g, 0, 0, W, H, 22); g.fill(); g.strokeStyle = '#6a7cff'; g.lineWidth = 3; roundRect(g, 2, 2, W - 4, H - 4, 20); g.stroke();
     const sub2 = this.page === 'ach' || this.page === 'album' || this.page === 'perks' || this.page === 'accs';
-    const modal = this.page === 'mk_pal' || this.page === 'dialog' || this.page === 'shop' || this.page === 'prof' || this.page === 'kb' || this.page === 'help' || sub2;
-    if (!modal) { TABS.forEach((t, i) => this.btn(8 + i * 94, 10, 91, 44, t[1], () => { this.page = t[0]; this.scroll = 0; this.msg = ''; if (t[0] === 'social') this._loadRooms(); if (t[0] === 'maker') this._mkLoad(); }, { sel: this.page === t[0], fs: 15, bg: '#33355a' })); }
+    const modal = false && this.page === 'admin' || this.page === 'mk_pal' || this.page === 'dialog' || this.page === 'shop' || this.page === 'prof' || this.page === 'kb' || this.page === 'help' || sub2;
+    const tabs = admin.is ? TABS.concat([['admin', '👑 Admin']]) : TABS, tw = 752 / tabs.length;
+    if (!modal) { tabs.forEach((t, i) => this.btn(8 + i * tw, 10, tw - 3, 44, t[1], () => { this.page = t[0]; this.scroll = 0; this.msg = ''; if (t[0] === 'social') this._loadRooms(); if (t[0] === 'maker') this._mkLoad(); }, { sel: this.page === t[0], fs: tabs.length > 8 ? 13 : 15, bg: t[0] === 'admin' ? '#8a6a10' : '#33355a' })); }
     else this.btn(W - 60, 10, 48, 44, '✕', () => { if (this.page === 'kb') this.show(this.kb.back); else if (this.page === 'shop' || this.page === 'prof') this.page = 'dialog'; else if (sub2) this.page = 'quests'; else if (this.page === 'mk_pal') this.page = 'maker'; else if (this.page === 'help') this.page = 'config'; else this.hide(); }, { bg: '#b04050' });
     this['p_' + this.page]();
     if (this.msg) { g.fillStyle = 'rgba(0,0,0,0.6)'; roundRect(g, 140, H - 44, W - 280, 34, 10); g.fill(); this.text(W / 2, H - 27, this.msg, { a: 'center', c: '#ffd76a', fs: 18 }); }
@@ -229,7 +238,7 @@ export const ui = {
     ACHIEVEMENTS.slice(off, off + 8).forEach((a, i) => { const y = 66 + i * 48, has = S.d.ach.indexOf(a.id) >= 0, v = S.d.stats[a.s] || 0; this.bar(20, y, W - 40, 42, has ? 1 : v / a.v, has ? '#8a6a20' : '#33355a'); this.text(32, y + 13, (has ? '✔ ' : '') + a.n, { fs: 17, c: has ? '#ffd76a' : '#fff' }); this.text(32, y + 31, a.d + (has ? '' : '  (' + Math.min(v, a.v) + '/' + a.v + ')'), { fs: 14, b: false, c: '#dde' }); this.text(W - 34, y + 21, '+' + a.c + ' 💰', { a: 'right', fs: 16 }); });
   },
   p_profile() {
-    const d = S.d, L = S.look; this.text(20, 80, S.name + ' — Nível ' + d.level + ' · ' + S.title(), { fs: 24 }); this.btn(560, 62, 188, 36, '✏ Mudar nome', () => this.keyboard('Seu nome', S.name, 16, (t) => { S.name = t.trim() || S.name; S.touch(); G.pushMeta(); emit('saveNow'); }, 'profile'), { bg: '#33355a', fs: 16 });
+    const d = S.d, L = S.look; this.text(20, 80, S.name + ' — Nível ' + d.level + ' · ' + S.title(), { fs: 24 }); this.btn(560, 62, 188, 36, '✏ Mudar nome', () => this.keyboard('Seu nome', S.name, 16, (t) => { if (/^hark/i.test(t.trim()) && !admin.is) { S.toast('Nome reservado ao admin', '#ff9a8a'); return; } S.name = t.trim() || S.name; S.touch(); G.pushMeta(); emit('saveNow'); }, 'profile'), { bg: '#33355a', fs: 16 });
     this.bar(20, 100, 520, 18, d.xp / S.xpNeed(), '#6a9cff'); this.text(552, 109, d.xp + '/' + S.xpNeed() + ' XP', { fs: 15 });
     this.text(20, 136, 'Profissão: ' + (d.prof ? PROFS[d.prof].icon + ' ' + PROFS[d.prof].n : 'nenhuma (fale com o Mestre Ofício na Vila)') + '   |   Código de amigo: ' + (net.friendCode || '—'), { fs: 15, c: '#bfe6ff', max: W - 40 });
     const sw = (y, label, list, key) => { this.text(20, y + 17, label, { fs: 16 }); list.forEach((c, i) => { const x = 130 + i * 50; const g = this.g; if (L[key] === c) { g.fillStyle = '#fff'; roundRect(g, x - 3, y - 3, 46, 40, 9); g.fill(); } g.fillStyle = c; roundRect(g, x, y, 40, 34, 7); g.fill(); this.widgets.push({ x, y, w: 40, h: 34, cb: () => { L[key] = c; this._look(); } }); }); };
@@ -320,6 +329,57 @@ export const ui = {
     log.forEach((m, i) => { this.text(20, 122 + i * 24, m.who + ':', { fs: 16, c: '#ffd76a', max: 170 }); this.text(196, 122 + i * 24, m.text, { fs: 16, b: false, max: 550 }); });
     QUICK_CHAT.forEach((q, i) => this.btn(20 + (i % 4) * 184, 280 + Math.floor(i / 4) * 44, 178, 38, q, () => { G.say(q); }, { bg: '#33355a', fs: 16 }));
     this.btn(20, 420, 360, 44, '⌨ Escrever mensagem', () => this.keyboard('Mensagem para a sala', '', 60, (t) => G.say(t), 'social'), { bg: '#4a5cc8' });
+  },
+  // ---------- Painel de admin ----------
+  p_admin() {
+    if (!admin.is) { this.page = 'map'; return; }
+    const a = this.adm || (this.adm = { sub: 'msg', tgt: 'all', dur: 120, qty: 5, boss: false, ip: 0 }), mk = G.def.netKey || G.mapId;
+    const done = (p) => p.then((e) => { this.msg = e || '✔ Enviado'; this.dirty = true; });
+    [['msg', '📢 Mensagem'], ['spawn', '🎁 Spawnar'], ['fx', '✨ Efeitos'], ['ev', '🎉 Eventos'], ['pl', '👥 Jogadores']].forEach((t, i) => this.btn(20 + i * 147, 62, 142, 36, t[1], () => { a.sub = t[0]; this.scroll = 0; this.msg = ''; }, { sel: a.sub === t[0], bg: '#5a4510', fs: 16 }));
+    const T = (y) => { this.text(20, y + 18, 'Alvo:', { fs: 16, c: '#ffd76a' }); [['me', '🙋 Só eu'], ['map', '🗺 Este mapa'], ['all', '🌍 Todo mundo']].forEach((o, i) => this.btn(80 + i * 140, y, 134, 36, o[1], () => { a.tgt = o[0]; }, { sel: a.tgt === o[0], bg: '#33355a', fs: 15 })); };
+    const D = (y, x0) => { this.text(x0, y + 18, 'Duração:', { fs: 16, c: '#ffd76a' }); [[30, '30 s'], [120, '2 min'], [300, '5 min'], [600, '10 min']].forEach((o, i) => this.btn(x0 + 84 + i * 76, y, 72, 36, o[1], () => { a.dur = o[0]; }, { sel: a.dur === o[0], bg: '#33355a', fs: 15 })); };
+    const target = () => (a.tgt === 'all' ? 'all' : 'map:' + mk);
+    if (a.sub === 'msg') {
+      this.text(20, 120, 'Mensagem global: aparece em faixa dourada no topo da visão de todos os jogadores online.', { fs: 15, b: false, c: '#dde', max: W - 40 });
+      this.btn(20, 140, 360, 50, '⌨ Escrever mensagem global', () => this.keyboard('Mensagem global', '', 80, (t) => done(admin.send('msg', 'all', { text: t })), 'admin'), { bg: '#8a6a10', fs: 18 });
+      this.btn(388, 140, 360, 50, '⌨ Mensagem só para este mapa', () => this.keyboard('Mensagem para o mapa', '', 80, (t) => done(admin.send('msg', 'map:' + mk, { text: t })), 'admin'), { bg: '#33355a', fs: 16 });
+      ['Bem-vindos à Beta do RoleVRGO! 🐱', 'Evento começando em 2 minutos!', 'Servidor vai reiniciar em 5 minutos.', 'Obrigado por testar! Relatem bugs 💛', 'Festa na Vila agora! 🎉', 'Respeitem os outros jogadores, por favor.'].forEach((m, i) => this.btn(20 + (i % 2) * 368, 206 + Math.floor(i / 2) * 48, 360, 42, m, () => done(admin.send('msg', 'all', { text: m })), { bg: '#2a2c4a', fs: 14 }));
+    } else if (a.sub === 'spawn') {
+      this.text(20, 118, 'Itens (cai do céu perto de você para todos do mapa, ou direto na sua bolsa):', { fs: 14, b: false, c: '#dde', max: W - 40 });
+      const ids = Object.keys(ITEMS).filter((k) => ITEMS[k].k !== 'quest'), per = 12, pages = Math.ceil(ids.length / per); a.ip = clamp(a.ip, 0, pages - 1);
+      ids.slice(a.ip * per, a.ip * per + per).forEach((id, i) => this.btn(20 + (i % 6) * 104, 130 + Math.floor(i / 6) * 40, 100, 36, ITEMS[id].n, () => { a.item = id; }, { sel: a.item === id, bg: '#33355a', fs: 12, fg: RARITY[ITEMS[id].r].c }));
+      this.btn(648, 130, 50, 36, '◀', () => { a.ip--; }, { off: a.ip <= 0, bg: '#2a2c4a' }); this.btn(698, 130, 50, 36, '▶', () => { a.ip++; }, { off: a.ip >= pages - 1, bg: '#2a2c4a' }); this.text(698, 186, (a.ip + 1) + '/' + pages, { a: 'center', fs: 14 });
+      [1, 5, 20].forEach((q, i) => this.btn(20 + i * 70, 214, 64, 36, 'x' + q, () => { a.qty = q; }, { sel: a.qty === q, bg: '#2a2c4a', fs: 15 }));
+      const P = this.player, it = a.item;
+      this.btn(236, 214, 170, 36, '🎒 Para mim', () => { if (!it) { this.msg = 'Escolha um item'; return; } S.addItem(it, a.qty); }, { off: !it, bg: '#3a9a5a', fs: 15 });
+      this.btn(412, 214, 336, 36, '🌧 Chuva aqui (todos do mapa)', () => { if (!it) { this.msg = 'Escolha um item'; return; } done(admin.send('drop', 'map:' + mk, { item: it, n: a.qty, x: P.pos.x, y: P.pos.y, z: P.pos.z })); }, { off: !it, bg: '#8a6a10', fs: 15 });
+      this.btn(20, 258, 240, 36, '💰 Chuva de 20 moedas', () => done(admin.send('drop', 'map:' + mk, { coins: 10, n: 20, x: P.pos.x, y: P.pos.y, z: P.pos.z })), { bg: '#8a6a10', fs: 15 });
+      this.btn(268, 258, 220, 36, '💰 +1000 para mim', () => { S.addCoins(1000); }, { bg: '#3a9a5a', fs: 15 }); this.btn(496, 258, 252, 36, '⭐ +1 nível para mim', () => { S.addXp(S.xpNeed() - S.d.xp); }, { bg: '#3a9a5a', fs: 15 });
+      this.text(20, 318, 'Bichos (aparecem perto de você, para todos do mapa):', { fs: 14, b: false, c: '#dde' });
+      Object.keys(ENEMIES).forEach((k, i) => this.btn(20 + i * 120, 330, 114, 40, (a.boss ? '👑 ' : '') + (a.boss ? BOSS_NAMES[k] : ENEMIES[k].n), () => done(admin.send('spawn', 'map:' + mk, { type: k, boss: a.boss, n: a.boss ? 1 : Math.min(8, a.qty), x: P.pos.x - Math.sin(P.headYaw) * 6, z: P.pos.z - Math.cos(P.headYaw) * 6 })), { bg: '#6a3a8a', fs: 13 }));
+      this.btn(500, 330, 248, 40, a.boss ? '👑 Chefes: SIM' : '👑 Chefes: NÃO', () => { a.boss = !a.boss; }, { bg: a.boss ? '#8a6a10' : '#33355a', fs: 15 });
+      this.text(20, 392, 'Quantidade de bichos = quantidade escolhida acima (máx. 8). Chefe = 1 por vez.', { fs: 13, b: false, c: '#99a' });
+    } else if (a.sub === 'fx') {
+      T(108); D(152, 20);
+      EFFECTS.forEach((e, i) => this.btn(20 + (i % 3) * 245, 200 + Math.floor(i / 3) * 46, 239, 40, e[1], () => { if (a.tgt === 'me') { admin.selfEffect(e[0], a.dur); if (e[0] === 'heal') emit('adminHeal'); if (e[0] === 'confetti') emit('confetti'); } else done(admin.send('effect', target(), { fx: e[0] }, a.dur)); }, { bg: '#4a5cc8', fs: 15 }));
+      this.text(20, 400, 'Voar: gatilho/WASD movem, Espaço sobe, C desce. Os efeitos somem sozinhos no fim da duração.', { fs: 13, b: false, c: '#99a', max: W - 40 });
+      this.btn(20, 418, 240, 36, '⏹ Tirar efeitos de mim', () => { admin.effects = {}; }, { bg: '#8a4a4a', fs: 15 });
+    } else if (a.sub === 'ev') {
+      D(108, 20); this.text(420, 126, 'Eventos valem para todos, em todos os mapas.', { fs: 13, b: false, c: '#99a' });
+      EVENTS_ADM.forEach((e, i) => { const y = 152 + Math.floor(i / 2) * 64, x = 20 + (i % 2) * 368, on = admin.eventOn(e[0]); this.btn(x, y, 360, 58, '', () => done(admin.send('event', 'all', { ev: e[0] }, a.dur)), { bg: on ? '#8a6a10' : '#4a5cc8', sel: on }); this.text(x + 14, y + 20, e[1] + (on ? '  (ativo)' : ''), { fs: 18 }); this.text(x + 14, y + 42, e[2], { fs: 13, b: false, c: '#dfe6ff', max: 330 }); });
+      this.btn(20, 412, 360, 40, '⏹ Encerrar evento e efeitos de todos', () => done(admin.send('stop', 'all', {}, 1)), { bg: '#8a4a4a', fs: 15 });
+    } else {
+      const list = Array.from(G.remotes.values()); this.text(20, 118, 'Neste mapa (' + list.length + '):', { fs: 15, c: '#ffd76a' }); const P = this.player;
+      list.slice(0, 5).forEach((r, i) => { const y = 132 + i * 44; this.text(24, y + 18, r.meta.name + ' (Nv ' + (r.meta.level || 1) + ')', { fs: 15, max: 200 });
+        this.btn(228, y, 96, 36, '➡ Ir até', () => { const p = r.av.root.position; P.teleport(p.x + 1, p.y + 0.2, p.z + 1); this.hide(); }, { bg: '#33355a', fs: 14 });
+        this.btn(330, y, 104, 36, '⬅ Puxar', () => done(admin.send('tp', 'p:' + r.id, { map: mk, x: P.pos.x + 1, y: P.pos.y, z: P.pos.z + 1 })), { bg: '#33355a', fs: 14 });
+        this.btn(440, y, 104, 36, '🎁 +100', () => done(admin.send('give', 'p:' + r.id, { coins: 100 })), { bg: '#3a9a5a', fs: 14 });
+        this.btn(550, y, 96, 36, '❤ Curar', () => done(admin.send('effect', 'p:' + r.id, { fx: 'heal' })), { bg: '#3a9a5a', fs: 14 });
+        this.btn(652, y, 96, 36, '🚪 Vila', () => done(admin.send('kick', 'p:' + r.id, {})), { bg: '#8a4a4a', fs: 14 }); });
+      const lob = Object.keys(net.lobbyState).filter((k) => k !== net.id).map((k) => Object.assign({ id: k }, net.lobbyState[k][0])); this.text(20, 368, 'Online em outros lugares (' + lob.length + '):', { fs: 15, c: '#ffd76a' });
+      lob.slice(0, 2).forEach((p, i) => { const y = 380 + i * 40; this.text(24, y + 16, (p.n || 'Gato') + ' — ' + (MAPS[p.m] ? MAPS[p.m].name : p.m || '?'), { fs: 14, max: 380 }); if (p.m) this.btn(420, y, 150, 34, '➡ Ir para o mapa', () => { this.hide(); this._goMap(p.m); }, { bg: '#33355a', fs: 13 }); this.btn(578, y, 170, 34, '⬅ Puxar p/ cá', () => done(admin.send('tp', 'p:' + p.id, { map: mk, x: P.pos.x + 1, y: P.pos.y, z: P.pos.z + 1 })), { bg: '#33355a', fs: 13 }); });
+      this.text(20, 470, '"Vila" e "Puxar" dependem do jogo do jogador obedecer: não é um banimento.', { fs: 12, b: false, c: '#99a', max: W - 40 });
+    }
   },
   // ---------- Criador de Mapas ----------
   _goMap(m) { if (!m) return; if (m.indexOf('c_') === 0) { maker.play(G, m.slice(2), false).then((e) => { if (e) S.toast(e, '#ff9a8a'); }).catch(() => S.toast('Não foi possível abrir o mapa', '#ff9a8a')); return; } if (!MAPS[m]) return; if (S.d.maps.indexOf(m) < 0) S.d.maps.push(m); G.travel(m); },
@@ -419,7 +479,7 @@ export const ui = {
   // ---------- HUD ----------
   drawHud() {
     const g = this.hg, d = S.d; g.clearRect(0, 0, 512, 160); if (!d) return;
-    let y = 94; for (let i = this.toasts.length - 1; i >= 0; i--) { const t = this.toasts[i]; g.font = 'bold 20px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; let s = t.t; while (s.length > 4 && g.measureText(s).width > 490) s = s.slice(0, -2); const w = g.measureText(s).width + 20; g.fillStyle = 'rgba(16,14,30,0.78)'; roundRect(g, 256 - w / 2, y - 14, w, 28, 9); g.fill(); g.fillStyle = t.c; g.fillText(s, 256, y + 1); y -= 31; }
+    let y = 94; for (let i = this.toasts.length - 1; i >= (G.adminLabel ? Math.max(0, this.toasts.length - 2) : 0); i--) { const t = this.toasts[i]; g.font = 'bold 20px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; let s = t.t; while (s.length > 4 && g.measureText(s).width > 490) s = s.slice(0, -2); const w = g.measureText(s).width + 20; g.fillStyle = 'rgba(16,14,30,0.78)'; roundRect(g, 256 - w / 2, y - 14, w, 28, 9); g.fill(); g.fillStyle = t.c; g.fillText(s, 256, y + 1); y -= 31; }
     g.fillStyle = 'rgba(16,14,30,0.7)'; roundRect(g, 26, 112, 460, 44, 14); g.fill();
     g.textAlign = 'left'; g.font = 'bold 20px sans-serif'; g.fillStyle = '#fff'; g.textBaseline = 'middle'; g.fillText('Nv ' + d.level, 40, 134);
     g.fillStyle = 'rgba(0,0,0,0.5)'; roundRect(g, 100, 127, 110, 14, 7); g.fill(); g.fillStyle = '#6a9cff'; roundRect(g, 100, 127, Math.max(14, 110 * d.xp / S.xpNeed()), 14, 7); g.fill();
@@ -427,7 +487,8 @@ export const ui = {
     g.fillStyle = '#ffd76a'; g.fillText('💰' + d.coins, 344, 134);
     g.fillStyle = !net.online ? '#e05050' : net.status === 'online' ? '#4ac86a' : '#e8a030'; g.beginPath(); g.arc(466, 134, 7, 0, 6.3); g.fill();
     if (rec.on) { g.textAlign = 'left'; g.font = 'bold 20px sans-serif'; g.fillStyle = '#ff5050'; g.fillText('● REC ' + Math.floor(rec.seconds()) + 's', 30, 14); this.hudDirty = true; }
-    if (this.combo > 1) { g.textAlign = 'center'; g.font = 'bold 22px sans-serif'; g.fillStyle = '#ff9a40'; g.fillText('COMBO x' + this.combo, 256, 14); }
+    if (G.adminLabel) { g.textAlign = 'center'; g.font = 'bold 18px sans-serif'; let s2 = G.adminLabel; while (s2.length > 4 && g.measureText(s2).width > 480) s2 = s2.slice(0, -2); const w2 = g.measureText(s2).width + 18; g.fillStyle = 'rgba(120,70,10,0.82)'; roundRect(g, 256 - w2 / 2, 2, w2, 24, 8); g.fill(); g.fillStyle = '#ffe9a8'; g.fillText(s2, 256, 15); }
+    if (this.combo > 1) { g.textAlign = 'center'; g.font = 'bold 22px sans-serif'; g.fillStyle = '#ff9a40'; g.fillText('COMBO x' + this.combo, 256, G.adminLabel ? 40 : 14); }
     this.htex.needsUpdate = true;
   }
 };

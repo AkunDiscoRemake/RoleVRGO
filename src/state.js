@@ -47,6 +47,7 @@ export const S = {
     if (this.sandbox) return;
     if (n <= 0) return;
     if (net.now() < this.boostUntil) n = Math.round(n * 1.2);
+    if (this.xpMul) n = Math.round(n * this.xpMul());
     const hx = this.held().xp; if (hx) n = Math.round(n * hx);
     n = Math.round(n * (1 + this.perk('xp') * 0.05));
     const d = this.d; d.xp += n; let up = false;
