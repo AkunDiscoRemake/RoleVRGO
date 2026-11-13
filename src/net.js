@@ -41,8 +41,9 @@ export const net = {
     if (this.lobby) return;
     const ch = this.lobby = this.client.channel('rv:lobby', { config: { presence: { key: this.id } } });
     ch.on('presence', { event: 'sync' }, () => { this.lobbyState = ch.presenceState(); emit('lobby'); });
-    ch.subscribe((st) => { if (st === 'SUBSCRIBED') this._trackLobby(); });
+    ch.subscribe((st) => { if (st === 'SUBSCRIBED') this._trackLobby(); else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT' || st === 'CLOSED') { if (this.lobby !== ch) return; setTimeout(() => { if (this.lobby !== ch) return; this.client.removeChannel(ch); this.lobby = null; this.joinLobby(); }, 5000); } });
     // caixa de entrada pessoal: convites de amizade/grupo e mensagens diretas
+    if (this.inbox) return;
     const ib = this.inbox = this.client.channel('rv:u:' + this.id, { config: { broadcast: { self: false } } });
     ib.on('broadcast', { event: 'inbox' }, (m) => emit('inbox', m.payload));
     ib.subscribe();
@@ -108,7 +109,7 @@ export const net = {
     const ch = this.party = this.client.channel('rv:party:' + code, { config: { broadcast: { self: false }, presence: { key: this.id } } });
     ch.on('presence', { event: 'sync' }, () => { const st = ch.presenceState(); this.partyMembers = Object.keys(st).map((k) => Object.assign({ id: k }, st[k][0])); emit('party'); });
     ch.on('broadcast', { event: 'chat' }, (m) => emit('partyChat', m.payload));
-    ch.subscribe((st) => { if (st === 'SUBSCRIBED') ch.track({ n: this.meta.name, l: this.meta.level, r: this.room, m: this.map }); });
+    ch.subscribe((st) => { if (st === 'SUBSCRIBED') ch.track({ n: this.meta.name, l: this.meta.level, r: this.room, m: this.map }); else if ((st === 'CHANNEL_ERROR' || st === 'TIMED_OUT') && this.party === ch) setTimeout(() => { if (this.party === ch) this.joinParty(code); }, 5000); });
   },
   leaveParty() { if (this.party) { this.client.removeChannel(this.party); this.party = null; } this.partyCode = ''; this.partyMembers = []; emit('party'); },
   partySay(text) { if (this.party) this.party.send({ type: 'broadcast', event: 'chat', payload: { id: this.id, n: this.meta.name, x: text } }); }

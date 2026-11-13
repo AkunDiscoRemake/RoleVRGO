@@ -8,13 +8,14 @@ import { Sky } from './sky.js';
 import { perf } from './perf.js';
 import { net } from './net.js';
 import { S } from './state.js';
-import { ITEMS, ORES, PICKS, GLOVES, RODS, FISH_TABLE, TREASURE_TABLE, RARITY, QUESTS, currentEvent, HELD, PROPS, ENEMIES, BOSS_NAMES, BOSS_DROPS, titleFor } from './data.js';
+import { ITEMS, ORES, PICKS, GLOVES, RODS, FISH_TABLE, TREASURE_TABLE, RARITY, QUESTS, currentEvent, HELD, PROPS, ENEMIES, BOSS_NAMES, BOSS_DROPS, titleFor, PETS } from './data.js';
 import { rng, hashStr, clamp, emit, on, angDiff } from './util.js';
 import { EYE, HAND_R } from './config.js';
 import { maker } from './maker.js';
 import { admin } from './admin.js';
 import { DAY_LENGTH } from './config.js';
 
+const cleanName = (n) => String(n == null ? 'Gato' : n).replace(/[\u0000-\u001f<>]/g, '').slice(0, 16) || 'Gato';
 const _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(), _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _col = new THREE.Color(), _col2 = new THREE.Color(), _q2 = new THREE.Quaternion();
 const bubbleMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
   vertexShader: 'varying vec3 vN;\nvoid main(){ vec4 mv = modelViewMatrix * instanceMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * mat3(instanceMatrix) * normal); gl_Position = projectionMatrix * mv; }',
@@ -167,7 +168,7 @@ export const G = {
     if (net.online && !keep) { net.join(this.room, def.netKey || id, this.roomPublic); this.pushMeta(); }
   },
   _disposeMap() {
-    for (const o of this.objs) { this.scene.remove(o); if (o.geometry && !o.geometry.userData.shared) { /* geometrias de modelo ficam em cache */ } if (o.material && o.material !== instMat && o.material !== worldMat) { if (o.material.map && o.material.map !== this.fx.tex) o.material.map.dispose(); o.material.dispose(); } if (o.isInstancedMesh) o.dispose(); }
+    for (const o of this.objs) { this.scene.remove(o); if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose(); /* geometrias de modelo (cache) ficam */ if (o.material && o.material !== instMat && o.material !== worldMat) { if (o.material.map && o.material.map !== this.fx.tex) o.material.map.dispose(); o.material.dispose(); } if (o.isInstancedMesh) o.dispose(); }
     this.props.forEach((p) => this.scene.remove(p.mesh)); this.props.clear();
     this.enemies = []; this.drops = []; this.tChests = []; this.coinMesh = this.dropGemMesh = this.tChestMesh = this.beamMesh = null; this._tKey = '';
     this.objs.length = 0; for (const n of this.npcs) n.av.dispose(); this.npcs.length = 0;
@@ -178,17 +179,18 @@ export const G = {
   _chestVis(c) { const open = !c.ev && S.chestOpen(this.mapId + ':' + c.key); c.open = open; setInst(this.chestMesh, c.i, c.x, c.hidden ? -999 : c.y, c.z, c.ev ? 2.6 : 1.9, c.ry); this.chestMesh.setColorAt(c.i, c.ev ? _col.setRGB(2, 1.6, 0.4) : open ? _col.setRGB(0.35, 0.35, 0.4) : c.tier >= 2 ? _col.setRGB(1.3, 1.1, 1.6) : _col.setRGB(1.1, 1.1, 1.1)); this.chestMesh.instanceColor.needsUpdate = true; },
   _npcMarks() { for (const n of this.npcs) { let mark = ''; if (n.quests) for (const q of n.quests) { const st = S.questState(q); if (st === 'ready') { mark = '❓ '; break; } if (st === 'open' && !mark) mark = '❗ '; } n.av.setName(mark + n.name, n.role); } },
   _boards() { if (!this.E || !this.E.boards.length) return; const draw = (lb) => { for (const b of this.E.boards) { const g = b.canvas.getContext('2d'); g.fillStyle = '#1c1830'; g.fillRect(0, 0, 512, 512); g.fillStyle = '#ffd76a'; g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.fillText('🏆 Ranking da Arena', 256, 46); g.font = 'bold 24px sans-serif'; g.textAlign = 'left'; const rows = lb ? lb.wins : []; if (!lb) { g.fillStyle = '#aaa'; g.fillText(net.online ? 'Carregando...' : 'Offline', 40, 110); } else if (!rows.length) { g.fillStyle = '#aaa'; g.fillText('Ninguém venceu ainda. Seja o primeiro!', 30, 110); } rows.forEach((r, i) => { g.fillStyle = i === 0 ? '#ffd76a' : i < 3 ? '#e8e8f0' : '#aab'; g.fillText((i + 1) + '. ' + r.name, 30, 100 + i * 38); g.textAlign = 'right'; g.fillText(r.wins + ' vitórias  Nv ' + r.level, 490, 100 + i * 38); g.textAlign = 'left'; }); b.tex.needsUpdate = true; } }; draw(null); if (net.online) net.leaderboard().then(draw).catch(() => {}); },
-  pushMeta() { net.setMeta({ name: /^hark/i.test(S.name) && !admin.is ? 'Gato' : S.name, look: S.look, level: S.d.level, sid: this.sid, admin: admin.is ? 1 : 0, prof: S.d.prof, party: net.partyCode, fc: net.friendCode, held: S.d.hand }); },
+  pushMeta() { net.setMeta({ name: /^hark/i.test(S.name) && !admin.is ? 'Gato' : S.name, look: S.look, level: S.d.level, sid: this.sid, pet: S.d.pet, admin: admin.is ? 1 : 0, prof: S.d.prof, party: net.partyCode, fc: net.friendCode, held: S.d.hand }); },
 
   // ================= eventos de rede e de jogo =================
   _bindEvents() {
-    on('peerJoin', (id, meta) => { if (!meta || this.remotes.has(id)) return; const av = new CatAvatar(meta.look, (admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), { sub: 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1), tagColor: this._tagColor(id, meta) }); av.root.visible = false; this.scene.add(av.root); const r = { id, av, meta, has: false, x: 0, y: 0, z: 0, yaw: 0, hy: 0, hp: 0, h: [0, 0.6, -0.4, 0, 0.6, -0.4], flags: 1, life: 100, px: 0, pz: 0, hit: [0, 0], patT: 0 }; this.remotes.set(id, r); if (meta.sid) this.sids[meta.sid] = r; this._remoteHeld(r); setTimeout(() => this.props.forEach((p) => { if (p.owner === net.id) net.send('prop', { id: p.id, k: p.k, x: p.x, y: p.y, z: p.z, ry: p.ry }); }), 1500); emit('toast', meta.name + ' entrou', '#bfe6ff'); emit('players'); });
-    on('peerMeta', (id, meta) => { const r = this.remotes.get(id); if (!r || !meta) return; if (JSON.stringify(meta.look) !== JSON.stringify(r.meta.look)) r.av.setLook(meta.look); r.meta = meta; this._remoteHeld(r); r.av.tagColor = this._tagColor(id, meta); r.av.setName((admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1)); if (meta.sid) this.sids[meta.sid] = r; emit('players'); });
-    on('peerLeave', (id) => { const r = this.remotes.get(id); if (!r) return; if (r.heldMesh) this.scene.remove(r.heldMesh); this.props.forEach((p, k) => { if (p.owner === id) this._delProp(k); }); r.av.dispose(); this.remotes.delete(id); for (const k in this.sids) if (this.sids[k] === r) delete this.sids[k]; emit('players'); });
-    on('peerState', (p) => { const r = this.sids[p[0]]; if (!r) return; r.x = p[1]; r.y = p[2]; r.z = p[3]; r.yaw = p[4]; r.hy = p[5]; r.hp = p[6]; for (let i = 0; i < 6; i++) r.h[i] = p[7 + i]; const fl = p[13]; const em = (fl >> 4) & 15; r.tool = (fl >> 8) & 7; if (em !== r.av.emote) { r.av.setEmote(em); if (em === 7) playAt('click', r.av.root.position, this.camera, 0), meow(0.5, 1.1); } r.flags = fl; r.life = p[14]; if (!r.has) { r.has = true; r.av.root.position.set(r.x, r.y, r.z); r.av.root.visible = true; } });
+    on('questReady', () => this._npcMarks()); on('inv', () => { if (this.npcs.length) this._npcMarks(); });
+    on('peerJoin', (id, meta) => { if (!meta || this.remotes.has(id)) return; meta.name = cleanName(meta.name); const av = new CatAvatar(meta.look, (admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), { sub: 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1), tagColor: this._tagColor(id, meta) }); av.root.visible = false; this.scene.add(av.root); const r = { id, av, meta, has: false, x: 0, y: 0, z: 0, yaw: 0, hy: 0, hp: 0, h: [0, 0.6, -0.4, 0, 0.6, -0.4], flags: 1, life: 100, px: 0, pz: 0, hit: [0, 0], patT: 0 }; this.remotes.set(id, r); if (meta.sid) this.sids[meta.sid] = r; this._remoteHeld(r); setTimeout(() => this.props.forEach((p) => { if (p.owner === net.id) net.send('prop', { id: p.id, k: p.k, x: p.x, y: p.y, z: p.z, ry: p.ry }); }), 1500); emit('toast', meta.name + ' entrou', '#bfe6ff'); emit('players'); });
+    on('peerMeta', (id, meta) => { const r = this.remotes.get(id); if (!r || !meta) return; meta.name = cleanName(meta.name); if (JSON.stringify(meta.look) !== JSON.stringify(r.meta.look)) r.av.setLook(meta.look); r.meta = meta; this._remoteHeld(r); r.av.tagColor = this._tagColor(id, meta); r.av.setName((admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1)); if (meta.sid) this.sids[meta.sid] = r; emit('players'); });
+    on('peerLeave', (id) => { const r = this.remotes.get(id); if (!r) return; if (r.pet && r.pet.av) r.pet.av.dispose(); if (r.heldMesh) this.scene.remove(r.heldMesh); this.props.forEach((p, k) => { if (p.owner === id) this._delProp(k); }); r.av.dispose(); this.remotes.delete(id); for (const k in this.sids) if (this.sids[k] === r) delete this.sids[k]; emit('players'); });
+    on('peerState', (p) => { if (!Array.isArray(p) || p.length < 15) return; for (let i = 1; i < 15; i++) if (typeof p[i] !== 'number' || !Number.isFinite(p[i]) || Math.abs(p[i]) > 2000) return; const r = this.sids[p[0]]; if (!r) return; r.x = p[1]; r.y = p[2]; r.z = p[3]; r.yaw = p[4]; r.hy = p[5]; r.hp = p[6]; for (let i = 0; i < 6; i++) r.h[i] = p[7 + i]; const fl = p[13]; const em = (fl >> 4) & 15; r.tool = (fl >> 8) & 7; if (em !== r.av.emote) { r.av.setEmote(em); if (em === 7) playAt('click', r.av.root.position, this.camera, 0), meow(0.5, 1.1); } r.flags = fl; r.life = p[14]; if (!r.has) { r.has = true; r.av.root.position.set(r.x, r.y, r.z); r.av.root.visible = true; } });
     on('peerEvent', (e) => this._peerEvent(e));
     on('fling', () => S.stat('fling')); on('fellOut', () => { const sp = this.def.spawn; this.player.teleport(sp[0], this.world.floorAt(sp[0], 50, sp[1]) + 0.2, sp[1], sp[2]); });
-    on('land', (v) => { play('thud', Math.min(1, v / 14)); }); on('handTouch', (i, h) => { const sp = h.speed; if (sp > 1.2) { play(this.world.surface === 'snow' ? 'step_snow' : this.world.surface === 'stone' ? 'step_stone' : 'step_grass', Math.min(0.8, sp / 7)); this.player.pulse(Math.min(1, sp / 6), 20); } });
+    on('land', (v) => { const p = this.player.pos, sc = { snow: 0xffffff, sand: 0xe8d098, stone: 0xb8b8c0 }[this.world.surface] || 0xc8b890; if (!this.player.inWater) { this.fx.ring(p.x, this.world.floorAt(p.x, p.y + 0.3, p.z) + 0.04, p.z, sc, Math.min(2.4, 0.6 + v * 0.12), true, null, 0.5); this.fx.burst(p.x, p.y + 0.1, p.z, sc, Math.min(14, 4 + v | 0), 2, 4); } play('thud', Math.min(1, v / 14)); }); on('handTouch', (i, h) => { const sp = h.speed; if (sp > 1.2) { play(this.world.surface === 'snow' ? 'step_snow' : this.world.surface === 'stone' ? 'step_stone' : 'step_grass', Math.min(0.8, sp / 7)); this.player.pulse(Math.min(1, sp / 6), 20); } });
     on('splash', (v) => { splashSfx(Math.min(1, 0.5 + (v || 0) * 0.08)); const p = this.player.pos, wy = this.world.waterY; this.fx.burst(p.x, wy + 0.1, p.z, 0xd8f8ff, 26, 4.5); this.fx.ring(p.x, wy + 0.05, p.z, 0xd8f8ff, 2.6, true, null, 0.9); this.fx.ring(p.x, wy + 0.05, p.z, 0xffffff, 1.4, true, null, 0.6); });
     on('dodge', () => play('dodge', 0.4)); on('grab', () => play('cloth', 0.35));
     on('party', () => { this.remotes.forEach((r) => { r.av.tagColor = this._tagColor(r.id, r.meta); r.av.drawTag(); }); });
@@ -204,13 +206,14 @@ export const G = {
     on('adminEvent', (ev, late) => { this.admT = 0; if (ev && !late) { const n = { party: '🎉 FESTA!', invasion: '👾 INVASÃO!', goldrain: '💰 CHUVA DE OURO!', treasure: '🗝 CAÇA AO TESOURO!', xp2: '⭐ XP EM DOBRO!', night: '🌙 NOITE ETERNA', day: '☀ DIA ETERNO' }[ev.ev] || ev.ev; emit('banner', n + '  —  ' + ev.author, 6); play('event', 0.9); if (ev.ev !== 'night' && ev.ev !== 'day') this._confetti(30); } if (!ev) { this._tKey = ''; for (const c of this.tChests) c.gone = true; } });
     on('meta', () => { if (net.online) this.pushMeta(); }); on('levelup', () => { if (net.online) this.pushMeta(); const p = this.player.pos; this.fx.burst(p.x, p.y + 1, p.z, 0xffd76a, 40, 4, 3); });
   },
+  muted(id) { return !!(S.d && S.d.muted && S.d.muted.indexOf(id) >= 0); },
   _tagColor(id, meta) { if (admin.ids.has(id)) return '#ffd040'; if (meta && meta.party && meta.party === net.partyCode && net.partyCode) return '#8fd0ff'; if (this.friends.some((f) => f.id === id && f.status === 'accepted')) return '#9cf09c'; return '#ffffff'; },
   _peerEvent(e) {
     const r = this.remotes.get(e.f), P = this.player;
-    if (e.t === 'chat') { if (r) { r.av.say(e.x, 6); this._log(r.meta.name, e.x); play('msg', 0.4); } }
-    else if (e.t === 'tree') { const tr = this.E.trees[e.i]; if (tr && tr.alive) this._fell(tr, e.u, 0, 1); }
-    else if (e.t === 'ore') { const o = this.E.ores[e.i]; if (o && o.alive) { o.alive = false; o.respawn = e.u; this._oreVis(o); } }
-    else if (e.t === 'hit' && e.to === net.id) {
+    if (e.t === 'chat') { if (r && !this.muted(e.f)) { const tx = String(e.x == null ? '' : e.x).slice(0, 80); r.av.say(tx, 6); this._log(r.meta.name, tx); play('msg', 0.4); } }
+    else if (e.t === 'tree') { const tr = this.E.trees[e.i | 0]; if (tr && tr.alive) this._fell(tr, Math.min(Number(e.u) || 0, net.now() + 180000), 0, 1); }
+    else if (e.t === 'ore') { const o = this.E.ores[e.i | 0]; if (o && o.alive && !o.ev) { o.alive = false; o.respawn = Math.min(Number(e.u) || 0, net.now() + 180000); this._oreVis(o); } }
+    else if (e.t === 'hit' && e.to === net.id && Number.isFinite(e.x) && Number.isFinite(e.z) && Number.isFinite(e.d)) {
       if (!P.fightZone || S.hp <= 0) return;
       const now = this.time; let d = clamp(e.d, 1, 60), blocked = false, dodged = P.iframes > 0;
       if (!dodged) {
@@ -233,13 +236,13 @@ export const G = {
     else if (e.t === 'pat' && e.to === net.id) { purr(0.8); this.fx.burst(P.pos.x, P.pos.y + 1.3, P.pos.z, 0xff6090, 6, 1.2, -1); if (r) S.toast(r.meta.name + ' fez carinho em você ❤', '#ff9ab8'); }
     else if (e.t === 'prop') { if (e.x > -500 && e.x < 500 && this.props.size < 60) this._addProp(e.f + ':' + e.id, e.f, e.k, e.x, e.y, e.z, e.ry); }
     else if (e.t === 'propdel') this._delProp(e.f + ':' + e.id);
-    else if (e.t === 'fx') { this.fx.burst(e.x, e.y, e.z, e.c, e.n || 10, 3); }
+    else if (e.t === 'fx') { if ([e.x, e.y, e.z, e.c].every(Number.isFinite)) this.fx.burst(e.x, e.y, e.z, e.c, clamp(e.n | 0, 1, 20), 3); }
   },
   _inbox(m) {
     if (m.k === 'friend') { S.toast('👋 ' + m.name + ' quer ser seu amigo (menu Social)', '#9cf09c'); play('msg', 0.6); emit('friendsDirty'); }
     else if (m.k === 'faccept') { S.toast('✔ ' + m.name + ' aceitou sua amizade', '#9cf09c'); emit('friendsDirty'); }
     else if (m.k === 'party') { this.invite = m; S.toast('👥 ' + m.name + ' convidou você para o grupo (menu Social)', '#8fd0ff'); play('msg', 0.6); emit('party'); }
-    else if (m.k === 'dm') { this._log('[privado] ' + m.name, m.x); S.toast('✉ ' + m.name + ': ' + m.x, '#ffe9a8'); play('msg', 0.6); }
+    else if (m.k === 'dm' && !this.muted(m.from)) { m.x = String(m.x || '').slice(0, 80); m.name = cleanName(m.name); this._log('[privado] ' + m.name, m.x); S.toast('✉ ' + m.name + ': ' + m.x, '#ffe9a8'); play('msg', 0.6); }
   },
   _log(who, text) { this.chatLog.push({ who, text }); if (this.chatLog.length > 30) this.chatLog.shift(); emit('chat'); },
   say(text) { text = String(text).slice(0, 80); if (!text) return; this._log(S.name, text); net.send('chat', { x: text }); emit('selfSay', text); },
@@ -309,10 +312,10 @@ export const G = {
     if (S.hp > 0 && S.hp < S.maxHp() && (this.time - this.lastHurt > (fz ? 5 : 3.5))) { S.hp = Math.min(S.maxHp(), S.hp + (fz ? 3 : 12) * (S.held().regen || 1) * (1 + S.perk('regen') * 0.3) * dt); this._hpT = (this._hpT || 0) + dt; if (this._hpT > 0.5) { this._hpT = 0; emit('hp'); } }
     if (this.emoteT > 0 && (this.emoteT -= dt) <= 0) { this.myEmote = 0; P.frozen = false; P.emoteId = 0; }
     if (this.comboT > 0 && (this.comboT -= dt) <= 0) { this.combo = 0; emit('combo', 0); }
-    this._held(dt); maker.update(this); this._adminFx(dt);
+    this._held(dt); maker.update(this); this._adminFx(dt); this._pets(dt);
     const tp = P.tp; this.tpBall.visible = this.tpArc.visible = tp.show; if (tp.show) { this.tpBall.position.set(tp.x, tp.y + 0.22 + Math.sin(this.time * 6) * 0.04, tp.z); this.tpBall.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.geometry.setDrawRange(0, tp.n); this.tpArc.geometry.attributes.position.needsUpdate = true; }
     // passos
-    if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; play(P.inWater ? 'splash' : this.E.aero && P.pos.y > 1.9 && Math.hypot(P.pos.x, P.pos.z) < 44 ? 'glass' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
+    if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; if (P.speed > 3 && !P.inWater && perf.particles >= 0.5) this.fx.burst(P.pos.x, P.pos.y + 0.05, P.pos.z, { snow: 0xffffff, sand: 0xe8d098 }[W.surface] || 0xbcae90, 2, 0.8, 3); play(P.inWater ? 'splash' : this.E.aero && P.pos.y > 1.9 && Math.hypot(P.pos.x, P.pos.z) < 44 ? 'glass' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
     this._interact(dt, now); this._npcs(dt); this._enemies(dt); this._self(dt); this._remotes(dt); this._fishing(dt); this._events(dt, now);
     // mãos + sombras em lote
     const hp = this.hands; hp.begin(); const fur = S.look.fur;
@@ -398,6 +401,7 @@ export const G = {
       else if (e.state === 'home') { const ex = e.hx - e.x, ez = e.hz - e.z, ed = Math.hypot(ex, ez); e.hp = Math.min(def.hp, e.hp + 20 * dt); if (ed < 1) e.state = 'idle'; else { mv = def.sp; mx = ex / ed; mz = ez / ed; } if (d < 7 && alive && ed < 18) e.state = 'chase'; }
       // movimento (não entra na água) + empurrão ao levar golpe
       let nx = e.x + (mx * mv + e.kx) * dt, nz = e.z + (mz * mv + e.kz) * dt; e.kx *= Math.max(0, 1 - dt * 6); e.kz *= Math.max(0, 1 - dt * 6);
+      if (Math.abs(nx) < w.half - 3 && Math.abs(nz) < w.half - 3 && (mx || mz || e.kx || e.kz)) { _v.set(nx, w.heightAt(nx, nz) + 0.75 * e.rg, nz); if (w.collide(_v, 0.32 * e.rg, null)) { nx = _v.x; nz = _v.z; e.kx = e.kz = 0; } } // não atravessa paredes: desliza
       if (Math.abs(nx) < w.half - 3 && Math.abs(nz) < w.half - 3) { const nh = w.heightAt(nx, nz); if (nh > w.waterY + 0.05 && nh - e.y < 1.2) { e.x = nx; e.z = nz; e.y = nh; } else { e.t = 0; } }
       if (mx || mz) e.ry += angDiff(e.ry, Math.atan2(mx, mz)) * Math.min(1, dt * 9);
       if (mv > 0) e.ph += dt * (6 + mv * 3);
@@ -466,6 +470,24 @@ export const G = {
         if (hit) { b.alive = false; b.t = t + 8 + Math.random() * 6; _m.makeScale(0, 0, 0).setPosition(0, -999, 0); bm.setMatrixAt(b.i, _m); pop(0.8, b.r); this.fx.burst(x, y, z, 0xe8fbff, 14, 3, 1); this.fx.burst(x, y, z, 0x80e8ff, 6, 1.2, -1.5); this.fx.ring(x, y, z, 0xcff8ff, b.r * 2.2, false, this.camera.quaternion, 0.45); if (b.r > 0.85) chime(b.i, 0.5); S.stat('pop'); if ((S.d.stats.pop || 0) % 5 === 0) S.addCoins(2); P.pulse(0.4, 20); } } }
       bm.instanceMatrix.needsUpdate = true; }
     if (this.schoolMesh) for (const sc of this.E.schools) { if (Math.abs(sc.x - P.pos.x) > 70 || Math.abs(sc.z - P.pos.z) > 70) continue; for (let i = 0; i < sc.n; i++) { const a = t * (0.35 + (i % 3) * 0.08) + i * 6.283 / sc.n, rr = sc.r * (0.55 + (i % 5) * 0.11), x = sc.x + Math.cos(a) * rr, z = sc.z + Math.sin(a) * rr, y = sc.y + Math.sin(a * 2 + i) * 1.2; _q.setFromAxisAngle(UP, -a + Math.sin(t * 6 + i) * 0.25); _m.compose(_p.set(x, y, z), _q, _s.set(4, 4, 4)); this.schoolMesh.setMatrixAt(sc.i0 + i, _m); } this.schoolMesh.instanceMatrix.needsUpdate = true; }
+  },
+  // ---------- bichinhos de estimação: seguem o dono (o meu e os dos outros jogadores) ----------
+  _pets(dt) {
+    const P = this.player, w = this.world; if (!w) return;
+    const follow = (o, owner, yaw, dt2, emote) => {
+      const def = PETS.find((x) => x.id === o.id); if (!def || !def.look) return; if (!o.av) { o.av = new CatAvatar(def.look, '', { noTag: true, scale: 0.45 }); this.scene.add(o.av.root); o.av.root.position.copy(owner); }
+      const av = o.av, p = av.root.position, tx = owner.x + Math.sin(yaw) * 0.9 - Math.cos(yaw) * 0.6, tz = owner.z + Math.cos(yaw) * 0.9 + Math.sin(yaw) * 0.6, dx = tx - p.x, dz = tz - p.z, d = Math.hypot(dx, dz);
+      if (d > 14) { p.set(tx, owner.y, tz); } let sp = 0; if (d > 0.35) { sp = Math.min(6.5, d * 3); p.x += dx / d * sp * dt2; p.z += dz / d * sp * dt2; av.root.rotation.y += angDiff(av.root.rotation.y, Math.atan2(-dx, -dz)) * Math.min(1, dt2 * 8); }
+      else av.root.rotation.y += angDiff(av.root.rotation.y, Math.atan2(-(owner.x - p.x), -(owner.z - p.z))) * Math.min(1, dt2 * 3);
+      const fy = w.floorAt(p.x, owner.y + 1.2, p.z), wy = w.waterY; p.y += ((fy < wy - 0.2 && w.swim ? wy - 0.3 : fy) - p.y) * Math.min(1, dt2 * 10);
+      av.speed = sp; av.grounded = Math.abs(p.y - fy) < 0.3; o.idle = sp > 0.3 ? 0 : (o.idle || 0) + dt2;
+      const em = emote === 2 || emote === 8 || emote === 10 ? emote : o.idle > 8 ? 3 : 0; if (av.emote !== em) { av.emote = em; av.emoteT = 0; }
+      av.update(dt2, false);
+    };
+    const mine = this.myPet || (this.myPet = { id: 'none' }); if (mine.id !== S.d.pet) { if (mine.av) mine.av.dispose(); mine.av = null; mine.id = S.d.pet; }
+    if (mine.id !== 'none') follow(mine, P.pos, P.bodyYaw, dt, this.myEmote || 0);
+    this.remotes.forEach((r) => { const id = (r.meta && r.meta.pet) || 'none'; r.pet = r.pet || { id: 'none' }; if (r.pet.id !== id) { if (r.pet.av) r.pet.av.dispose(); r.pet.av = null; r.pet.id = id; }
+      if (id !== 'none' && r.has) { if (!r.near) { if (r.pet.av) r.pet.av.root.visible = false; return; } follow(r.pet, r.av.root.position, r.av.root.rotation.y, dt, r.av.emote); r.pet.av.root.visible = r.av.root.visible; } });
   },
   // ---------- admin: efeitos no jogador ----------
   _adminFx(dt) {

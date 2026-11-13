@@ -135,6 +135,7 @@ function makeCatMaterial() {
     ].join('\n'));
   };
   m.customProgramCacheKey = () => 'rvcat';
+  const prev = m.onBeforeCompile; m.onBeforeCompile = (sh) => { prev(sh); sh.fragmentShader = sh.fragmentShader.replace('#include <opaque_fragment>', 'float rim = pow(1.0 - clamp(dot(normalize(vNormal), normalize(vViewPosition)), 0.0, 1.0), 3.0);\noutgoingLight += rim * 0.3 * vec3(1.0, 0.95, 0.85);\n#include <opaque_fragment>'); }; // contorno de luz: destaca os gatos em qualquer cenário
   return m;
 }
 

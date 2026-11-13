@@ -114,7 +114,7 @@ export const ACHIEVEMENTS = [
   { id: 'cb1', n: 'Combo x5', d: 'Faça um combo de 5', s: 'combo', v: 1, c: 60 }, { id: 'bl1', n: 'Muralha', d: 'Bloqueie 20 golpes', s: 'blocked', v: 20, c: 80 },
   { id: 'ch1', n: 'Caça-Baús', d: 'Abra 10 baús', s: 'chest', v: 10, c: 80 }, { id: 'ch2', n: 'Tesoureiro', d: 'Abra 75 baús', s: 'chest', v: 75, c: 500 },
   { id: 'se1', n: 'Curioso', d: 'Descubra 1 segredo', s: 'secret', v: 1, c: 40 }, { id: 'se2', n: 'Sabe-Tudo', d: 'Descubra 9 segredos', s: 'secret', v: 9, c: 800 },
-  { id: 'vi1', n: 'Viajante', d: 'Visite todos os 10 mapas', s: 'maps', v: 10, c: 300 }, { id: 'fi1', n: 'Pescador', d: 'Pesque 10 peixes', s: 'fish', v: 10, c: 60 },
+  { id: 'vi1', n: 'Viajante', d: 'Visite todos os 13 mapas', s: 'maps', v: 13, c: 300 }, { id: 'fi1', n: 'Pescador', d: 'Pesque 10 peixes', s: 'fish', v: 10, c: 60 },
   { id: 'fi2', n: 'Lenda do Mar', d: 'Pesque um Peixe-Lua', s: 'moonfish', v: 1, c: 700 }, { id: 'di1', n: 'Arqueólogo', d: 'Desenterre 10 tesouros', s: 'dig', v: 10, c: 150 },
   { id: 'lv1', n: 'Nível 5', d: 'Chegue ao nível 5', s: 'level', v: 5, c: 100 }, { id: 'lv2', n: 'Nível 15', d: 'Chegue ao nível 15', s: 'level', v: 15, c: 500 },
   { id: 'co1', n: 'Pé-de-meia', d: 'Ganhe 1000 moedas no total', s: 'earned', v: 1000, c: 100 }, { id: 'so1', n: 'Sociável', d: 'Faça carinho em outro jogador', s: 'pat', v: 1, c: 40 },
@@ -214,3 +214,15 @@ export const CONTRACT_TYPES = [
 ];
 // Álbum de coleção: categorias de itens; completar uma dá recompensa.
 export const ALBUM = { fish: 'Peixes', gem: 'Gemas', ore: 'Minérios', forage: 'Natureza', treasure: 'Tesouros' };
+
+// Bichinhos de estimação: filhotes que seguem você (os outros jogadores também veem).
+export const PETS = [
+  { id: 'none', n: 'Nenhum' },
+  { id: 'kit_orange', n: 'Filhote Laranja', price: 400, look: { fur: '#f2a65a', fur2: '#f5f1e8', pattern: 1, eyes: '#58c26a', hat: 0 } },
+  { id: 'kit_gray', n: 'Filhote Cinza', price: 400, look: { fur: '#8a8f98', fur2: '#f5f1e8', pattern: 3, eyes: '#e0b030', hat: 0 } },
+  { id: 'kit_black', n: 'Filhote Preto', price: 700, look: { fur: '#3b3b45', fur2: '#f5f1e8', pattern: 5, eyes: '#e0b030', hat: 3 } },
+  { id: 'kit_snow', n: 'Filhote de Neve', price: 1200, look: { fur: '#f5f1e8', fur2: '#b8b0d8', pattern: 0, eyes: '#4aa3e0', hat: 6 } },
+  { id: 'kit_aero', n: 'Filhote Aero', price: 1800, look: { fur: '#7fb7c9', fur2: '#f5f1e8', pattern: 1, eyes: '#4aa3e0', hat: 9 } },
+  { id: 'kit_gold', n: 'Filhote Dourado', how: 'Chegue ao nível 15', s: 'level', v: 15, look: { fur: '#e8c27a', fur2: '#f2c230', pattern: 2, eyes: '#9b6ad6', hat: 2 } },
+  { id: 'kit_shadow', n: 'Filhote Sombrio', how: 'Derrote 1 chefe', s: 'boss', v: 1, look: { fur: '#3b3b45', fur2: '#9b6ad6', pattern: 2, eyes: '#e05050', hat: 8 } }
+];

@@ -9,7 +9,7 @@ import { perf } from './perf.js';
 import { worldMat } from './world.js';
 import { CatAvatar, defaultLook, cleanLook, FUR_COLORS, EYE_COLORS, PATTERNS } from './cat.js';
 import { store, emit, on } from './util.js';
-import { rec } from './rec.js';
+import { rec, downloadBlob, stamp } from './rec.js';
 import { admin } from './admin.js';
 import { LANG, LANGS, setLang, translateDOM } from './i18n.js';
 import { music } from './music.js';
@@ -102,7 +102,7 @@ function start() {
   if (started) return; started = true;
   S.name = ($('name').value || 'Gato').trim().slice(0, 16) || 'Gato'; S.look = look; store.set('name', S.name); store.set('look', look); store.set('room', chosen);
   $('lobby').style.display = 'none'; $('hint').style.display = 'block';
-  audioInit(); setVolume(store.get('vol', 0.8)); player.side = store.get('side', player.side);
+  audioInit(); setVolume(store.get('vol', 0.8)); player.side = store.get('side', player.side); const tm = store.get('turn', 30); player.smoothTurn = tm === 0; player.snapA = (tm || 30) * Math.PI / 180;
   perf.setProfile(store.get('profile', 'balanced'));
   G.room = chosen.code; G.roomName = chosen.name; G.roomPublic = chosen.pub;
   G.init(scene, camera, renderer, player); ui.init(scene, camera, player);
@@ -142,8 +142,12 @@ $('card').onclick = enterCardboard;
 self.RVcard = { exit() { cardboard = false; player.card = false; renderer.setScissorTest(false); resize(); if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen(); }, get on() { return cardboard; }, enter: enterCardboard };
 
 // ---------- loop ----------
+let photoReq = false, shotHud = null, comfortVig = store.get('vignette', true);
+self.RVphoto = () => { photoReq = true; }; self.RVvig = (v) => { if (v != null) { comfortVig = v; store.set('vignette', v); } return comfortVig; };
+const vig = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'), gr = g.createRadialGradient(64, 64, 22, 64, 64, 64); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(0.55, 'rgba(0,0,0,0.35)'); gr.addColorStop(1, 'rgba(0,0,0,1)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false })); m.position.z = -0.2; m.renderOrder = 998; m.visible = false; camera.add(m); return m; })();
 let last = 0, recFlip = false; const recCam = new THREE.PerspectiveCamera(80, 16 / 9, 0.05, 400); scene.add(recCam);
-addEventListener('keydown', (e) => { if (e.code === 'KeyR' && started && !(e.target && e.target.tagName === 'INPUT') && !(ui.open && ui.page === 'kb')) { const m = rec.toggle(canvas); if (m) S.toast(m, '#ff9a8a'); } });
+addEventListener('keydown', (e) => { if (e.code === 'KeyP' && started && !(e.target && e.target.tagName === 'INPUT') && !(ui.open && ui.page === 'kb')) photoReq = true; if (e.code === 'KeyR' && started && !(e.target && e.target.tagName === 'INPUT') && !(ui.open && ui.page === 'kb')) { const m = rec.toggle(canvas); if (m) S.toast(m, '#ff9a8a'); } });
 renderer.setAnimationLoop((t, frame) => {
   const dt = Math.min(0.05, Math.max(0.001, (t - last) / 1000)); const raw = (t - last) / 1000; last = t;
   if (!started) { if (pcat) { pcat.root.rotation.y = Math.PI + Math.sin(t / 1400) * 0.9; pcat.speed = 1.2; pcat.update(dt); } pcam.aspect = innerWidth / innerHeight; pcam.updateProjectionMatrix(); renderer.render(pv, pcam); return; }
@@ -152,6 +156,9 @@ renderer.setAnimationLoop((t, frame) => {
   if (frame && renderer.xr.isPresenting) { const ref = renderer.xr.getReferenceSpace(), pose = ref && frame.getViewerPose(ref); if (pose) for (const v of pose.views) if (v.requestViewportScale) v.requestViewportScale(Math.max(0.5, perf.scale)); }
   if (hands.on && hands.tick(performance.now())) { if (hands.pinch) player._press(); else player._release(); }
   G.update(dt); ui.update(dt); rec.tick();
+  // vinheta de conforto: escurece as bordas em movimento rápido (reduz enjoo no VR)
+  { const want = comfortVig && (renderer.xr.isPresenting || cardboard) ? Math.min(0.85, Math.max(0, (player.speed - 2.4) / 4, player.wasTouching && player.speed > 1.5 ? 0.35 : 0, player.swimming ? 0.2 : 0)) : 0; vig.material.opacity += (want - vig.material.opacity) * Math.min(1, dt * 6); vig.visible = vig.material.opacity > 0.02; }
+  const shot = photoReq; if (shot) { photoReq = false; shotHud = [ui.hud.visible, ui.cross.visible, G.laser.visible, vig.visible]; ui.hud.visible = false; ui.cross.visible = false; G.laser.visible = false; vig.visible = false; }
   if (cardboard && !renderer.xr.isPresenting) { // dois olhos lado a lado
     const w = canvas.width, h = canvas.height, hw = Math.floor(w / 2); if (camera.aspect !== hw / h) { camera.aspect = hw / h; camera.fov = 86; camera.updateProjectionMatrix(); }
     scene.updateMatrixWorld(); camera.updateMatrixWorld(); stereo.aspect = 1; stereo.update(camera); stereo.cameraL.projectionMatrix.copy(camera.projectionMatrix); stereo.cameraR.projectionMatrix.copy(camera.projectionMatrix);
@@ -165,6 +172,11 @@ renderer.setAnimationLoop((t, frame) => {
     const rt = renderer.getRenderTarget(); renderer.xr.enabled = false; renderer.setRenderTarget(null);
     camera.getWorldPosition(recCam.position); camera.getWorldQuaternion(recCam.quaternion); recCam.aspect = canvas.width / canvas.height; recCam.updateProjectionMatrix();
     renderer.render(scene, recCam); renderer.xr.enabled = true; renderer.setRenderTarget(rt);
+  }
+  if (shot) { // foto: no VR desenha uma visão extra no canvas; depois baixa o PNG
+    if (renderer.xr.isPresenting) { const rt = renderer.getRenderTarget(); renderer.xr.enabled = false; renderer.setRenderTarget(null); camera.getWorldPosition(recCam.position); camera.getWorldQuaternion(recCam.quaternion); recCam.aspect = canvas.width / canvas.height; recCam.updateProjectionMatrix(); renderer.render(scene, recCam); renderer.xr.enabled = true; renderer.setRenderTarget(rt); }
+    canvas.toBlob((b) => { if (b) { downloadBlob(b, 'rolevrgo-foto-' + stamp() + '.png'); S.toast('📸 Foto salva em Downloads', '#9cf09c'); play('click', 0.8); } else S.toast('Não foi possível salvar a foto', '#ff9a8a'); }, 'image/png');
+    [ui.hud.visible, ui.cross.visible, G.laser.visible, vig.visible] = shotHud;
   }
 });
 on('look', () => { /* a cor das patas vem de S.look a cada quadro */ });

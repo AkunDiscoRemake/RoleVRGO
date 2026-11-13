@@ -3,6 +3,8 @@ import { audioStream } from './assets.js';
 
 // Gravação de vídeo do jogo: MediaRecorder sobre o canvas (+ áudio do jogo).
 // Ao parar, o arquivo .webm é baixado pelo navegador (pasta Downloads).
+export function downloadBlob(blob, name) { const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = name; a.style.display = 'none'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 4000); }
+export function stamp() { const d = new Date(), p = (n) => String(n).padStart(2, '0'); return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()); }
 export const rec = {
   on: false, t0: 0, mr: null, chunks: [], max: 180,
   supported() { return typeof MediaRecorder !== 'undefined' && !!HTMLCanvasElement.prototype.captureStream; },

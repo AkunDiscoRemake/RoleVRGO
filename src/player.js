@@ -27,7 +27,7 @@ export class Player {
     this.frozen = false; this.fightZone = false; this.emoteWave = 0; this.guardHold = false;
     this.keys = {}; this.desktop = true; this.locked = false; this.padWas = false;
     this.onTrigger = null; this.onRelease = null; this.onMenu = null; this.onBack = null; // callbacks do jogo
-    this.speedMul = 1; this.jumpMul = 1; this.gravMul = 1; this.fly = false; this.backWas = false; this.swimming = false; this.swimDist = 0;
+    this.snapA = Math.PI / 6; this.smoothTurn = false; this.speedMul = 1; this.jumpMul = 1; this.gravMul = 1; this.fly = false; this.backWas = false; this.swimming = false; this.swimDist = 0;
     // VR Box / Cardboard (giroscópio do celular), gamepads/Joy-Cons, rastreamento de mãos e teleporte
     this.card = false; this.devQ = new THREE.Quaternion(); this.devOK = false; this._yaw0 = 0; this.gpMove = { x: 0, y: 0 }; this.gpAim = { x: 0, y: 0 }; this._gb = []; this._gbPrev = []; this.gpTrig = false; this.gpBlock = false; this.gpFound = false;
     this.handTrack = null; this.tracked = false; this.tpHeld = false; this.tpWas = false; this.tpCd = 0; this.padT = 0; this.padCenter = false; this.xrTp = false;
@@ -51,6 +51,7 @@ export class Player {
     const el = this.renderer.domElement;
     addEventListener('keydown', (e) => {
       if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+      if (this.typing && this.typing()) { this.keys = {}; return; } // digitando no teclado virtual
       this.keys[e.code] = true;
       if (e.code === 'Tab' || e.code === 'KeyM') { e.preventDefault(); if (this.onMenu) this.onMenu(); }
       if (e.code === 'KeyB' || e.key === 'BrowserBack' || e.key === 'GoBack') { e.preventDefault(); if (this.onBack) this.onBack(); }
@@ -60,6 +61,7 @@ export class Player {
       emit('key', e.code);
     });
     addEventListener('keyup', (e) => { this.keys[e.code] = false; });
+    addEventListener('blur', () => { this.keys = {}; if (this.trigger) this._release(); this.guardHold = false; });
     // toque na tela = gatilho (o botão do VR Box/Cardboard toca a tela)
     el.addEventListener('touchstart', (e) => { if (this.renderer.xr.isPresenting) return; e.preventDefault(); const t = e.touches[0]; this._tx = t.clientX; this._ty = t.clientY; this._press(); }, { passive: false });
     el.addEventListener('touchmove', (e) => { if (this.renderer.xr.isPresenting) return; e.preventDefault(); const t = e.touches[0]; if (!(this.card && this.devOK)) { this.yaw += (t.clientX - this._tx) * 0.005; this.pitch = clamp(this.pitch + (t.clientY - this._ty) * 0.005, -1.5, 1.5); } this._tx = t.clientX; this._ty = t.clientY; }, { passive: false }); // sem giroscópio: arrastar o dedo olha em volta
@@ -114,7 +116,7 @@ export class Player {
     this.gpBlock = !!B[6];
     if (down(1) && this.grounded && !this.frozen && !this.swimming) { this.vel.y = 4.6 * this.jumpMul; this.grounded = false; emit('jump'); }
     if (down(2)) this.cycleView();
-    if (down(4)) { if (this.fightZone) this.dodge(-1); else this.yaw += Math.PI / 6; } if (down(5)) { if (this.fightZone) this.dodge(1); else this.yaw -= Math.PI / 6; }
+    if (down(4)) { if (this.fightZone) this.dodge(-1); else this.yaw += this.snapA; } if (down(5)) { if (this.fightZone) this.dodge(1); else this.yaw -= this.snapA; }
     if (down(9) && this.onMenu) this.onMenu(); if (down(8) && this.onBack) this.onBack();
   }
   cycleView() { this.viewMode = this.viewMode % 3 + 1; emit('view', this.viewMode); }
@@ -158,7 +160,7 @@ export class Player {
       for (const c of this.controllers) { const src = c.userData.src, gp = src && src.gamepad; if (!gp) continue; const B = gp.buttons, A = gp.axes, L = src.handedness === 'left', sx = A.length >= 4 ? A[2] : A[0] || 0, sy = A.length >= 4 ? A[3] : A[1] || 0;
         if (L) { lx = sx; ly = sy; gl = !!(B[1] && B[1].pressed); btn.x = !!(B[4] && B[4].pressed); btn.y = !!(B[5] && B[5].pressed); } else { rx = sx; ry = sy; gr = !!(B[1] && B[1].pressed); btn.a = !!(B[4] && B[4].pressed); btn.b = !!(B[5] && B[5].pressed); } }
       const dz = (v) => (Math.abs(v) < 0.2 ? 0 : v); this.gpMove.x = dz(lx); this.gpMove.y = dz(ly);
-      if (Math.abs(rx) > 0.7 && !this._snap) { this._snap = true; if (this.fightZone) this.dodge(rx > 0 ? 1 : -1); else { this.yaw -= Math.sign(rx) * Math.PI / 6; emit('turn'); } } else if (Math.abs(rx) < 0.3) this._snap = false;
+      if (this.smoothTurn && !this.fightZone) { if (Math.abs(rx) > 0.2) this.yaw -= rx * 2.4 * dt; } else if (Math.abs(rx) > 0.7 && !this._snap) { this._snap = true; if (this.fightZone) this.dodge(rx > 0 ? 1 : -1); else { this.yaw -= Math.sign(rx) * this.snapA; emit('turn'); } } else if (Math.abs(rx) < 0.3) this._snap = false;
       this.questTp = ry < -0.6; this.guardHold = gl && gr;
       const down = (k) => btn[k] && !this.qPrev[k];
       if (down('a') && this.grounded && !this.frozen && !this.swimming) { this.vel.y = 4.6 * this.jumpMul; this.grounded = false; emit('jump'); }
@@ -194,7 +196,7 @@ export class Player {
     // cliques do touchpad por zona: cima/centro = menu, lados = girar (ou esquiva em luta), baixo = bloquear
     if (pad && !this.padWas) {
       if (py > 0.45 && Math.abs(px) < 0.6) { /* bloqueio: tratado como hold */ }
-      else if (Math.abs(px) > 0.5) { if (this.fightZone) this.dodge(px > 0 ? 1 : -1); else { this.yaw -= Math.sign(px) * Math.PI / 6; emit('turn'); } }
+      else if (Math.abs(px) > 0.5) { if (this.fightZone) this.dodge(px > 0 ? 1 : -1); else { this.yaw -= Math.sign(px) * this.snapA; emit('turn'); } }
       else if (py < -0.45 && this.onBack) this.onBack(); // topo do touchpad = menu rápido
       else { this.padCenter = true; this.padT = 0; } // centro: toque curto = menu, segurar = mira de teleporte
     }

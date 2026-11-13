@@ -1,4 +1,4 @@
-import { ITEMS, QUESTS, DAILY, ACHIEVEMENTS, PROFS, PICKS, GLOVES, RODS, HAT_PRICES, RARITY, HELD, RECIPES, ACCS, PERKS, CONTRACT_TYPES, ALBUM, titleFor } from './data.js';
+import { ITEMS, QUESTS, DAILY, ACHIEVEMENTS, PROFS, PICKS, GLOVES, RODS, HAT_PRICES, RARITY, HELD, RECIPES, ACCS, PERKS, CONTRACT_TYPES, ALBUM, titleFor, PETS } from './data.js';
 import { emit, on, store, dayKey, rng } from './util.js';
 import { net } from './net.js';
 import { play } from './assets.js';
@@ -8,7 +8,7 @@ import { HATS } from './cat.js';
 export const S = {
   name: 'Gato', look: null,
   d: null, dirty: false, boostUntil: 0, hp: 100, combo: 0,
-  blank() { return { level: 1, xp: 0, coins: 30, inv: {}, equip: { pick: 0, glove: 0, rod: 0 }, hats: [0], prof: '', profXp: {}, q: { active: {}, done: [] }, daily: { day: 0, prog: [0, 0, 0], claimed: [] }, ach: [], stats: {}, chests: { day: 0, open: [] }, secrets: [], maps: [], party: '', held: ['none', 'pick'], hand: 'none', perks: {}, seen: {}, albumDone: [], accSeen: [], contract: null, streak: { day: 0, n: 0 } }; },
+  blank() { return { level: 1, xp: 0, coins: 30, inv: {}, equip: { pick: 0, glove: 0, rod: 0 }, hats: [0], prof: '', profXp: {}, q: { active: {}, done: [] }, daily: { day: 0, prog: [0, 0, 0], claimed: [] }, ach: [], stats: {}, chests: { day: 0, open: [] }, secrets: [], maps: [], party: '', held: ['none', 'pick'], hand: 'none', perks: {}, seen: {}, albumDone: [], accSeen: [], contract: null, streak: { day: 0, n: 0 }, pets: ['none'], pet: 'none', muted: [] }; },
   load(data) {
     const b = this.blank(); const d = data && typeof data === 'object' ? data : {};
     for (const k in b) if (d[k] == null) d[k] = b[k];
@@ -28,6 +28,9 @@ export const S = {
   maxHp() { return 100 + (this.d.prof === 'fighter' ? 20 : 0) + Math.min(40, this.d.level * 2) + this.perk('hp') * 10; },
   xpNeed(l) { l = l || this.d.level; return 90 + l * 65 + l * l * 3; },
   // ---------- talentos, título, acessórios, álbum, contratos, sequência diária ----------
+  petOk(p) { return this.d.pets.indexOf(p.id) >= 0 || (p.s && (p.s === 'level' ? this.d.level : this.d.stats[p.s] || 0) >= p.v); },
+  setPet(id) { const p = PETS.find((x) => x.id === id); if (!p) return 'Bichinho inválido'; if (!this.petOk(p)) { if (!p.price) return p.how; const pr = this.buyPrice(p.price); if (this.d.coins < pr) return 'Moedas insuficientes'; this.d.coins -= pr; emit('coins'); play('coin', 0.7); }
+    if (this.d.pets.indexOf(id) < 0) this.d.pets.push(id); this.d.pet = id; if (id !== 'none') { this.toast('🐾 ' + p.n + ' agora segue você!', '#ffd76a'); play('heart', 0.7); } this.touch(); emit('meta'); return ''; },
   perk(id) { return this.d.perks[id] || 0; },
   perkPoints() { let used = 0; for (const k in this.d.perks) used += this.d.perks[k]; return this.d.level - 1 - used; },
   addPerk(id) { const p = PERKS.find((x) => x.id === id); if (!p || this.perkPoints() <= 0 || this.perk(id) >= p.max) return; this.d.perks[id] = this.perk(id) + 1; play('power', 0.5); this.toast('Talento: ' + p.n + ' ' + this.d.perks[id] + '/' + p.max, '#c06bff'); this.touch(); emit('hp'); },
@@ -40,7 +43,7 @@ export const S = {
     this.d.contract = { t: T.t, n, p: 0, title: T.title.replace('%n', n), xp: Math.round((50 + lvl * 14) * tier), coins: Math.round((40 + lvl * 11) * tier), tier }; play('book', 0.7); this.touch(); },
   claimContract() { const c = this.d.contract; if (!c || c.p < c.n) return; this.d.contract = null; this.addXp(c.xp); this.addCoins(c.coins); this.toast('📋 Contrato concluído: +' + c.xp + ' XP, +' + c.coins + ' moedas', '#6fd26f'); play('quest', 0.7); this.stat('contracts'); },
   streakCheck() { const now = net.now(), k = dayKey(now), st = this.d.streak; if (st.day === k) return; st.n = st.day === dayKey(now - 86400000) ? st.n + 1 : 1; st.day = k; const c = 25 * Math.min(st.n, 7); this.d.coins += c; this.toast('📅 Sequência diária: dia ' + st.n + ' — +' + c + ' moedas', '#ffd76a'); this.touch(); emit('coins'); },
-  touch() { this.dirty = true; store.set('save', { name: this.name, look: this.look, d: this.d }); },
+  touch() { this.dirty = true; this.localDirty = true; }, // gravação real em lote (ver setInterval abaixo)
   toast(t, c) { emit('toast', t, c); },
 
   addXp(n, why) {
@@ -101,7 +104,7 @@ export const S = {
   stat(t, key, n) {
     if (this.sandbox) return;
     n = n || 1; const d = this.d; d.stats[t] = (d.stats[t] || 0) + n;
-    for (const id in d.q.active) { const q = QUESTS[id], g = q.goal; if (g.t === t && g.t !== 'deliver' && (!g.k || g.k === key)) { const before = d.q.active[id]; d.q.active[id] = Math.min(g.n, before + n); if (before < g.n && d.q.active[id] >= g.n) { this.toast('Missão pronta: ' + q.title, '#ffd76a'); play('sel', 0.6); } } }
+    for (const id in d.q.active) { const q = QUESTS[id], g = q.goal; if (g.t === t && g.t !== 'deliver' && (!g.k || g.k === key)) { const before = d.q.active[id]; d.q.active[id] = Math.min(g.n, before + n); if (before < g.n && d.q.active[id] >= g.n) { this.toast('Missão pronta: ' + q.title, '#ffd76a'); play('sel', 0.6); emit('questReady'); } } }
     const dl = this.dailyList();
     for (let i = 0; i < 3; i++) { const g = dl[i].goal; if (g.t === t && d.daily.prog[i] < g.n) { d.daily.prog[i] = Math.min(g.n, d.daily.prog[i] + n); if (d.daily.prog[i] >= g.n) { this.toast('Diária concluída! Resgate no menu Missões.', '#ffd76a'); play('sel', 0.6); } } }
     const ct = d.contract; if (ct && ct.t === t && ct.p < ct.n) { ct.p = Math.min(ct.n, ct.p + n); if (ct.p >= ct.n) { this.toast('📋 Contrato pronto! Resgate em Missões.', '#ffd76a'); play('sel', 0.6); } }
@@ -133,5 +136,7 @@ export const S = {
 };
 // salvamento periódico
 setInterval(() => { if (S.dirty && S.d) { S.dirty = false; net.save(S.name, S.look, S.d).then((ok) => { if (!ok) S.dirty = true; }); } }, 8000);
+setInterval(() => { if (S.localDirty && S.d) { S.localDirty = false; store.set('save', { name: S.name, look: S.look, d: S.d }); } }, 3000);
 addEventListener('pagehide', () => { if (S.d) store.set('save', { name: S.name, look: S.look, d: S.d }); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && S.d) { store.set('save', { name: S.name, look: S.look, d: S.d }); if (S.dirty) { S.dirty = false; net.save(S.name, S.look, S.d); } } });
 on('saveNow', () => { if (S.d) { S.dirty = false; net.save(S.name, S.look, S.d); } });

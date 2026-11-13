@@ -45,7 +45,7 @@ export function modelGeometry(key) {
   g.setAttribute('color', new THREE.BufferAttribute(r.col, 3, true));
   g.setIndex(new THREE.BufferAttribute(r.idx, 1));
   g.computeBoundingSphere();
-  geoCache[key] = g;
+  g.userData.shared = true; geoCache[key] = g;
   return g;
 }
 
@@ -93,7 +93,7 @@ export function ambience(levels) {
       if (k === 'wind') { const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 0.09; lg.gain.value = 180; lfo.connect(lg); lg.connect(f.frequency); lfo.start(); }
       if (k === 'water') { const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 0.23; lg.gain.value = 260; lfo.connect(lg); lg.connect(f.frequency); lfo.start(); }
       src.start(); L = loops[k] = { g, max: d[3] }; }
-    L.g.gain.setTargetAtTime(want * L.max, ctx.currentTime, 0.25); }
+    if (Math.abs((L.last == null ? -1 : L.last) - want) > 0.02) { L.last = want; L.g.gain.setTargetAtTime(want * L.max, ctx.currentTime, 0.25); } }
 }
 // trovão: ruído grave com estrondo e rolagem
 export function thunder(vol) { if (!ctx || audioVolume <= 0) return; const t = ctx.currentTime, s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise(); s.playbackRate.value = 0.35; f.type = 'lowpass'; f.frequency.setValueAtTime(900, t); f.frequency.exponentialRampToValueAtTime(90, t + 2.8); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.9 * (vol || 1), t + 0.05); g.gain.exponentialRampToValueAtTime(0.25 * (vol || 1), t + 0.6); g.gain.exponentialRampToValueAtTime(0.0001, t + 3.2); s.connect(f); f.connect(g); g.connect(master); s.start(t, Math.random()); s.stop(t + 3.3); }
@@ -119,11 +119,12 @@ export function play(name, vol, pan, rate) {
 }
 // som posicional simples (atenuação + pan) relativo à câmera
 const _v = new THREE.Vector3();
+const _cp = new THREE.Vector3(), _cq = new THREE.Quaternion(), _cr = new THREE.Vector3();
 export function playAt(name, pos, camera, vol) {
   if (!ctx) return;
-  _v.copy(pos).sub(camera.getWorldPosition(new THREE.Vector3()));
+  _v.copy(pos).sub(camera.getWorldPosition(_cp));
   const d = _v.length(); if (d > 30) return;
-  const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.getWorldQuaternion(new THREE.Quaternion()));
+  const right = _cr.set(1, 0, 0).applyQuaternion(camera.getWorldQuaternion(_cq));
   play(name, (vol == null ? 1 : vol) / (1 + d * d * 0.03), d > 0.01 ? _v.dot(right) / d : 0);
 }
 // Miado procedural (osciladores) — a Kenney não tem miados, então é sintetizado.
