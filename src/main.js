@@ -116,7 +116,7 @@ async function enterVR() {
   if (!navigator.xr) return;
   try {
     renderer.xr.setFramebufferScaleFactor(perf.fbScale());
-    const session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor', 'bounded-floor'] });
+    const session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor', 'bounded-floor', 'hand-tracking'] });
     await renderer.xr.setSession(session); start(); audioInit(); music.start(); perf.apply();
     if (session.frameRate) perf.target = Math.min(72, session.frameRate);
     $('hint').style.display = 'none';

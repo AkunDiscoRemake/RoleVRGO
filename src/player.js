@@ -33,9 +33,12 @@ export class Player {
     this.handTrack = null; this.tracked = false; this.tpHeld = false; this.tpWas = false; this.tpCd = 0; this.padT = 0; this.padCenter = false; this.xrTp = false;
     this.tp = { show: false, valid: false, x: 0, y: 0, z: 0, n: 0, pts: new Float32Array(40 * 3) };
     this.viewMode = 1; this.viewYaw = 0; this.emoteId = 0; this.emoteTime = 0; // câmera: 1 = 1ª pessoa, 2 = 2ª (de frente), 3 = 3ª (por trás)
-    this.controllers = [];
+    this.controllers = []; this.grips = []; this.xhands = [];
+    this.sixAny = false; this.six = [false, false]; this.sixPos = [new THREE.Vector3(), new THREE.Vector3()]; this.qPrev = {}; this._snap = false; this.questTp = false;
     for (let i = 0; i < 2; i++) {
       const c = renderer.xr.getController(i); this.head.add(c); this.controllers.push(c);
+      const gr = renderer.xr.getControllerGrip(i); this.head.add(gr); this.grips.push(gr); // posição real (6DoF) no Meta Quest
+      const hd = renderer.xr.getHand(i); this.head.add(hd); this.xhands.push(hd); // rastreamento de mãos do Quest
       c.addEventListener('selectstart', () => { this.active = c; this._press(); });
       c.addEventListener('selectend', () => this._release());
       c.addEventListener('connected', (e) => { c.userData.src = e.data; if (!this.active) this.active = c; if (e.data && e.data.handedness === 'left') this.side = -1; else if (e.data && e.data.handedness === 'right') this.side = 1; });
@@ -141,7 +144,29 @@ export class Player {
     // controle
     let pad = false, px = 0, py = 0;
     if (!xr) this._pollPads(); else { this.gpMove.x = this.gpMove.y = 0; this.gpBlock = false; }
-    if (xr) {
+    // Meta Quest (6DoF): cada pata segue a posição real do controle ou da mão rastreada
+    this.sixAny = false; this.six[0] = this.six[1] = false; this.questTp = false;
+    if (xr) for (let i = 0; i < 2; i++) {
+      const src = this.controllers[i].userData.src; if (!src) continue; const slot = src.handedness === 'left' ? 1 : 0;
+      if (src.hand) { const J = this.xhands[i].joints || {}, j = J['middle-finger-metacarpal'] || J['wrist']; if (j && j.visible !== false) { j.getWorldPosition(this.sixPos[slot]); this.six[slot] = true; } }
+      else if (src.gripSpace && !(src.profiles || []).some((p) => /oculus-go|go-controller|generic-trigger-touchpad$/.test(p)) && this.grips[i].visible !== false) { this.grips[i].getWorldPosition(this.sixPos[slot]); this.six[slot] = true; }
+    }
+    this.sixAny = this.six[0] || this.six[1];
+    if (xr && this.sixAny) {
+      // analógico esquerdo anda, direito gira 30° (para frente = mira de teleporte), A pula, B menu, X menu rápido, Y câmera, os dois grips bloqueiam
+      let lx = 0, ly = 0, rx = 0, ry = 0, gl = false, gr = false; const btn = {};
+      for (const c of this.controllers) { const src = c.userData.src, gp = src && src.gamepad; if (!gp) continue; const B = gp.buttons, A = gp.axes, L = src.handedness === 'left', sx = A.length >= 4 ? A[2] : A[0] || 0, sy = A.length >= 4 ? A[3] : A[1] || 0;
+        if (L) { lx = sx; ly = sy; gl = !!(B[1] && B[1].pressed); btn.x = !!(B[4] && B[4].pressed); btn.y = !!(B[5] && B[5].pressed); } else { rx = sx; ry = sy; gr = !!(B[1] && B[1].pressed); btn.a = !!(B[4] && B[4].pressed); btn.b = !!(B[5] && B[5].pressed); } }
+      const dz = (v) => (Math.abs(v) < 0.2 ? 0 : v); this.gpMove.x = dz(lx); this.gpMove.y = dz(ly);
+      if (Math.abs(rx) > 0.7 && !this._snap) { this._snap = true; if (this.fightZone) this.dodge(rx > 0 ? 1 : -1); else { this.yaw -= Math.sign(rx) * Math.PI / 6; emit('turn'); } } else if (Math.abs(rx) < 0.3) this._snap = false;
+      this.questTp = ry < -0.6; this.guardHold = gl && gr;
+      const down = (k) => btn[k] && !this.qPrev[k];
+      if (down('a') && this.grounded && !this.frozen && !this.swimming) { this.vel.y = 4.6 * this.jumpMul; this.grounded = false; emit('jump'); }
+      if (down('b') && this.onMenu) this.onMenu(); if (down('x') && this.onBack) this.onBack(); if (down('y')) this.cycleView();
+      this.qPrev = btn;
+      const c = this.active && this.active.userData.src ? this.active : this.controllers.find((k) => k.userData.src);
+      if (c) { c.getWorldQuaternion(this.ctrlQuat); this.rawCtrl.set(0, 0, -1).applyQuaternion(this.ctrlQuat); if (vm === 2) this.ctrlQuat.premultiply(_qpi); } else { this.ctrlQuat.copy(_q); this.rawCtrl.copy(this.rawDir); }
+    } else if (xr) {
       const c = this.active && this.active.userData.src ? this.active : this.controllers.find((k) => k.userData.src);
       if (c) {
         c.getWorldQuaternion(this.ctrlQuat); this.rawCtrl.set(0, 0, -1).applyQuaternion(this.ctrlQuat); if (vm === 2) this.ctrlQuat.premultiply(_qpi);
@@ -162,7 +187,7 @@ export class Player {
     }
     this.ctrlDir.set(0, 0, -1).applyQuaternion(this.ctrlQuat);
     // mira: no VR é o "laser" do controle; no desktop é o centro da tela e as patas ficam um pouco abaixo
-    if (xr) { this.aimDir.copy(vm === 1 ? this.ctrlDir : this.rawCtrl); }
+    if (xr) { this.aimDir.copy(vm === 1 && !this.sixAny ? this.ctrlDir : this.rawCtrl); }
     else { this.aimDir.copy(this.rawDir); _e.set(clamp(eX - 0.38 - this.gpAim.y * 1.15, -1.55, 1.5), this.headYaw - this.gpAim.x * 0.9, 0, 'YXZ'); this.ctrlDir.set(0, 0, -1).applyEuler(_e); } // direcional direito do gamepad move as patas (sem giroscópio)
     // "puxão" para cima do controle (usado na pesca)
     this.flickUp = (this.ctrlDir.y - this.prevDir.y) / Math.max(dt, 0.001); this.prevDir.copy(this.ctrlDir);
@@ -176,7 +201,7 @@ export class Player {
     this.xrTp = false;
     if (this.padCenter) { if (pad) { this.padT += dt; if (this.padT > 0.3) this.xrTp = true; } else { this.padCenter = false; if (this.padT <= 0.3 && this.onMenu) this.onMenu(); } }
     this.padWas = pad;
-    this.tpHeld = this.xrTp || (!xr && (!!this.keys.KeyT || !!this._gb[3] || !!this._gb[10] || !!this._gb[11]));
+    this.tpHeld = this.xrTp || this.questTp || (!xr && (!!this.keys.KeyT || !!this._gb[3] || !!this._gb[10] || !!this._gb[11]));
     this.blockInput = !!(this.guardHold || this.blockKey || this.gpBlock);
   }
 
@@ -197,7 +222,8 @@ export class Player {
     for (let i = 0; i < 2; i++) {
       const h = this.hands[i], s = (i === 0 ? 1 : -1) * this.side, t = h.target;
       t.set(P.x + cb * 0.17 * s, sy, P.z - sb * 0.17 * s);
-      if (this.block) { t.set(P.x - Math.sin(this.headYaw) * 0.36 + cb * 0.11 * s, P.y + EYE - 0.06, P.z - Math.cos(this.headYaw) * 0.36 - sb * 0.11 * s); }
+      if (this.six[i] && !this.emoteId) t.copy(this.sixPos[i]);
+      else if (this.block) { t.set(P.x - Math.sin(this.headYaw) * 0.36 + cb * 0.11 * s, P.y + EYE - 0.06, P.z - Math.cos(this.headYaw) * 0.36 - sb * 0.11 * s); }
       else if (i === 1 && this.emoteWave > 0) { t.set(P.x + cb * 0.3 * s + Math.sin(this.emoteWave * 12) * 0.12 * cb, P.y + EYE + 0.32, P.z - sb * 0.3 * s - Math.sin(this.emoteWave * 12) * 0.12 * sb); }
       else if (this.emoteId) { const et = this.emoteTime, e = this.emoteId, sg = i === 0 ? 1 : -1; let u = 0.9, f = 0.18, sd = 0.36;
         if (e === 2) u = 0.9 + Math.sin(et * 7.5) * 0.35 * sg; else if (e === 8) { u = 1.3 + Math.abs(Math.sin(et * 6)) * 0.2; sd = 0.4; } else if (e === 10) { sd = 0.55; } else if (e === 11) { u = 0.5; f = 0.45; sd = 0.12; } else if (e === 12) { u = 0.8 + Math.round(Math.sin(et * 5) * 2) / 2 * 0.3 * sg; f = 0.3; } else if (e === 6) { u = 0.82; f = 0.34; sd = 0.07; } else if (e === 5) { u = 0.78; f = 0.28; sd = 0.14; }
@@ -206,7 +232,7 @@ export class Player {
       else { t.x += mx * REACH; t.y += dir.y * REACH; t.z += mz * REACH; }
     }
     if (this.emoteWave > 0) this.emoteWave -= dt;
-    if (this.desktop) this.camera.getWorldPosition(this.aimPos); else if (this.viewMode === 1) this.aimPos.copy(this.hands[0].target); else { this.camera.getWorldPosition(this.aimPos); this.aimPos.y -= 0.25; }
+    if (this.desktop) this.camera.getWorldPosition(this.aimPos); else if (this.sixAny && this.active) this.active.getWorldPosition(this.aimPos); else if (this.viewMode === 1) this.aimPos.copy(this.hands[0].target); else { this.camera.getWorldPosition(this.aimPos); this.aimPos.y -= 0.25; }
     // a câmera externa não entra no chão
     if (this.viewMode !== 1) { this.camera.getWorldPosition(_b); const fl = world.heightAt(_b.x, _b.z) + 0.4; this.camLift = Math.max(0, (this.camLift || 0) + (fl - _b.y)) * 0.9; } else this.camLift = 0;
     if (this.emoteId) this.emoteTime += dt;
@@ -281,7 +307,7 @@ export class Player {
       let wx = 0, wz = 0;
       if (!this.frozen) {
         if (this.walkHeld) { const l = Math.hypot(dir.x, dir.z); if (l > 0.2) { wx = dir.x / l; wz = dir.z / l; } }
-        if (this.desktop) {
+        if (this.desktop || this.sixAny) {
           const f = (this.keys.KeyW || this.keys.ArrowUp ? 1 : 0) - (this.keys.KeyS || this.keys.ArrowDown ? 1 : 0), r = (this.keys.KeyD || this.keys.ArrowRight ? 1 : 0) - (this.keys.KeyA || this.keys.ArrowLeft ? 1 : 0);
           const gf = f - this.gpMove.y, gr = r + this.gpMove.x;
           if (gf || gr) { const c = Math.cos(this.headYaw), s = Math.sin(this.headYaw); wx = -s * gf + c * gr; wz = -c * gf - s * gr; const l = Math.hypot(wx, wz); if (l > 1) { wx /= l; wz /= l; } }

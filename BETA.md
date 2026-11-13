@@ -7,6 +7,7 @@ Jogar: https://akundiscoremake.github.io/RoleVRGO/
 | Aparelho | Botão no lobby | Como controla |
 |---|---|---|
 | Oculus Go | 🥽 Entrar em VR | Controle 3DoF (ver README) |
+| Meta Quest 2/3/Pro | 🥽 Entrar em VR (no Quest Browser) | Controles 6DoF: cada pata segue um controle. Sem controles, as mãos rastreadas viram as patas |
 | Celular + VR Box / Cardboard | 📱 VR Box / Cardboard | Cabeça = sensor de movimento do celular. Toque na tela (botão do Cardboard) = gatilho. Opcional: mãos pela câmera e/ou Joy-Cons/gamepad |
 | Computador | 🖥 Jogar no navegador | Teclado + mouse, ou gamepad |
 
@@ -43,7 +44,8 @@ Segure o centro do touchpad (Oculus Go), a tecla T (PC) ou o botão de teleporte
 
 Nada disto foi testado em hardware — só em navegador de computador, com gamepad e mãos simulados:
 
-1. Oculus Go: entrar em VR, locomoção, menu, teleporte, desempenho (FPS em Config).
+1. Meta Quest: patas seguindo os controles, empurrar o chão e escalar com os braços, analógicos, botões A/B/X/Y, teleporte, rastreamento de mãos (pinça).
+2. Oculus Go: entrar em VR, locomoção, menu, teleporte, desempenho (FPS em Config).
 2. VR Box: orientação da cabeça (direções certas? deriva?), separação dos olhos, toque como gatilho.
 3. MediaPipe: as patas acompanham as mãos? A pinça dispara o gatilho? Quantos Hz aparecem em Config?
 4. Joy-Cons: quais botões respondem, juntos e separados, originais e não originais.

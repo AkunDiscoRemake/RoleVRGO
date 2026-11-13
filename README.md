@@ -1,6 +1,6 @@
 # RoleVRGO 🐱🥽 (Beta)
 
-Mundo multiplayer VR de gatos feito para **Oculus Go** (WebXR, controle 3DoF): Gorilla Locomotion, luta PvP, mineração, pesca, missões, roleplay e 10 mapas. Também roda no navegador do computador (teclado + mouse).
+Mundo multiplayer VR de gatos feito para **Oculus Go** (WebXR, controle 3DoF) e **Meta Quest** (controles 6DoF e rastreamento de mãos): Gorilla Locomotion, luta PvP, mineração, pesca, missões, roleplay e 10 mapas. Também roda no navegador do computador (teclado + mouse).
 
 **Jogar:** https://akundiscoremake.github.io/RoleVRGO/ · **Página de lançamento:** https://akundiscoremake.github.io/RoleVRGO/lancamento/ · **Guia para testers:** [BETA.md](BETA.md)
 
@@ -33,6 +33,8 @@ Português, English, Español e Русский (seletor no lobby e no menu Mapa;
 | Touchpad baixo (segurar) | Bloquear |
 
 \* O navegador do Oculus Go normalmente reserva o botão Back para o sistema e não o entrega às páginas; por isso o topo do touchpad faz a mesma função. Se o navegador expuser o botão, ele abre o menu rápido.
+
+**Meta Quest:** cada pata segue a posição real do controle (ou da mão rastreada, sem controles: pinça = gatilho). Analógico esquerdo anda, direito gira 30° (para frente = teleporte), A pula, B menu, X menu rápido, Y câmera, os dois grips bloqueiam.
 
 Computador: WASD, mouse, clique = gatilho, Espaço pula, M menu, B menu rápido, V troca a câmera (1ª/2ª/3ª pessoa), R grava vídeo, Enter chat, 1–9 emotes, Q/E esquiva, F bloquear.
 

@@ -338,7 +338,7 @@ export const G = {
     this.fx.update(dt);
     // laser de mira
     const a = this.uiOpen ? null : this.aim(); const show = this.uiOpen || !!a; this.laser.visible = show && !P.hands[0].touch && !P.desktop;
-    if (this.laser.visible) { const arr = this.laser.geometry.attributes.position.array, O = P.viewMode === 1 ? P.hands[0].target : P.aimPos, D = P.aimDir, len = this.uiOpen ? (this.uiDist || 2) : this.aimT; arr[0] = O.x; arr[1] = O.y; arr[2] = O.z; arr[3] = O.x + D.x * len; arr[4] = O.y + D.y * len; arr[5] = O.z + D.z * len; this.laser.geometry.attributes.position.needsUpdate = true; }
+    if (this.laser.visible) { const arr = this.laser.geometry.attributes.position.array, O = P.viewMode === 1 && !P.sixAny ? P.hands[0].target : P.aimPos, D = P.aimDir, len = this.uiOpen ? (this.uiDist || 2) : this.aimT; arr[0] = O.x; arr[1] = O.y; arr[2] = O.z; arr[3] = O.x + D.x * len; arr[4] = O.y + D.y * len; arr[5] = O.z + D.z * len; this.laser.geometry.attributes.position.needsUpdate = true; }
     // rede: envia estado
     this.netT -= dt; if (this.netT <= 0 && net.status === 'online') { const hz = this.remotes.size > 6 ? Math.min(perf.netHz, 6) : perf.netHz; this.netT = 1 / hz; const h = P.hands, x = P.pos.x, y = P.pos.y, z = P.pos.z, f2 = (v) => Math.round(v * 100) / 100; const flags = (P.grounded ? 1 : 0) | (P.block ? 2 : 0) | (fz ? 4 : 0) | (P.iframes > 0 ? 8 : 0) | ((this.myEmote || 0) << 4) | (this.tool << 8); net.sendState([this.sid, f2(x), f2(y), f2(z), f2(P.bodyYaw), f2(angDiff(P.bodyYaw, P.headYaw)), f2(P.headPitch), f2(h[0].pos.x - x), f2(h[0].pos.y - y), f2(h[0].pos.z - z), f2(h[1].pos.x - x), f2(h[1].pos.y - y), f2(h[1].pos.z - z), flags, Math.round(S.hp)]); }
   },
