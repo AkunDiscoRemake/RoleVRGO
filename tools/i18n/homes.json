@@ -1253,5 +1253,35 @@
 "🎙 Positional voice chat and 💬 chat in VR from the quick menu. PC: H = paws on mouse, N = microphone.",
 "🎙 Chat de voz posicional y 💬 chat en VR desde el menú rápido. PC: H = patas con el ratón, N = micrófono.",
 "🎙 Позиционный голосовой чат и 💬 чат в VR через быстрое меню. ПК: H — лапы на мыши, N — микрофон."
+],
+"Azarado e ao mesmo tempo sortudo": [
+"Unlucky and lucky at the same time",
+"Desafortunado y afortunado a la vez",
+"Невезучий и везучий одновременно"
+],
+"Levou um raio na cabeça (chance de 0,001%)": [
+"Got struck by lightning on the head (0.001% chance)",
+"Le cayó un rayo en la cabeza (0,001% de probabilidad)",
+"Получил молнией по голове (шанс 0,001%)"
+],
+"❓ Conquista secreta": [
+"❓ Secret achievement",
+"❓ Logro secreto",
+"❓ Секретное достижение"
+],
+"um raio ⚡": [
+"a lightning bolt ⚡",
+"un rayo ⚡",
+"молния ⚡"
+],
+" foi atingido por um raio!": [
+" got struck by lightning!",
+" fue alcanzado por un rayo!",
+" поражён молнией!"
+],
+"⚡ Você levou um RAIO na cabeça!": [
+"⚡ Lightning struck your head!",
+"⚡ ¡Te cayó un RAYO en la cabeza!",
+"⚡ Тебе в голову ударила МОЛНИЯ!"
 ]
 }

@@ -219,6 +219,7 @@ export const G = {
     if (e.t === 'home') { home.remote(e); return; }
     if (e.t === 'vc') { voice.signal(e); return; }
     if (e.t === 'nk') { infect.onNet(e); return; }
+    if (e.t === 'zap') { if ([e.x, e.y, e.z].every((v) => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) < 2000)) { this._bolt(e.x, e.y, e.z, false); const r = this.remotes.get(e.f); if (r) this._log('⚡', r.meta.name + ' foi atingido por um raio!'); } return; }
     if (e.t === 'chat') { if (r && !this.muted(e.f)) { const tx = String(e.x == null ? '' : e.x).slice(0, 80); r.av.say(tx, 6); this._log(r.meta.name, tx); play('msg', 0.4); } }
     else if (e.t === 'tree') { const tr = this.E.trees[e.i | 0]; if (tr && tr.alive) this._fell(tr, Math.min(Number(e.u) || 0, net.now() + 180000), 0, 1); }
     else if (e.t === 'ore') { const o = this.E.ores[e.i | 0]; if (o && o.alive && !o.ev) { o.alive = false; o.respawn = Math.min(Number(e.u) || 0, net.now() + 180000); this._oreVis(o); } }
@@ -258,6 +259,28 @@ export const G = {
   emote(id) { const P = this.player; this.myEmote = id; this.emoteT = id === 3 || id === 4 ? 9999 : 3; if (id === 1) P.emoteWave = 2.5; P.emoteId = [2, 5, 6, 8, 10, 11, 12].indexOf(id) >= 0 ? id : 0; P.emoteTime = 0; if (id === 7) meow(1); if (id === 6) this.fx.burst(P.pos.x, P.pos.y + 1.4, P.pos.z, 0xff5080, 8, 1.2, -1); const e = EMOTES.find((x) => x.id === id); if (e) emit('selfSay', e.icon); S.stat('emote'); P.frozen = id === 3 || id === 4; },
   async refreshFriends() { if (!net.online) return; try { this.friends = await net.rpc('rv_friends'); S.setStat('friends', this.friends.filter((f) => f.status === 'accepted').length); this.remotes.forEach((r) => { r.av.tagColor = this._tagColor(r.id, r.meta); r.av.drawTag(); }); emit('friends'); } catch (e) { /* offline */ } },
   _combo() { this.combo = this.comboT > 0 ? this.combo + 1 : 1; this.comboT = 1.6; if (this.combo === 5) { S.stat('combo'); S.toast('🔥 COMBO x5!', '#ff9a40'); play('power', 0.5); } emit('combo', this.combo); },
+  // ⚡ easter egg secreto: a cada segundo de jogo há 0,001% de chance de levar um raio na cabeça
+  _zapRoll(dt) { if (!this.world || this.pending || S.hp <= 0 || this.uiOpen) return; this.zapT = (this.zapT || 0) + dt; if (this.zapT < 1) return; this.zapT = 0; if (Math.random() < 0.00001) this._zap(); },
+  _zap() {
+    const P = this.player, x = P.pos.x, y = P.pos.y, z = P.pos.z; this._bolt(x, y, z, true); if (net.online) net.send('zap', { x, y, z });
+    if (!this.zapFlash) { this.zapFlash = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.BackSide, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false })); this.zapFlash.renderOrder = 998; this.camera.add(this.zapFlash); }
+    this.zapFlash.material.opacity = 0.95; this.zapK = 0.95; P.pulse(1, 400); P.frozen = true; S.hp = 0; emit('hp');
+    S.toast('⚡ Você levou um RAIO na cabeça!', '#fff27a'); S.setStat('lightning', (S.d.stats.lightning || 0) + 1);
+    setTimeout(() => this._knockedOut('um raio ⚡'), 900);
+  },
+  // raio visível: zigue-zague do céu até a cabeça, clarão, faíscas, fumaça e trovão alto
+  _bolt(x, y, z, me) {
+    const pts = [], top = y + 70; let px = x, pz = z; for (let i = 0; i <= 14; i++) { const t = i / 14, yy = top + (y + 1.1 - top) * t; if (i > 0 && i < 14) { px = x + (Math.random() - 0.5) * 5 * (1 - t); pz = z + (Math.random() - 0.5) * 5 * (1 - t); } else { px = x; pz = z; } pts.push(px, yy, pz); }
+    // segmentos grossos (o WebGL desenha linhas com 1 pixel): núcleo branco + brilho amarelo
+    const grp = new THREE.Group(), core = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, fog: false, depthWrite: false }), glow = new THREE.MeshBasicMaterial({ color: 0xfff27a, transparent: true, opacity: 0.45, fog: false, depthWrite: false, blending: THREE.AdditiveBlending }), geos = [];
+    for (let i = 0; i < 14; i++) { const a = new THREE.Vector3(pts[i * 3], pts[i * 3 + 1], pts[i * 3 + 2]), b2 = new THREE.Vector3(pts[i * 3 + 3], pts[i * 3 + 4], pts[i * 3 + 5]), d = b2.clone().sub(a), len = d.length(); const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
+      for (const [m, w] of [[core, 0.16], [glow, 0.6]]) { const g = new THREE.BoxGeometry(w, len, w); geos.push(g); const me = new THREE.Mesh(g, m); me.position.copy(a).lerp(b2, 0.5); me.quaternion.copy(q); me.renderOrder = 9; me.frustumCulled = false; grp.add(me); } }
+    this.scene.add(grp); const l1 = { material: core }, l2 = { material: glow };
+    this.fx.burst(x, y + 1.1, z, 0xfff27a, 40, 6, 3); this.fx.burst(x, y + 0.6, z, 0x9fe8ff, 24, 4, 1); this.fx.ring(x, this.world ? this.world.floorAt(x, y + 0.5, z) + 0.05 : y, z, 0xfff27a, 3.5, true, null, 0.7);
+    setTimeout(() => this.fx.burst(x, y + 1.3, z, 0x555555, 18, 1.2, -1), 500);
+    if (me) thunder(1); else { const d = Math.hypot(x - this.player.pos.x, z - this.player.pos.z); setTimeout(() => thunder(Math.max(0.2, 1 - d / 120)), Math.min(2500, d * 3)); }
+    let k = 1; const iv = setInterval(() => { k -= 0.12; l1.material.opacity = k > 0.6 || (k > 0.25 && k < 0.4) ? 1 : 0.15; l2.material.opacity = l1.material.opacity * 0.6; if (k <= 0) { clearInterval(iv); this.scene.remove(grp); for (const g of geos) g.dispose(); core.dispose(); glow.dispose(); } }, 50);
+  },
   _knockedOut(by) { S.toast('💫 Você foi nocauteado por ' + by, '#ff8a8a'); play('ko', 0.7); this.player.frozen = true; this.koT = 2.2; this.fade = 0.001; this.pending = '__respawn'; },
 
   // ================= interação por gatilho =================
@@ -355,6 +378,7 @@ export const G = {
     if (this.portalMesh) this.portalMesh.material.opacity = 0.6 + Math.sin(this.time * 3) * 0.15;
     if (this.starMesh) for (const s of this.E.secrets) if (!s.found) setInst(this.starMesh, s.i, s.x, s.y + 0.5 + Math.sin(this.time * 2) * 0.15, s.z, 1.6, this.time * 1.5);
     if (W.waterU) W.waterU.uTime.value = this.time;
+    this._zapRoll(dt); if (this.zapK > 0) { this.zapK = Math.max(0, this.zapK - dt * 2.5); this.zapFlash.material.opacity = this.zapK; }
     this.fx.ambient(this.under ? 'bubble' : this.def.custom ? this.def.ambId : AMBIENT[this.mapId] || '', P.pos, this.time, this.sky.night);
     this.fx.update(dt);
     // laser de mira

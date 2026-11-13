@@ -324,7 +324,7 @@ export const ui = {
   },
   p_ach() {
     this.text(20, 34, '🏆 Conquistas', { fs: 24, c: '#ffd76a' }); const off = this.pager(ACHIEVEMENTS.length, 8, 460);
-    ACHIEVEMENTS.slice(off, off + 8).forEach((a, i) => { const y = 66 + i * 48, has = S.d.ach.indexOf(a.id) >= 0, v = S.d.stats[a.s] || 0; this.bar(20, y, W - 40, 42, has ? 1 : v / a.v, has ? '#8a6a20' : '#33355a'); this.text(32, y + 13, (has ? '✔ ' : '') + a.n, { fs: 17, c: has ? '#ffd76a' : '#fff' }); this.text(32, y + 31, a.d + (has ? '' : '  (' + Math.min(v, a.v) + '/' + a.v + ')'), { fs: 14, b: false, c: '#dde' }); this.text(W - 34, y + 21, '+' + a.c + ' 💰', { a: 'right', fs: 16 }); });
+    ACHIEVEMENTS.slice(off, off + 8).forEach((a0, i) => { const y = 66 + i * 48, has = S.d.ach.indexOf(a0.id) >= 0, v = S.d.stats[a0.s] || 0, a = a0.secret && !has ? Object.assign({}, a0, { n: '❓ Conquista secreta', d: '???' }) : a0; this.bar(20, y, W - 40, 42, has ? 1 : v / a.v, has ? '#8a6a20' : '#33355a'); this.text(32, y + 13, (has ? '✔ ' : '') + a.n, { fs: 17, c: has ? '#ffd76a' : '#fff' }); this.text(32, y + 31, a.d + (has ? '' : '  (' + Math.min(v, a.v) + '/' + a.v + ')'), { fs: 14, b: false, c: '#dde' }); this.text(W - 34, y + 21, '+' + a.c + ' 💰', { a: 'right', fs: 16 }); });
   },
   p_profile() {
     const d = S.d, L = S.look; this.text(20, 80, S.name + ' — Nível ' + d.level + ' · ' + S.title(), { fs: 24 }); this.btn(560, 62, 188, 36, '✏ Mudar nome', () => this.keyboard('Seu nome', S.name, 16, (t) => { if (/^hark/i.test(t.trim()) && !admin.is) { S.toast('Nome reservado ao admin', '#ff9a8a'); return; } S.name = t.trim() || S.name; S.touch(); G.pushMeta(); emit('saveNow'); }, 'profile'), { bg: '#33355a', fs: 16 });
