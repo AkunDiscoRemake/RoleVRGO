@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.0.3 — Infecção Nuclear ☢️
+
+### Novo
+- **Mapa Infecção Nuclear ☢️** (portal na Vila). É uma usina abandonada com reator central, torres de resfriamento com escada em espiral, contêineres empilhados, prédios em ruínas, passarela elevada, trampolins, barris radioativos e lama tóxica que deixa lento.
+- **Modo pega-pega** com duas classes: **Infectado** e **Não-infectado**.
+  - Rodadas de 2:30. Um paciente zero é sorteado e tem 3 segundos antes de poder pegar alguém.
+  - Para infectar, é só **encostar a pata** num não-infectado. Quem é pego vira infectado, e quem entra no meio da rodada já entra infectado.
+  - Os sobreviventes vencem se o tempo acabar; os infectados vencem se pegarem todo mundo.
+  - Recompensas: +8 XP e +5 moedas por infecção, +40 XP e +30 moedas por sobreviver, +20 XP e +10 moedas na infecção total.
+- **Sintomas do infectado:**
+  - os acessórios, chapéus e roupas **derretem e se distorcem** aos poucos (animado);
+  - **dentes enormes e afiados** para fora da boca;
+  - olhos verdes brilhando em órbitas escuras, sobrancelhas de raiva, veias, feridas radioativas e baba tóxica;
+  - pelo doente, corpo maior e curvado, espasmos na cabeça e patas esverdeadas;
+  - **+5% de velocidade**.
+- **Escolha ao entrar:** 🤖 **com bots** (5 bots que fogem e caçam, numa sala só sua) ou 👥 **multiplayer real** (todos da sala no mapa, mínimo de 2). No multiplayer, o anfitrião controla as rodadas e confirma as infecções; se ele sair, outro jogador assume.
+- Conquistas novas: **Paciente Zero** (infecte 25) e **Imune** (sobreviva a 5 rodadas). A conquista Viajante agora pede os 14 mapas.
+
 ## 0.0.2 — Casas e roleplay
 
 ### Novo

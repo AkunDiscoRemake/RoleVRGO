@@ -14,6 +14,7 @@ import { maker, SKIES, GROUNDS, MOODS, AMBS, COLORS, CAT_ORDER } from './maker.j
 import { rec } from './rec.js';
 import { FUR_COLORS, EYE_COLORS, PATTERNS, HATS, EMOTES, roundRect, AGES, OUTFITS, LASERS, PRESETS } from './cat.js';
 import { voice } from './voice.js';
+import { infect } from './infect.js';
 import { home, HOUSES, FURN, FCATS, FURN_BY, WALLS, FLOORS, COLS, COL_NAMES } from './home.js';
 import { play, setVolume, audioVolume } from './assets.js';
 import { on, emit, store, clamp } from './util.js';
@@ -64,7 +65,7 @@ export const ui = {
     on('dialog', (n) => { this.npc = n; this.line = Math.floor(Math.random() * n.lines.length); this.show('dialog'); });
     on('friendsDirty', () => G.refreshFriends()); on('partyChat', (m) => { G._log('[grupo] ' + m.n, m.x); play('msg', 0.4); });
     on('combo', (n) => { this.combo = n; });
-    on('maker', () => { if (this.open) this.dirty = true; }); on('key', (c) => { if (!(this.open && this.page === 'kb')) { if (!home.key(c)) maker.key(c); } }); on('home', () => { if (this.open) this.dirty = true; });
+    on('maker', () => { if (this.open) this.dirty = true; }); on('key', (c) => { if (!(this.open && this.page === 'kb')) { if (!home.key(c)) maker.key(c); } }); on('home', () => { if (this.open) this.dirty = true; }); on('nukeChoose', () => this.show('q_nuke'));
     on('makerText', (o) => this.keyboard(o.k === 'npc' ? 'NPC — escreva "Nome: fala"' : 'Texto da placa', '', 60, (t) => { if (o.k === 'npc') { const i = t.indexOf(':'); o.d = { name: (i > 0 ? t.slice(0, i) : 'Gato').trim().slice(0, 16), text: (i > 0 ? t.slice(i + 1) : t).trim() }; } else o.d = { text: t }; maker.commit(o); }, 'close'));
     addEventListener('keydown', (e) => {
       if (e.target && e.target.tagName === 'INPUT') return;
@@ -84,7 +85,7 @@ export const ui = {
   qpager(n, per) { const pages = Math.max(1, Math.ceil(n / per)); this.scroll = clamp(this.scroll, 0, pages - 1); if (pages > 1) { this.btn(224, 462, 90, 40, '▲', () => { this.scroll--; }, { off: this.scroll <= 0, bg: '#33355a' }); this.text(384, 482, (this.scroll + 1) + '/' + pages, { a: 'center' }); this.btn(454, 462, 90, 40, '▼', () => { this.scroll++; }, { off: this.scroll >= pages - 1, bg: '#33355a' }); } return this.scroll * per; },
   p_q_root() {
     this.qhead('Menu rápido', true); const h = S.held(), P = this.player, pet = PETS.find((x) => x.id === S.d.pet) || PETS[0], R = (i, label, cb, o) => this.btn(224, 56 + i * 30, 320, 27, label, cb, Object.assign({ bg: '#4a5cc8', fs: 14 }, o || {}));
-    [['💬 Chat', 'q_chat'], ['🎙 Voz: ' + (voice.mic ? 'microfone ligado' : voice.on ? 'só ouvindo' : 'desligada'), 'q_voice'], ['🐱 Avatar', 'q_avatar'], ['🏠 Casa' + (home.mine() && home.editing ? ' (decorando)' : ''), 'q_home'], ['🗡 Itens na pata: ' + h.n, 'q_items'], ['🐾 Bichinho: ' + pet.n, 'q_pets'], ['🔨 Fabricar itens', 'q_craft'], ['📦 Colocar objetos', 'q_spawn'], ['😺 Emotes', 'q_emotes'], ['🗺 Viajar', 'q_travel'], ['🍖 Consumíveis', 'q_use']].forEach((r, i) => R(i, r[0], () => { this.page = r[1]; this.scroll = 0; }));
+    [['💬 Chat', 'q_chat'], ['🎙 Voz: ' + (voice.mic ? 'microfone ligado' : voice.on ? 'só ouvindo' : 'desligada'), 'q_voice'], ['🐱 Avatar', 'q_avatar'], ['🏠 Casa' + (home.mine() && home.editing ? ' (decorando)' : ''), 'q_home'], ['🗡 Itens na pata: ' + h.n, 'q_items'], ['🐾 Bichinho: ' + pet.n, 'q_pets'], ['🔨 Fabricar itens', 'q_craft'], [infect.active ? '☢ Infecção: trocar modo' : '📦 Colocar objetos', infect.active ? 'q_nuke' : 'q_spawn'], ['😺 Emotes', 'q_emotes'], ['🗺 Viajar', 'q_travel'], ['🍖 Consumíveis', 'q_use']].forEach((r, i) => R(i, r[0], () => { this.page = r[1]; this.scroll = 0; }));
     R(11, '📷 Câmera: ' + ['1ª pessoa', '2ª pessoa (de frente)', '3ª pessoa (por trás)'][P.viewMode - 1], () => P.cycleView(), { bg: '#33355a' });
     R(12, '📸 Tirar foto', () => { this.hide(); setTimeout(() => self.RVphoto && self.RVphoto(), 120); }, { bg: '#33355a' });
     R(13, rec.on ? '⏹ Parar e baixar vídeo (' + Math.floor(rec.seconds()) + 's)' : '⏺ Gravar vídeo', () => { const m = rec.toggle(G.renderer.domElement); if (m) this.msg = m; else if (rec.on) this.hide(); }, { bg: rec.on ? '#b04050' : '#33355a', off: !rec.supported() });
@@ -101,6 +102,16 @@ export const ui = {
     this.text(384, 420, 'Mais perto = mais alto. Silenciar: Social > Jogadores.', { a: 'center', fs: 12, c: '#99a', b: false, max: 320 });
     this.text(384, 442, 'Nunca diga seu endereço, telefone ou senhas.', { a: 'center', fs: 12, c: '#ffb0a0', b: false, max: 320 });
     if (voice.err) this.text(384, 470, voice.err, { a: 'center', fs: 12, c: '#ff9a8a', b: false, max: 320 });
+  },
+  p_q_nuke() {
+    this.qhead('☢ Infecção Nuclear', true);
+    let y = this.wrap(234, 74, 'Pega-pega radioativo! Um gato começa INFECTADO. Para infectar, encoste a PATA em quem não está infectado.', 300, 20, { fs: 14, b: false });
+    y = this.wrap(234, y + 6, '☣ Infectados: acessórios derretem, dentes enormes, olhos verdes e +5% de velocidade.', 300, 20, { fs: 14, b: false, c: '#c8ff80' });
+    y = this.wrap(234, y + 6, '🐱 Sobreviva até o tempo acabar para ganhar a rodada.', 300, 20, { fs: 14, b: false, c: '#bfe6ff' });
+    this.btn(224, 268, 320, 62, '🤖 Jogar com bots', () => { infect.choose('bots'); this.hide(); }, { bg: '#3a9a5a', fs: 21, sel: infect.mode === 'bots' });
+    this.btn(224, 340, 320, 62, '👥 Multiplayer real', () => { infect.choose('mp'); this.hide(); }, { bg: '#4a5cc8', fs: 21, sel: infect.mode === 'mp' });
+    this.text(384, 424, 'No multiplayer, todos da sua sala neste mapa jogam juntos.', { a: 'center', fs: 12, c: '#99a', b: false, max: 320 });
+    this.btn(224, 448, 320, 40, '🚪 Voltar para a Vila', () => { this.hide(); G.travel('village'); }, { bg: '#8a4a4a', fs: 16 });
   },
   p_q_chat() {
     this.qhead('💬 Chat'); const g = this.g, log = G.chatLog.slice(-5); g.fillStyle = 'rgba(255,255,255,0.07)'; roundRect(g, 224, 58, 320, 136, 10); g.fill();
@@ -221,6 +232,7 @@ export const ui = {
     for (const t of this.toasts) t.life -= dt; if (this.toasts.length && this.toasts[0].life <= 0) { this.toasts.shift(); this.hudDirty = true; }
     this.hudT -= dt; if (this.hudDirty && this.hudT <= 0) { this.hudDirty = false; this.hudT = 0.2; this.drawHud(); }
     this.cross.visible = this.player.desktop;
+    if (G.modeLabel !== this._ml) { this._ml = G.modeLabel; this.hudDirty = true; }
     if (this.chatT > 0) { this.chatT -= dt; this.chatPlane.material.opacity = Math.min(1, this.chatT); this.chatPlane.visible = this.chatT > 0 && !(this.open && this.page === 'kb'); }
     if (this.bannerT > 0) { this.bannerT -= dt; this.banner.material.opacity = Math.min(1, this.bannerT * 2); this.banner.scale.setScalar(1 + Math.max(0, this.bannerT - (this.bannerT > 0 ? 0 : 0)) * 0); if (this.bannerT <= 0) this.banner.visible = false; }
     if (!this.open) return;
@@ -355,7 +367,7 @@ export const ui = {
   },
   p_news() {
     this.text(20, 34, '📰 Novidades — versão ' + VERSION, { fs: 24, c: '#ffd76a' }); let y = 74;
-    for (const l of ['🏠 CASAS: 8 estilos para morar, 53 móveis, cor de parede e chão (Menu rápido > Casa).', 'Visite a casa dos amigos pelo botão 🏠 em Social (aberta, só amigos ou trancada).', 'Idades para roleplay: adulto, adolescente e filhote, e 10 roupas novas.', 'Avatares prontos, incluindo o Trio da Ceia 🎄 com olhos de laser (easter egg).', 'Versão estável! Obrigado a todos que testaram a Beta.', 'Bichinhos de estimação que seguem você (Menu rápido > Bichinho).', 'Modo foto: botão no Menu rápido ou tecla P; a imagem vai para Downloads.', 'Conforto no VR: giro de 30°, 45° ou suave e vinheta em movimento rápido (Config).', 'Silenciar jogadores na aba Social > Jogadores.', 'Inimigos não atravessam mais paredes e casas.', 'Muito mais leve: menos gravações no aparelho e sem vazamento de memória ao trocar de mapa.', 'Correções no chat (o gato não anda mais enquanto você digita) e nos marcadores de missão.', 'Poeira nos passos e aterrissagens e contorno de luz nos gatos.'])
+    for (const l of ['☢️ NOVO MAPA: Infecção Nuclear, pega-pega com bots ou multiplayer real. Encoste a pata para infectar!', '🎙 Chat de voz posicional e 💬 chat no VR pelo menu rápido. PC: H = patas no mouse, N = microfone.', '🏠 CASAS: 8 estilos para morar, 53 móveis, cor de parede e chão (Menu rápido > Casa).', 'Visite a casa dos amigos pelo botão 🏠 em Social (aberta, só amigos ou trancada).', 'Idades para roleplay: adulto, adolescente e filhote, e 10 roupas novas.', 'Avatares prontos, incluindo o Trio da Ceia 🎄 com olhos de laser (easter egg).', 'Versão estável! Obrigado a todos que testaram a Beta.', 'Bichinhos de estimação que seguem você (Menu rápido > Bichinho).', 'Modo foto: botão no Menu rápido ou tecla P; a imagem vai para Downloads.', 'Conforto no VR: giro de 30°, 45° ou suave e vinheta em movimento rápido (Config).', 'Silenciar jogadores na aba Social > Jogadores.', 'Inimigos não atravessam mais paredes e casas.', 'Muito mais leve: menos gravações no aparelho e sem vazamento de memória ao trocar de mapa.', 'Correções no chat (o gato não anda mais enquanto você digita) e nos marcadores de missão.', 'Poeira nos passos e aterrissagens e contorno de luz nos gatos.'])
       y = this.wrap(24, y, '• ' + l, W - 50, 22, { fs: 16, b: false }) + 4;
   },
   p_help() {
@@ -577,6 +589,7 @@ export const ui = {
     g.fillStyle = !net.online ? '#e05050' : net.status === 'online' ? '#4ac86a' : '#e8a030'; g.beginPath(); g.arc(466, 134, 7, 0, 6.3); g.fill();
     if (voice.mic) { g.textAlign = 'left'; g.font = 'bold 20px sans-serif'; g.fillStyle = voice.level > 0.06 ? '#6fd26f' : '#ffffff'; g.fillText('🎙', 424, 134); this.hudDirty = true; }
     if (rec.on) { g.textAlign = 'left'; g.font = 'bold 20px sans-serif'; g.fillStyle = '#ff5050'; g.fillText('● REC ' + Math.floor(rec.seconds()) + 's', 30, 14); this.hudDirty = true; }
+    if (G.modeLabel) { g.textAlign = 'center'; g.font = 'bold 19px sans-serif'; const s3 = G.modeLabel, w3 = Math.min(500, g.measureText(s3).width + 20), y3 = G.adminLabel ? 40 : 15; g.fillStyle = infect.myInf ? 'rgba(40,90,10,0.88)' : 'rgba(20,40,20,0.8)'; roundRect(g, 256 - w3 / 2, y3 - 13, w3, 26, 8); g.fill(); g.fillStyle = infect.myInf ? '#c8ff80' : '#e8ffd8'; g.fillText(s3, 256, y3); }
     if (G.adminLabel) { g.textAlign = 'center'; g.font = 'bold 18px sans-serif'; let s2 = G.adminLabel; while (s2.length > 4 && g.measureText(s2).width > 480) s2 = s2.slice(0, -2); const w2 = g.measureText(s2).width + 18; g.fillStyle = 'rgba(120,70,10,0.82)'; roundRect(g, 256 - w2 / 2, 2, w2, 24, 8); g.fill(); g.fillStyle = '#ffe9a8'; g.fillText(s2, 256, 15); }
     if (this.combo > 1) { g.textAlign = 'center'; g.font = 'bold 22px sans-serif'; g.fillStyle = '#ff9a40'; g.fillText('COMBO x' + this.combo, 256, G.adminLabel ? 40 : 14); }
     this.htex.needsUpdate = true;

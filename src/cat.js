@@ -38,7 +38,7 @@ export function defaultLook(seed) {
 export function cleanLook(l) {
   const d = defaultLook(0.3); l = l || {};
   const hex = (v, f) => (typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v) ? v : f);
-  return { fur: hex(l.fur, d.fur), fur2: hex(l.fur2, d.fur2), pattern: clamp(l.pattern | 0, 0, PATTERNS.length - 1), eyes: hex(l.eyes, d.eyes), hat: clamp(l.hat | 0, 0, HATS.length - 1), acc: clamp(l.acc | 0, 0, 11), age: clamp(l.age | 0, 0, 2), outfit: clamp(l.outfit | 0, 0, OUTFITS.length - 1), laser: clamp(l.laser | 0, 0, LASERS.length - 1) };
+  return { fur: hex(l.fur, d.fur), fur2: hex(l.fur2, d.fur2), pattern: clamp(l.pattern | 0, 0, PATTERNS.length - 1), eyes: hex(l.eyes, d.eyes), hat: clamp(l.hat | 0, 0, HATS.length - 1), acc: clamp(l.acc | 0, 0, 11), age: clamp(l.age | 0, 0, 2), outfit: clamp(l.outfit | 0, 0, OUTFITS.length - 1), laser: clamp(l.laser | 0, 0, LASERS.length - 1), inf: l.inf ? 1 : 0 };
 }
 
 const _c = new THREE.Color();
@@ -50,7 +50,7 @@ class Builder {
     const g = geo.index ? geo.toNonIndexed() : geo; const p = g.attributes.position, n = g.attributes.normal, base = this.pos.length / 3;
     for (let i = 0; i < p.count; i++) {
       if (this.hs !== 1 && (part === 1 || part === 5)) { const k = this.hs; this.pos.push(pivot[0] + (p.getX(i) - pivot[0]) * k, pivot[1] + (p.getY(i) - pivot[1]) * k, pivot[2] + (p.getZ(i) - pivot[2]) * k); } else this.pos.push(p.getX(i), p.getY(i), p.getZ(i)); this.nrm.push(n.getX(i), n.getY(i), n.getZ(i)); this.col.push(c[0], c[1], c[2]);
-      let w = weight == null ? 1 : weight;
+      let w = weight == null ? (this.accW || 1) : weight; // accW = 2 marca acessórios/roupas (derretem no infectado)
       if (weight === 'tail') w = clamp((p.getZ(i) - pivot[2]) / 0.34 + (p.getY(i) - pivot[1]) / 0.5, 0, 1.4);
       this.part.push(part, w); this.piv.push(pivot[0], pivot[1], pivot[2]); this.idx.push(base + i);
     }
@@ -74,8 +74,9 @@ class Builder {
 }
 
 // O gato olha para -Z. Partes: 0 tronco, 1 cabeça, 2 perna esq., 3 perna dir., 4 cauda.
+function sick(hex, k) { const c = rgb(hex); const m = k == null ? 0.55 : k; return '#' + [0, 1, 2].map((i) => Math.round(Math.min(255, (c[i] + ([125, 154, 90][i] - c[i]) * m) * 0.82)).toString(16).padStart(2, '0')).join(''); }
 export function buildCatGeometry(look) {
-  look = cleanLook(look);
+  look = cleanLook(look); if (look.inf) look = Object.assign({}, look, { fur: sick(look.fur), fur2: sick(look.fur2, 0.4) }); // infectado: pelo doente
   const b = new Builder(AGE_HEAD[look.age]), pt = look.pattern, LZ = LASERS[look.laser][1];
   const fur = rgb(look.fur), dark = rgb(look.fur, 0.72), f2 = rgb(look.fur2), pink = [236, 140, 160], eye = rgb(look.eyes), black = [30, 28, 34];
   const legC = pt === 2 ? rgb(look.fur2, 0.55) : fur, pawC = pt === 1 || pt === 5 ? f2 : pt === 2 ? rgb(look.fur2, 0.45) : dark;
@@ -86,7 +87,7 @@ export function buildCatGeometry(look) {
   if (pt === 1) b.box(0.24, 0.3, 0.02, 0, 0.5, -0.145, f2, 0);
   if (pt === 3) for (let i = 0; i < 3; i++) b.box(0.37, 0.045, 0.2, 0, 0.42 + i * 0.11, 0.05, dark, 0);
   if (pt === 4) { b.box(0.16, 0.16, 0.02, 0.1, 0.6, 0.145, f2, 0); b.box(0.02, 0.18, 0.14, 0.185, 0.5, -0.02, rgb('#3b3b45'), 0); b.box(0.02, 0.14, 0.12, -0.185, 0.58, 0.04, f2, 0); }
-  outfit(b, look.outfit);
+  b.accW = 2; outfit(b, look.outfit); b.accW = 0;
   // coleira
   b.box(0.3, 0.035, 0.26, 0, 0.745, 0, [200, 60, 70], 0); b.box(0.05, 0.05, 0.03, 0, 0.72, -0.14, [240, 200, 60], 0);
   // cabeça
@@ -97,8 +98,18 @@ export function buildCatGeometry(look) {
     b.box(0.09, 0.1, 0.02, -0.11, 0.99, -0.205, LZ, 5, NECK); b.box(0.09, 0.1, 0.02, 0.11, 0.99, -0.205, LZ, 5, NECK);
     for (const sx of [-1, 1]) { const L = 5, g = new THREE.BoxGeometry(0.035, 0.035, L); g.translate(0, 0, -L / 2); g.rotateX(0.42); g.rotateY(-sx * 0.32); g.translate(sx * 0.11, 0.99, -0.22); b.add(g, LZ, 5, NECK);
       const g2 = new THREE.BoxGeometry(0.012, 0.012, L); g2.translate(0, 0, -L / 2); g2.rotateX(0.42); g2.rotateY(-sx * 0.32); g2.translate(sx * 0.11, 0.99, -0.225); b.add(g2, [255, 255, 255], 5, NECK); }
-  } else { b.box(0.075, 0.09, 0.02, -0.11, 0.99, -0.205, eye, 1, NECK); b.box(0.075, 0.09, 0.02, 0.11, 0.99, -0.205, eye, 1, NECK); }
-  if (!LZ) { b.box(0.03, 0.075, 0.02, -0.11, 0.99, -0.215, black, 1, NECK); b.box(0.03, 0.075, 0.02, 0.11, 0.99, -0.215, black, 1, NECK); }
+  } else if (!look.inf) { b.box(0.075, 0.09, 0.02, -0.11, 0.99, -0.205, eye, 1, NECK); b.box(0.075, 0.09, 0.02, 0.11, 0.99, -0.205, eye, 1, NECK); }
+  if (look.inf) { // ☢ sintomas: olhos brilhando em órbitas escuras, sobrancelhas de raiva, bocarra com dentes enormes, veias e baba tóxica
+    const TOX = [70, 235, 35], DK = [22, 16, 22];
+    for (const sx of [-1, 1]) { b.box(0.11, 0.12, 0.016, sx * 0.11, 0.985, -0.199, DK, 1, NECK); if (!LZ) b.box(0.075, 0.045, 0.02, sx * 0.11, 0.98, -0.21, TOX, 5, NECK); b.box(0.11, 0.028, 0.02, sx * 0.105, 1.055, -0.212, DK, 1, NECK, null, 0, sx * 0.45);
+      b.box(0.012, 0.13, 0.012, sx * 0.2, 0.95, -0.2, [50, 95, 35], 1, NECK, null, 0, sx * 0.3); b.box(0.012, 0.09, 0.012, sx * 0.16, 1.07, -0.2, [50, 95, 35], 1, NECK, null, 0, -sx * 0.5); }
+    b.box(0.26, 0.085, 0.022, 0, 0.86, -0.214, [70, 8, 18], 1, NECK);
+    for (let i = 0; i < 7; i++) { const x = -0.11 + i * 0.0367, big = i === 1 || i === 5, L = big ? 0.22 : 0.1 + (i % 2) * 0.03; const g = new THREE.ConeGeometry(big ? 0.028 : 0.02, L, 4); g.rotateX(Math.PI); g.translate(x, 0.895 - L / 2, -0.23); b.add(g, [250, 248, 228], 1, NECK); }
+    for (const sx of [-1, 1]) { const g = new THREE.ConeGeometry(0.022, 0.12, 4); g.translate(sx * 0.07, 0.84 + 0.06, -0.232); b.add(g, [245, 242, 220], 1, NECK); }
+    b.box(0.016, 0.1, 0.016, 0.06, 0.76, -0.232, TOX, 5, NECK); b.box(0.014, 0.06, 0.014, -0.03, 0.78, -0.232, TOX, 5, NECK);
+    b.box(0.06, 0.06, 0.012, 0.1, 0.6, -0.15, TOX, 5); b.box(0.045, 0.045, 0.012, -0.12, 0.48, -0.15, TOX, 5); b.box(0.012, 0.05, 0.05, 0.185, 0.55, 0.02, TOX, 5); b.box(0.05, 0.05, 0.012, -0.05, 0.62, 0.146, TOX, 5);
+  }
+  if (!LZ && !look.inf) { b.box(0.03, 0.075, 0.02, -0.11, 0.99, -0.215, black, 1, NECK); b.box(0.03, 0.075, 0.02, 0.11, 0.99, -0.215, black, 1, NECK); }
   if (pt === 3) { b.box(0.05, 0.02, 0.2, -0.09, 1.125, -0.05, dark, 1, NECK); b.box(0.05, 0.02, 0.2, 0, 1.125, -0.05, dark, 1, NECK); b.box(0.05, 0.02, 0.2, 0.09, 1.125, -0.05, dark, 1, NECK); }
   if (pt === 4) b.box(0.2, 0.2, 0.02, 0.12, 1.02, 0.165, rgb('#3b3b45'), 1, NECK);
   // orelhas
@@ -115,7 +126,7 @@ export function buildCatGeometry(look) {
   b.box(0.07, 0.07, 0.2, 0, 0.42, 0.22, tailC, 4, TB, 'tail'); b.box(0.07, 0.2, 0.07, 0, 0.52, 0.34, tailC, 4, TB, 'tail');
   b.box(0.075, 0.14, 0.075, 0, 0.68, 0.36, pt === 3 || pt === 2 ? dark : pt === 1 || pt === 5 ? f2 : tailC, 4, TB, 'tail');
   // chapéus (presos à cabeça)
-  const H = look.hat, top = 1.12;
+  b.accW = 2; const H = look.hat, top = 1.12;
   if (H === 1) { b.cyl(0.2, 0.2, 0.02, 10, 0, top + 0.01, -0.02, [28, 28, 34], 1, NECK); b.cyl(0.12, 0.12, 0.2, 10, 0, top + 0.11, -0.02, [28, 28, 34], 1, NECK); b.cyl(0.123, 0.123, 0.04, 10, 0, top + 0.05, -0.02, [190, 40, 50], 1, NECK); }
   else if (H === 2) { b.cyl(0.13, 0.12, 0.07, 8, 0, top + 0.035, -0.02, [245, 200, 50], 1, NECK); for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + Math.PI / 4; b.cone(0.035, 0.08, 4, Math.cos(a) * 0.1, top + 0.1, -0.02 + Math.sin(a) * 0.1, [245, 200, 50], 1, NECK); } b.box(0.04, 0.04, 0.02, 0, top + 0.04, -0.15, [220, 50, 70], 1, NECK); }
   else if (H === 3) { b.box(0.1, 0.09, 0.04, -0.08, top + 0.04, -0.02, [235, 90, 150], 1, NECK); b.box(0.1, 0.09, 0.04, 0.08, top + 0.04, -0.02, [235, 90, 150], 1, NECK); b.box(0.05, 0.05, 0.05, 0, top + 0.04, -0.02, [200, 60, 120], 1, NECK); }
@@ -138,6 +149,7 @@ export function buildCatGeometry(look) {
   else if (A === 9) { const g = new THREE.TorusGeometry(0.36, 0.03, 4, 12); g.rotateX(Math.PI / 2); g.translate(0, 0.5, 0); b.add(g, [255, 225, 90], 0, [0, 0, 0]); const g2 = new THREE.TorusGeometry(0.3, 0.02, 4, 12); g2.rotateX(Math.PI / 2); g2.translate(0, 0.28, 0); b.add(g2, [255, 240, 150], 0, [0, 0, 0]); }
   else if (A === 10) { for (let i = 0; i < 9; i++) { const a = -1.9 + i * 0.475; b.box(0.045, 0.045, 0.045, Math.sin(a) * 0.19, 0.71 - Math.cos(a) * 0.03, -Math.cos(a) * 0.16, white, 0); } }
   else if (A === 11) { b.cone(0.05, 0.2, 5, -0.2, 1.2, -0.12, [150, 30, 40], 1, NECK); b.cone(0.05, 0.2, 5, 0.2, 1.2, -0.12, [150, 30, 40], 1, NECK); }
+  b.accW = 0;
   return b.build(!!LZ);
 }
 
@@ -163,13 +175,15 @@ function outfit(b, o) {
 
 function makeCatMaterial() {
   const m = new THREE.MeshLambertMaterial({ vertexColors: true });
-  const u = { uLegs: { value: new THREE.Vector2() }, uHead: { value: new THREE.Vector2() }, uTail: { value: 0 } };
+  const u = { uLegs: { value: new THREE.Vector2() }, uHead: { value: new THREE.Vector2() }, uTail: { value: 0 }, uInfect: { value: 0 }, uTime: { value: 0 } };
   m.userData.u = u;
   m.onBeforeCompile = (sh) => {
-    sh.uniforms.uLegs = u.uLegs; sh.uniforms.uHead = u.uHead; sh.uniforms.uTail = u.uTail;
-    sh.vertexShader = 'attribute vec2 aPart;\nvarying float vGlow;\nattribute vec3 aPivot;\nuniform vec2 uLegs;\nuniform vec2 uHead;\nuniform float uTail;\n' + sh.vertexShader.replace('#include <begin_vertex>', [
+    sh.uniforms.uLegs = u.uLegs; sh.uniforms.uHead = u.uHead; sh.uniforms.uTail = u.uTail; sh.uniforms.uInfect = u.uInfect; sh.uniforms.uTime = u.uTime;
+    sh.vertexShader = 'attribute vec2 aPart;\nvarying float vGlow;\nvarying float vMelt;\nuniform float uInfect;\nuniform float uTime;\nattribute vec3 aPivot;\nuniform vec2 uLegs;\nuniform vec2 uHead;\nuniform float uTail;\n' + sh.vertexShader.replace('#include <begin_vertex>', [
       '#include <begin_vertex>',
       'vGlow = step(4.5, aPart.x);',
+      'float accM = step(1.5, aPart.y) * uInfect; vMelt = accM;',
+      'if (accM > 0.0) { float dr = 0.5 + 0.5 * sin(transformed.x * 37.0 + transformed.z * 23.0); transformed.y -= accM * (0.03 + dr * dr * 0.15) * (0.65 + 0.35 * sin(uTime * 1.3 + transformed.x * 9.0)); transformed.xz += accM * 0.04 * vec2(sin(transformed.y * 29.0 + uTime * 2.1), cos(transformed.y * 23.0 + uTime * 1.7)); }',
       'vec3 pv = transformed - aPivot;',
       'if (aPart.x > 0.5) {',
       '  if (aPart.x < 1.5 || aPart.x > 4.5) { float c = cos(uHead.y), s = sin(uHead.y); pv = vec3(pv.x, pv.y * c - pv.z * s, pv.y * s + pv.z * c); c = cos(uHead.x); s = sin(uHead.x); pv = vec3(pv.x * c + pv.z * s, pv.y, -pv.x * s + pv.z * c); }',
@@ -180,7 +194,7 @@ function makeCatMaterial() {
     ].join('\n'));
   };
   m.customProgramCacheKey = () => 'rvcat';
-  const prev = m.onBeforeCompile; m.onBeforeCompile = (sh) => { prev(sh); sh.fragmentShader = 'varying float vGlow;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', 'outgoingLight = mix(outgoingLight, vColor * 1.5 + 0.12, vGlow);\nfloat rim = pow(1.0 - clamp(dot(normalize(vNormal), normalize(vViewPosition)), 0.0, 1.0), 3.0);\noutgoingLight += rim * 0.3 * vec3(1.0, 0.95, 0.85) * (1.0 - vGlow);\n#include <opaque_fragment>'); }; // contorno de luz: destaca os gatos em qualquer cenário
+  const prev = m.onBeforeCompile; m.onBeforeCompile = (sh) => { prev(sh); sh.fragmentShader = 'varying float vGlow;\nvarying float vMelt;\nuniform float uInfect;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', 'outgoingLight = mix(outgoingLight, outgoingLight * vec3(0.5, 1.0, 0.3) + vec3(0.03, 0.08, 0.0), vMelt * 0.85);\noutgoingLight = mix(outgoingLight, vColor * 1.5 + 0.12, vGlow);\nfloat rim = pow(1.0 - clamp(dot(normalize(vNormal), normalize(vViewPosition)), 0.0, 1.0), 3.0);\noutgoingLight += rim * (1.0 - vGlow) * mix(vec3(0.3, 0.285, 0.255), vec3(0.2, 0.6, 0.08), uInfect);\n#include <opaque_fragment>'); }; // contorno de luz: destaca os gatos em qualquer cenário
   return m;
 }
 
@@ -220,7 +234,7 @@ export class CatAvatar {
     this.mat = makeCatMaterial(); this.u = this.mat.userData.u;
     this.mesh = new THREE.Mesh(buildCatGeometry(this.look), this.mat); this.mesh.castShadow = !this.look.laser;
     this.root.add(this.mesh);
-    this.baseScale = opts.scale || 1; this.scale = this.baseScale * AGE_SCALE[this.look.age]; this.root.scale.setScalar(this.scale);
+    this.baseScale = opts.scale || 1; this.scale = this.baseScale * AGE_SCALE[this.look.age] * (this.look.inf ? 1.1 : 1); this.root.scale.setScalar(this.scale);
     this.h1 = new THREE.Vector3(); this.h2 = new THREE.Vector3(); this.handsVisible = true;
     this.t = Math.random() * 10; this.walk = 0; this.emote = 0; this.emoteT = 0; this.bubble = ''; this.bubbleT = 0; this.sub = opts.sub || '';
     this.speed = 0; this.grounded = true; this.blocking = false; this.headYaw = 0; this.headPitch = 0; this.flash = 0;
@@ -248,7 +262,7 @@ export class CatAvatar {
     if (this.sub) { g.font = 'bold 16px sans-serif'; g.fillStyle = this.isNPC ? '#ffd76a' : '#bfe6ff'; g.strokeStyle = 'rgba(0,0,0,0.7)'; g.lineWidth = 3; g.strokeText(this.sub, 128, 84); g.fillText(this.sub, 128, 84); }
     this.tag.material.map.needsUpdate = true;
   }
-  setLook(look) { this.look = cleanLook(look); this.mesh.geometry.dispose(); this.mesh.geometry = buildCatGeometry(this.look); this.mesh.castShadow = !this.look.laser; this.scale = this.baseScale * AGE_SCALE[this.look.age]; this.root.scale.setScalar(this.scale); }
+  setLook(look) { this.look = cleanLook(look); this.mesh.geometry.dispose(); this.mesh.geometry = buildCatGeometry(this.look); this.mesh.castShadow = !this.look.laser; this.scale = this.baseScale * AGE_SCALE[this.look.age] * (this.look.inf ? 1.1 : 1); this.root.scale.setScalar(this.scale); }
   setName(name, sub) { this.name = name; if (sub != null) this.sub = sub; this.drawTag(); }
   say(text, secs) { this.bubble = text; this.bubbleT = secs || 5; this.drawTag(); }
   setEmote(id) { this.emote = id; this.emoteT = 0; const e = EMOTES.find((x) => x.id === id); if (e && id !== 3 && id !== 4) this.say(e.icon, 2.5); }
@@ -260,6 +274,7 @@ export class CatAvatar {
     this.t += dt; this.emoteT += dt;
     if (this.bubbleT > 0) { this.bubbleT -= dt; if (this.bubbleT <= 0) { this.bubble = ''; this.drawTag(); } }
     const py = this.root.position.y, vyNow = (py - (this._ly == null ? py : this._ly)) / Math.max(dt, 0.001); this._ly = py; this.vy = (this.vy || 0) + (vyNow - (this.vy || 0)) * Math.min(1, dt * 12);
+    this.u.uTime.value = this.t; { const iv = this.u.uInfect.value, tg = this.look.inf ? 1 : 0; if (iv !== tg) this.u.uInfect.value = Math.abs(tg - iv) < 0.01 ? tg : iv + (tg - iv) * Math.min(1, dt * 0.8); } // derretimento progressivo
     if (lod) return;
     const u = this.u, m = this.mesh, sp = Math.min(this.speed, 6), t = this.t, P = this.pose || (this.pose = { lL: 0, lR: 0, bob: 0, tilt: 0, sway: 0, yoff: 0, tail: 0, hy: 0, hp: 0, tw: 0, sy: 0 });
     // aterrissagem: mola amortecida de achatar/esticar
@@ -291,6 +306,7 @@ export class CatAvatar {
     else if (e === 10) { tw = et * 9; bob = Math.abs(Math.sin(et * 9)) * 0.08; sy = 0.05; tail = 1.1; }
     else if (e === 11) { const b = Math.sin(Math.min(1, et / 1.6) * Math.PI); tilt = -0.95 * b; hp = 0.3 * b; lL = lR = 0.12 * b; }
     else if (e === 12) { const q = (v) => Math.round(v * 2) / 2, b = et * 5; sway = q(Math.sin(b)) * 0.2; tw = q(Math.sin(b * 0.5)) * 0.6; hy += q(Math.sin(b * 0.7)) * 0.7; lL = q(Math.sin(b)) * 0.5; lR = -lL; bob = Math.abs(q(Math.sin(b * 2))) * 0.04; tail = q(Math.sin(b)) * 0.8; }
+    if (this.look.inf) { tilt += 0.16; hp += 0.1; const tw2 = Math.sin(t * 23) * Math.sin(t * 3.1); if (tw2 > 0.8) { hy += Math.sin(t * 61) * 0.6; hp -= 0.3; } sway += Math.sin(t * 17) * 0.03; } // infectado: curvado e com espasmos
     if (this.blocking) { tilt = 0.14; hp += 0.12; yoff -= 0.05; lL = 0.25; lR = -0.25; }
     if (this.flash > 0.15) { tilt += 0.25; hp -= 0.3; } // recuo ao levar golpe
     const f = 1 - Math.exp(-dt * 20), g = 1 - Math.exp(-dt * 10);

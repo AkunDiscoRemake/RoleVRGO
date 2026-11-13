@@ -1078,5 +1078,180 @@
 "Closer = louder. Mute: Social > Players.",
 "Más cerca = más alto. Silenciar: Social > Jugadores.",
 "Ближе = громче. Заглушить: Общение > Игроки."
+],
+"Infecção Nuclear ☢️": [
+"Nuclear Infection ☢️",
+"Infección Nuclear ☢️",
+"Ядерная инфекция ☢️"
+],
+"☢ INFECÇÃO NUCLEAR": [
+"☢ NUCLEAR INFECTION",
+"☢ INFECCIÓN NUCLEAR",
+"☢ ЯДЕРНАЯ ИНФЕКЦИЯ"
+],
+"Pega-pega: encoste a pata para infectar!": [
+"Tag: touch with your paw to infect!",
+"Pilla-pilla: ¡toca con la pata para infectar!",
+"Салки: коснись лапой, чтобы заразить!"
+],
+"☢ Infecção Nuclear": [
+"☢ Nuclear Infection",
+"☢ Infección Nuclear",
+"☢ Ядерная инфекция"
+],
+"Pega-pega radioativo! Um gato começa INFECTADO. Para infectar, encoste a PATA em quem não está infectado.": [
+"Radioactive tag! One cat starts INFECTED. To infect, touch an uninfected cat with your PAW.",
+"¡Pilla-pilla radiactivo! Un gato empieza INFECTADO. Para infectar, toca con la PATA a quien no esté infectado.",
+"Радиоактивные салки! Один кот начинает ЗАРАЖЁННЫМ. Чтобы заразить, коснись ЛАПОЙ незаражённого."
+],
+"☣ Infectados: acessórios derretem, dentes enormes, olhos verdes e +5% de velocidade.": [
+"☣ Infected: accessories melt, huge teeth, green eyes and +5% speed.",
+"☣ Infectados: los accesorios se derriten, dientes enormes, ojos verdes y +5% de velocidad.",
+"☣ Заражённые: аксессуары плавятся, огромные зубы, зелёные глаза и +5% скорости."
+],
+"🐱 Sobreviva até o tempo acabar para ganhar a rodada.": [
+"🐱 Survive until time runs out to win the round.",
+"🐱 Sobrevive hasta que se acabe el tiempo para ganar la ronda.",
+"🐱 Продержись до конца времени, чтобы выиграть раунд."
+],
+"🤖 Jogar com bots": [
+"🤖 Play with bots",
+"🤖 Jugar con bots",
+"🤖 Играть с ботами"
+],
+"👥 Multiplayer real": [
+"👥 Real multiplayer",
+"👥 Multijugador real",
+"👥 Настоящий мультиплеер"
+],
+"No multiplayer, todos da sua sala neste mapa jogam juntos.": [
+"In multiplayer, everyone in your room on this map plays together.",
+"En multijugador, todos los de tu sala en este mapa juegan juntos.",
+"В мультиплеере вместе играют все из твоей комнаты на этой карте."
+],
+"🚪 Voltar para a Vila": [
+"🚪 Back to the Village",
+"🚪 Volver a la Villa",
+"🚪 Вернуться в деревню"
+],
+"☢ Infecção: trocar modo": [
+"☢ Infection: change mode",
+"☢ Infección: cambiar modo",
+"☢ Инфекция: сменить режим"
+],
+"🤖 Modo com bots: ": [
+"🤖 Bots mode: ",
+"🤖 Modo con bots: ",
+"🤖 Режим с ботами: "
+],
+" bots entraram": [
+" bots joined",
+" bots entraron",
+" ботов вошли"
+],
+"👥 Multiplayer: esperando pelo menos 2 jogadores": [
+"👥 Multiplayer: waiting for at least 2 players",
+"👥 Multijugador: esperando al menos 2 jugadores",
+"👥 Мультиплеер: ждём минимум 2 игроков"
+],
+"☢ Esperando jogadores (": [
+"☢ Waiting for players (",
+"☢ Esperando jugadores (",
+"☢ Ждём игроков ("
+],
+"☢ Rodada começa em ": [
+"☢ Round starts in ",
+"☢ La ronda empieza en ",
+"☢ Раунд начнётся через "
+],
+"☣ INFECTADO": [
+"☣ INFECTED",
+"☣ INFECTADO",
+"☣ ЗАРАЖЁН"
+],
+"🏃 FUJA!": [
+"🏃 RUN!",
+"🏃 ¡HUYE!",
+"🏃 БЕГИ!"
+],
+"☣ Os infectados venceram!": [
+"☣ The infected won!",
+"☣ ¡Ganaron los infectados!",
+"☣ Заражённые победили!"
+],
+"🐱 Os sobreviventes venceram!": [
+"🐱 The survivors won!",
+"🐱 ¡Ganaron los supervivientes!",
+"🐱 Выжившие победили!"
+],
+"☣ VOCÊ É O PACIENTE ZERO! Pegue todo mundo!": [
+"☣ YOU ARE PATIENT ZERO! Catch everyone!",
+"☣ ¡ERES EL PACIENTE CERO! ¡Atrapa a todos!",
+"☣ ТЫ НУЛЕВОЙ ПАЦИЕНТ! Поймай всех!"
+],
+"☢ Rodada ": [
+"☢ Round ",
+"☢ Ronda ",
+"☢ Раунд "
+],
+": fuja do infectado!": [
+": run from the infected!",
+": ¡huye del infectado!",
+": беги от заражённого!"
+],
+"☣ VOCÊ FOI INFECTADO! Agora pegue os outros!": [
+"☣ YOU GOT INFECTED! Now catch the others!",
+"☣ ¡TE INFECTARON! ¡Ahora atrapa a los demás!",
+"☣ ТЕБЯ ЗАРАЗИЛИ! Теперь лови остальных!"
+],
+" foi infectado!": [
+" got infected!",
+" fue infectado!",
+" заражён!"
+],
+"🏆 Você sobreviveu! +40 XP, +30 moedas": [
+"🏆 You survived! +40 XP, +30 coins",
+"🏆 ¡Sobreviviste! +40 XP, +30 monedas",
+"🏆 Ты выжил! +40 опыта, +30 монет"
+],
+"☣ Infecção total! +20 XP, +10 moedas": [
+"☣ Total infection! +20 XP, +10 coins",
+"☣ ¡Infección total! +20 XP, +10 monedas",
+"☣ Полное заражение! +20 опыта, +10 монет"
+],
+"Visite todos os 14 mapas": [
+"Visit all 14 maps",
+"Visita los 14 mapas",
+"Посети все 14 карт"
+],
+"Paciente Zero": [
+"Patient Zero",
+"Paciente Cero",
+"Нулевой пациент"
+],
+"Infecte 25 gatos na Infecção Nuclear": [
+"Infect 25 cats in Nuclear Infection",
+"Infecta 25 gatos en Infección Nuclear",
+"Зарази 25 котов в «Ядерной инфекции»"
+],
+"Imune": [
+"Immune",
+"Inmune",
+"Иммунный"
+],
+"Sobreviva a 5 rodadas da Infecção Nuclear": [
+"Survive 5 rounds of Nuclear Infection",
+"Sobrevive 5 rondas de Infección Nuclear",
+"Переживи 5 раундов «Ядерной инфекции»"
+],
+"☢️ NOVO MAPA: Infecção Nuclear, pega-pega com bots ou multiplayer real. Encoste a pata para infectar!": [
+"☢️ NEW MAP: Nuclear Infection, tag with bots or real multiplayer. Touch with your paw to infect!",
+"☢️ NUEVO MAPA: Infección Nuclear, pilla-pilla con bots o multijugador real. ¡Toca con la pata para infectar!",
+"☢️ НОВАЯ КАРТА: Ядерная инфекция, салки с ботами или с живыми игроками. Коснись лапой, чтобы заразить!"
+],
+"🎙 Chat de voz posicional e 💬 chat no VR pelo menu rápido. PC: H = patas no mouse, N = microfone.": [
+"🎙 Positional voice chat and 💬 chat in VR from the quick menu. PC: H = paws on mouse, N = microphone.",
+"🎙 Chat de voz posicional y 💬 chat en VR desde el menú rápido. PC: H = patas con el ratón, N = micrófono.",
+"🎙 Позиционный голосовой чат и 💬 чат в VR через быстрое меню. ПК: H — лапы на мыши, N — микрофон."
 ]
 }

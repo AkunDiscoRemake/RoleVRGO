@@ -92,8 +92,8 @@ export const MAPS = {
       ring(8, 14.5, (x, z) => lampPost(w, E, x, z), PI / 8);
       ring(8, 11, (x, z, a) => w.put('grave/bench', x, z, { s: 2, ry: -a + H, col: 'box' }), PI / 8);
       // portais para os outros mapas
-      const dest = ['forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero', 'dark', 'pool'];
-      ring(12, 21.5, (x, z, a, i) => E.portal(dest[i], x, z), -H + PI / 10);
+      const dest = ['forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero', 'dark', 'pool', 'nuke'];
+      ring(13, 21.5, (x, z, a, i) => E.portal(dest[i], x, z), -H + PI / 10);
       // casas
       ring(10, 33, (x, z, a, i) => { const ry = Math.round(Math.atan2(z, -x) / H) * H; house(w, x, z, ry, { wood: i % 2, floors: 1 + (i % 3 === 0 ? 1 : 0), chimney: i % 2, s: 4.6, roof: i % 3 === 1 ? 'town/roof-point' : 'town/roof-high-point' }); }, 0.3);
       ring(7, 47, (x, z, a, i) => { if (Math.hypot(x - pond[0], z - pond[1]) < 16) return; const ry = Math.round(Math.atan2(z, -x) / H) * H; house(w, x, z, ry, { wood: (i + 1) % 2, s: 4.2 }); }, 0.9);
@@ -580,7 +580,43 @@ export const MAPS = {
     }
   }
 };
-export const MAP_ORDER = ['village', 'forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero', 'dark', 'pool'];
-export const MAP_ICONS = { village: '🏡', forest: '🌲', mine: '⛏', desert: '🏜', snow: '🏔', arena: '🥊', castle: '🏰', city: '🏙', island: '🏝', training: '🎯', aero: '🫧', dark: '🦇', pool: '🏊' };
-export const PORTAL_COLORS = { village: 0x70e070, forest: 0x2f9e4f, mine: 0x8a70c0, desert: 0xf0c050, snow: 0xb8e8ff, arena: 0xf05a40, castle: 0xa0a8c0, city: 0x50a0f0, island: 0x30d0d0, training: 0xf0a040, aero: 0x60e8ff, dark: 0x9a2050, pool: 0x9ff0e8 };
+
+// ======================= INFECÇÃO NUCLEAR (modo pega-pega) =======================
+MAPS.nuke = {
+  name: 'Infecção Nuclear ☢️', size: 124, surface: 'stone', sky: [0x8a9a48, 0xb8b040, 0x101808], fog: 0.7, infect: true,
+  spawn: [0, 46, PI], build(w, E, r) {
+    const POOLS = [[-26, -10, 9], [24, 14, 8], [6, -34, 7], [-14, 26, 6]], RUST = 0x8a5a3a, CON = [0xa8502e, 0x3a6a8a, 0x6a7a3a, 0xc8a030], GR = [0.55, 0.62, 0.45];
+    w.heightFn = (x, z) => { let h = (fbm(x * 0.04, z * 0.04, 77, 3) - 0.5) * 1.2; for (const p of POOLS) { const pd = Math.hypot(x - p[0], z - p[1]); if (pd < p[2]) h -= smooth(1 - pd / p[2]) * 1.8; } const d = Math.max(Math.abs(x), Math.abs(z)); if (d > 52) h += Math.min(12, (d - 52) * (d - 52) * 0.1); return h; };
+    const g1 = C(0x5a5e48), g2 = C(0x44483a), tox = C(0x7aa83a), conc = C(0x8a8a80);
+    w.buildGround(60, (x, z, h, c) => { mix(c, g1, g2, noise2(x * 0.14, z * 0.14, 31)); if (Math.abs(x) < 3.5 || Math.abs(z) < 3.5) mix(c, c, conc, 0.75); if (h < -0.35) mix(c, c, tox, clamp(-h - 0.35, 0, 1)); });
+    w.addWater(-0.6, 0x8aff30, 1, 0.82); // lama radioativa (deixa lento)
+    returnPortal(w, E, 0, 52);
+    E.sign('☢ INFECÇÃO NUCLEAR', 0, 3.4, 44); E.sign('Pega-pega: encoste a pata para infectar!', 4, 2.6, 40);
+    // reator central: plataformas em dois níveis com escadas, núcleo brilhante
+    boxAbs(w, 0, 0, 0, 14, 1.2, 14, 0x6a6e66); boxAbs(w, 0, 1.2, 0, 9, 1.6, 9, 0x5a5e58); w.put('prim/cyl', 0, 0, { s: [4.4, 6, 4.4], abs: 2.8, tint: T(0x7a8070), col: 'box' });
+    w.put('prim/sphere', 0, 0, { s: 2.6, abs: 8.4, tint: [0.7, 2.2, 0.5] }); E.lamp(0, 10, 0, 0x8aff30); E.lamp(0, 4, 0, 0x8aff30);
+    for (let k = 0; k < 4; k++) { const a = k * H, cx = Math.cos(a), cz = Math.sin(a); for (let i = 0; i < 4; i++) boxAbs(w, cx * (8.6 - i * 0.9), 0, cz * (8.6 - i * 0.9), k % 2 ? 0.9 : 2.4, 0.3 + i * 0.3, k % 2 ? 2.4 : 0.9, 0x6a6e66); }
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) { w.put('pirate/barrel', sx * 5.6, sz * 5.6, { s: 1.6, abs: 1.2, col: 'box', tint: [1.7, 1.5, 0.3] }); E.lamp(sx * 6.4, 2, sz * 6.4, 0xb8ff40); }
+    // torres de resfriamento (dá para escalar em volta pelos anéis)
+    for (const t of [[-30, 20], [30, -22]]) { w.put('prim/cyl', t[0], t[1], { s: [10, 16, 10], tint: T(0x9a9a90), col: 'box' }); w.put('prim/cyl', t[0], t[1], { s: [10.4, 1.2, 10.4], abs: 6, tint: T(0xc04030) }); w.put('prim/cyl', t[0], t[1], { s: [10.4, 1.2, 10.4], abs: 12, tint: T(0xc04030) });
+      for (let i = 0; i < 9; i++) { const a = i * 0.8; boxAbs(w, t[0] + Math.cos(a) * 6, 1.2 + i * 1.6, t[1] + Math.sin(a) * 6, 2.2, 0.35, 2.2, RUST); } E.lamp(t[0], 17, t[1], 0x8aff30); }
+    // contêineres empilhados (labirinto de perseguição)
+    for (let i = 0; i < 18; i++) { const a = r() * PI * 2, d = 14 + r() * 26, x = Math.cos(a) * d, z = Math.sin(a) * d; if (Math.abs(x) < 4 && z > 30) continue; if (POOLS.some((p) => Math.hypot(x - p[0], z - p[1]) < p[2] + 2)) continue;
+      const rot = r() < 0.5, n = 1 + Math.floor(r() * 3), c = CON[i % 4]; for (let k = 0; k < n; k++) { const ox = k === 2 ? (rot ? 0 : 1.4) : 0; boxAbs(w, x + ox, w.heightAt(x, z) + k * 2.6, z, rot ? 2.4 : 6, 2.6, rot ? 6 : 2.4, k % 2 ? CON[(i + 1) % 4] : c); } }
+    // prédios em ruínas e grades
+    ring(6, 44, (x, z, a, i) => { if (z > 38) return; const k = ['city/building-a', 'city/building-c', 'city/building-e', 'city/building-g'][i % 4]; w.put(k, x, z, { s: 5, ry: -a - H, col: 'box', tint: GR }); }, 0.4);
+    ring(16, 36, (x, z, a, i) => { if (i % 3 === 0 || (Math.abs(x) < 6 && z > 0)) return; w.put('nature/fence_simple', x, z, { s: 4, ry: -a + H, col: 'box', tint: [0.6, 0.55, 0.45] }); });
+    // passarela elevada ligando o reator a uma torre
+    for (let i = 0; i < 12; i++) boxAbs(w, -3 - i * 2.3, 2.8 + i * 0.25, 2 + i * 1.5, 2.6, 0.3, 2.2, RUST);
+    // barris radioativos e destroços
+    scatter(w, r, ['pirate/barrel'], 30, { s: [1.3, 1.8], col: 'box', tint: [1.6, 1.45, 0.3], ok: (x, z) => Math.hypot(x, z) > 9 });
+    scatter(w, r, ['grave/debris', 'nature/rock_largeA', 'survival/box-large'], 26, { s: [2, 3.2], col: 'box', tint: [0.6, 0.62, 0.5], ok: (x, z) => Math.hypot(x, z) > 10 });
+    scatter(w, r, ['grave/pine-crooked', 'grave/trunk-long'], 16, { s: [2.5, 3.5], col: 'trunk', tint: [0.5, 0.5, 0.4], ok: (x, z) => Math.hypot(x, z) > 18 });
+    for (let i = 0; i < 10; i++) { const a = i / 10 * PI * 2 + 0.2; E.lamp(Math.cos(a) * 24, 1.2, Math.sin(a) * 24, 0x9aff40); }
+    E.spring(-12, -14, 15); E.spring(16, 4, 15); E.spring(-6, 30, 14);
+  }
+};
+export const MAP_ORDER = ['village', 'forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero', 'dark', 'pool', 'nuke'];
+export const MAP_ICONS = { village: '🏡', forest: '🌲', mine: '⛏', desert: '🏜', snow: '🏔', arena: '🥊', castle: '🏰', city: '🏙', island: '🏝', training: '🎯', aero: '🫧', dark: '🦇', pool: '🏊', nuke: '☢️' };
+export const PORTAL_COLORS = { village: 0x70e070, forest: 0x2f9e4f, mine: 0x8a70c0, desert: 0xf0c050, snow: 0xb8e8ff, arena: 0xf05a40, castle: 0xa0a8c0, city: 0x50a0f0, island: 0x30d0d0, training: 0xf0a040, aero: 0x60e8ff, dark: 0x9a2050, pool: 0x9ff0e8, nuke: 0x8aff30 };
 export { hasModel };
