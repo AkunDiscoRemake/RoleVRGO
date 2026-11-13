@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RoleVRGO — Lançamento da Beta</title>
+<meta name="description" content="RoleVRGO: mundo multiplayer VR de gatos com Gorilla Locomotion, 11 mapas, luta, mineração, pesca, missões, criador de mapas e muito mais. Grátis no navegador, no Oculus Go e no celular com VR Box.">
+<meta property="og:title" content="RoleVRGO — o mundo VR dos gatos chegou (Beta)">
+<meta property="og:description" content="11 mapas, Gorilla Locomotion, luta, mineração, pesca, missões e criador de mapas. Grátis no navegador, Oculus Go e VR Box.">
+<meta property="og:image" content="https://akundiscoremake.github.io/RoleVRGO/lancamento/img/hero.jpg">
+<meta property="og:url" content="https://akundiscoremake.github.io/RoleVRGO/lancamento/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --bg: #f4f8ff; --surface: #ffffff; --surface-2: #e9f1ff; --text: #14182b; --muted: #4c5675; --line: #d5def0;
+    --brand: #3f57d6; --brand-2: #1fb6e8; --accent: #e8a030; --ok: #2f9a5a; --shadow: 0 10px 30px rgba(30, 50, 120, 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #11121f; --surface: #1a1c30; --surface-2: #22253f; --text: #eef1ff; --muted: #a9b0cf; --line: #2e3254; --brand: #7d8cff; --brand-2: #45d2ff; --accent: #ffbf55; --ok: #5fd68f; --shadow: 0 10px 30px rgba(0, 0, 0, 0.35); }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.55; }
+  img { max-width: 100%; display: block; }
+  a { color: var(--brand); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+  /* topo */
+  .hero { position: relative; overflow: hidden; color: #fff; background: #1a3a8a; }
+  .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+  .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 20, 60, 0.15) 0%, rgba(10, 20, 60, 0.35) 45%, rgba(10, 16, 40, 0.9) 100%); }
+  .hero .wrap { position: relative; z-index: 1; padding-top: 96px; padding-bottom: 56px; }
+  .badge { display: inline-block; background: var(--accent); color: #1b1300; font-weight: 800; font-size: 13px; letter-spacing: 0.06em; padding: 4px 10px; border-radius: 999px; }
+  .hero h1 { font-size: clamp(40px, 8vw, 78px); line-height: 1; margin: 14px 0 10px; letter-spacing: -0.02em; text-shadow: 0 4px 24px rgba(0, 0, 0, 0.35); }
+  .hero h1 span { color: #ffd76a; }
+  .hero p.lead { font-size: clamp(17px, 2.4vw, 22px); max-width: 720px; margin: 0 0 24px; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4); }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { display: inline-block; padding: 14px 22px; border-radius: 14px; font-weight: 800; text-decoration: none; font-size: 17px; }
+  .btn.main { background: #3fbf6a; color: #fff; box-shadow: 0 8px 24px rgba(40, 160, 90, 0.4); }
+  .btn.alt { background: rgba(255, 255, 255, 0.16); color: #fff; border: 2px solid rgba(255, 255, 255, 0.55); }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 30px; font-weight: 700; font-size: 15px; }
+  .stats b { font-size: 26px; display: block; color: #ffd76a; }
+  /* seções */
+  section { padding: 56px 0 8px; }
+  h2 { font-size: clamp(26px, 4vw, 38px); margin: 0 0 8px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 26px; max-width: 760px; font-size: 17px; }
+  .grid { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .g4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); }
+  .card h3 { margin: 6px 0 6px; font-size: 19px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .ico { font-size: 28px; }
+  .map { padding: 0; overflow: hidden; }
+  .map img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .map div { padding: 14px 16px 16px; }
+  .spot { display: grid; gap: 16px; grid-template-columns: 1.4fr 1fr; align-items: stretch; }
+  .spot .big { border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); }
+  .spot .big img { width: 100%; height: 100%; object-fit: cover; }
+  .spot .side { display: grid; gap: 16px; }
+  .spot .side img { border-radius: 18px; box-shadow: var(--shadow); aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  @media (max-width: 760px) { .spot { grid-template-columns: 1fr; } }
+  .aero { background: linear-gradient(135deg, #e8fbff, #d6f0ff 45%, #f1e6ff); border-radius: 24px; padding: 28px; }
+  @media (prefers-color-scheme: dark) { .aero { background: linear-gradient(135deg, #102a3c, #13213f 45%, #241a3c); } }
+  ul.check { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 6px; }
+  ul.check li::before { content: "✔ "; color: var(--ok); font-weight: 800; }
+  .shots { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .shots figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); }
+  .shots img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .shots figcaption { padding: 10px 14px; font-size: 14px; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 14px; overflow: hidden; font-size: 15px; }
+  td, th { padding: 10px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--surface-2); }
+  .beta { background: var(--surface-2); border: 2px dashed var(--accent); border-radius: 22px; padding: 26px; }
+  .tablewrap { overflow-x: auto; }
+  footer { margin-top: 64px; padding: 30px 0 46px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <img src="img/hero.jpg" alt="Aero Paraíso: lago cristalino, ponte de vidro, bolhas e arco-íris">
+  <div class="wrap">
+    <span class="badge">BETA ABERTA</span>
+    <h1>Role<span>VR</span>GO</h1>
+    <p class="lead">O mundo multiplayer em realidade virtual onde você é um gato. Empurre o chão com as patas, escale prédios, lute, minere, nade e faça amigos — direto no navegador, sem instalar nada.</p>
+    <div class="cta">
+      <a class="btn main" href="https://akundiscoremake.github.io/RoleVRGO/">▶ Jogar agora (grátis)</a>
+      <a class="btn alt" href="https://github.com/AkunDiscoRemake/RoleVRGO/blob/ccr-7296b89f-ryojp0/BETA.md">Guia para testers</a>
+    </div>
+    <div class="stats">
+      <div><b>11</b>mapas</div><div><b>22</b>NPCs</div><div><b>35</b>conquistas</div><div><b>4</b>idiomas</div><div><b>0</b>cadastro</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <h2>Bem-vindo ao RoleVRGO 🐱</h2>
+    <p class="sub">RoleVRGO é um jogo de mundo aberto e roleplay feito para o <b>Oculus Go</b>, que também roda no celular com <b>VR Box/Cardboard</b> e no <b>computador</b>. Todo mundo é um gato low-poly com duas patinhas flutuantes, e todo o mundo é compartilhado: os outros jogadores que você vê são pessoas de verdade, conectadas em tempo real.</p>
+    <div class="grid g4">
+      <div class="card"><div class="ico">🥽</div><h3>Oculus Go</h3><p>Entrar em VR direto do navegador do óculos. O controle 3DoF move as patas.</p></div>
+      <div class="card"><div class="ico">📱</div><h3>VR Box / Cardboard</h3><p>Tela dividida e sensor do celular. Opcional: suas mãos de verdade pela câmera (MediaPipe).</p></div>
+      <div class="card"><div class="ico">🖥</div><h3>Computador</h3><p>Teclado e mouse, sem óculos. Bom para explorar e criar mapas.</p></div>
+      <div class="card"><div class="ico">🎮</div><h3>Joy-Con e gamepad</h3><p>Botões e direcionais (sem giroscópio do controle), no PC ou junto do VR Box.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Gorilla Locomotion de gato</h2>
+    <p class="sub">Sem joystick para andar: você se move com as patas. Encoste as patinhas no chão e empurre para trás para dar impulso, agarre paredes e puxe para escalar, solte no ar para voar longe. Se preferir, o gatilho também faz andar e dá para teleportar segurando o centro do touchpad.</p>
+    <div class="spot">
+      <div class="big"><img src="img/gato.jpg" alt="Gato laranja com cachecol dançando na praça da Vila" loading="lazy"></div>
+      <div class="side">
+        <img src="img/luta.jpg" alt="Luta na Arena contra o Mestre Bigodão, com contador de combo" loading="lazy">
+        <img src="img/noite.jpg" alt="A Vila à noite com lanternas acesas" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>11 mapas para explorar</h2>
+    <p class="sub">Cada mapa tem NPCs, missões, segredos, baús e atividades próprias. Todos os mapas se conectam pelos portais da Vila.</p>
+    <div class="grid g3">
+      <div class="card map"><img src="img/vila.jpg" alt="Vila dos Bigodes vista do alto" loading="lazy"><div><h3>🏡 Vila dos Bigodes</h3><p>Praça com portais, lojas, ferreiro, profissões, lago para pescar e o segredo do moinho.</p></div></div>
+      <div class="card map"><img src="img/floresta.jpg" alt="Floresta Sussurrante" loading="lazy"><div><h3>🌲 Floresta Sussurrante</h3><p>Rio, ruínas, cogumelos, árvores para cortar, fantasmas e uma casa no topo da árvore gigante.</p></div></div>
+      <div class="card map"><img src="img/mina.jpg" alt="Mina Profunda" loading="lazy"><div><h3>⛏ Mina Profunda</h3><p>Caverna com minérios, cristais, diamantes, orcs e um chefe no fundo.</p></div></div>
+      <div class="card map"><img src="img/deserto.jpg" alt="Deserto Dourado com pirâmide e oásis" loading="lazy"><div><h3>🏜 Deserto Dourado</h3><p>Pirâmide para escalar, oásis, tesouros enterrados e esqueletos.</p></div></div>
+      <div class="card map"><img src="img/neve.jpg" alt="Montanhas Nevadas" loading="lazy"><div><h3>🏔 Montanhas Nevadas</h3><p>Rota de escalada até o cume, cabanas, cristais de gelo e trampolim de neve.</p></div></div>
+      <div class="card map"><img src="img/arena.jpg" alt="Arena dos Campeões" loading="lazy"><div><h3>🥊 Arena dos Campeões</h3><p>Ringue de PvP, arquibancada, bonecos de treino, sparring e ranking de vitórias.</p></div></div>
+      <div class="card map"><img src="img/castelo.jpg" alt="Castelo Real visto do alto" loading="lazy"><div><h3>🏰 Castelo Real</h3><p>Muralhas para caminhar por cima, torres, fosso, o Rei Ronrom e uma surpresa na torre mais alta.</p></div></div>
+      <div class="card map"><img src="img/cidade.jpg" alt="Miaulópolis" loading="lazy"><div><h3>🏙 Miaulópolis</h3><p>Prédios para escalar, entregas pela cidade, boutique de chapéus e um arranha-céu secreto.</p></div></div>
+      <div class="card map"><img src="img/ilha.jpg" alt="Ilha do Tesouro" loading="lazy"><div><h3>🏝 Ilha do Tesouro</h3><p>Praia, cais de pesca, navio naufragado, mar para nadar e o lendário Peixe-Lua.</p></div></div>
+      <div class="card map"><img src="img/treino.jpg" alt="Campo de Treino" loading="lazy"><div><h3>🎯 Campo de Treino</h3><p>Pista de obstáculos, paredes de escalada, trampolins e o Sensei que ensina tudo.</p></div></div>
+      <div class="card map"><img src="img/aero.jpg" alt="Aero Paraíso" loading="lazy"><div><h3>🫧 Aero Paraíso</h3><p>Céu azul, grama brilhante, vidro e bolhas: o mapa mais bonito do jogo. Veja abaixo.</p></div></div>
+      <div class="card map"><img src="img/criador.jpg" alt="Mapa feito no Criador de Mapas" loading="lazy"><div><h3>🛠 + os seus mapas</h3><p>Monte o seu mapa no Criador e publique para a comunidade jogar.</p></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="aero">
+      <h2>Aero Paraíso ✨</h2>
+      <p class="sub">Um mapa inteiro com a estética Frutiger Aero: torres e cúpulas de vidro brilhante, arco-íris, aurora no céu, ilhas flutuantes com cachoeiras e um lago fundo de verdade. Mergulhe para nadar entre golfinhos, águas-vivas e cardumes, com raios de luz, cáusticas no fundo e som abafado debaixo d'água.</p>
+      <div class="spot">
+        <div class="big"><img src="img/aero_fundo.jpg" alt="Debaixo d'água no Aero Paraíso, com peixes e bolhas" loading="lazy"></div>
+        <div class="side">
+          <img src="img/aero_ilha.jpg" alt="Ilha flutuante com cachoeira" loading="lazy">
+          <img src="img/hero.jpg" alt="Ponte de vidro sobre o lago cristalino" loading="lazy">
+        </div>
+      </div>
+      <ul class="check">
+        <li>Bolhas brilhantes para estourar com as patas</li>
+        <li>Pérolas, corais e uma cúpula secreta no fundo do lago</li>
+        <li>Música ambiente própria e sons de água e cachoeira</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>O que dá pra fazer</h2>
+    <p class="sub">Tem atividade para jogar por muito tempo: sempre há um próximo objetivo.</p>
+    <div class="grid g3">
+      <div class="card"><div class="ico">🥊</div><h3>Luta</h3><p>Socos com as patas: quanto mais rápido o golpe, mais dano. Combos, bloqueio, esquiva, zonas de PvP e ranking.</p></div>
+      <div class="card"><div class="ico">⛏</div><h3>Mineração</h3><p>14 minérios e gemas, de pedra a diamante e fragmento estelar, com picaretas cada vez melhores.</p></div>
+      <div class="card"><div class="ico">🎣</div><h3>Pesca e coleta</h3><p>Lance a linha e puxe quando a boia afundar. Cogumelos, flores, conchas, pérolas e tesouros enterrados.</p></div>
+      <div class="card"><div class="ico">🪓</div><h3>Machado</h3><p>Corte árvores em 7 mapas: elas tombam, dão lenha e voltam a crescer.</p></div>
+      <div class="card"><div class="ico">👾</div><h3>Inimigos e chefes</h3><p>Fantasmas, esqueletos, zumbis e orcs que avisam antes de atacar, e um chefe gigante em cada região.</p></div>
+      <div class="card"><div class="ico">📜</div><h3>Missões</h3><p>Missões de NPCs, diárias e contratos infinitos que crescem com o seu nível.</p></div>
+      <div class="card"><div class="ico">⭐</div><h3>Progressão</h3><p>Níveis, títulos, talentos, conquistas, álbum de coleção e sequência diária.</p></div>
+      <div class="card"><div class="ico">🎀</div><h3>Acessórios conquistáveis</h3><p>Óculos, capa de herói, asas de bolha, aura dourada… não se compram, se conquistam.</p></div>
+      <div class="card"><div class="ico">🔨</div><h3>Fabricação e lojas</h3><p>16 receitas, lojas nos NPCs, 5 profissões e itens de pata com bônus de dano, velocidade e mais.</p></div>
+      <div class="card"><div class="ico">👥</div><h3>Social de verdade</h3><p>Salas públicas e privadas, amigos por código, grupos, chat, emotes e carinho em outros gatos.</p></div>
+      <div class="card"><div class="ico">🛠</div><h3>Criador de Mapas</h3><p>Use todos os modelos do jogo, inimigos, baús, NPCs com fala e até seus próprios modelos .glb e imagens. Publique para a comunidade.</p></div>
+      <div class="card"><div class="ico">🎉</div><h3>Eventos</h3><p>Eventos mundiais automáticos e eventos ao vivo: festa, invasão, chuva de ouro e caça ao tesouro.</p></div>
+      <div class="card"><div class="ico">📷</div><h3>Câmeras e vídeo</h3><p>1ª, 2ª e 3ª pessoa e gravação de vídeo que baixa direto para a pasta Downloads.</p></div>
+      <div class="card"><div class="ico">🌍</div><h3>4 idiomas</h3><p>Português, English, Español e Русский.</p></div>
+      <div class="card"><div class="ico">🌡</div><h3>Feito para aparelhos simples</h3><p>Qualidade automática que ajusta resolução, distância e efeitos conforme o desempenho.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Por dentro do jogo</h2>
+    <div class="shots">
+      <figure><img src="img/menu.jpg" alt="Menu rápido aberto no jogo" loading="lazy"><figcaption>Menu rápido: avatar, itens na pata, fabricar, objetos, emotes, câmera e gravação.</figcaption></figure>
+      <figure><img src="img/vrbox.jpg" alt="Tela dividida do modo VR Box" loading="lazy"><figcaption>Modo VR Box: tela dividida para usar o celular como óculos.</figcaption></figure>
+      <figure><img src="img/criador.jpg" alt="Criador de Mapas" loading="lazy"><figcaption>Criador de Mapas: formas, modelos, entidades e seus próprios assets.</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Como jogar</h2>
+    <div class="tablewrap">
+      <table>
+        <tr><th>Ação</th><th>Oculus Go</th><th>Computador</th></tr>
+        <tr><td>Impulso</td><td>Aponte para o chão e varra o controle para trás</td><td>Olhe para o chão e mova o mouse</td></tr>
+        <tr><td>Escalar</td><td>Encoste na parede, segure o gatilho, puxe e solte</td><td>Segure o clique encostado e puxe</td></tr>
+        <tr><td>Andar</td><td>Gatilho com as patas no ar</td><td>WASD</td></tr>
+        <tr><td>Menu / menu rápido</td><td>Centro / topo do touchpad</td><td>M / B</td></tr>
+        <tr><td>Teleporte</td><td>Segure o centro do touchpad</td><td>Segure T</td></tr>
+        <tr><td>Câmera / gravar</td><td>Menu rápido</td><td>V / R</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="beta">
+      <h2>Entre na Beta 🧪</h2>
+      <p class="sub">O RoleVRGO está em fase Beta: tudo é grátis, sem cadastro (o progresso fica salvo no seu aparelho e na nuvem). Ainda estamos testando nos aparelhos de verdade, então sua ajuda conta muito, principalmente no Oculus Go, no VR Box e com Joy-Cons.</p>
+      <p>Encontrou um problema? Conte qual aparelho e navegador usou, o que tentou fazer, o que aconteceu e os números da aba <b>Config</b> do jogo (FPS e qualidade).</p>
+      <div class="cta" style="margin-top:18px">
+        <a class="btn main" href="https://akundiscoremake.github.io/RoleVRGO/">▶ Jogar a Beta</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b>RoleVRGO</b> — Beta. Criado por hark.</p>
+    <p>Modelos e sons: <a href="https://kenney.nl">Kenney.nl</a> (CC0) · Motor 3D: Three.js · Multiplayer e salvamento: Supabase · Hospedagem: GitHub Pages.</p>
+  </div>
+</footer>
+</body>
+</html>

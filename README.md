@@ -2,7 +2,7 @@
 
 Mundo multiplayer VR de gatos feito para **Oculus Go** (WebXR, controle 3DoF): Gorilla Locomotion, luta PvP, mineração, pesca, missões, roleplay e 10 mapas. Também roda no navegador do computador (teclado + mouse).
 
-**Jogar:** https://akundiscoremake.github.io/RoleVRGO/ · **Guia para testers:** [BETA.md](BETA.md)
+**Jogar:** https://akundiscoremake.github.io/RoleVRGO/ · **Página de lançamento:** https://akundiscoremake.github.io/RoleVRGO/lancamento/ · **Guia para testers:** [BETA.md](BETA.md)
 
 Também funciona em **VR Box / Cardboard** (tela dividida + sensor do celular), com **rastreamento de mãos pela câmera (MediaPipe)** opcional e **Joy-Cons/gamepads** (sem usar o giroscópio do controle).
 
