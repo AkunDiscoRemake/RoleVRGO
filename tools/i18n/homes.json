@@ -1278,5 +1278,175 @@
 "Got struck by lightning and toasted (0.001% per millisecond)",
 "Le cayó un rayo y quedó tostado (0,001% por milisegundo)",
 "Получил молнией и поджарился (0,001% в миллисекунду)"
+],
+"Visite todos os 17 mapas": [
+"Visit all 17 maps",
+"Visita los 17 mapas",
+"Посети все 17 карт"
+],
+"Rei das Nuvens": [
+"King of the Clouds",
+"Rey de las Nubes",
+"Король облаков"
+],
+"Complete a Corrida nas Nuvens nas Ilhas do Céu": [
+"Finish the Cloud Race on the Sky Islands",
+"Completa la Carrera en las Nubes en las Islas del Cielo",
+"Пройди «Гонку в облаках» на Небесных островах"
+],
+"Pé Quente": [
+"Hot Feet",
+"Pies Calientes",
+"Горячие пятки"
+],
+"Encoste na lava 5 vezes no Vulcão Ardente": [
+"Touch the lava 5 times in the Burning Volcano",
+"Toca la lava 5 veces en el Volcán Ardiente",
+"Коснись лавы 5 раз в Огненном вулкане"
+],
+"Ilhas do Céu": [
+"Sky Islands",
+"Islas del Cielo",
+"Небесные острова"
+],
+"🏆 CHEGADA": [
+"🏆 FINISH",
+"🏆 META",
+"🏆 ФИНИШ"
+],
+"🏁 Corrida nas Nuvens: chegue ao troféu!": [
+"🏁 Cloud Race: reach the trophy!",
+"🏁 Carrera en las Nubes: ¡llega al trofeo!",
+"🏁 Гонка в облаках: доберись до кубка!"
+],
+"🌀 Trampolins e anéis te lançam longe": [
+"🌀 Trampolines and rings launch you far",
+"🌀 Trampolines y anillos te lanzan lejos",
+"🌀 Батуты и кольца далеко подбрасывают"
+],
+"🏆 Recorde: ": [
+"🏆 Record: ",
+"🏆 Récord: ",
+"🏆 Рекорд: "
+],
+"🏁 Corrida nas Nuvens": [
+"🏁 Cloud Race",
+"🏁 Carrera en las Nubes",
+"🏁 Гонка в облаках"
+],
+"⏱ Valendo! Chegue ao troféu": [
+"⏱ Go! Reach the trophy",
+"⏱ ¡Ya! Llega al trofeo",
+"⏱ Старт! Доберись до кубка"
+],
+"🚩 Checkpoint!": [
+"🚩 Checkpoint!",
+"🚩 ¡Punto de control!",
+"🚩 Чекпоинт!"
+],
+"Atalho detectado: o tempo não vale como recorde": [
+"Shortcut detected: this time doesn't count as a record",
+"Atajo detectado: el tiempo no cuenta como récord",
+"Обнаружен срез: время не засчитано"
+],
+"🏆 NOVO RECORDE: ": [
+"🏆 NEW RECORD: ",
+"🏆 NUEVO RÉCORD: ",
+"🏆 НОВЫЙ РЕКОРД: "
+],
+"🏁 Chegou! ": [
+"🏁 Finished! ",
+"🏁 ¡Llegaste! ",
+"🏁 Финиш! "
+],
+" (recorde ": [
+" (record ",
+" (récord ",
+" (рекорд "
+],
+"☁ Caiu nas nuvens! Voltando ao checkpoint": [
+"☁ Fell into the clouds! Back to the checkpoint",
+"☁ ¡Caíste en las nubes! Volviendo al punto de control",
+"☁ Упал в облака! Возврат к чекпоинту"
+],
+"  ·  recorde ": [
+"  ·  record ",
+"  ·  récord ",
+"  ·  рекорд "
+],
+"Vulcão Ardente": [
+"Burning Volcano",
+"Volcán Ardiente",
+"Огненный вулкан"
+],
+"🌋 Vulcão Ardente: não pise na lava!": [
+"🌋 Burning Volcano: don't step in the lava!",
+"🌋 Volcán Ardiente: ¡no pises la lava!",
+"🌋 Огненный вулкан: не наступай в лаву!"
+],
+"! −18 de vida": [
+"! −18 health",
+"! −18 de vida",
+"! −18 здоровья"
+],
+"Lava": [
+"Lava",
+"Lava",
+"Лава"
+],
+"a lava 🔥": [
+"the lava 🔥",
+"la lava 🔥",
+"лава 🔥"
+],
+"uma bola de fogo 🔥": [
+"a fireball 🔥",
+"una bola de fuego 🔥",
+"огненный шар 🔥"
+],
+"Bola de fogo": [
+"Fireball",
+"Bola de fuego",
+"Огненный шар"
+],
+"Neon City": [
+"Neon City",
+"Neon City",
+"Неон-Сити"
+],
+"🌃 Neon City": [
+"🌃 Neon City",
+"🌃 Neon City",
+"🌃 Неон-Сити"
+],
+"Guia da Neon City": [
+"Neon City guide",
+"Guía de Neon City",
+"Гид Неон-Сити"
+],
+"Bem-vinde à Neon City! Os trampolins levam aos telhados.": [
+"Welcome to Neon City! The trampolines take you to the rooftops.",
+"¡Bienvenide a Neon City! Los trampolines llevan a los tejados.",
+"Добро пожаловать в Неон-Сити! Батуты ведут на крыши."
+],
+"Já viu o holograma da praça? Ele dança a noite toda.": [
+"Have you seen the hologram in the square? It dances all night.",
+"¿Viste el holograma de la plaza? Baila toda la noche.",
+"Видел голограмму на площади? Она танцует всю ночь."
+],
+"Dizem que tem caixas perdidas nos telhados...": [
+"They say there are lost boxes on the rooftops...",
+"Dicen que hay cajas perdidas en los tejados...",
+"Говорят, на крышах потерялись коробки..."
+],
+"☁️🌋🌃 3 MAPAS NOVOS: Ilhas do Céu (corrida com cronômetro), Vulcão Ardente (lava e erupções) e Neon City (chuva, holograma e carros voadores).": [
+"☁️🌋🌃 3 NEW MAPS: Sky Islands (timed race), Burning Volcano (lava and eruptions) and Neon City (rain, hologram and flying cars).",
+"☁️🌋🌃 3 MAPAS NUEVOS: Islas del Cielo (carrera con cronómetro), Volcán Ardiente (lava y erupciones) y Neon City (lluvia, holograma y coches voladores).",
+"☁️🌋🌃 3 НОВЫЕ КАРТЫ: Небесные острова (гонка на время), Огненный вулкан (лава и извержения) и Неон-Сити (дождь, голограмма и летающие машины)."
+],
+"✨ Efeitos novos: rastros de velocidade, portais com partículas, lava animada, chuva e sons novos (boing, whoosh, lava, chuva).": [
+"✨ New effects: speed trails, particle portals, animated lava, rain and new sounds (boing, whoosh, lava, rain).",
+"✨ Efectos nuevos: estelas de velocidad, portales con partículas, lava animada, lluvia y sonidos nuevos (boing, whoosh, lava, lluvia).",
+"✨ Новые эффекты: следы скорости, порталы с частицами, анимированная лава, дождь и новые звуки (боинг, вжух, лава, дождь)."
 ]
 }

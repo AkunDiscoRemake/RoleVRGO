@@ -35,6 +35,12 @@ export class FX {
       this.col[i * 3] = this._c.r; this.col[i * 3 + 1] = this._c.g; this.col[i * 3 + 2] = this._c.b; this.life[i] = 0.5 + Math.random() * 0.5; this.grav[i] = grav == null ? 5 : grav;
     }
   }
+  // partícula com velocidade definida (rastros de velocidade, faíscas direcionais)
+  streak(x, y, z, vx, vy, vz, color, life) {
+    if (perf.particles < 0.5) return; const i = this.next; this.next = (this.next + 1) % MAXP; this._c.set(color);
+    this.pos[i * 3] = x; this.pos[i * 3 + 1] = y; this.pos[i * 3 + 2] = z; this.vel[i * 3] = vx; this.vel[i * 3 + 1] = vy; this.vel[i * 3 + 2] = vz;
+    this.col[i * 3] = this._c.r; this.col[i * 3 + 1] = this._c.g; this.col[i * 3 + 2] = this._c.b; this.life[i] = life || 0.35; this.grav[i] = 0;
+  }
   // flat=true: deitado (superfície da água); senão, de frente para a câmera (quat)
   ring(x, y, z, color, size, flat, quat, dur) {
     let r = this.rings[0]; for (const k of this.rings) if (k.life <= 0) { r = k; break; } else if (k.life < r.life) r = k;
@@ -48,8 +54,8 @@ export class FX {
   // tipo: snow | fire (vaga-lumes, só à noite) | leaf | dust | spark | ''
   ambient(type, center, time, night) {
     const on = !!type && perf.particles >= 0.5 && !(type === 'fire' && night < 0.4); this.amb.visible = on; if (!on) return;
-    if (type !== this.ambType) { this.ambType = type; const m = this.amb.material; m.color.setHex({ snow: 0xffffff, fire: 0xe8ff70, leaf: 0xa8e070, dust: 0xf0d8a0, spark: 0x80d0ff, bubble: 0xd8f8ff, ember: 0xff5a30 }[type] || 0xffffff); m.size = { snow: 0.13, fire: 0.22, leaf: 0.12, dust: 0.09, spark: 0.16 }[type] || 0.12; m.blending = type === 'fire' || type === 'spark' || type === 'ember' ? THREE.AdditiveBlending : THREE.NormalBlending; m.opacity = type === 'dust' ? 0.5 : 0.85; m.needsUpdate = true; }
-    const P = this.aPos, S = this.aSeed, B = 26, H = 12, fall = { snow: 1.3, fire: 0, leaf: 0.5, dust: 0.1, spark: -0.15, bubble: -0.7, ember: -0.55 }[type] || 0, drift = { snow: 0.5, fire: 0.25, leaf: 0.9, dust: 1.6, spark: 0.1 }[type] || 0.3;
+    if (type !== this.ambType) { this.ambType = type; const m = this.amb.material; m.color.setHex({ snow: 0xffffff, fire: 0xe8ff70, leaf: 0xa8e070, dust: 0xf0d8a0, spark: 0x80d0ff, bubble: 0xd8f8ff, ember: 0xff5a30, rain: 0x9fc8ff, ash: 0x9a9088 }[type] || 0xffffff); m.size = { rain: 0.09, ash: 0.12, snow: 0.13, fire: 0.22, leaf: 0.12, dust: 0.09, spark: 0.16 }[type] || 0.12; m.blending = type === 'fire' || type === 'spark' || type === 'ember' ? THREE.AdditiveBlending : THREE.NormalBlending; m.opacity = type === 'dust' ? 0.5 : 0.85; m.needsUpdate = true; }
+    const P = this.aPos, S = this.aSeed, B = 26, H = 12, fall = { snow: 1.3, fire: 0, leaf: 0.5, dust: 0.1, spark: -0.15, bubble: -0.7, ember: -0.55, rain: 13, ash: 0.6 }[type] || 0, drift = { snow: 0.5, fire: 0.25, leaf: 0.9, dust: 1.6, spark: 0.1, rain: 0.8, ash: 0.7 }[type] || 0.3;
     for (let i = 0; i < this.aN; i++) { const k = i * 3, sx = S[k], sy = S[k + 1], sz = S[k + 2];
       let x = sx * B + time * drift * (0.5 + sz) + Math.sin(time * 0.7 + sx * 30) * 0.6, y = sy * H - time * fall * (0.6 + sx * 0.8) + (type === 'fire' ? Math.sin(time * 0.9 + sz * 40) * 0.8 : 0), z = sz * B + Math.cos(time * 0.6 + sy * 30) * 0.6;
       x = ((x - center.x) % B + B) % B - B / 2 + center.x; z = ((z - center.z) % B + B) % B - B / 2 + center.z; y = ((y - center.y) % H + H) % H - 2 + center.y;

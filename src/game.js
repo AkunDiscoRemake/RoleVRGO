@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { World, worldMat, matU, glossify } from './world.js';
 import { MAPS, initPrims, PORTAL_COLORS, MAP_ICONS } from './maps.js';
-import { modelGeometry, play, playAt, meow, purr, pop, setUnder, ambience, chime, splashSfx, chirp, thunder } from './assets.js';
+import './maps2.js';
+import { modelGeometry, play, playAt, meow, purr, pop, setUnder, ambience, chime, splashSfx, chirp, thunder, boing } from './assets.js';
 import { CatAvatar, HandPool, EMOTES, AGE_EYE } from './cat.js';
 import { FX, LabelBatch } from './fx.js';
 import { Sky } from './sky.js';
@@ -23,7 +24,7 @@ const _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _q = new THREE.Quatern
 const bubbleMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
   vertexShader: 'varying vec3 vN;\nvoid main(){ vec4 mv = modelViewMatrix * instanceMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * mat3(instanceMatrix) * normal); gl_Position = projectionMatrix * mv; }',
   fragmentShader: 'varying vec3 vN;\nvoid main(){ vec3 n = normalize(vN); float fr = pow(1.0 - abs(n.z), 2.2); float sp = smoothstep(0.90, 0.97, dot(n, normalize(vec3(-0.45, 0.6, 0.66)))) + 0.5 * smoothstep(0.95, 0.99, dot(n, normalize(vec3(0.5, -0.5, 0.7)))); vec3 c = mix(vec3(0.55, 0.92, 1.0), vec3(1.0), fr) + vec3(0.25, 0.1, 0.3) * n.y * fr; gl_FragColor = vec4(c + sp, clamp(0.10 + fr * 0.62 + sp, 0.0, 1.0)); }' });
-const AMBIENT = { dark: 'ember', pool: '', aero: 'bubble', village: 'leaf', forest: 'fire', mine: 'spark', desert: 'dust', snow: 'snow', castle: 'leaf', island: 'leaf', training: 'leaf', arena: 'dust', nuke: 'dust' };
+const AMBIENT = { dark: 'ember', pool: '', aero: 'bubble', village: 'leaf', forest: 'fire', mine: 'spark', desert: 'dust', snow: 'snow', castle: 'leaf', island: 'leaf', training: 'leaf', arena: 'dust', nuke: 'dust', volcano: 'ember', neon: 'rain', sky: '' };
 const UP = new THREE.Vector3(0, 1, 0), ZERO = new THREE.Vector3(0, 0, 0);
 const instMat = new THREE.MeshLambertMaterial({ vertexColors: true }); glossify(instMat, 'rvinst', false);
 const jellyMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, uniforms: { uTime: matU.uTime },
@@ -57,7 +58,7 @@ export const G = {
   // ================= carregamento de mapa =================
   travel(id) { if (this.pending || (!MAPS[id] && id !== 'custom' && id !== 'home') || (id === this.mapId && id !== 'home')) return; this.pending = id; this.fade = 0.001; play('portal', 0.6); },
   loadMap(id, keep) {
-    const scene = this.scene; if (id !== 'nuke' || !keep) infect.leave(); this._disposeMap();
+    const scene = this.scene; if (id !== 'nuke' || !keep) infect.leave(); this.modeLabel = ''; this._disposeMap();
     const def = id === 'custom' ? this.customDef : id === 'home' ? this.homeDef : MAPS[id], w = new World(scene, def.size); w.surface = def.surface;
     if (id !== 'custom' && maker.playing) maker.close(); S._sbChests = [];
     const E = { npcs: [], ores: [], chests: [], portals: [], collects: [], digs: [], fishes: [], secrets: [], dummies: [], zones: [], lamps: [], signs: [], boards: [], springs: [] };
@@ -68,7 +69,7 @@ export const G = {
     E.dummy = (x, z) => E.dummies.push({ x, z }); E.zone = (type, x, z, r) => E.zones.push({ type, x, z, r }); E.lamp = (x, y, z, c) => E.lamps.push({ x, y, z, c: c || 0xffd890 });
     E.sign = (text, x, y, z) => E.signs.push({ text, x, y, z }); E.board = (x, z, yaw) => E.boards.push({ x, z, yaw }); E.spring = (x, z, p) => E.springs.push({ x, z, p }); E.enemies = []; E.enemy = (type, x, z, boss) => E.enemies.push({ type, x, z, boss }); E.schools = []; E.school = (x, y, z, r, n) => E.schools.push({ x, y, z, r, n }); E.bubbleN = 0; E.bubbles = (n) => { E.bubbleN = n; }; E.rainbow = (x, z, r) => { E.rb = { x, z, r }; }; E.trees = []; E.tree = (x, z, model) => E.trees.push({ x, z, model: model || 'nature/tree_default' }); E.falls = []; E.waterfall = (x, y1, z, y0, wd) => E.falls.push({ x, y1, z, y0, wd });
     def.build(w, E, rng(hashStr(id)));
-    w.swim = !!def.swim; matU.uTiles.value = id === 'pool' ? 1 : 0; matU.uGloss.value = id === 'pool' ? 0.6 : id === 'aero' || (def.custom && def.sky[0] === 0x4cc6ff) ? 1 : 0; matU.uCaust.value = def.swim ? 1 : 0;
+    w.swim = !!def.swim; matU.uTiles.value = id === 'pool' ? 1 : 0; matU.uGloss.value = id === 'pool' ? 0.6 : id === 'neon' ? 0.85 : id === 'aero' || (def.custom && def.sky[0] === 0x4cc6ff) ? 1 : 0; matU.uCaust.value = def.swim ? 1 : 0;
     this.world = w; this.E = E; this.def = def; this.mapId = id;
     const add = (o) => { scene.add(o); this.objs.push(o); return o; };
     const inst = (geo, n, mat) => { const m = new THREE.InstancedMesh(geo, mat || instMat, Math.max(1, n)); m.count = n; m.frustumCulled = false; m.castShadow = true; return add(m); };
@@ -364,10 +365,10 @@ export const G = {
     hp.end(perf.shadows > 0);
     // lanternas e céu
     this.camera.getWorldPosition(_v); const under = W.swim && _v.y < W.waterY - 0.05; this.under = under;
-    const skyNow = admin.eventOn('night') ? DAY_LENGTH * 750 : admin.eventOn('day') ? DAY_LENGTH * 250 : this.mapId === 'dark' ? DAY_LENGTH * 985 : now; // Reino Sombrio: crepúsculo eterno
+    const skyNow = admin.eventOn('night') ? DAY_LENGTH * 750 : admin.eventOn('day') ? DAY_LENGTH * 250 : this.mapId === 'dark' ? DAY_LENGTH * 985 : this.mapId === 'neon' ? DAY_LENGTH * 760 : this.mapId === 'volcano' ? DAY_LENGTH * 455 : now; // Reino Sombrio: crepúsculo eterno
     this.sky.update(skyNow, this.def, P.pos, perf, under); this._adminTick(dt, now);
     if (this.mapId === 'pool') { this.sky.hemi.groundColor.setHex(0xcfeef2); this.sky.hemi.color.setHex(0xffffff); this.sky.sun.color.setHex(0xf4fbff); } // luz fluorescente fria
-    if (this.mapId === 'dark') { // relâmpagos com trovão
+    if (this.mapId === 'dark' || this.mapId === 'neon') { // relâmpagos com trovão
       this.boltT = (this.boltT == null ? 6 : this.boltT) - dt;
       if (this.boltT <= 0) { this.boltT = 9 + Math.random() * 16; this.bolt = 0.45; setTimeout(() => thunder(0.8), 300 + Math.random() * 900); }
       if (this.bolt > 0) { this.bolt -= dt; const k = this.bolt > 0.3 || (this.bolt > 0.12 && this.bolt < 0.2) ? 1 : 0.25; this.sky.hemi.intensity += k * 4; this.scene.background.lerp(_col.setHex(0xd8d0ff), k * 0.7); this.scene.fog.color.copy(this.scene.background); }
@@ -381,6 +382,9 @@ export const G = {
     // ⚡ torrados: o seu gato e os remotos ficam pretos, arrepiados e soltando fumaça por 25 s
     if (this.burntT > 0) { this.burntT -= dt; if (this.selfCat) this.selfCat.setBurnt(this.burntT > 0); this.smokeT = (this.smokeT || 0) - dt; if (this.smokeT <= 0) { this.smokeT = 0.3; this.fx.burst(P.pos.x, P.pos.y + 1.25, P.pos.z, 0x3a3a3a, 2, 0.7, -1); } }
     this.remotes.forEach((r) => { if (!r.burntT) return; r.burntT = Math.max(0, r.burntT - dt); r.av.setBurnt(r.burntT > 0); if (r.has && Math.random() < dt * 3) { const q = r.av.root.position; this.fx.burst(q.x, q.y + 1.25, q.z, 0x3a3a3a, 2, 0.7, -1); } });
+    // ✨ rastros de velocidade quando o gato voa rápido e partículas girando nos portais
+    { const sp = Math.hypot(P.vel.x, P.vel.y, P.vel.z); if (sp > 6.5 && !P.grounded && !P.swimming) { const cp = this.camera.getWorldPosition(_v2), k = 1 / sp; for (let n = 0; n < 2; n++) { const ox = (Math.random() - 0.5) * 3, oy = (Math.random() - 0.5) * 2, oz = (Math.random() - 0.5) * 3; this.fx.streak(cp.x + P.vel.x * k * 3 + ox, cp.y + P.vel.y * k * 3 + oy, cp.z + P.vel.z * k * 3 + oz, -P.vel.x * 0.9, -P.vel.y * 0.9, -P.vel.z * 0.9, 0xe8f4ff, 0.22); } } }
+    if (this.E.portals.length && perf.particles >= 0.5) for (const pt of this.E.portals) { if (Math.random() > 0.35 || Math.abs(pt.x - P.pos.x) > 24 || Math.abs(pt.z - P.pos.z) > 24) continue; const a = Math.random() * 6.283, c = Math.cos(pt.yaw), sn = Math.sin(pt.yaw), r = 1.05; this.fx.streak(pt.x + c * Math.cos(a) * r, pt.y + 1.45 + Math.sin(a) * r, pt.z - sn * Math.cos(a) * r, -c * Math.cos(a) * 1.2, -Math.sin(a) * 1.2, sn * Math.cos(a) * 1.2, PORTAL_COLORS[pt.to] || 0xffffff, 0.75); }
     this._zapRoll(dt); if (this.zapK > 0) { this.zapK = Math.max(0, this.zapK - dt * 2.5); this.zapFlash.material.opacity = this.zapK; }
     this.fx.ambient(this.under ? 'bubble' : this.def.custom ? this.def.ambId : AMBIENT[this.mapId] || '', P.pos, this.time, this.sky.night);
     this.fx.update(dt);
@@ -479,7 +483,8 @@ export const G = {
   _aero(dt) {
     const P = this.player, t = this.time, W = this.world, ax = this.ax;
     // ambiente sonoro: marolas perto da água, ronco submarino, cachoeira por distância
-    if (W.swim || ax || this.mapId === 'dark') { let fall = 0; if (ax) for (const f of ax.falls) { const d = Math.hypot(P.pos.x - f.x, P.pos.z - f.z); fall = Math.max(fall, clamp(1 - d / 34, 0, 1)); } const nearW = W.heightAt(P.pos.x, P.pos.z) < W.waterY + 2.5 || P.swimming; ambience({ water: this.under ? 0 : nearW ? (this.mapId === 'pool' ? 0.5 : 1) : 0.25, under: this.under ? 1 : 0, fall: this.under ? fall * 0.3 : fall * fall, wind: this.mapId === 'dark' ? 1 : 0, hum: this.mapId === 'pool' && !this.under ? 1 : 0 }); this._amb = true; } else if (this._amb) { this._amb = false; ambience({}); }
+    if (this.def.amb && !W.swim) { ambience(this.def.amb(P, this)); this._amb = true; } // ambiência própria dos mapas novos (lava, chuva, vento, neon)
+    else if (W.swim || ax || this.mapId === 'dark') { let fall = 0; if (ax) for (const f of ax.falls) { const d = Math.hypot(P.pos.x - f.x, P.pos.z - f.z); fall = Math.max(fall, clamp(1 - d / 34, 0, 1)); } const nearW = W.heightAt(P.pos.x, P.pos.z) < W.waterY + 2.5 || P.swimming; ambience({ water: this.under ? 0 : nearW ? (this.mapId === 'pool' ? 0.5 : 1) : 0.25, under: this.under ? 1 : 0, fall: this.under ? fall * 0.3 : fall * fall, wind: this.mapId === 'dark' ? 1 : 0, hum: this.mapId === 'pool' && !this.under ? 1 : 0 }); this._amb = true; } else if (this._amb) { this._amb = false; ambience({}); }
     // rastro de bolhas das braçadas
     if (P.swimming) for (const h of P.hands) if (h.speed > 1.6 && Math.random() < 0.35) this.fx.burst(h.pos.x, h.pos.y, h.pos.z, 0xdff8ff, 1, 0.6, -2.2);
     if (ax) {
@@ -608,7 +613,7 @@ export const G = {
     // portais
     for (const p of E.portals) if (Math.abs(px - p.x) < 1.1 && Math.abs(pz - p.z) < 1.1 && Math.abs(py - p.y) < 2.5) { this.travel(p.to); return; }
     // trampolins
-    for (const s of E.springs) if (Math.abs(px - s.x) < 1 && Math.abs(pz - s.z) < 1 && py - s.y < 1.2 && P.vel.y <= 0.5) { P.vel.y = s.p; P.grounded = false; play('power', 0.5, 0, 1.4); this.fx.burst(s.x, s.y + 0.8, s.z, 0x80ffb0, 10, 2); }
+    for (const s of E.springs) if (Math.abs(px - s.x) < 1 && Math.abs(pz - s.z) < 1 && py - s.y < 1.2 && P.vel.y <= 0.5) { P.vel.y = s.p; P.grounded = false; play('power', 0.35, 0, 1.4); boing(0.6); this.fx.burst(s.x, s.y + 0.8, s.z, 0x80ffb0, 14, 3); this.fx.ring(s.x, s.y + 0.6, s.z, 0x80ffb0, 1.8, true, null, 0.5); }
     // segredos
     for (const s of E.secrets) if (!s.found && Math.abs(px - s.x) < s.r && Math.abs(pz - s.z) < s.r && Math.abs(py - s.y) < 3) { s.found = true; S.secret(this.mapId + ':' + s.key, s.key); setInst(this.starMesh, s.i, 0, -999, 0, 0, 0); this.fx.burst(s.x, s.y + 1, s.z, 0xc080ff, 40, 4, 2); }
     // minérios

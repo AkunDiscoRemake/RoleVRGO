@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.0.4 — Céu, Vulcão e Neon
+
+### Mapas novos (agora são 17)
+- **☁️ Ilhas do Céu:** 15 ilhas flutuantes em espiral sobre um mar de nuvens.
+  - **Corrida nas Nuvens** com cronômetro e recorde salvo, com moedas e XP ao chegar.
+  - Trampolins, anéis dourados de impulso, 3 checkpoints e arco de chegada com troféu.
+  - Quem cai volta ao último checkpoint. Também tem nuvens em movimento, ilhas decorativas, segredos e um baú.
+- **🌋 Vulcão Ardente:** um vulcão com cratera e rios de **lava animada** (shader próprio) com pontes.
+  - **Erupções** a cada 7 a 13 s lançam bolas de fogo em arco.
+  - A **lava queima**: −18 de vida, joga o gato para fora e deixa ele torrado por uns segundos.
+  - Colunas de basalto, espinhos de obsidiana, templo em ruínas com chefe, rubis e pedras-do-sol, e céu de entardecer alaranjado.
+- **🌃 Neon City:** cidade cyberpunk sempre à noite, com **chuva**, relâmpagos e ruas molhadas que refletem a luz.
+  - Letreiros neon e luminosos (MIAU BAR, RoleVRGO, ARCADE...).
+  - **Holograma gigante de um gato dançando** na praça.
+  - Carros voadores, holofotes, trampolins para os telhados, caixas escondidas e uma NPC guia.
+- O portal de cada um dos 3 fica na Vila, que agora tem 16 portais. Cada mapa tem música própria.
+
+### Efeitos e sons
+- **Rastros de velocidade** quando o gato voa rápido e **partículas girando** dentro dos portais.
+- Anel de impacto e **boing** nos trampolins; **whoosh** nos anéis de impulso.
+- Ambientes sonoros novos: **lava borbulhando**, **chuva** e **zumbido neon**, além de chiado de lava e estrondo de erupção.
+- Partículas de **chuva** e **cinzas**.
+
+### Outros
+- Conquistas novas: **Rei das Nuvens** e **Pé Quente**. A conquista Viajante agora pede os 17 mapas.
+- A tela do mapa no menu mostra os 17 mapas em duas linhas.
+
 ## 0.0.3 — Infecção Nuclear ☢️
 
 ### Novo
