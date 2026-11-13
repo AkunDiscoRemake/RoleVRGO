@@ -18,6 +18,7 @@
 - **Patas no mouse (PC)**, a pedido de um tester: a tecla **H** liga e desliga, e segurar o botão do meio do mouse ativa enquanto estiver apertado. O mouse move as patas e a câmera fica parada. Encoste no chão, segure o clique e arraste para se impulsionar, como no Gorilla Tag de PC. A rodinha muda o alcance.
 
 ### Correções
+- **Chat no VR:** agora é o primeiro item do menu rápido (botão Back no Go, X no Quest), com as últimas mensagens, 12 frases rápidas e o teclado. As mensagens também aparecem por alguns segundos no canto inferior esquerdo da visão, no VR e no PC.
 - Mudanças de visual feitas dentro do jogo (chapéu, acessório...) agora ficam guardadas ao reabrir o jogo.
 
 ### Servidor

@@ -44,6 +44,12 @@ export const ui = {
     this.banner = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.15), new THREE.MeshBasicMaterial({ map: this.btex, transparent: true, fog: false, depthTest: false, depthWrite: false })); this.banner.renderOrder = 16; this.banner.position.set(0, 0.3, -1.2); this.banner.visible = false; camera.add(this.banner); this.bannerT = 0;
     on('banner', (txt, secs) => { const g = this.bc.getContext('2d'); g.clearRect(0, 0, 768, 96); const grd = g.createLinearGradient(0, 0, 768, 0); grd.addColorStop(0, 'rgba(120,70,10,0.0)'); grd.addColorStop(0.12, 'rgba(120,70,10,0.9)'); grd.addColorStop(0.88, 'rgba(120,70,10,0.9)'); grd.addColorStop(1, 'rgba(120,70,10,0.0)'); g.fillStyle = grd; g.fillRect(0, 10, 768, 76);
       g.strokeStyle = '#ffd76a'; g.lineWidth = 3; g.beginPath(); g.moveTo(60, 12); g.lineTo(708, 12); g.moveTo(60, 84); g.lineTo(708, 84); g.stroke(); g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; let t = String(txt); while (t.length > 4 && g.measureText(t).width > 680) t = t.slice(0, -2); if (t !== String(txt)) t += '…'; g.fillStyle = '#fff6d0'; g.fillText(t, 384, 49); this.btex.needsUpdate = true; this.banner.visible = true; this.bannerT = secs || 5; });
+    // chat na visão: últimas mensagens aparecem por alguns segundos (no VR não há outra forma de ver o chat sem abrir o menu)
+    this.cc = document.createElement('canvas'); this.cc.width = 512; this.cc.height = 112; this.ctex = new THREE.CanvasTexture(this.cc); this.ctex.minFilter = THREE.LinearFilter; this.ctex.generateMipmaps = false;
+    this.chatPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.11), new THREE.MeshBasicMaterial({ map: this.ctex, transparent: true, fog: false, depthTest: false, depthWrite: false })); this.chatPlane.renderOrder = 15; this.chatPlane.position.set(-0.43, -0.24, -1.1); this.chatPlane.rotation.set(-0.15, 0.32, 0, 'YXZ'); this.chatPlane.visible = false; camera.add(this.chatPlane); this.chatT = 0;
+    on('chat', () => { const log = G.chatLog.slice(-3), g = this.cc.getContext('2d'); g.clearRect(0, 0, 512, 112); if (!log.length) return; g.fillStyle = 'rgba(14,12,30,0.62)'; roundRect(g, 0, 0, 512, 112, 14); g.fill(); g.textBaseline = 'middle';
+      log.forEach((m, i) => { const y = 112 - (log.length - i) * 34 + 14; g.font = 'bold 20px sans-serif'; let w = String(m.who); if (w.length > 14) w = w.slice(0, 13) + '…'; g.fillStyle = '#ffd76a'; g.fillText(w + ':', 12, y); const wx = 12 + g.measureText(w + ': ').width; g.font = '20px sans-serif'; g.fillStyle = '#fff'; let t = String(m.text); while (t.length > 2 && g.measureText(t).width > 500 - wx) t = t.slice(0, -2); if (t !== String(m.text)) t += '…'; g.fillText(t, wx, y); });
+      this.ctex.needsUpdate = true; this.chatPlane.visible = true; this.chatT = 9; });
     // mira (desktop)
     this.cross = new THREE.Mesh(new THREE.RingGeometry(0.004, 0.007, 12), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.7, fog: false, depthTest: false })); this.cross.position.z = -0.6; this.cross.renderOrder = 30; camera.add(this.cross);
     player.onMenu = () => this.toggle();
@@ -75,12 +81,19 @@ export const ui = {
   qhead(title, root) { this.text(384, 34, title, { a: 'center', fs: 22, c: '#ffd76a' }); if (!root) this.btn(224, 14, 70, 38, '◀', () => { this.page = 'q_root'; this.scroll = 0; this.msg = ''; }, { bg: '#33355a' }); this.btn(474, 14, 70, 38, '✕', () => this.hide(), { bg: '#b04050' }); },
   qpager(n, per) { const pages = Math.max(1, Math.ceil(n / per)); this.scroll = clamp(this.scroll, 0, pages - 1); if (pages > 1) { this.btn(224, 462, 90, 40, '▲', () => { this.scroll--; }, { off: this.scroll <= 0, bg: '#33355a' }); this.text(384, 482, (this.scroll + 1) + '/' + pages, { a: 'center' }); this.btn(454, 462, 90, 40, '▼', () => { this.scroll++; }, { off: this.scroll >= pages - 1, bg: '#33355a' }); } return this.scroll * per; },
   p_q_root() {
-    this.qhead('Menu rápido', true); const h = S.held(), P = this.player, pet = PETS.find((x) => x.id === S.d.pet) || PETS[0], R = (i, label, cb, o) => this.btn(224, 58 + i * 34, 320, 31, label, cb, Object.assign({ bg: '#4a5cc8', fs: 15 }, o || {}));
-    [['🐱 Avatar', 'q_avatar'], ['🏠 Casa' + (home.mine() && home.editing ? ' (decorando)' : ''), 'q_home'], ['🗡 Itens na pata: ' + h.n, 'q_items'], ['🐾 Bichinho: ' + pet.n, 'q_pets'], ['🔨 Fabricar itens', 'q_craft'], ['📦 Colocar objetos', 'q_spawn'], ['😺 Emotes', 'q_emotes'], ['🗺 Viajar', 'q_travel'], ['🍖 Consumíveis', 'q_use']].forEach((r, i) => R(i, r[0], () => { this.page = r[1]; this.scroll = 0; }));
-    R(9, '📷 Câmera: ' + ['1ª pessoa', '2ª pessoa (de frente)', '3ª pessoa (por trás)'][P.viewMode - 1], () => P.cycleView(), { bg: '#33355a' });
-    R(10, '📸 Tirar foto', () => { this.hide(); setTimeout(() => self.RVphoto && self.RVphoto(), 120); }, { bg: '#33355a' });
-    R(11, rec.on ? '⏹ Parar e baixar vídeo (' + Math.floor(rec.seconds()) + 's)' : '⏺ Gravar vídeo', () => { const m = rec.toggle(G.renderer.domElement); if (m) this.msg = m; else if (rec.on) this.hide(); }, { bg: rec.on ? '#b04050' : '#33355a', off: !rec.supported() });
-    R(12, '📜 Menu completo', () => { this.page = 'map'; }, { bg: '#33355a' });
+    this.qhead('Menu rápido', true); const h = S.held(), P = this.player, pet = PETS.find((x) => x.id === S.d.pet) || PETS[0], R = (i, label, cb, o) => this.btn(224, 58 + i * 32, 320, 29, label, cb, Object.assign({ bg: '#4a5cc8', fs: 15 }, o || {}));
+    [['💬 Chat', 'q_chat'], ['🐱 Avatar', 'q_avatar'], ['🏠 Casa' + (home.mine() && home.editing ? ' (decorando)' : ''), 'q_home'], ['🗡 Itens na pata: ' + h.n, 'q_items'], ['🐾 Bichinho: ' + pet.n, 'q_pets'], ['🔨 Fabricar itens', 'q_craft'], ['📦 Colocar objetos', 'q_spawn'], ['😺 Emotes', 'q_emotes'], ['🗺 Viajar', 'q_travel'], ['🍖 Consumíveis', 'q_use']].forEach((r, i) => R(i, r[0], () => { this.page = r[1]; this.scroll = 0; }));
+    R(10, '📷 Câmera: ' + ['1ª pessoa', '2ª pessoa (de frente)', '3ª pessoa (por trás)'][P.viewMode - 1], () => P.cycleView(), { bg: '#33355a' });
+    R(11, '📸 Tirar foto', () => { this.hide(); setTimeout(() => self.RVphoto && self.RVphoto(), 120); }, { bg: '#33355a' });
+    R(12, rec.on ? '⏹ Parar e baixar vídeo (' + Math.floor(rec.seconds()) + 's)' : '⏺ Gravar vídeo', () => { const m = rec.toggle(G.renderer.domElement); if (m) this.msg = m; else if (rec.on) this.hide(); }, { bg: rec.on ? '#b04050' : '#33355a', off: !rec.supported() });
+    R(13, '📜 Menu completo', () => { this.page = 'map'; }, { bg: '#33355a' });
+  },
+  p_q_chat() {
+    this.qhead('💬 Chat'); const g = this.g, log = G.chatLog.slice(-5); g.fillStyle = 'rgba(255,255,255,0.07)'; roundRect(g, 224, 58, 320, 136, 10); g.fill();
+    if (!log.length) this.text(384, 126, 'Nenhuma mensagem ainda.', { a: 'center', fs: 15, c: '#99a', b: false });
+    log.forEach((m, i) => this.text(234, 74 + i * 26, m.who + ': ' + m.text, { fs: 14, b: false, max: 300, c: i === log.length - 1 ? '#fff' : '#cfd3ea' }));
+    QUICK_CHAT.forEach((q, i) => this.btn(224 + (i % 2) * 162, 202 + Math.floor(i / 2) * 40, 158, 36, q, () => { G.say(q); play('click', 0.4); }, { bg: '#33355a', fs: 15 }));
+    this.btn(224, 446, 320, 46, '⌨ Escrever mensagem', () => this.keyboard('Mensagem para a sala', '', 60, (t) => G.say(t), 'q_chat'), { bg: '#4a5cc8', fs: 17 });
   },
   p_q_pets() {
     this.qhead('🐾 Bichinhos'); const off = this.qpager(PETS.length, 6);
@@ -194,6 +207,7 @@ export const ui = {
     for (const t of this.toasts) t.life -= dt; if (this.toasts.length && this.toasts[0].life <= 0) { this.toasts.shift(); this.hudDirty = true; }
     this.hudT -= dt; if (this.hudDirty && this.hudT <= 0) { this.hudDirty = false; this.hudT = 0.2; this.drawHud(); }
     this.cross.visible = this.player.desktop;
+    if (this.chatT > 0) { this.chatT -= dt; this.chatPlane.material.opacity = Math.min(1, this.chatT); this.chatPlane.visible = this.chatT > 0 && !(this.open && this.page === 'kb'); }
     if (this.bannerT > 0) { this.bannerT -= dt; this.banner.material.opacity = Math.min(1, this.bannerT * 2); this.banner.scale.setScalar(1 + Math.max(0, this.bannerT - (this.bannerT > 0 ? 0 : 0)) * 0); if (this.bannerT <= 0) this.banner.visible = false; }
     if (!this.open) return;
     if (this.page === 'config' || this.page === 'map') { this.cfgT = (this.cfgT || 0) - dt; if (this.cfgT <= 0) { this.cfgT = 1; this.dirty = true; } }
