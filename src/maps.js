@@ -30,13 +30,13 @@ function house(w, x, z, ry, o) {
   w.addBoxC(x, base + fl * s, z, s * 0.8, s * 0.3, s * 0.8); w.addBoxC(x, base + fl * s, z, s * 0.45, s * 0.62, s * 0.45); w.addBoxC(x, base + fl * s, z, s * 0.15, s * 0.9, s * 0.15);
   if (o.chimney) w.put('town/chimney', x, z, { s, ry, abs: base + fl * s });
 }
-function tower(w, x, z, s, mids, roof) {
+function tower(w, x, z, s, mids, roof, tint) {
   const base = w.heightAt(x, z); let y = base;
-  w.put('castle/tower-square-base', x, z, { s, abs: y }); y += 1.01 * s;
-  for (let i = 0; i < mids; i++) { w.put(i % 2 ? 'castle/tower-square-mid-windows' : 'castle/tower-square-mid', x, z, { s, abs: y }); y += 1.01 * s; }
-  w.put('castle/tower-square-top', x, z, { s, abs: y });
+  w.put('castle/tower-square-base', x, z, { s, abs: y, tint }); y += 1.01 * s;
+  for (let i = 0; i < mids; i++) { w.put(i % 2 ? 'castle/tower-square-mid-windows' : 'castle/tower-square-mid', x, z, { s, abs: y, tint }); y += 1.01 * s; }
+  w.put('castle/tower-square-top', x, z, { s, abs: y, tint });
   w.addBoxC(x, base - 1, z, s, y - base + 1, s);
-  if (roof) { w.put('castle/tower-square-roof', x, z, { s: s * 0.9, abs: y + 0.3 * s }); w.addBoxC(x, y, z, s * 0.6, s * 1.2, s * 0.6); }
+  if (roof) { w.put('castle/tower-square-roof', x, z, { s: s * 0.9, abs: y + 0.3 * s, tint }); w.addBoxC(x, y, z, s * 0.6, s * 1.2, s * 0.6); }
   else { for (let k = 0; k < 4; k++) { const a = k * H; w.addBoxC(x + Math.cos(a) * s * 0.46, y, z + Math.sin(a) * s * 0.46, k % 2 ? s : s * 0.08, s * 0.28, k % 2 ? s * 0.08 : s); } }
   return y; // altura do topo
 }
@@ -92,8 +92,8 @@ export const MAPS = {
       ring(8, 14.5, (x, z) => lampPost(w, E, x, z), PI / 8);
       ring(8, 11, (x, z, a) => w.put('grave/bench', x, z, { s: 2, ry: -a + H, col: 'box' }), PI / 8);
       // portais para os outros mapas
-      const dest = ['forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero'];
-      ring(10, 20.5, (x, z, a, i) => E.portal(dest[i], x, z), -H + PI / 10);
+      const dest = ['forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero', 'dark', 'pool'];
+      ring(12, 21.5, (x, z, a, i) => E.portal(dest[i], x, z), -H + PI / 10);
       // casas
       ring(10, 33, (x, z, a, i) => { const ry = Math.round(Math.atan2(z, -x) / H) * H; house(w, x, z, ry, { wood: i % 2, floors: 1 + (i % 3 === 0 ? 1 : 0), chimney: i % 2, s: 4.6, roof: i % 3 === 1 ? 'town/roof-point' : 'town/roof-high-point' }); }, 0.3);
       ring(7, 47, (x, z, a, i) => { if (Math.hypot(x - pond[0], z - pond[1]) < 16) return; const ry = Math.round(Math.atan2(z, -x) / H) * H; house(w, x, z, ry, { wood: (i + 1) % 2, s: 4.2 }); }, 0.9);
@@ -440,6 +440,116 @@ export const MAPS = {
       for (let i = 0; i < 8; i++) { let x, z; do { const a = r() * 6.28, d = 48 + r() * 14; x = Math.cos(a) * d; z = Math.sin(a) * d; } while (!land(x, z)); E.tree(x, z, 'nature/tree_palmTall'); } lampPost(w, E, -4, 66); lampPost(w, E, 4, 66);
     }
   },
+  // ======================= REINO SOMBRIO (Dark Fantasy) =======================
+  dark: {
+    name: 'Reino Sombrio', size: 170, surface: 'stone', sky: [0x3a2252, 0x7a2438, 0x0a0614], fog: 0.6,
+    spawn: [0, 70, PI], build(w, E, r) {
+      const river = (x) => Math.sin(x * 0.05 + 1) * 16 + 30, DK = [0.4, 0.4, 0.56], DT = [0.42, 0.36, 0.5];
+      w.heightFn = (x, z) => { let h = (fbm(x * 0.03, z * 0.03, 51, 3) - 0.42) * 10; const cd = Math.max(Math.abs(x), Math.abs(z + 24)); if (cd < 30) h = h * smooth(clamp((cd - 22) / 8, 0, 1)) + 1.5 * (1 - smooth(clamp((cd - 22) / 8, 0, 1)));
+        const rd = Math.abs(z - river(x)); if (rd < 9) h -= smooth(1 - rd / 9) * (3.5 + Math.max(0, h) * 0.5); const sp = Math.hypot(x, z - 66); if (sp < 12) h *= smooth(clamp((sp - 6) / 6, 0, 1)); const d = Math.hypot(x, z); if (d > 74) h += Math.min(10, (d - 74) * (d - 74) * 0.06); return h; };
+      const g1 = C(0x3d3a4a), g2 = C(0x2b2836), mud = C(0x3a2a35), path = C(0x5c5262);
+      w.buildGround(64, (x, z, h, c) => { mix(c, g1, g2, noise2(x * 0.12, z * 0.12, 7)); if (Math.abs(x) < 3 && z > -4 && z < 68) mix(c, c, path, 0.85); if (h < -1) mix(c, c, mud, 0.8); });
+      w.addWater(-1.4, 0x4a1a5a);
+      returnPortal(w, E, 0, 76);
+      // ponte de pedra sobre o rio sombrio
+      const rz = river(0); for (let k = -4; k <= 4; k++) boxAbs(w, 0, -0.6 + (4 - Math.abs(k)) * 0.15, rz + k * 2.4, 3.6, 0.4, 2.5, 0x4a4252);
+      for (const sx of [-1.9, 1.9]) for (let k = -4; k <= 4; k += 2) w.put('grave/lantern-candle', sx, rz + k * 2.4, { s: 2.2, abs: -0.1 + (4 - Math.abs(k)) * 0.15 });
+      // castelo em ruínas
+      const L = 20, cz = -24, S = 6;
+      for (let i = -3; i <= 3; i++) for (const side of [0, 1, 2, 3]) {
+        if ((i * 7 + side * 3) % 5 === 0 && !(side === 0 && i === 0)) continue; // trechos desmoronados
+        const p = i * S, x = side === 0 || side === 2 ? p : side === 1 ? L : -L, z = side === 0 ? cz + L : side === 2 ? cz - L : cz + p, gate = side === 0 && i === 0, half = (i + side) % 3 === 0;
+        w.put(gate ? 'castle/wall-doorway' : half ? 'castle/wall-half' : 'castle/wall', x, z, { s: S, ry: side % 2 ? H : 0, abs: 1.5, tint: DK });
+        if (gate) { w.addBoxC(x - 2.4, 0, z, 1.2, 9.4, 3); w.addBoxC(x + 2.4, 0, z, 1.2, 9.4, 3); w.addBoxC(x, 6.1, z, 6, 3.2, 3); } else w.addBoxC(x, 0, z, side % 2 ? 3 : S, half ? 5 : 9.4, side % 2 ? S : 3);
+      }
+      tower(w, -L, cz + L, 7, 1, true, DK); tower(w, L, cz + L, 7, 2, false, DK); tower(w, L, cz - L, 7, 1, true, DK);
+      const ky = tower(w, -L, cz - L, 8, 4, false, DK); w.put('castle/flag-banner-long', -L + 4.1, cz - L, { s: 4, abs: ky - 6, ry: H, tint: [0.6, 0.2, 0.25] });
+      for (let i = 0; i < 16; i++) { const a = i * 0.78, y = 2 + i * 1.6; boxAbs(w, -L + Math.cos(a) * 5.6, y, cz - L + Math.sin(a) * 5.6, 2.2, 0.35, 2.2, 0x4a4252); } // escada em espiral até o alto da torre
+      E.secret('dark', -L, ky + 0.6, cz - L, 3); E.chest('k_tower', -L + 1.5, ky, cz - L + 1, 2); E.lamp(-L, ky + 2.2, cz - L, 0xff3050);
+      // sala do trono: altar, trono e cristal amaldiçoado
+      boxAbs(w, 0, 1.5, cz - 8, 10, 0.6, 6, 0x3a3242); w.put('dungeon/chair', 0, cz - 9.5, { s: 5, abs: 2.1, ry: 0, col: 'box', tint: [0.6, 0.3, 0.35] });
+      w.put('grave/altar-stone', 0, cz - 4.5, { s: 3, abs: 2.1, col: 'box', tint: DK }); w.put('prim/sphere', 0, cz - 4.5, { s: 1.3, abs: 3.6, tint: [1.6, 0.25, 0.35] }); E.lamp(0, 4.3, cz - 4.5, 0xff2040);
+      for (const sx of [-6, 6]) for (const sz of [-14, -2]) { w.put('grave/fire-basket', sx, cz + sz, { s: 3, abs: 1.5 }); E.lamp(sx, 2.3, cz + sz, 0xff7a30); w.put('grave/column-large', sx * 1.4, cz + sz, { s: 4, abs: 1.5, col: 'trunk', cw: 0.3, tint: DK }); }
+      E.chest('k_throne', 3.5, 2.1, cz - 10, 2); E.enemy('vampire', 0, cz - 2, true);
+      // cemitério
+      const gx = 44, gz = 8; for (let i = 0; i < 6; i++) for (let j = 0; j < 4; j++) { if (r() < 0.2) continue; w.put(['grave/gravestone-cross', 'grave/gravestone-round', 'grave/gravestone-broken', 'grave/gravestone-decorative'][Math.floor(r() * 4)], gx - 10 + i * 4, gz - 6 + j * 4, { s: 2.6, ry: (r() - 0.5) * 0.4, col: 'box', cs: 0.7, tint: DK }); }
+      w.put('grave/crypt-large', gx, gz + 12, { s: 4, ry: PI, col: 'box', tint: DK }); w.put('grave/crypt-small', gx - 12, gz + 10, { s: 4, ry: PI, col: 'box', tint: DK }); w.put('grave/cross-column', gx + 12, gz - 10, { s: 4, col: 'box', tint: DK });
+      for (let i = -3; i <= 3; i++) { w.put('grave/iron-fence', gx + i * 4, gz - 12, { s: 4, tint: DK }); w.put('grave/iron-fence', gx + i * 4, gz + 18, { s: 4, ry: PI, tint: DK }); }
+      for (const [x, z] of [[gx - 8, gz], [gx + 8, gz + 4], [gx, gz - 4], [gx - 4, gz + 8]]) { w.put('grave/candle-multiple', x, z, { s: 3 }); E.lamp(x, w.heightAt(x, z) + 0.8, z, 0xffb050); }
+      scatter(w, r, ['grave/pumpkin-carved', 'grave/pumpkin-tall-carved', 'grave/urn-round', 'grave/debris', 'grave/coffin'], 18, { area: [gx - 14, gz - 10, gx + 14, gz + 16], s: [2, 3] });
+      E.chest('k_crypt', gx, null, gz + 7, 1); E.sign('Cemitério dos Bigodes Perdidos', gx, w.heightAt(gx, gz - 14) + 2.6, gz - 14);
+      // floresta morta, rochas e ruínas
+      const free = (x, z) => Math.max(Math.abs(x), Math.abs(z - cz)) > 30 && Math.hypot(x - gx, z - gz - 3) > 18 && Math.abs(z - river(x)) > 7 && Math.hypot(x, z - 66) > 10 && !(Math.abs(x) < 4 && z > 0);
+      scatter(w, r, ['grave/pine', 'grave/pine-crooked', 'grave/pine-fall', 'grave/trunk-long'], 120, { s: [2.4, 4.2], col: 'trunk', cw: 0.08, ok: free, tint: DT });
+      scatter(w, r, ['grave/rocks-tall', 'nature/rock_tallA', 'nature/stone_tallB', 'grave/stone-wall-damaged', 'grave/brick-wall'], 40, { s: [2.5, 5], col: 'box', cs: 0.7, ok: free, tint: DK });
+      scatter(w, r, ['nature/mushroom_tanTall', 'nature/grass', 'grave/debris'], 90, { s: [2, 3], ok: free, detail: 1, tint: [0.7, 0.5, 0.9] });
+      for (let k = 0; k < 12; k++) { const z = 62 - k * 6.5; if (Math.abs(z - river(0)) < 8) continue; for (const sx of [-4, 4]) if (k % 2) { w.put('grave/lightpost-single', sx, z, { s: 3.2, ry: sx > 0 ? PI : 0, col: 'trunk', cw: 0.05, tint: DK }); E.lamp(sx * 0.82, w.heightAt(sx, z) + 3.9, z, 0xb070ff); } }
+      // acampamento da bruxa
+      w.put('nature/campfire_stones', 7, 62, { s: 3 }); w.put('nature/campfire_logs', 7, 62, { s: 3 }); E.lamp(7, w.heightAt(7, 62) + 0.6, 62, 0x60ff90); w.put('nature/tent_detailedOpen', 13, 58, { s: 5, ry: -2.3, col: 'box', cs: 0.7, tint: [0.5, 0.35, 0.6] });
+      E.npc('corvina', 'Corvina', 'Bruxa das Sombras', 9, 64, { fur: '#3b3b45', fur2: '#9b6ad6', pattern: 2, eyes: '#9b6ad6', hat: 8, acc: 5 }, { quests: ['k1', 'k2', 'k3'], shop: 'general', lines: ['Bem-vindo ao Reino Sombrio, gatinho. Daqui pra frente, nada é gentil.', 'O Conde Miaulácula guarda o trono do castelo em ruínas. Leve amigos.', 'No alto da torre mais alta há algo que brilha. Suba pela escada em espiral.', 'Cristais de ametista crescem perto das criptas. Eles adoram a escuridão.'] });
+      // minérios amaldiçoados e inimigos
+      for (let i = 0; i < 14; i++) { let x, z; do { x = (r() - 0.5) * 140; z = (r() - 0.5) * 140; } while (!free(x, z)); E.ore(i < 5 ? 'amethyst' : i < 8 ? 'ruby' : i < 11 ? 'silver' : 'coal', x, z); }
+      const spawnE = (type, n, ok) => { for (let i = 0; i < n; i++) { let x, z, t = 0; do { x = (r() - 0.5) * 140; z = (r() - 0.5) * 140; } while (!ok(x, z) && t++ < 200); E.enemy(type, x, z); } };
+      spawnE('ghost', 4, (x, z) => Math.hypot(x - gx, z - gz - 3) < 18); spawnE('skeleton', 4, (x, z) => Math.hypot(x - gx, z - gz - 3) < 22); spawnE('darkknight', 4, (x, z) => Math.max(Math.abs(x), Math.abs(z - cz)) < 18 && Math.hypot(x, z - cz + 6) > 6);
+      spawnE('vampire', 3, free); spawnE('zombie', 3, free);
+      E.chest('k_1', -56, null, 30, 1); E.chest('k_2', 58, null, -40, 1); E.chest('k_3', -40, null, -60, 0);
+      E.sign('Castelo em Ruínas', 0, w.heightAt(0, -1) + 2.8, -1);
+    }
+  },
+  // ======================= POOLROOMS =======================
+  pool: {
+    name: 'Poolrooms', size: 120, surface: 'stone', sky: [0xeaf6ff, 0xfff1e6, 0x9cc0d0], fog: 0.75, swim: true,
+    spawn: [0, 0, 0], build(w, E, r) {
+      const N = 7, CS = 16, O = -48, FL = 0, CE = 6.5, WT = 0.6;
+      w.heightFn = (x, z) => { const d = Math.max(Math.abs(x), Math.abs(z)); return -4 + (d > 57 ? Math.min(14, (d - 57) * 4) : 0); };
+      const tile = C(0x9fdde0), deep = C(0x6cc4cc);
+      w.buildGround(48, (x, z, h, c) => { mix(c, tile, deep, 0.4 + noise2(x * 0.2, z * 0.2, 3) * 0.2); });
+      w.addWater(0.25, 0xbff8f6, 1, 0.38);
+      const TT = { [0xf2f7f6]: [1.2, 1.28, 1.28], [0xf8fbfa]: [1.3, 1.34, 1.34], [0xbfeee8]: [0.95, 1.25, 1.2], [0xfff2c4]: [1.3, 1.24, 1.0], [0xd6e8ff]: [1.08, 1.18, 1.32] };
+      const pb = (x, y, z, sx, sy, sz, col) => w.put('prim/box', x, z, { s: [sx, sy, sz], tint: TT[col] || [1.2, 1.28, 1.28], abs: y, col: 'box' });
+      const WH = 0xf2f7f6, CEIL = 0xf8fbfa, ACC = [0xbfeee8, 0xfff2c4, 0xf2f7f6, 0xf2f7f6, 0xd6e8ff];
+      const cell = [];
+      for (let i = 0; i < N; i++) { cell[i] = []; for (let j = 0; j < N; j++) { const spawn = i === 3 && j === 3, secret = i === 6 && j === 6; cell[i][j] = { cx: O + i * CS, cz: O + j * CS, pool: secret ? 'full' : spawn ? null : r() < 0.38 ? 'rect' : null, sky: spawn || r() < 0.12, col: ACC[Math.floor(r() * ACC.length)], pil: r() < 0.3, dive: r() < 0.25 }; } }
+      cell[5][6].pool = 'east'; // piscina que encosta na parede da sala secreta (passagem submersa)
+      // piso: caixas com topo em y = 0, deixando buracos onde há piscina (fundo em y = -4)
+      for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+        const c = cell[i][j], x0 = c.cx - CS / 2, z0 = c.cz - CS / 2;
+        let px0, px1, pz0, pz1;
+        if (c.pool === 'full') { px0 = x0; px1 = x0 + CS; pz0 = z0; pz1 = z0 + CS; }
+        else if (c.pool === 'east') { px0 = x0 + 5; px1 = x0 + CS; pz0 = z0 + 4; pz1 = z0 + CS - 4; }
+        else if (c.pool) { const a = 3 + Math.floor(r() * 3), b = 3 + Math.floor(r() * 3); px0 = x0 + a; px1 = x0 + CS - b; pz0 = z0 + 3 + Math.floor(r() * 2); pz1 = z0 + CS - 3 - Math.floor(r() * 2); }
+        const fb = (ax, az, bx, bz) => { if (bx - ax > 0.05 && bz - az > 0.05) pb((ax + bx) / 2, FL - 4.2, (az + bz) / 2, bx - ax, 4.2, bz - az, c.col); };
+        if (!c.pool) fb(x0, z0, x0 + CS, z0 + CS);
+        else { fb(x0, z0, x0 + CS, pz0); fb(x0, pz1, x0 + CS, z0 + CS); fb(x0, pz0, px0, pz1); fb(px1, pz0, x0 + CS, pz1); c.pr = [px0, pz0, px1, pz1];
+          for (let k = 0; k < 2; k++) { const x = px0 + 1 + r() * (px1 - px0 - 2), z = pz0 + 1 + r() * (pz1 - pz0 - 2); E.collect('pearl', 'plat/jewel', x, z, 1.5, [2.2, 2.2, 2.4]); }
+          if (c.dive && c.pool === 'rect') { const sx = px0 - 1.2, sz = (pz0 + pz1) / 2; for (let k = 0; k < 4; k++) pb(sx - 3 + k * 0.01, FL, sz - 3 + k * 1.2, 1.6, 0.6 * (k + 1), 1.2, WH); pb(sx, FL, sz + 1.6, 1.6, 2.6, 1.8, WH); } }
+        // teto e luz fluorescente
+        if (!c.sky) { pb(c.cx, CE, c.cz, CS, 0.5, CS, CEIL); for (const [ox, oz] of [[-4, -4], [4, 4], [-4, 4], [4, -4]]) { w.put('prim/box', c.cx + ox, c.cz + oz, { s: [2.6, 0.08, 0.5], abs: CE - 0.08, tint: [1.6, 1.6, 1.6] }); } E.lamp(c.cx, CE - 0.35, c.cz, 0xeaffff); }
+        if (c.pil && !c.pool) for (const [ox, oz] of [[-4, -4], [4, -4], [-4, 4], [4, 4]]) pb(c.cx + ox, FL, c.cz + oz, 1, CE, 1, WH);
+      }
+      // paredes entre salas: abertas, com porta ou com arco; bordas fechadas
+      const wall = (x, z, len, alongX, mode, under) => { // mode: 'door' | 'solid'
+        const y0 = under ? -1.2 : FL - 4.2, h = CE - y0;
+        const seg = (a, b) => { if (b - a < 0.1) return; const m = (a + b) / 2, l = b - a; if (alongX) pb(x - len / 2 + m, y0, z, l, h, WT, WH); else pb(x, y0, z - len / 2 + m, WT, h, l, WH); };
+        if (mode === 'solid') seg(0, len); else { const d = 3 + r() * (len - 10), dw = 4; seg(0, d); seg(d + dw, len); if (alongX) pb(x - len / 2 + d + dw / 2, 3.6, z, dw, CE - 3.6, WT, WH); else pb(x, 3.6, z - len / 2 + d + dw / 2, WT, CE - 3.6, dw, WH); }
+      };
+      for (let i = 0; i <= N; i++) for (let j = 0; j < N; j++) {
+        const x = O - CS / 2 + i * CS, z = O + j * CS, edge = i === 0 || i === N, sec = (i === 6 && j === 6) || (i === 7 && j === 6);
+        if (i === 6 && j === 6) { wall(x, z, CS, false, 'solid', true); continue; } // sala secreta: só se entra nadando por baixo
+        if (edge || sec) { wall(x, z, CS, false, 'solid'); continue; } if (r() < 0.3) continue; wall(x, z, CS, false, 'door');
+      }
+      for (let j = 0; j <= N; j++) for (let i = 0; i < N; i++) {
+        const x = O + i * CS, z = O - CS / 2 + j * CS, edge = j === 0 || j === N, sec = i === 6 && (j === 6 || j === 7);
+        if (edge || sec) { wall(x, z, CS, true, 'solid'); continue; } if (r() < 0.3) continue; wall(x, z, CS, true, 'door');
+      }
+      // sala secreta: ilhota com estrela, baú e uma luz que pisca
+      const sc = cell[6][6]; pb(sc.cx, FL - 4.2, sc.cz, 5, 4.6, 5, 0xfff2c4); E.secret('pool', sc.cx, 1.2, sc.cz, 2.5); E.chest('p_secret', sc.cx + 1.4, 0.4, sc.cz + 1.4, 3); E.lamp(sc.cx, CE - 1, sc.cz, 0xff8080);
+      // sala inicial
+      returnPortal(w, E, 4, 4); E.sign('Não se perca.', -3, 2.8, -6);
+      E.npc('eco', 'Eco', 'Salva-vidas', -4, 3, { fur: '#f5f1e8', fur2: '#e05050', pattern: 5, eyes: '#4aa3e0', hat: 0, acc: 8 }, { quests: ['p1', 'p2', 'p3'], lines: ['Ah, outro gato. Há quanto tempo você está aqui? Eu perdi a conta.', 'As salas continuam. Sempre continuam. Os azulejos são todos iguais.', 'Dizem que há uma sala sem porta. Só se chega nadando por baixo da parede.', 'As piscinas são fundas. Pérolas descansam lá embaixo.'] });
+      for (let k = 0; k < 6; k++) { const c = cell[Math.floor(r() * N)][Math.floor(r() * N)]; if (c.pool || c === cell[3][3]) continue; E.chest('p_' + k, c.cx + 3, 0, c.cz - 3, k % 3 === 0 ? 1 : 0); }
+    }
+  },
   // ======================= CAMPO DE TREINO =======================
   training: {
     name: 'Campo de Treino', size: 120, surface: 'grass', sky: [0x98d0f0, 0xf8b070, 0x0c1228], fog: 1,
@@ -470,7 +580,7 @@ export const MAPS = {
     }
   }
 };
-export const MAP_ORDER = ['village', 'forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero'];
-export const MAP_ICONS = { village: '🏡', forest: '🌲', mine: '⛏', desert: '🏜', snow: '🏔', arena: '🥊', castle: '🏰', city: '🏙', island: '🏝', training: '🎯', aero: '🫧' };
-export const PORTAL_COLORS = { village: 0x70e070, forest: 0x2f9e4f, mine: 0x8a70c0, desert: 0xf0c050, snow: 0xb8e8ff, arena: 0xf05a40, castle: 0xa0a8c0, city: 0x50a0f0, island: 0x30d0d0, training: 0xf0a040, aero: 0x60e8ff };
+export const MAP_ORDER = ['village', 'forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero', 'dark', 'pool'];
+export const MAP_ICONS = { village: '🏡', forest: '🌲', mine: '⛏', desert: '🏜', snow: '🏔', arena: '🥊', castle: '🏰', city: '🏙', island: '🏝', training: '🎯', aero: '🫧', dark: '🦇', pool: '🏊' };
+export const PORTAL_COLORS = { village: 0x70e070, forest: 0x2f9e4f, mine: 0x8a70c0, desert: 0xf0c050, snow: 0xb8e8ff, arena: 0xf05a40, castle: 0xa0a8c0, city: 0x50a0f0, island: 0x30d0d0, training: 0xf0a040, aero: 0x60e8ff, dark: 0x9a2050, pool: 0x9ff0e8 };
 export { hasModel };

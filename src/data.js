@@ -87,6 +87,12 @@ export const QUESTS = {
   z2: { npc: 'aqua', title: 'Pérolas do fundo', desc: 'Entregue 8 Pérolas colhidas no fundo do lago.', goal: { t: 'deliver', k: 'pearl', n: 8 }, xp: 200, coins: 220, after: 'z1' },
   z3: { npc: 'aqua', title: 'A cúpula submersa', desc: 'Ache o segredo no fundo do lago.', goal: { t: 'secret', k: 'aero', n: 1 }, xp: 240, coins: 260, after: 'z2' },
   z4: { npc: 'vista', title: 'Estoura-bolhas', desc: 'Estoure 25 bolhas flutuantes com as patas.', goal: { t: 'pop', n: 25 }, xp: 110, coins: 90 },
+  k1: { npc: 'corvina', title: 'Cavaleiros sem alma', desc: 'Derrote 3 Cavaleiros Sombrios no castelo em ruínas.', goal: { t: 'kill', k: 'darkknight', n: 3 }, xp: 180, coins: 160 },
+  k2: { npc: 'corvina', title: 'A torre mais alta', desc: 'Suba a escada em espiral e ache o segredo no topo da torre.', goal: { t: 'secret', k: 'dark', n: 1 }, xp: 220, coins: 200, after: 'k1' },
+  k3: { npc: 'corvina', title: 'Cristais da escuridão', desc: 'Entregue 4 Ametistas.', goal: { t: 'deliver', k: 'amethyst', n: 4 }, xp: 200, coins: 240 },
+  p1: { npc: 'eco', title: 'A sala sem porta', desc: 'Encontre a sala secreta: só se entra nadando por baixo da parede.', goal: { t: 'secret', k: 'pool', n: 1 }, xp: 220, coins: 200 },
+  p2: { npc: 'eco', title: 'Pérolas esquecidas', desc: 'Entregue 6 Pérolas das piscinas.', goal: { t: 'deliver', k: 'pearl', n: 6 }, xp: 160, coins: 180 },
+  p3: { npc: 'eco', title: 'Nadando sem fim', desc: 'Nade 250 metros.', goal: { t: 'swim', n: 250 }, xp: 140, coins: 120, after: 'p2' },
   t2: { npc: 'sensei', title: 'Defesa primeiro', desc: 'Bloqueie 5 golpes do Mestre.', goal: { t: 'blocked', n: 5 }, xp: 120, coins: 90, after: 't1' }
 };
 // Missões diárias (3 por dia, sorteadas pela data UTC)
@@ -178,9 +184,11 @@ export const ENEMIES = {
   ghost: { n: 'Fantasma', model: 'grave/character-ghost', s: 1.7, hp: 40, dmg: 8, sp: 2.3, xp: 18, coins: [4, 10], drop: ['quartz', 0.08], fly: 1 },
   skeleton: { n: 'Esqueleto', model: 'grave/character-skeleton', s: 1.75, hp: 55, dmg: 10, sp: 2.7, xp: 24, coins: [6, 14], drop: ['oldcoin', 0.18] },
   zombie: { n: 'Zumbi', model: 'grave/character-zombie', s: 1.7, hp: 75, dmg: 12, sp: 1.7, xp: 26, coins: [6, 14], drop: ['snack', 0.25] },
-  orc: { n: 'Orc', model: 'dungeon/character-orc', s: 1.95, hp: 100, dmg: 15, sp: 2.4, xp: 40, coins: [10, 22], drop: ['iron', 0.35] }
+  orc: { n: 'Orc', model: 'dungeon/character-orc', s: 1.95, hp: 100, dmg: 15, sp: 2.4, xp: 40, coins: [10, 22], drop: ['iron', 0.35] },
+  vampire: { n: 'Vampiro', model: 'grave/character-vampire', s: 1.8, hp: 80, dmg: 13, sp: 2.9, xp: 34, coins: [8, 18], drop: ['ruby', 0.12] },
+  darkknight: { n: 'Cavaleiro Sombrio', model: 'arena/character-soldier', s: 2.0, hp: 95, dmg: 14, sp: 2.5, xp: 38, coins: [9, 20], drop: ['amethyst', 0.2], tint: [0.42, 0.36, 0.55] }
 };
-export const BOSS_NAMES = { ghost: 'Espectro Ancião', skeleton: 'Rei Esqueleto', zombie: 'Zumbi Gigante', orc: 'Chefe Orc' };
+export const BOSS_NAMES = { ghost: 'Espectro Ancião', skeleton: 'Rei Esqueleto', zombie: 'Zumbi Gigante', orc: 'Chefe Orc', vampire: 'Conde Miaulácula', darkknight: 'Lorde Sombrio' };
 export const BOSS_DROPS = ['emerald', 'ruby', 'relic', 'amethyst'];
 
 // Acessórios CONQUISTÁVEIS (não se compram): liberam quando a condição é cumprida. s = estatística, v = valor.

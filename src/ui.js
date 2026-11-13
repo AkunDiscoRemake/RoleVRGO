@@ -187,7 +187,7 @@ export const ui = {
   // ---------- páginas ----------
   p_map() {
     const ev = currentEvent(net.now()); this.text(20, 80, 'Viagem rápida (mapas já visitados)', { c: '#bfe6ff' });
-    MAP_ORDER.forEach((id, i) => { const ok = id === 'village' || S.d.maps.indexOf(id) >= 0, here = id === G.mapId; this.btn(20 + (i % 6) * 123, 96 + Math.floor(i / 6) * 92, 117, 84, MAP_ICONS[id] + ' ' + MAPS[id].name, () => { this.hide(); G.travel(id); }, { off: !ok || here, sel: here, fs: 16, bg: ev.active && ev.map === id ? '#a05cc8' : '#4a5cc8' }); });
+    MAP_ORDER.forEach((id, i) => { const ok = id === 'village' || S.d.maps.indexOf(id) >= 0, here = id === G.mapId; this.btn(20 + (i % 7) * 104, 96 + Math.floor(i / 7) * 92, 100, 84, MAP_ICONS[id] + ' ' + MAPS[id].name, () => { this.hide(); G.travel(id); }, { off: !ok || here, sel: here, fs: 16, bg: ev.active && ev.map === id ? '#a05cc8' : '#4a5cc8' }); });
     this.text(20, 278, 'Mapas com 🔒 cinza: entre uma vez pelo portal na Vila para liberar.', { fs: 15, c: '#99a', b: false });
     const g = this.g; g.fillStyle = 'rgba(255,255,255,0.07)'; roundRect(g, 20, 296, W - 40, 150, 12); g.fill();
     this.text(34, 318, '🌟 ' + (ev.active ? 'Evento ativo: ' + ev.ev.n : 'Próximo evento: ' + ev.ev.n), { c: '#ffe070' });
@@ -356,7 +356,7 @@ export const ui = {
       this.btn(20, 258, 240, 36, '💰 Chuva de 20 moedas', () => done(admin.send('drop', 'map:' + mk, { coins: 10, n: 20, x: P.pos.x, y: P.pos.y, z: P.pos.z })), { bg: '#8a6a10', fs: 15 });
       this.btn(268, 258, 220, 36, '💰 +1000 para mim', () => { S.addCoins(1000); }, { bg: '#3a9a5a', fs: 15 }); this.btn(496, 258, 252, 36, '⭐ +1 nível para mim', () => { S.addXp(S.xpNeed() - S.d.xp); }, { bg: '#3a9a5a', fs: 15 });
       this.text(20, 318, 'Bichos (aparecem perto de você, para todos do mapa):', { fs: 14, b: false, c: '#dde' });
-      Object.keys(ENEMIES).forEach((k, i) => this.btn(20 + i * 120, 330, 114, 40, (a.boss ? '👑 ' : '') + (a.boss ? BOSS_NAMES[k] : ENEMIES[k].n), () => done(admin.send('spawn', 'map:' + mk, { type: k, boss: a.boss, n: a.boss ? 1 : Math.min(8, a.qty), x: P.pos.x - Math.sin(P.headYaw) * 6, z: P.pos.z - Math.cos(P.headYaw) * 6 })), { bg: '#6a3a8a', fs: 13 }));
+      Object.keys(ENEMIES).forEach((k, i) => this.btn(20 + i * 80, 330, 76, 40, (a.boss ? '👑 ' : '') + (a.boss ? BOSS_NAMES[k] : ENEMIES[k].n), () => done(admin.send('spawn', 'map:' + mk, { type: k, boss: a.boss, n: a.boss ? 1 : Math.min(8, a.qty), x: P.pos.x - Math.sin(P.headYaw) * 6, z: P.pos.z - Math.cos(P.headYaw) * 6 })), { bg: '#6a3a8a', fs: 13 }));
       this.btn(500, 330, 248, 40, a.boss ? '👑 Chefes: SIM' : '👑 Chefes: NÃO', () => { a.boss = !a.boss; }, { bg: a.boss ? '#8a6a10' : '#33355a', fs: 15 });
       this.text(20, 392, 'Quantidade de bichos = quantidade escolhida acima (máx. 8). Chefe = 1 por vez.', { fs: 13, b: false, c: '#99a' });
     } else if (a.sub === 'fx') {

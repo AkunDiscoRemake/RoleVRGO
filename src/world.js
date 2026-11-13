@@ -17,12 +17,19 @@ function detailTexture() {
 const groundMat = new THREE.MeshLambertMaterial({ vertexColors: true });
 // Uniformes compartilhados: uGloss liga o acabamento "Frutiger Aero" (borda luminosa + reflexo especular),
 // uCaust liga as cáusticas animadas no fundo do lago.
-export const matU = { uGloss: { value: 0 }, uTime: { value: 0 }, uWaterY: { value: -100 }, uCaust: { value: 0 } };
+export const matU = { uTiles: { value: 0 }, uGloss: { value: 0 }, uTime: { value: 0 }, uWaterY: { value: -100 }, uCaust: { value: 0 } };
 export function glossify(mat, key, ground) {
   mat.onBeforeCompile = (sh) => {
-    sh.uniforms.uGloss = matU.uGloss; sh.uniforms.uTime = matU.uTime; sh.uniforms.uWaterY = matU.uWaterY; sh.uniforms.uCaust = matU.uCaust;
+    sh.uniforms.uGloss = matU.uGloss; sh.uniforms.uTiles = matU.uTiles; sh.uniforms.uTime = matU.uTime; sh.uniforms.uWaterY = matU.uWaterY; sh.uniforms.uCaust = matU.uCaust;
     sh.vertexShader = 'varying vec3 vWp;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\nvWp = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz;\n#else\nvWp = (modelMatrix * vec4(transformed, 1.0)).xyz;\n#endif');
-    sh.fragmentShader = 'uniform float uGloss;\nuniform float uTime;\nuniform float uWaterY;\nuniform float uCaust;\nvarying vec3 vWp;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', [
+    sh.fragmentShader = 'uniform float uGloss;\nuniform float uTiles;\nuniform float uTime;\nuniform float uWaterY;\nuniform float uCaust;\nvarying vec3 vWp;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', [
+      'if (uTiles > 0.0) {', // azulejos procedurais (Poolrooms): rejunte pelo plano dominante da superfície
+      '  vec3 tn = abs(normalize(cross(dFdx(vWp), dFdy(vWp))));',
+      '  vec2 tuv = tn.y > 0.5 ? vWp.xz : (tn.x > 0.5 ? vWp.zy : vWp.xy);',
+      '  vec2 tf = fract(tuv / 0.5); float tl = max(step(tf.x, 0.05), step(tf.y, 0.05));',
+      '  float th = fract(sin(dot(floor(tuv / 0.5), vec2(12.9898, 78.233))) * 43758.5453);',
+      '  outgoingLight *= (1.0 - tl * 0.22 * uTiles) * (0.97 + th * 0.05);',
+      '}',
       'if (uGloss > 0.0) {',
       '  vec3 gn = normalize(vNormal); vec3 gv = normalize(vViewPosition);',
       '  float gf = pow(1.0 - clamp(dot(gn, gv), 0.0, 1.0), 3.0);',
@@ -151,9 +158,9 @@ export class World {
     // "saia" escura além da borda, para o mapa não terminar no vazio
     return m;
   }
-  addWater(y, color, mul) {
+  addWater(y, color, mul, opacity) {
     this.waterY = y; const sz = this.size * (mul || 1), seg = 28;
-    const mat = new THREE.MeshBasicMaterial({ color: color || 0x3a8fd0, transparent: true, opacity: 0.84, side: THREE.DoubleSide });
+    const mat = new THREE.MeshBasicMaterial({ color: color || 0x3a8fd0, transparent: true, opacity: opacity || 0.84, side: THREE.DoubleSide });
     this.waterU = { uTime: { value: 0 } };
     mat.onBeforeCompile = (sh) => { // ondas, reflexo do céu em ângulo rasante (fresnel) e cintilação do sol
       sh.uniforms.uTime = this.waterU.uTime;

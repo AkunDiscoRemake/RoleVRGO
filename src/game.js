@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { World, worldMat, matU, glossify } from './world.js';
 import { MAPS, initPrims, PORTAL_COLORS, MAP_ICONS } from './maps.js';
-import { modelGeometry, play, playAt, meow, purr, pop, setUnder, ambience, chime, splashSfx, chirp } from './assets.js';
+import { modelGeometry, play, playAt, meow, purr, pop, setUnder, ambience, chime, splashSfx, chirp, thunder } from './assets.js';
 import { CatAvatar, HandPool, EMOTES } from './cat.js';
 import { FX, LabelBatch } from './fx.js';
 import { Sky } from './sky.js';
@@ -19,7 +19,7 @@ const _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _q = new THREE.Quatern
 const bubbleMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
   vertexShader: 'varying vec3 vN;\nvoid main(){ vec4 mv = modelViewMatrix * instanceMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * mat3(instanceMatrix) * normal); gl_Position = projectionMatrix * mv; }',
   fragmentShader: 'varying vec3 vN;\nvoid main(){ vec3 n = normalize(vN); float fr = pow(1.0 - abs(n.z), 2.2); float sp = smoothstep(0.90, 0.97, dot(n, normalize(vec3(-0.45, 0.6, 0.66)))) + 0.5 * smoothstep(0.95, 0.99, dot(n, normalize(vec3(0.5, -0.5, 0.7)))); vec3 c = mix(vec3(0.55, 0.92, 1.0), vec3(1.0), fr) + vec3(0.25, 0.1, 0.3) * n.y * fr; gl_FragColor = vec4(c + sp, clamp(0.10 + fr * 0.62 + sp, 0.0, 1.0)); }' });
-const AMBIENT = { aero: 'bubble', village: 'leaf', forest: 'fire', mine: 'spark', desert: 'dust', snow: 'snow', castle: 'leaf', island: 'leaf', training: 'leaf', arena: 'dust' };
+const AMBIENT = { dark: 'ember', pool: '', aero: 'bubble', village: 'leaf', forest: 'fire', mine: 'spark', desert: 'dust', snow: 'snow', castle: 'leaf', island: 'leaf', training: 'leaf', arena: 'dust' };
 const UP = new THREE.Vector3(0, 1, 0), ZERO = new THREE.Vector3(0, 0, 0);
 const instMat = new THREE.MeshLambertMaterial({ vertexColors: true }); glossify(instMat, 'rvinst', false);
 const jellyMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, uniforms: { uTime: matU.uTime },
@@ -64,7 +64,7 @@ export const G = {
     E.dummy = (x, z) => E.dummies.push({ x, z }); E.zone = (type, x, z, r) => E.zones.push({ type, x, z, r }); E.lamp = (x, y, z, c) => E.lamps.push({ x, y, z, c: c || 0xffd890 });
     E.sign = (text, x, y, z) => E.signs.push({ text, x, y, z }); E.board = (x, z, yaw) => E.boards.push({ x, z, yaw }); E.spring = (x, z, p) => E.springs.push({ x, z, p }); E.enemies = []; E.enemy = (type, x, z, boss) => E.enemies.push({ type, x, z, boss }); E.schools = []; E.school = (x, y, z, r, n) => E.schools.push({ x, y, z, r, n }); E.bubbleN = 0; E.bubbles = (n) => { E.bubbleN = n; }; E.rainbow = (x, z, r) => { E.rb = { x, z, r }; }; E.trees = []; E.tree = (x, z, model) => E.trees.push({ x, z, model: model || 'nature/tree_default' }); E.falls = []; E.waterfall = (x, y1, z, y0, wd) => E.falls.push({ x, y1, z, y0, wd });
     def.build(w, E, rng(hashStr(id)));
-    w.swim = !!def.swim; matU.uGloss.value = id === 'aero' || (def.custom && def.sky[0] === 0x4cc6ff) ? 1 : 0; matU.uCaust.value = def.swim ? 1 : 0;
+    w.swim = !!def.swim; matU.uTiles.value = id === 'pool' ? 1 : 0; matU.uGloss.value = id === 'pool' ? 0.6 : id === 'aero' || (def.custom && def.sky[0] === 0x4cc6ff) ? 1 : 0; matU.uCaust.value = def.swim ? 1 : 0;
     this.world = w; this.E = E; this.def = def; this.mapId = id;
     const add = (o) => { scene.add(o); this.objs.push(o); return o; };
     const inst = (geo, n, mat) => { const m = new THREE.InstancedMesh(geo, mat || instMat, Math.max(1, n)); m.count = n; m.frustumCulled = false; m.castShadow = true; return add(m); };
@@ -157,7 +157,7 @@ export const G = {
       for (let i = 0; i < 4; i++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.fx.tex, color: [0xfff2c0, 0x80e8ff, 0xffa0e0, 0xa0ffb0][i], transparent: true, opacity: 0.5, depthTest: false, depthWrite: false, fog: false, blending: THREE.AdditiveBlending })); sp.renderOrder = 12; sp.visible = false; add(sp); ax.flare.push(sp); } }
     // inimigos (um InstancedMesh por tipo)
     this.enemies = []; const eg = {}; for (const e of E.enemies) (eg[e.type] = eg[e.type] || []).push(e);
-    for (const k in eg) { const def = ENEMIES[k], mesh = inst(modelGeometry(def.model), eg[k].length); eg[k].forEach((e, i) => { e.def = e.boss ? Object.assign({}, def, { n: BOSS_NAMES[k], s: def.s * 1.9, hp: def.hp * 6, dmg: Math.round(def.dmg * 1.6), sp: def.sp * 0.9, xp: def.xp * 8, coins: [def.coins[0] * 8, def.coins[1] * 8] }) : def; e.rg = e.boss ? 1.8 : 1; e.mesh = mesh; e.i = i; e.hx = e.x; e.hz = e.z; e.y = w.heightAt(e.x, e.z); e.hp = def.hp; e.state = 'idle'; e.st = 0; e.t = Math.random() * 6; e.ry = Math.random() * 6.28; e.ph = Math.random() * 6; e.tx = e.x; e.tz = e.z; e.flash = 0; e.kx = e.kz = 0; mesh.setColorAt(i, _col.setRGB(1, 1, 1)); this.enemies.push(e); }); }
+    for (const k in eg) { const def = ENEMIES[k], mesh = inst(modelGeometry(def.model), eg[k].length); eg[k].forEach((e, i) => { e.tc = def.tint || [1, 1, 1]; e.def = e.boss ? Object.assign({}, def, { n: BOSS_NAMES[k], s: def.s * 1.9, hp: def.hp * 6, dmg: Math.round(def.dmg * 1.6), sp: def.sp * 0.9, xp: def.xp * 8, coins: [def.coins[0] * 8, def.coins[1] * 8] }) : def; e.rg = e.boss ? 1.8 : 1; e.mesh = mesh; e.i = i; e.hx = e.x; e.hz = e.z; e.y = w.heightAt(e.x, e.z); e.hp = def.hp; e.state = 'idle'; e.st = 0; e.t = Math.random() * 6; e.ry = Math.random() * 6.28; e.ph = Math.random() * 6; e.tx = e.x; e.tz = e.z; e.flash = 0; e.kx = e.kz = 0; mesh.setColorAt(i, _col.setRGB(e.tc[0], e.tc[1], e.tc[2])); this.enemies.push(e); }); }
     w.buildGrid();
     this.player.teleport(sp[0], w.floorAt(sp[0], 50, sp[1]) + 0.1, sp[1], sp[2]);
     for (let i = 0; i < 12; i++) w.update(sp[0], sp[1], perf);
@@ -326,8 +326,14 @@ export const G = {
     hp.end(perf.shadows > 0);
     // lanternas e céu
     this.camera.getWorldPosition(_v); const under = W.swim && _v.y < W.waterY - 0.05; this.under = under;
-    const skyNow = admin.eventOn('night') ? DAY_LENGTH * 750 : admin.eventOn('day') ? DAY_LENGTH * 250 : now;
+    const skyNow = admin.eventOn('night') ? DAY_LENGTH * 750 : admin.eventOn('day') ? DAY_LENGTH * 250 : this.mapId === 'dark' ? DAY_LENGTH * 985 : now; // Reino Sombrio: crepúsculo eterno
     this.sky.update(skyNow, this.def, P.pos, perf, under); this._adminTick(dt, now);
+    if (this.mapId === 'pool') { this.sky.hemi.groundColor.setHex(0xcfeef2); this.sky.hemi.color.setHex(0xffffff); this.sky.sun.color.setHex(0xf4fbff); } // luz fluorescente fria
+    if (this.mapId === 'dark') { // relâmpagos com trovão
+      this.boltT = (this.boltT == null ? 6 : this.boltT) - dt;
+      if (this.boltT <= 0) { this.boltT = 9 + Math.random() * 16; this.bolt = 0.45; setTimeout(() => thunder(0.8), 300 + Math.random() * 900); }
+      if (this.bolt > 0) { this.bolt -= dt; const k = this.bolt > 0.3 || (this.bolt > 0.12 && this.bolt < 0.2) ? 1 : 0.25; this.sky.hemi.intensity += k * 4; this.scene.background.lerp(_col.setHex(0xd8d0ff), k * 0.7); this.scene.fog.color.copy(this.scene.background); }
+    }
     matU.uTime.value = this.time; if (under !== this._wasUnder) { this._wasUnder = under; setUnder(under); }
     this._aero(dt);
     if (this.lampMesh) { const n = this.E.aero ? Math.max(0.5, this.sky.night) : this.sky.night; this.lampMesh.material.color.setScalar(0.5 + n * 0.5); this.glow.visible = n > 0.12 && perf.particles >= 0.5; this.glow.material.opacity = n * 0.85; }
@@ -404,7 +410,7 @@ export const G = {
       const sq = def.fly ? 1 : mv > 0 ? 1 + Math.cos(e.ph * 2) * 0.06 : 1 + Math.sin(t * 2 + e.i) * 0.02;
       _q.setFromAxisAngle(UP, e.ry); _q2.setFromAxisAngle(_v.set(1, 0, 0), lean + (def.fly ? Math.sin(t * 1.7 + e.i) * 0.08 : 0)); _q.multiply(_q2);
       _m.compose(_p.set(e.x, e.y + hop, e.z), _q, _s.set(def.s * sc / Math.sqrt(sq), def.s * sc * sq, def.s * sc / Math.sqrt(sq))); e.mesh.setMatrixAt(e.i, _m); e.mesh.instanceMatrix.needsUpdate = true;
-      if (e.flash > 0 || e.wasFlash) { e.flash -= dt; const f = Math.max(0, e.flash) * 5; e.mesh.setColorAt(e.i, e.state === 'windup' ? _col.setRGB(1 + f * 1.5, 1 - f * 0.4, 1 - f * 0.4) : _col.setRGB(1 + f * 2, 1 + f * 2, 1 + f * 2)); e.mesh.instanceColor.needsUpdate = true; e.wasFlash = e.flash > 0; }
+      if (e.flash > 0 || e.wasFlash) { e.flash -= dt; const f = Math.max(0, e.flash) * 5; const tc = e.tc || [1, 1, 1]; e.mesh.setColorAt(e.i, e.state === 'windup' ? _col.setRGB(tc[0] + f * 1.5, tc[1] - f * 0.4, tc[2] - f * 0.4) : _col.setRGB(tc[0] + f * 2, tc[1] + f * 2, tc[2] + f * 2)); e.mesh.instanceColor.needsUpdate = true; e.wasFlash = e.flash > 0; }
     }
   },
   // ---------- objetos colocados no mundo (sincronizados por broadcast) ----------
@@ -429,7 +435,7 @@ export const G = {
   _aero(dt) {
     const P = this.player, t = this.time, W = this.world, ax = this.ax;
     // ambiente sonoro: marolas perto da água, ronco submarino, cachoeira por distância
-    if (W.swim || ax) { let fall = 0; if (ax) for (const f of ax.falls) { const d = Math.hypot(P.pos.x - f.x, P.pos.z - f.z); fall = Math.max(fall, clamp(1 - d / 34, 0, 1)); } const nearW = W.heightAt(P.pos.x, P.pos.z) < W.waterY + 2.5 || P.swimming; ambience({ water: this.under ? 0 : nearW ? 1 : 0.25, under: this.under ? 1 : 0, fall: this.under ? fall * 0.3 : fall * fall }); this._amb = true; } else if (this._amb) { this._amb = false; ambience({}); }
+    if (W.swim || ax || this.mapId === 'dark') { let fall = 0; if (ax) for (const f of ax.falls) { const d = Math.hypot(P.pos.x - f.x, P.pos.z - f.z); fall = Math.max(fall, clamp(1 - d / 34, 0, 1)); } const nearW = W.heightAt(P.pos.x, P.pos.z) < W.waterY + 2.5 || P.swimming; ambience({ water: this.under ? 0 : nearW ? (this.mapId === 'pool' ? 0.5 : 1) : 0.25, under: this.under ? 1 : 0, fall: this.under ? fall * 0.3 : fall * fall, wind: this.mapId === 'dark' ? 1 : 0, hum: this.mapId === 'pool' && !this.under ? 1 : 0 }); this._amb = true; } else if (this._amb) { this._amb = false; ambience({}); }
     // rastro de bolhas das braçadas
     if (P.swimming) for (const h of P.hands) if (h.speed > 1.6 && Math.random() < 0.35) this.fx.burst(h.pos.x, h.pos.y, h.pos.z, 0xdff8ff, 1, 0.6, -2.2);
     if (ax) {
@@ -496,8 +502,8 @@ export const G = {
   spawnEnemy(type, x, z, boss) {
     const base = ENEMIES[type]; if (!base || !this.world) return null; const w = this.world; x = clamp(x, -w.half + 4, w.half - 4); z = clamp(z, -w.half + 4, w.half - 4);
     const def = boss ? Object.assign({}, base, { n: BOSS_NAMES[type], s: base.s * 1.9, hp: base.hp * 6, dmg: Math.round(base.dmg * 1.6), sp: base.sp * 0.9, xp: base.xp * 8, coins: [base.coins[0] * 8, base.coins[1] * 8] }) : base;
-    const mesh = new THREE.InstancedMesh(modelGeometry(base.model), instMat, 1); mesh.frustumCulled = false; mesh.castShadow = true; mesh.setColorAt(0, _col.setRGB(1, 1, 1)); this.scene.add(mesh); this.objs.push(mesh);
-    const e = { type, x, z, boss, def, rg: boss ? 1.8 : 1, mesh, i: 0, hx: x, hz: z, y: w.heightAt(x, z), hp: def.hp, state: 'idle', st: 0, t: 0, ry: Math.random() * 6.28, ph: 0, tx: x, tz: z, flash: 0, kx: 0, kz: 0, temp: true };
+    const mesh = new THREE.InstancedMesh(modelGeometry(base.model), instMat, 1); mesh.frustumCulled = false; mesh.castShadow = true; const tc = base.tint || [1, 1, 1]; mesh.setColorAt(0, _col.setRGB(tc[0], tc[1], tc[2])); this.scene.add(mesh); this.objs.push(mesh);
+    const e = { type, x, z, boss, def, tc, rg: boss ? 1.8 : 1, mesh, i: 0, hx: x, hz: z, y: w.heightAt(x, z), hp: def.hp, state: 'idle', st: 0, t: 0, ry: Math.random() * 6.28, ph: 0, tx: x, tz: z, flash: 0, kx: 0, kz: 0, temp: true };
     setInst(mesh, 0, e.x, e.y, e.z, def.s, e.ry); this.enemies.push(e); return e;
   },
   // itens/moedas caindo do céu (eventos do admin): cada jogador pega a sua cópia

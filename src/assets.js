@@ -87,13 +87,16 @@ function noise() { if (!noiseBuf) { noiseBuf = ctx.createBuffer(1, ctx.sampleRat
 // laços de ambiente por ruído filtrado: water (marolas), fall (cachoeira), under (ronco submarino). níveis 0..1
 export function ambience(levels) {
   if (!ctx) return;
-  const defs = { water: ['bandpass', 520, 0.6, 0.11], fall: ['highpass', 900, 0.4, 0.2], under: ['lowpass', 160, 0.8, 0.3] };
+  const defs = { water: ['bandpass', 520, 0.6, 0.11], fall: ['highpass', 900, 0.4, 0.2], under: ['lowpass', 160, 0.8, 0.3], wind: ['bandpass', 360, 0.9, 0.16], hum: ['lowpass', 120, 6, 0.06] };
   for (const k in defs) { const want = audioVolume > 0 ? (levels[k] || 0) : 0; let L = loops[k];
     if (!L) { if (want <= 0.001) continue; const d = defs[k], src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); src.buffer = noise(); src.loop = true; src.playbackRate.value = k === 'under' ? 0.5 : 1; f.type = d[0]; f.frequency.value = d[1]; f.Q.value = d[2]; g.gain.value = 0; src.connect(f); f.connect(g); g.connect(master);
+      if (k === 'wind') { const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 0.09; lg.gain.value = 180; lfo.connect(lg); lg.connect(f.frequency); lfo.start(); }
       if (k === 'water') { const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 0.23; lg.gain.value = 260; lfo.connect(lg); lg.connect(f.frequency); lfo.start(); }
       src.start(); L = loops[k] = { g, max: d[3] }; }
     L.g.gain.setTargetAtTime(want * L.max, ctx.currentTime, 0.25); }
 }
+// trovão: ruído grave com estrondo e rolagem
+export function thunder(vol) { if (!ctx || audioVolume <= 0) return; const t = ctx.currentTime, s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise(); s.playbackRate.value = 0.35; f.type = 'lowpass'; f.frequency.setValueAtTime(900, t); f.frequency.exponentialRampToValueAtTime(90, t + 2.8); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.9 * (vol || 1), t + 0.05); g.gain.exponentialRampToValueAtTime(0.25 * (vol || 1), t + 0.6); g.gain.exponentialRampToValueAtTime(0.0001, t + 3.2); s.connect(f); f.connect(g); g.connect(master); s.start(t, Math.random()); s.stop(t + 3.3); }
 // sininho de vidro (pérolas, segredos, bolhas grandes)
 export function chime(step, vol) { if (!ctx || audioVolume <= 0) return; const t = ctx.currentTime, notes = [1318.5, 1568, 1760, 2093, 2637, 3136]; for (let i = 0; i < 3; i++) { const o = ctx.createOscillator(), g = ctx.createGain(), f = notes[((step || 0) + i * 2) % notes.length]; o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t + i * 0.07); g.gain.exponentialRampToValueAtTime(0.16 * (vol || 1), t + i * 0.07 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.07 + 0.9); o.connect(g); g.connect(master); o.start(t + i * 0.07); o.stop(t + i * 0.07 + 1); } }
 // espirro d'água sintetizado: ruído com filtro descendo
