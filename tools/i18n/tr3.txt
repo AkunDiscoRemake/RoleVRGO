@@ -1,0 +1,295 @@
+640¦Your friend code: ¦Tu código de amigo: ¦Твой код друга: 
+641¦+ Add by code¦+ Añadir por código¦+ Добавить по коду
+642¦Friend's code¦Código del amigo¦Код друга
+643¦Request sent to ¦Solicitud enviada a ¦Запрос отправлен игроку 
+644¦Code not found¦Código no encontrado¦Код не найден
+645¦Error adding¦Error al añadir¦Ошибка добавления
+646¦No friends yet. Swap codes or add from the Players tab.¦Aún no tienes amigos. Intercambia códigos o añade desde la pestaña Jugadores.¦Друзей пока нет. Обменяйтесь кодами или добавь на вкладке «Игроки».
+647¦wants to be your friend¦quiere ser tu amigo¦хочет дружить
+648¦request pending¦solicitud pendiente¦запрос ожидает
+649¦● online¦● en línea¦● в сети
+650¦ — private room¦ — sala privada¦ — закрытая комната
+651¦○ offline¦○ desconectado¦○ не в сети
+652¦Accept¦Aceptar¦Принять
+653¦Go there¦Ir allí¦Перейти
+654¦Room ¦Sala ¦Комната 
+655¦✉ Msg¦✉ Msj¦✉ Сообщ.
+656¦Message to ¦Mensaje para ¦Сообщение для 
+657¦[to ¦[para ¦[для 
+658¦Remove¦Quitar¦Удалить
+659¦ invited you to a party¦ te invitó a un grupo¦ приглашает тебя в группу
+660¦Decline¦Rechazar¦Отклонить
+661¦You are not in a party.¦No estás en un grupo.¦Ты не в группе.
+662¦+ Create party¦+ Crear grupo¦+ Создать группу
+663¦Party code¦Código del grupo¦Код группы
+664¦Parties have their own chat, blue names, and you see where each member is.¦Los grupos tienen chat propio, nombres en azul y ves dónde está cada miembro.¦У группы свой чат, синие имена, и видно, где каждый участник.
+665¦Party ¦Grupo ¦Группа 
+666¦ member(s)¦ miembro(s)¦ участник(ов)
+667¦Leave party¦Salir del grupo¦Выйти из группы
+668¦ — room ¦ — sala ¦ — комната 
+669¦💬 Talk to party¦💬 Hablar al grupo¦💬 Написать группе
+670¦Message to the party¦Mensaje al grupo¦Сообщение группе
+671¦No messages yet.¦Aún no hay mensajes.¦Сообщений пока нет.
+672¦⌨ Write message¦⌨ Escribir mensaje¦⌨ Написать сообщение
+673¦Could not open the map¦No se pudo abrir el mapa¦Не удалось открыть карту
+674¦Offline: only the local draft is available.¦Sin conexión: solo está disponible el borrador local.¦Офлайн: доступен только локальный черновик.
+675¦Community unavailable: the database does not have the map tables yet (run supabase/maps.sql).¦Comunidad no disponible: la base de datos aún no tiene las tablas de mapas (ejecuta supabase/maps.sql).¦Сообщество недоступно: в базе ещё нет таблиц карт (запусти supabase/maps.sql).
+676¦Loading map...¦Cargando mapa...¦Загрузка карты...
+677¦Edit mode: point and press the trigger to place. Menu > Create for options.¦Modo edición: apunta y pulsa el gatillo para colocar. Menú > Crear para opciones.¦Режим редактора: наведи и нажми курок, чтобы поставить. Меню > Создать — настройки.
+678¦Community map: no permanent rewards here.¦Mapa de la comunidad: aquí no hay recompensas permanentes.¦Карта сообщества: здесь нет постоянных наград.
+679¦Error opening the map¦Error al abrir el mapa¦Ошибка открытия карты
+680¦🌍 Community¦🌍 Comunidad¦🌍 Сообщество
+681¦📁 My maps¦📁 Mis mapas¦📁 Мои карты
+682¦🛠 Editor¦🛠 Editor¦🛠 Редактор
+683¦Order: newest¦Orden: más nuevos¦Порядок: новые
+684¦Order: popular¦Orden: populares¦Порядок: популярные
+685¦🔑 Open by code¦🔑 Abrir por código¦🔑 Открыть по коду
+686¦Map code¦Código del mapa¦Код карты
+687¦No maps published yet. Be the first: My maps > New map.¦Aún no hay mapas publicados. Sé el primero: Mis mapas > Nuevo mapa.¦Опубликованных карт пока нет. Будь первым: Мои карты > Новая карта.
+688¦by ¦por ¦автор 
+689¦ objects  ·  code ¦ objetos  ·  código ¦ объектов  ·  код 
+690¦▶ Play¦▶ Jugar¦▶ Играть
+691¦＋ New map¦＋ Nuevo mapa¦＋ Новая карта
+692¦Map name¦Nombre del mapa¦Название карты
+693¦Map of ¦Mapa de ¦Карта игрока 
+694¦✎ Continue draft: ¦✎ Continuar borrador: ¦✎ Продолжить черновик: 
+695¦You have not saved any map on the server yet.¦Aún no has guardado ningún mapa en el servidor.¦Ты ещё не сохранял карты на сервере.
+696¦🌍 published¦🌍 publicado¦🌍 опубликована
+697¦🔒 private¦🔒 privado¦🔒 закрытая
+698¦  ·  code ¦  ·  código ¦  ·  код 
+699¦ objects¦ objetos¦ объектов
+700¦✎ Edit¦✎ Editar¦✎ Изменить
+701¦Delete¦Eliminar¦Удалить
+702¦  [draft]¦  [borrador]¦  [черновик]
+703¦/700 objects  ·  ¦/700 objetos  ·  ¦/700 объектов  ·  
+705¦  ·  (play only: another author's map)¦  ·  (solo jugar: mapa de otro autor)¦  ·  (только играть: карта другого автора)
+706¦✏ Name¦✏ Nombre¦✏ Имя
+707¦Size: ¦Tamaño: ¦Размер: 
+708¦Sky: ¦Cielo: ¦Небо: 
+709¦Ground: ¦Suelo: ¦Земля: 
+710¦Water: ¦Agua: ¦Вода: 
+711¦no¦no¦нет
+712¦Terrain: ¦Relieve: ¦Рельеф: 
+713¦medium¦medio¦средний
+714¦Music: ¦Música: ¦Музыка: 
+715¦Particles: ¦Partículas: ¦Частицы: 
+716¦🧽 Tool: ERASE¦🧽 Herramienta: BORRAR¦🧽 Инструмент: СТЕРЕТЬ
+717¦🖌 Tool: PLACE¦🖌 Herramienta: COLOCAR¦🖌 Инструмент: СТАВИТЬ
+718¦↶ Undo (¦↶ Deshacer (¦↶ Отменить (
+719¦Grid: ¦Rejilla: ¦Сетка: 
+720¦Collision: ¦Colisión: ¦Столкновения: 
+721¦⟲ Rotate¦⟲ Girar¦⟲ Повернуть
+722¦Rotate ⟳¦Girar ⟳¦Повернуть ⟳
+723¦Smaller¦Más pequeño¦Меньше
+724¦Bigger¦Más grande¦Больше
+725¦Lower¦Bajar¦Ниже
+726¦Raise¦Subir¦Выше
+727¦Color¦Color¦Цвет
+728¦Brush: ¦Pincel: ¦Кисть: 
+729¦  ·  scale ¦  ·  escala ¦  ·  масштаб 
+730¦  ·  rotation ¦  ·  giro ¦  ·  поворот 
+731¦°  ·  height ¦°  ·  altura ¦°  ·  высота 
+732¦🎨 Choose object¦🎨 Elegir objeto¦🎨 Выбрать объект
+733¦📁 Import my asset (.glb / image)¦📁 Importar mi asset (.glb / imagen)¦📁 Импорт своего ассета (.glb / картинка)
+734¦Exit VR to choose a file¦Sal del VR para elegir un archivo¦Выйди из VR, чтобы выбрать файл
+735¦▶ Test¦▶ Probar¦▶ Тест
+736¦✎ Back to editing¦✎ Volver a editar¦✎ Вернуться к правке
+737¦💾 Save (private)¦💾 Guardar (privado)¦💾 Сохранить (закрыто)
+738¦🌍 Publish¦🌍 Publicar¦🌍 Опубликовать
+739¦🚪 Leave map¦🚪 Salir del mapa¦🚪 Покинуть карту
+740¦Shapes¦Formas¦Фигуры
+741¦My assets¦Mis assets¦Мои ассеты
+742¦No asset imported. Use \"Import my asset\" in the Editor (.glb up to 20k vertices, or an image).¦Ningún asset importado. Usa \"Importar mi asset\" en el Editor (.glb hasta 20 mil vértices, o imagen).¦Ассеты не импортированы. Нажми «Импорт своего ассета» в редакторе (.glb до 20 тыс. вершин или картинка).
+744¦Next line ▶¦Siguiente frase ▶¦Дальше ▶
+745¦ XP, ¦ XP, ¦ опыта, 
+746¦Turn in¦Entregar¦Сдать
+747¦🔨 Forge¦🔨 Forja¦🔨 Кузница
+748¦🛒 Shop¦🛒 Tienda¦🛒 Магазин
+749¦🎓 Choose profession¦🎓 Elegir profesión¦🎓 Выбрать профессию
+750¦Hit the Master inside the ring to start training. He warns (flashes) before attacking: block or dodge!¦Golpea al Maestro dentro del ring para empezar a entrenar. Avisa (parpadea) antes de atacar: ¡bloquea o esquiva!¦Ударь Мастера на ринге, чтобы начать тренировку. Перед атакой он предупреждает (мигает): блокируй или уклоняйся!
+751¦Buy¦Comprar¦Купить
+752¦Sell¦Vender¦Продать
+753¦✔ You already have it¦✔ Ya lo tienes¦✔ Уже есть
+754¦🔒 Buy the previous one¦🔒 Compra el anterior¦🔒 Купи предыдущий
+755¦Buy — ¦Comprar — ¦Купить — 
+756¦Nothing to sell.¦Nada que vender.¦Нечего продавать.
+757¦Sell 1 — ¦Vender 1 — ¦Продать 1 — 
+758¦Sell all — ¦Vender todo — ¦Продать всё — 
+759¦Sell ores, gems and fish¦Vender minerales, gemas y peces¦Продать руду, самоцветы и рыбу
+760¦Sold for ¦Vendido por ¦Продано за 
+761¦Nothing to sell¦Nada que vender¦Нечего продавать
+762¦🎓 Professions¦🎓 Profesiones¦🎓 Профессии
+763¦Pick one. The bonus works on every map and can be changed at any time.¦Elige una. El bono vale en todos los mapas y se puede cambiar en cualquier momento.¦Выбери одну. Бонус действует на всех картах, сменить можно в любой момент.
+764¦✔ Current¦✔ Actual¦✔ Текущая
+765¦Choose¦Elegir¦Выбрать
+770¦space¦espacio¦пробел
+772¦On a computer you can also type on the physical keyboard.¦En el ordenador también puedes escribir con el teclado físico.¦На компьютере можно печатать и на обычной клавиатуре.
+773¦Lv ¦Nv ¦Ур 
+776¦Central Square¦Plaza Central¦Центральная площадь
+777¦🎣 Fishing spot¦🎣 Punto de pesca¦🎣 Место для рыбалки
+778¦⚔ Fight zone (PvP)¦⚔ Zona de lucha (PvP)¦⚔ Зона боя (PvP)
+779¦🏆 Arena Ranking¦🏆 Ranking de la Arena¦🏆 Рейтинг арены
+781¦Nobody has won yet. Be the first!¦Nadie ha ganado aún. ¡Sé el primero!¦Пока никто не победил. Будь первым!
+782¦ wins  Lv ¦ victorias  Nv ¦ побед  Ур 
+783¦ joined¦ entró¦ вошёл
+784¦someone¦alguien¦кто-то
+785¦Blocked ¦Bloqueado ¦Блок 
+786¦🥊 You knocked out ¦🥊 Noqueaste a ¦🥊 Ты нокаутировал 
+787¦ petted you ❤¦ te acarició ❤¦ погладил тебя ❤
+788¦ wants to be your friend (Social menu)¦ quiere ser tu amigo (menú Social)¦ хочет дружить (меню «Общение»)
+789¦ accepted your friendship¦ aceptó tu amistad¦ принял дружбу
+790¦ invited you to the party (Social menu)¦ te invitó al grupo (menú Social)¦ приглашает в группу (меню «Общение»)
+791¦[private] ¦[privado] ¦[лично] 
+792¦🔥 COMBO x5!¦🔥 ¡COMBO x5!¦🔥 КОМБО x5!
+793¦💫 You were knocked out by ¦💫 Te noqueó ¦💫 Тебя нокаутировал 
+794¦Chest: +¦Cofre: +¦Сундук: +
+795¦Line cast... pull when the bobber sinks!¦Línea lanzada... ¡tira cuando la boya se hunda!¦Удочка заброшена... дёргай, когда поплавок утонет!
+796¦Line reeled in¦Línea recogida¦Удочка смотана
+797¦⚔ You entered the fight zone!¦⚔ ¡Entraste en la zona de lucha!¦⚔ Ты вошёл в зону боя!
+798¦You left the fight zone¦Saliste de la zona de lucha¦Ты покинул зону боя
+799¦ defeated: +¦ derrotado: +¦ побеждён: +
+800¦Placed: ¦Colocado: ¦Поставлено: 
+801¦Your objects were removed¦Tus objetos fueron eliminados¦Твои объекты убраны
+802¦You need a better pickaxe (¦Necesitas un pico mejor (¦Нужна кирка получше (
+803¦You need the axe to chop (quick menu > Paw items)¦Necesitas el hacha para talar (menú rápido > Objetos en la pata)¦Чтобы рубить, нужен топор (быстрое меню > Предметы в лапе)
+804¦Step into the ring to fight the Master¦Entra al ring para luchar con el Maestro¦Зайди на ринг, чтобы сразиться с Мастером
+805¦Health ¦Vida ¦Здоровье 
+806¦🥊 You beat the Master!¦🥊 ¡Venciste al Maestro!¦🥊 Ты победил Мастера!
+807¦You petted ¦Acariciaste a ¦Ты погладил 
+808¦Too early!¦¡Demasiado pronto!¦Слишком рано!
+809¦The fish got away...¦El pez se escapó...¦Рыба сорвалась...
+810¦🌟 Event: ¦🌟 Evento: ¦🌟 Событие: 
+811¦Invalid item¦Objeto no válido¦Неверный предмет
+812¦Missing ¦Faltan ¦Не хватает 
+813¦In paw: ¦En la pata: ¦В лапе: 
+814¦Missing materials¦Faltan materiales¦Не хватает материалов
+815¦🔨 Crafted: ¦🔨 Fabricado: ¦🔨 Создано: 
+816¦Talent: ¦Talento: ¦Талант: 
+817¦Costs 100 coins¦Cuesta 100 monedas¦Стоит 100 монет
+818¦🎀 Accessory earned: ¦🎀 Accesorio conseguido: ¦🎀 Получен аксессуар: 
+819¦ (wear it in Avatar)¦ (póntelo en Avatar)¦ (надень в «Аватар»)
+820¦📋 Contract done: +¦📋 Contrato completado: +¦📋 Контракт выполнен: +
+821¦ XP, +¦ XP, +¦ опыта, +
+822¦📅 Daily streak: day ¦📅 Racha diaria: día ¦📅 Ежедневная серия: день 
+823¦⭐ Level ¦⭐ Nivel ¦⭐ Уровень 
+824¦ — created maps give no items)¦ — los mapas creados no dan objetos)¦ — на созданных картах предметы не даются)
+825¦📖 New in the album: ¦📖 Nuevo en el álbum: ¦📖 Новое в альбоме: 
+826¦📖 Collection complete: ¦📖 Colección completa: ¦📖 Коллекция собрана: 
+827¦! +400 coins¦! +400 monedas¦! +400 монет
+828¦Hat: ¦Sombrero: ¦Шляпа: 
+829¦Buy the previous one first¦Compra primero el anterior¦Сначала купи предыдущий
+830¦Not enough coins¦Monedas insuficientes¦Не хватает монет
+831¦New hat! Wear it in Profile.¦¡Sombrero nuevo! Póntelo en Perfil.¦Новая шляпа! Надень в «Профиле».
+832¦Equipped: ¦Equipado: ¦Надето: 
+833¦Yum! +¦¡Ñam! +¦Ням! +
+834¦Catnip! +20% XP for 3 min¦¡Hierba gatera! +20% de XP durante 3 min¦Кошачья мята! +20% опыта на 3 мин
+835¦Quest ready: ¦Misión lista: ¦Задание готово: 
+836¦Daily done! Claim it in the Quests menu.¦¡Diaria completada! Reclámala en el menú Misiones.¦Ежедневное выполнено! Забери в меню «Задания».
+837¦📋 Contract ready! Claim it in Quests.¦📋 ¡Contrato listo! Reclámalo en Misiones.¦📋 Контракт готов! Забери в «Заданиях».
+838¦🏆 Achievement: ¦🏆 Logro: ¦🏆 Достижение: 
+839¦ coins)¦ monedas)¦ монет)
+840¦Quest accepted: ¦Misión aceptada: ¦Задание принято: 
+841¦Daily: +¦Diaria: +¦Ежедневное: +
+842¦✨ Map secret found!¦✨ ¡Secreto del mapa encontrado!¦✨ Секрет карты найден!
+843¦✨ Secret discovered! +¦✨ ¡Secreto descubierto! +¦✨ Секрет найден! +
+844¦Clear day¦Día despejado¦Ясный день
+846¦Sunset¦Atardecer¦Закат
+847¦Snow¦Nieve¦Снег
+848¦Purple night¦Noche morada¦Фиолетовая ночь
+849¦Cave¦Cueva¦Пещера
+850¦Grass¦Césped¦Трава
+851¦Aero grass¦Césped Aero¦Аэро-трава
+852¦Sand¦Arena¦Песок
+853¦Asphalt¦Asfalto¦Асфальт
+854¦Dirt¦Tierra¦Земля
+855¦Glass¦Cristal¦Стекло
+856¦Building¦Construcción¦Постройки
+857¦City¦Ciudad¦Город
+858¦Game¦Juego¦Игра
+859¦🚩 Start point¦🚩 Punto de inicio¦🚩 Точка старта
+860¦🐱 NPC (with a line)¦🐱 NPC (con frase)¦🐱 NPC (с репликой)
+861¦🪧 Text sign¦🪧 Cartel de texto¦🪧 Табличка с текстом
+862¦💡 Light¦💡 Luz¦💡 Свет
+863¦📦 Common chest¦📦 Cofre común¦📦 Обычный сундук
+864¦📦 Rare chest¦📦 Cofre raro¦📦 Редкий сундук
+865¦📦 Epic chest¦📦 Cofre épico¦📦 Эпический сундук
+866¦🪓 Choppable tree¦🪓 Árbol talable¦🪓 Дерево для рубки
+867¦🥊 Training dummy¦🥊 Muñeco de entrenamiento¦🥊 Тренировочный манекен
+868¦⭐ Secret¦⭐ Secreto¦⭐ Секрет
+869¦❌ Buried treasure¦❌ Tesoro enterrado¦❌ Зарытый клад
+870¦🌀 Portal to the Village¦🌀 Portal a la Villa¦🌀 Портал в деревню
+871¦🫧 Bubbles (20)¦🫧 Burbujas (20)¦🫧 Пузыри (20)
+872¦👑 Boss ¦👑 Jefe ¦👑 Босс 
+873¦My map¦Mi mapa¦Моя карта
+874¦Map NPC¦NPC del mapa¦NPC карты
+875¦Sign¦Cartel¦Табличка
+876¦Nothing to erase here¦Nada que borrar aquí¦Здесь нечего стирать
+877¦Limit of 700 objects per map¦Límite de 700 objetos por mapa¦Лимит: 700 объектов на карту
+878¦Start point set¦Punto de inicio definido¦Точка старта задана
+882¦Open a map in the editor first¦Abre primero un mapa en el editor¦Сначала открой карту в редакторе
+883¦Limit of 8 assets per map¦Límite de 8 assets por mapa¦Лимит: 8 ассетов на карту
+884¦The file has no meshes¦El archivo no tiene mallas¦В файле нет моделей
+885¦Model too large (¦Modelo demasiado grande (¦Модель слишком большая (
+886¦The map would be too large (¦El mapa sería demasiado grande (¦Карта получится слишком большой (
+887¦Offline: draft saved only on this device¦Sin conexión: borrador guardado solo en este dispositivo¦Офлайн: черновик сохранён только на этом устройстве
+888¦Published! Code: ¦¡Publicado! Código: ¦Опубликовано! Код: 
+889¦Saved (private). Code: ¦Guardado (privado). Código: ¦Сохранено (закрыто). Код: 
+890¦The database does not have the map tables yet (run supabase/maps.sql)¦La base de datos aún no tiene las tablas de mapas (ejecuta supabase/maps.sql)¦В базе ещё нет таблиц карт (запусти supabase/maps.sql)
+891¦Error saving: ¦Error al guardar: ¦Ошибка сохранения: 
+892¦Map not found¦Mapa no encontrado¦Карта не найдена
+893¦Plain¦Liso¦Гладкий
+894¦Light belly¦Barriga clara¦Светлое брюшко
+895¦Siamese¦Siamés¦Сиамский
+896¦Tabby¦Atigrado¦Полосатый
+897¦Spotted¦Manchado¦Пятнистый
+898¦Socks¦Calcetines¦Носочки
+899¦Top hat¦Chistera¦Цилиндр
+900¦Crown¦Corona¦Корона
+901¦Bow¦Lazo¦Бантик
+902¦Straw hat¦Sombrero de paja¦Соломенная шляпа
+903¦Beanie¦Gorro¦Шапка
+904¦Pirate bandana¦Pañuelo pirata¦Пиратская бандана
+905¦Wizard hat¦Sombrero de mago¦Шляпа волшебника
+906¦Halo¦Aureola¦Нимб
+907¦Wave¦Saludar¦Помахать
+908¦Dance¦Bailar¦Танец
+909¦Sit¦Sentarse¦Сесть
+910¦Sleep¦Dormir¦Спать
+911¦Laugh¦Reír¦Смех
+912¦Meow¦Maullar¦Мяукнуть
+913¦Celebrate¦Celebrar¦Праздновать
+914¦Angry¦Enfadado¦Злой
+915¦Spin¦Girar¦Вращение
+916¦Bow down¦Reverencia¦Поклон
+917¦Robot¦Robot¦Робот
+920¦Loading models (Kenney)...¦Cargando modelos (Kenney)...¦Загрузка моделей (Kenney)...
+921¦Error loading the models: ¦Error al cargar los modelos: ¦Ошибка загрузки моделей: 
+922¦Connecting to the server...¦Conectando al servidor...¦Подключение к серверу...
+923¦ cat(s) online now¦ gato(s) en línea ahora¦ кот(ов) сейчас онлайн
+924¦Connected ✔  Your friend code: ¦Conectado ✔  Tu código de amigo: ¦Подключено ✔  Твой код друга: 
+925¦⚠ No connection to the server — offline solo mode (progress saved only on this device).¦⚠ Sin conexión con el servidor — modo solitario sin conexión (progreso guardado solo en este dispositivo).¦⚠ Нет связи с сервером — одиночный офлайн-режим (прогресс сохраняется только на этом устройстве).
+926¦🥽 Enter VR¦🥽 Entrar en VR¦🥽 Войти в VR
+927¦VR not available in this browser¦VR no disponible en este navegador¦VR недоступен в этом браузере
+928¦VR not available¦VR no disponible¦VR недоступен
+929¦Room found: ¦Sala encontrada: ¦Комната найдена: 
+930¦Room \"¦Sala \"¦Комната \"
+931¦\" not found.¦\" no encontrada.¦\" не найдена.
+932¦Error looking up the room.¦Error al buscar la sala.¦Ошибка поиска комнаты.
+933¦Private room created! Code for your friends: ¦¡Sala privada creada! Código para tus amigos: ¦Закрытая комната создана! Код для друзей: 
+934¦Could not create the room.¦No se pudo crear la sala.¦Не удалось создать комнату.
+935¦Talk to Mimi (❗) in front of you. Menu: touchpad / M key¦Habla con Mimi (❗) delante de ti. Menú: touchpad / tecla M¦Поговори с Мими (❗) перед тобой. Меню: тачпад / клавиша M
+936¦Could not start VR: ¦No se pudo iniciar el VR: ¦Не удалось запустить VR: 
+937¦No motion sensor: drag your finger on the screen to look around¦Sin sensor de movimiento: arrastra el dedo por la pantalla para mirar¦Нет датчика движения: води пальцем по экрану, чтобы осмотреться
+938¦Importing ¦Importando ¦Импорт 
+939¦Asset imported! It is already on the brush.¦¡Asset importado! Ya está en el pincel.¦Ассет импортирован! Он уже на кисти.
+940¦Import failed: ¦Error al importar: ¦Ошибка импорта: 
+941¦requesting camera...¦pidiendo cámara...¦запрос камеры...
+942¦camera unavailable in this browser¦cámara no disponible en este navegador¦камера недоступна в этом браузере
+943¦downloading MediaPipe...¦descargando MediaPipe...¦загрузка MediaPipe...
+945¦✋ Hand tracking active: show your hands to the camera¦✋ Seguimiento de manos activo: muestra las manos a la cámara¦✋ Отслеживание рук включено: покажи руки камере
+946¦error: ¦error: ¦ошибка: 
+947¦Hand tracking unavailable: ¦Seguimiento de manos no disponible: ¦Отслеживание рук недоступно: 
+948¦This browser cannot record¦Este navegador no permite grabar¦Этот браузер не умеет записывать
+949¦🎬 Video saved to Downloads: ¦🎬 Vídeo guardado en Descargas: ¦🎬 Видео сохранено в «Загрузки»: 
+951¦⏺ Recording... (max 3 min)¦⏺ Grabando... (máx. 3 min)¦⏺ Запись... (макс. 3 мин)
+952¦Could not record: ¦No se pudo grabar: ¦Не удалось записать: 

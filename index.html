@@ -13,6 +13,7 @@
   h1 { margin: 0 0 2px; font-size: 30px; } h1 span { color: #ffd76a; }
   .sub { color: #bfe6ff; font-size: 14px; margin-bottom: 12px; }
   label { display: block; font-size: 13px; color: #aab; margin: 10px 0 4px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  select { width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 2px solid #44466a; background: #0e0d1c; color: #fff; font-size: 16px; }
   input { width: 100%; box-sizing: border-box; padding: 11px 12px; border-radius: 10px; border: 2px solid #44466a; background: #0e0d1c; color: #fff; font-size: 17px; }
   .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .sw { width: 32px; height: 32px; border-radius: 8px; border: 3px solid transparent; cursor: pointer; padding: 0; }
@@ -36,6 +37,8 @@
   <div class="sub">Mundo multiplayer VR de gatos — Gorilla Locomotion, luta, mineração e roleplay. Feito para Oculus Go.</div>
   <label for="name">Nome do seu gato</label>
   <input id="name" maxlength="16" autocomplete="off">
+  <label for="lang">Idioma</label>
+  <select id="lang"></select>
   <label>Pelagem</label><div class="row" id="fur"></div>
   <label>Cor de detalhe</label><div class="row" id="fur2"></div>
   <label>Olhos</label><div class="row" id="eyes"></div>

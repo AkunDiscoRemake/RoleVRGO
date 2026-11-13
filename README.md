@@ -6,6 +6,10 @@ Mundo multiplayer VR de gatos feito para **Oculus Go** (WebXR, controle 3DoF): G
 
 Também funciona em **VR Box / Cardboard** (tela dividida + sensor do celular), com **rastreamento de mãos pela câmera (MediaPipe)** opcional e **Joy-Cons/gamepads** (sem usar o giroscópio do controle).
 
+## Idiomas
+
+Português, English, Español e Русский (seletor no lobby e no menu Mapa; detecta o idioma do navegador). Os textos ficam em `src/i18n-dict.json`; a compilação (`tools/build.mjs`) troca cada texto em português por `__t('texto')`. Para traduzir textos novos: `node tools/i18n-extract.mjs tools/i18n/pt.json`, acrescente linhas em `tools/i18n/tr*.txt` e rode `npm run i18n`.
+
 ## Tecnologia
 
 - HTML/CSS/JavaScript + **Three.js** (r160, empacotado com esbuild para o Chromium antigo do Go).
@@ -43,6 +47,7 @@ As mãos são duas bolinhas flutuantes (sem braços): uma segue a rotação do c
 - **Longa duração:** talentos (1 ponto por nível), contratos infinitos com recompensa que cresce com o nível, álbum de coleção, chefes em 6 mapas, sequência diária, títulos e **acessórios conquistáveis** (liberados por feitos, não comprados).
 - **Natação** no Aero Paraíso e no mar da Ilha: braçadas com as patas ou gatilho; parado, o gato flutua até a superfície.
 - **Música ambiente** gerada em tempo real com osciladores (um clima por mapa; pode ser desligada em Config).
+- **Machado e lenha:** árvores cortáveis (com toco) em 7 mapas; o machado aparece sozinho na pata perto delas. A árvore cai, dá lenha e volta depois de ~70 s. Tem missão, diária, contrato e conquista.
 - **Inimigos** (fantasmas, esqueletos, zumbis, orcs) em 6 mapas: perseguem, avisam o golpe e atacam; rodam no aparelho de cada jogador (não são sincronizados).
 - **Fabricação** de ferramentas, itens de pata, consumíveis e chapéus a partir dos materiais coletados (menu rápido > Fabricar, ou Forja dos ferreiros).
 - **Câmera** em 1ª, 2ª e 3ª pessoa (menu rápido ou tecla V).

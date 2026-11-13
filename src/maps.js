@@ -121,6 +121,7 @@ export const MAPS = {
       for (let i = 0; i < 5; i++) { const a = r() * 6.28, d = 40 + r() * 16; E.ore(i < 3 ? 'stone' : 'copper', Math.cos(a) * d, Math.sin(a) * d); }
       E.chest('v_1', -27, null, 40, 0); E.chest('v_2', 55, null, -12, 0); E.chest('v_3', 12, null, 58, 1);
       E.sign('Lago dos Bigodes — pesca', 38, 2.6, 30); E.board(-4.5, 14.5, PI);
+      for (let i = 0; i < 12; i++) { let x, z; do { const a = r() * 6.28, d = 38 + r() * 18; x = Math.cos(a) * d; z = Math.sin(a) * d; } while (!far(x, z) || w.heightAt(x, z) < 0); E.tree(x, z, i % 2 ? 'nature/tree_default' : 'nature/tree_oak'); }
     }
   },
   // ======================= FLORESTA =======================
@@ -158,6 +159,7 @@ export const MAPS = {
       w.put('nature/statue_obelisk', -60, 10, { s: 5, col: 'box' }); E.sign('Ruínas antigas', -60, w.heightAt(-60, 10) + 5, 10); ring(6, 6, (x, z) => w.put('nature/statue_columnDamaged', -60 + x, 10 + z, { s: 4, col: 'box' }));
       E.chest('f_ruin', -60, null, 13, 1);
       E.enemy('ghost', -60, 16, true);
+      for (let i = 0; i < 40; i++) { let x, z; do { x = (r() - 0.5) * 140; z = (r() - 0.5) * 140; } while (!dry(x, z)); E.tree(x, z, i % 3 ? 'nature/tree_default' : 'nature/tree_oak'); }
       for (let i = 0; i < 8; i++) { let x, z; do { x = (r() - 0.5) * 140; z = (r() - 0.5) * 140; } while (!dry(x, z) || Math.hypot(x, z - 60) < 28 || Math.hypot(x + 28, z - 42) < 16); E.enemy(i % 3 === 2 ? 'zombie' : 'ghost', x, z); }
     }
   },
@@ -249,6 +251,7 @@ export const MAPS = {
       for (let i = 0; i < 16; i++) { let x, z; do { x = (r() - 0.5) * 160; z = (r() - 0.5) * 160; } while (!low(x, z)); E.collect('snowbell', 'nature/flower_purpleC', x, z, 3.4); }
       E.chest('s_1', -60, null, 50, 0); E.chest('s_2', 64, null, 30, 1);
       E.enemy('orc', 40, 44, true);
+      for (let i = 0; i < 10; i++) { let x, z; do { x = (r() - 0.5) * 150; z = (r() - 0.5) * 150; } while (!low(x, z)); E.tree(x, z, 'plat/tree-pine-snow'); }
       for (let i = 0; i < 6; i++) { let x, z; do { x = (r() - 0.5) * 160; z = (r() - 0.5) * 160; } while (!low(x, z) || Math.hypot(x, z - 68) < 30); E.enemy(i % 3 === 0 ? 'ghost' : 'orc', x, z); } E.spring(-30, 62, 15); E.sign('Trampolim de neve!', -30, w.heightAt(-30, 62) + 2.2, 62);
     }
   },
@@ -316,6 +319,7 @@ export const MAPS = {
       for (let i = 0; i < 6; i++) { const a = r() * 6.28; E.ore(i < 3 ? 'iron' : 'stone', Math.cos(a) * 58, Math.sin(a) * 58 - 5); }
       E.fish(40, -5, 4);
       E.enemy('zombie', -56, -44, true);
+      for (let i = 0; i < 10; i++) { let x, z; do { x = (r() - 0.5) * 130; z = (r() - 0.5) * 130; } while (!outside(x, z) || w.heightAt(x, z) < w.waterY + 0.3); E.tree(x, z, 'nature/tree_oak'); }
       for (let i = 0; i < 6; i++) { let x, z; do { x = (r() - 0.5) * 130; z = (r() - 0.5) * 130; } while (!outside(x, z) || Math.hypot(x, z - 62) < 22 || w.heightAt(x, z) < w.waterY + 0.3); E.enemy(i % 2 ? 'skeleton' : 'zombie', x, z); }
     }
   },
@@ -380,6 +384,7 @@ export const MAPS = {
       const hx = -14, hz = -12, hh = w.heightAt(hx, hz); w.put('pirate/tower-complete-small', hx, hz, { s: 1.5, col: 'box', cs: 0.8 }); E.chest('i_hill', hx + 4, null, hz, 1); E.lamp(hx, hh + 9.6, hz, 0xffc060);
       E.chest('i_1', 38, null, -20, 0); E.chest('i_2', -40, null, 14, 1);
       E.enemy('skeleton', -22, -2, true);
+      for (let i = 0; i < 8; i++) { let x, z; do { x = (r() - 0.5) * 90; z = (r() - 0.5) * 80; } while (!(w.heightAt(x, z) > 1 && w.heightAt(x, z) < 6) || Math.hypot(x, z - 34) < 8); E.tree(x, z, 'nature/tree_palmTall'); }
       for (let i = 0; i < 5; i++) { let x, z; do { x = (r() - 0.5) * 100; z = (r() - 0.5) * 90; } while (!(w.heightAt(x, z) > 0.8) || Math.hypot(x, z - 33) < 24); E.enemy('skeleton', x, z); }
       for (let i = 0; i < 8; i++) { const a = r() * 6.28; const x = -14 + Math.cos(a) * 12, z = -12 + Math.sin(a) * 12; E.ore(i < 3 ? 'gold' : i < 6 ? 'copper' : 'silver', x, z); }
     }
@@ -431,7 +436,8 @@ export const MAPS = {
       for (let i = 0; i < 6; i++) { const a = r() * 6.28; E.ore('quartz', Math.cos(a) * 58, Math.sin(a) * 58); }
       E.npc('aqua', 'Aqua', 'Guia do Aero Paraíso', 5, 60, { fur: '#7fb7c9', fur2: '#f5f1e8', pattern: 1, eyes: '#4aa3e0', hat: 9, acc: 7 }, { quests: ['z1', 'z2', 'z3'], lines: ['Bem-vindo ao Aero Paraíso! Céu azul, grama brilhante e água cristalina.', 'O lago é fundo: mergulhe e nade. Dê braçadas com as patas ou segure o gatilho para ir na direção apontada.', 'No fundo há pérolas, corais e uma cúpula secreta.', 'Parado na água você flutua de volta à superfície.'] });
       E.npc('vista', 'Vista', 'Loja Cristal', -7, 59, { fur: '#f5f1e8', fur2: '#7fb7c9', pattern: 5, eyes: '#58c26a', hat: 0, acc: 1 }, { quests: ['z4'], shop: 'general', lines: ['Estoure as bolhas com as patas! Elas voltam logo.', 'Tudo aqui é brilhante, limpo e otimista. Como o futuro devia ser.', 'Os trampolins de vidro jogam você lá no alto.'] });
-      E.sign('Lago Cristal — mergulhe!', 0, 3.4, 44); lampPost(w, E, -4, 66); lampPost(w, E, 4, 66);
+      E.sign('Lago Cristal — mergulhe!', 0, 3.4, 44);
+      for (let i = 0; i < 8; i++) { let x, z; do { const a = r() * 6.28, d = 48 + r() * 14; x = Math.cos(a) * d; z = Math.sin(a) * d; } while (!land(x, z)); E.tree(x, z, 'nature/tree_palmTall'); } lampPost(w, E, -4, 66); lampPost(w, E, 4, 66);
     }
   },
   // ======================= CAMPO DE TREINO =======================
@@ -459,6 +465,7 @@ export const MAPS = {
       w.put('arena/weapon-rack', -8, 36, { s: 3, ry: 0.4, col: 'box' }); w.put('grave/hay-bale', -12, 30, { s: 3, col: 'box' }); w.put('grave/hay-bale', -14.5, 31, { s: 3, ry: 1, col: 'box' }); w.put('grave/hay-bale', -13, 30.5, { s: 3, abs: 1.1, col: 'box' });
       scatter(w, r, ['nature/tree_default', 'nature/tree_oak'], 30, { s: [4, 6], col: 'trunk', cw: 0.1, ok: (x, z) => Math.hypot(x, z) > 53 });
       for (let i = 0; i < 4; i++) E.ore('stone', 36 + i * 3, 40); E.chest('t_1', -42, null, -40, 0);
+      for (let i = 0; i < 5; i++) E.tree(-40 + i * 5, 40, 'nature/tree_default');
       lampPost(w, E, -3, 44); lampPost(w, E, 3, 44); lampPost(w, E, -14, -2); lampPost(w, E, -34, -2);
     }
   }

@@ -1,0 +1,297 @@
+330¦Ember¦Brasa¦Уголёк
+331¦Blacksmith¦Herrero¦Кузнец
+332¦A better pickaxe breaks harder rocks.¦Un pico mejor rompe piedras más duras.¦Кирка получше ломает камни потвёрже.
+333¦Gold and gems only come out with a good tool.¦El oro y las gemas solo salen con buena herramienta.¦Золото и самоцветы добываются только хорошим инструментом.
+334¦Mr. Whiskers¦Don Bigote¦Дядя Ус
+335¦Point at the water and press the trigger to cast the line.¦Apunta al agua y pulsa el gatillo para lanzar la línea.¦Наведи на воду и нажми курок, чтобы забросить удочку.
+336¦When the bobber sinks, pull the controller up!¦Cuando la boya se hunda, ¡tira del mando hacia arriba!¦Когда поплавок утонет, дёрни контроллер вверх!
+337¦Master Craft¦Maestro Oficio¦Мастер Ремёсел
+338¦Professions¦Profesiones¦Профессии
+339¦Every paw has a talent. Pick a profession!¦Cada pata tiene un talento. ¡Elige una profesión!¦У каждой лапы свой талант. Выбери профессию!
+340¦You can switch professions whenever you like.¦Puedes cambiar de profesión cuando quieras.¦Профессию можно менять когда угодно.
+341¦Whisker Lake — fishing¦Lago de los Bigotes — pesca¦Усатое озеро — рыбалка
+342¦Whispering Forest¦Bosque Susurrante¦Шепчущий лес
+343¦Sage¦Salvia¦Шалфея
+344¦Herbalist¦Herbolaria¦Травница
+345¦The forest holds mushrooms, flowers and firewood. Just touch them with your paw.¦El bosque guarda setas, flores y leña. Solo toca con la pata.¦В лесу есть грибы, цветы и дрова. Просто коснись лапой.
+346¦They say there is a house atop the giant tree, north of the river.¦Dicen que hay una casa en lo alto del árbol gigante, al norte del río.¦Говорят, на гигантском дереве к северу от реки есть домик.
+347¦The big rocks are great for climbing practice.¦Las piedras grandes son geniales para practicar escalada.¦Большие камни отлично подходят для тренировки лазания.
+348¦Ancient ruins¦Ruinas antiguas¦Древние руины
+349¦Deep Mine¦Mina Profunda¦Глубокая шахта
+350¦Pebble¦Piedrita¦Галька
+351¦Mine Boss¦Jefa de la Mina¦Начальница шахты
+352¦Hit the colored rocks with your paws — the faster the hit, the more damage.¦Golpea las piedras de colores con las patas: cuanto más rápido el golpe, más daño.¦Бей лапами по цветным камням — чем быстрее удар, тем больше урон.
+353¦Rare gems are at the bottom of the cave, way down there.¦Las gemas raras están al fondo de la cueva, allá abajo.¦Редкие самоцветы лежат на дне пещеры, в самом низу.
+354¦Rock too hard? Buy a better pickaxe.¦¿Piedra demasiado dura? Compra un pico mejor.¦Камень слишком твёрдый? Купи кирку получше.
+355¦Tunnel¦Túnel¦Туннель
+356¦Lamplighter¦Farolero¦Фонарщик
+357¦No coal, no lanterns. No lanterns... meow.¦Sin carbón, sin linternas. Sin linternas... miau.¦Нет угля — нет фонарей. Нет фонарей... мяу.
+358¦Ore nodes come back after a while, for everyone.¦Los nodos de mineral reaparecen tras un rato, para todos.¦Рудные жилы со временем появляются снова, для всех.
+359¦Golden Desert¦Desierto Dorado¦Золотая пустыня
+360¦Sapphire¦Zafiro¦Сапфира
+361¦Treasure Hunter¦Cazadora de Tesoros¦Охотница за сокровищами
+362¦See the X marks on the ground? Dig by hitting with your paws!¦¿Ves las X en el suelo? ¡Cava golpeando con las patas!¦Видишь крестики на земле? Копай, ударяя лапами!
+363¦The pyramid hides something shiny at the top.¦La pirámide esconde algo brillante en la cima.¦Пирамида прячет что-то блестящее на вершине.
+364¦Cacti give fruit, if you dare to touch them.¦Los cactus dan frutos, si te atreves a tocarlos.¦Кактусы дают плоды, если не побоишься дотронуться.
+365¦Snowy Mountains¦Montañas Nevadas¦Снежные горы
+366¦Flake¦Copo¦Снежок
+367¦Mountain Guide¦Guía de la Montaña¦Горный проводник
+368¦The summit is way up there. You only get there by climbing with your paws!¦La cumbre está allá arriba. ¡Solo se llega escalando con las patas!¦Вершина высоко наверху. Добраться можно, только карабкаясь лапами!
+369¦Grab the rock with the trigger, pull down and release to go up.¦Agarra la roca con el gatillo, tira hacia abajo y suelta para subir.¦Схватись за скалу курком, потяни вниз и отпусти, чтобы подняться.
+370¦Ice crystals glow blue on the slopes.¦Los cristales de hielo brillan azules en las laderas.¦Ледяные кристаллы светятся синим на склонах.
+371¦Snow trampoline!¦¡Trampolín de nieve!¦Снежный батут!
+372¦Arena of Champions¦Arena de los Campeones¦Арена чемпионов
+373¦Claw¦Garra¦Коготь
+374¦Arena Master¦Maestro de Arena¦Мастер арены
+375¦Inside the red ring anything goes: punch with your paws!¦Dentro del anillo rojo vale todo: ¡golpea con las patas!¦Внутри красного кольца можно всё: бей лапами!
+376¦Fast alternating hits make a COMBO. Press down on the touchpad to block.¦Golpes rápidos y alternados hacen COMBO. Pulsa abajo en el touchpad para bloquear.¦Быстрые чередующиеся удары дают КОМБО. Нажми тачпад вниз, чтобы блокировать.
+377¦Click the sides of the touchpad to dodge.¦Pulsa los lados del touchpad para esquivar.¦Нажимай края тачпада, чтобы уклоняться.
+378¦Outside the ring nobody gets hurt. This is roleplay too!¦Fuera del ring nadie sale herido. ¡Aquí también hay rol!¦За рингом никто не пострадает. Здесь ещё и ролевая игра!
+379¦Master Whiskers¦Maestro Bigotón¦Мастер Усач
+380¦Sparring (NPC)¦Sparring (NPC)¦Спарринг (NPC)
+381¦Step into the ring and hit me to start training!¦¡Entra al ring y golpéame para empezar a entrenar!¦Заходи на ринг и ударь меня, чтобы начать тренировку!
+382¦Royal Castle¦Castillo Real¦Королевский замок
+383¦King Purr¦Rey Ronrón¦Король Мурлыка
+384¦King of Cats¦Rey de los Gatos¦Король котов
+385¦Welcome to my castle, little furry subject.¦Bienvenido a mi castillo, pequeño súbdito peludo.¦Добро пожаловать в мой замок, маленький пушистый подданный.
+386¦The tallest tower holds a surprise for those with the claws to climb it.¦La torre más alta guarda una sorpresa para quien tenga garras para subir.¦В самой высокой башне сюрприз для тех, у кого хватит когтей забраться.
+387¦My chests reopen every day. Help yourself!¦Mis cofres se reabren cada día. ¡Sírvete!¦Мои сундуки открываются заново каждый день. Угощайся!
+388¦Mrs. Sardine¦Doña Sardina¦Тётушка Сардина
+389¦Royal Cook¦Cocinera Real¦Королевская повариха
+390¦Today's banquet is fish. Tomorrow's too.¦El banquete de hoy es pescado. El de mañana también.¦Сегодня на пиру рыба. Завтра тоже.
+391¦Sea Bass bite in the Village lake and on the Island.¦Los róbalos pican en el lago de la Villa y en la Isla.¦Окунь клюёт в деревенском озере и на острове.
+392¦Sentinel¦Centinela¦Часовой
+393¦Guard¦Guardia¦Стражник
+394¦Halt! ...Oh, it's just a cat. Go ahead.¦¡Alto ahí! ...Ah, es solo un gato. Puedes pasar.¦Стой! ...А, это просто кот. Проходи.
+395¦You can walk along the top of the entire wall.¦Se puede caminar por encima de toda la muralla.¦По стене можно пройти целиком поверху.
+396¦Meowtropolis¦Miaulópolis¦Мяуполис
+397¦Stamp¦Sello¦Штамп
+398¦Mail Carrier¦Cartero¦Почтальон
+399¦Packages scattered all over the city! Will you help me?¦¡Paquetes por toda la ciudad! ¿Me ayudas?¦Посылки разбросаны по всему городу! Поможешь?
+400¦Buildings are great for climbing. Grab, pull, release!¦Los edificios son geniales para escalar. ¡Agarra, tira, suelta!¦По зданиям отлично лазить. Хватай, тяни, отпускай!
+401¦There is a fire escape on the tallest skyscraper.¦Hay una escalera de incendios en el rascacielos más alto.¦На самом высоком небоскрёбе есть пожарная лестница.
+403¦Hat Boutique¦Boutique de Sombreros¦Шляпный бутик
+404¦A cat without a hat is just a cat. With a hat, it's an ICON.¦Un gato sin sombrero es solo un gato. Con sombrero, es un ICONO.¦Кот без шляпы — просто кот. В шляпе — ИКОНА.
+405¦After buying, put it on in the Profile menu.¦Después de comprar, póntelo en el menú Perfil.¦После покупки надень в меню «Профиль».
+406¦Treasure Island¦Isla del Tesoro¦Остров сокровищ
+407¦Captain Bottle¦Capitán Botella¦Капитан Бутылка
+408¦Retired Pirate¦Pirata Jubilado¦Пират на пенсии
+409¦Arrr! I mean... meowrrr!¦¡Arrr! Digo... ¡miarrr!¦Аррр! То есть... мяррр!
+410¦From the pier you can catch the legendary Moonfish. They say.¦Desde el muelle se pesca el legendario Pez Luna. Dicen.¦С причала ловится легендарная рыба-луна. Говорят.
+411¦The wreck to the east holds a treasure atop the mast.¦El naufragio al este guarda un tesoro en lo alto del mástil.¦На затонувшем корабле к востоку есть сокровище на верхушке мачты.
+412¦Aero Paradise¦Aero Paraíso¦Аэро-Рай
+414¦Aero Paradise Guide¦Guía del Aero Paraíso¦Проводник Аэро-Рая
+415¦Welcome to Aero Paradise! Blue sky, shiny grass and crystal-clear water.¦¡Bienvenido al Aero Paraíso! Cielo azul, césped brillante y agua cristalina.¦Добро пожаловать в Аэро-Рай! Голубое небо, сияющая трава и кристальная вода.
+416¦The lake is deep: dive and swim. Stroke with your paws or hold the trigger to go where you point.¦El lago es hondo: bucea y nada. Da brazadas con las patas o mantén el gatillo para ir hacia donde apuntas.¦Озеро глубокое: ныряй и плыви. Греби лапами или держи курок, чтобы плыть туда, куда указываешь.
+417¦At the bottom there are pearls, corals and a secret dome.¦En el fondo hay perlas, corales y una cúpula secreta.¦На дне есть жемчуг, кораллы и секретный купол.
+418¦Stay still in the water and you float back to the surface.¦Quieto en el agua flotas de vuelta a la superficie.¦Замри в воде — и всплывёшь на поверхность.
+420¦Crystal Shop¦Tienda Cristal¦Хрустальная лавка
+421¦Pop the bubbles with your paws! They come back soon.¦¡Revienta las burbujas con las patas! Vuelven pronto.¦Лопай пузыри лапами! Они скоро вернутся.
+422¦Everything here is shiny, clean and optimistic. As the future should be.¦Todo aquí es brillante, limpio y optimista. Como debería ser el futuro.¦Здесь всё блестящее, чистое и оптимистичное. Каким и должно быть будущее.
+423¦The glass trampolines launch you way up high.¦Los trampolines de cristal te lanzan bien alto.¦Стеклянные батуты подбрасывают высоко-высоко.
+424¦Crystal Lake — dive in!¦Lago Cristal — ¡bucea!¦Хрустальное озеро — ныряй!
+425¦Training Grounds¦Campo de Entrenamiento¦Тренировочная площадка
+426¦Hit me inside the circle to start!¦¡Golpéame dentro del círculo para empezar!¦Ударь меня внутри круга, чтобы начать!
+427¦Sensei Paws¦Sensei Patas¦Сэнсэй Лапа
+428¦Instructor¦Instructor¦Инструктор
+429¦BOOST: point at the ground, touch it with your paws and sweep the controller back.¦IMPULSO: apunta al suelo, apoya las patas y barre el mando hacia atrás.¦ТОЛЧОК: наведи на землю, коснись лапами и махни контроллером назад.
+430¦CLIMB: touch the wall, hold the trigger, pull down and release.¦ESCALADA: apoya en la pared, mantén el gatillo, tira hacia abajo y suelta.¦ЛАЗАНИЕ: коснись стены, держи курок, потяни вниз и отпусти.
+431¦WALK: trigger in the air walks where you point.¦CAMINAR: el gatillo en el aire camina hacia donde apuntas.¦ХОДЬБА: курок в воздухе — идёшь туда, куда указываешь.
+432¦FIGHT: fast hits deal more damage. Block with touchpad down.¦LUCHA: los golpes rápidos hacen más daño. Bloquea con el touchpad hacia abajo.¦БОЙ: быстрые удары наносят больше урона. Блок — тачпад вниз.
+433¦The obstacle course is to the east. The bell at the top is the goal!¦La pista de obstáculos está al este. ¡La campana en la cima es la meta!¦Полоса препятствий на востоке. Колокол наверху — цель!
+434¦Trampolines¦Trampolines¦Батуты
+435¦Obstacle Course →¦Pista de Obstáculos →¦Полоса препятствий →
+436¦Training Ring¦Ring de Entrenamiento¦Тренировочный ринг
+437¦🗺 Map¦🗺 Mapa¦🗺 Карта
+438¦🎒 Bag¦🎒 Bolsa¦🎒 Сумка
+439¦📜 Quests¦📜 Misiones¦📜 Задания
+440¦🐱 Profile¦🐱 Perfil¦🐱 Профиль
+441¦👥 Social¦👥 Social¦👥 Общение
+442¦😺 Emotes¦😺 Gestos¦😺 Эмоции
+443¦🛠 Create¦🛠 Crear¦🛠 Создать
+444¦⚙ Settings¦⚙ Ajustes¦⚙ Настройки
+445¦📷 Camera: ¦📷 Cámara: ¦📷 Камера: 
+446¦1st person¦1ª persona¦1-е лицо
+447¦2nd person¦2ª persona¦2-е лицо
+448¦3rd person¦3ª persona¦3-е лицо
+449¦[party] ¦[grupo] ¦[группа] 
+450¦NPC — type \"Name: line\"¦NPC — escribe \"Nombre: frase\"¦NPC — введи \"Имя: фраза\"
+451¦Sign text¦Texto del cartel¦Текст таблички
+452¦Cat¦Gato¦Кот
+456¦Message to the room¦Mensaje a la sala¦Сообщение в комнату
+457¦Quick menu¦Menú rápido¦Быстрое меню
+458¦🐱 Avatar¦🐱 Avatar¦🐱 Аватар
+459¦🗡 Paw items: ¦🗡 Objetos en la pata: ¦🗡 Предмет в лапе: 
+460¦🔨 Craft items¦🔨 Fabricar objetos¦🔨 Создать предметы
+461¦📦 Place objects¦📦 Colocar objetos¦📦 Поставить объекты
+462¦🗺 Travel¦🗺 Viajar¦🗺 Путешествие
+463¦🍖 Consumables¦🍖 Consumibles¦🍖 Расходники
+464¦2nd person (front)¦2ª persona (de frente)¦2-е лицо (спереди)
+465¦3rd person (behind)¦3ª persona (por detrás)¦3-е лицо (сзади)
+466¦⏹ Stop and download video (¦⏹ Parar y descargar vídeo (¦⏹ Остановить и скачать видео (
+467¦⏺ Record video¦⏺ Grabar vídeo¦⏺ Записать видео
+468¦📜 Full menu¦📜 Menú completo¦📜 Полное меню
+469¦🔨 Craft¦🔨 Fabricar¦🔨 Создать
+470¦You already have it¦Ya lo tienes¦Уже есть
+471¦Craft the previous tier first¦Fabrica primero el nivel anterior¦Сначала создай предыдущий уровень
+472¦Materials come from mining, gathering and fishing.¦Los materiales salen de minar, recolectar y pescar.¦Материалы добываются копанием, сбором и рыбалкой.
+473¦Fur¦Pelaje¦Шерсть
+474¦Detail color¦Color de detalle¦Цвет деталей
+475¦Eyes¦Ojos¦Глаза
+476¦Pattern¦Patrón¦Узор
+477¦Hat (¦Sombrero (¦Шляпа (
+478¦ owned)¦ tuyos)¦ есть)
+479¦✏ Name: ¦✏ Nombre: ¦✏ Имя: 
+480¦Your name¦Tu nombre¦Твоё имя
+481¦Accessory (¦Accesorio (¦Аксессуар (
+482¦ earned)¦ conseguidos)¦ получено)
+483¦See how to earn them in Quests > Accessories.¦Mira cómo conseguirlos en Misiones > Accesorios.¦Как получить — смотри в Задания > Аксессуары.
+484¦🗡 Paw items¦🗡 Objetos en la pata¦🗡 Предметы в лапе
+485¦  (in paw)¦  (en la pata)¦  (в лапе)
+486¦  — tap to hold¦  — toca para sujetar¦  — нажми, чтобы взять
+487¦  — not enough coins¦  — monedas insuficientes¦  — не хватает монет
+488¦  — tap to buy¦  — toca para comprar¦  — нажми, чтобы купить
+489¦ coins · the bonus applies while the item is in your paw¦ monedas · el bono vale mientras el objeto está en la pata¦ монет · бонус действует, пока предмет в лапе
+490¦Jumps high! Appears in front of you¦¡Salta alto! Aparece delante de ti¦Высоко подбрасывает! Появляется перед тобой
+491¦Decoration with sparks¦Decoración con chispas¦Украшение с искрами
+492¦Decoration¦Decoración¦Украшение
+493¦Solid: you can stand on it and climb¦Sólido: puedes subirte y escalar¦Твёрдый: можно встать и залезть
+494¦🧹 Clear (¦🧹 Limpiar (¦🧹 Убрать (
+495¦Everyone in the room sees your objects.¦Todos en la sala ven tus objetos.¦Твои объекты видят все в комнате.
+496¦You are here¦Estás aquí¦Ты здесь
+497¦Tap to travel¦Toca para viajar¦Нажми, чтобы отправиться
+498¦Other maps: enter through the Village portals.¦Otros mapas: entra por los portales de la Villa.¦Другие карты: входи через порталы в деревне.
+499¦Restores ¦Recupera ¦Восстанавливает 
+500¦ health¦ de vida¦ здоровья
+501¦+20% XP for 3 minutes¦+20% de XP durante 3 minutos¦+20% опыта на 3 минуты
+502¦Health: ¦Vida: ¦Здоровье: 
+503¦ · buy more at the groceries¦ · compra más en las tiendas¦ · купи ещё в лавках
+505¦Fast travel (maps already visited)¦Viaje rápido (mapas ya visitados)¦Быстрое перемещение (посещённые карты)
+506¦Grey 🔒 maps: enter once through the Village portal to unlock.¦Mapas con 🔒 gris: entra una vez por el portal de la Villa para desbloquear.¦Серые карты с 🔒: войди один раз через портал в деревне, чтобы открыть.
+507¦Active event: ¦Evento activo: ¦Идёт событие: 
+508¦Next event: ¦Próximo evento: ¦Следующее событие: 
+509¦ — ends in ¦ — termina en ¦ — закончится через 
+510¦ — starts in ¦ — empieza en ¦ — начнётся через 
+511¦ min¦ min¦ мин
+512¦☀ Day¦☀ Día¦☀ День
+513¦🌙 Night¦🌙 Noche¦🌙 Ночь
+514¦   |   Room: ¦   |   Sala: ¦   |   Комната: 
+515¦public¦pública¦открытая
+516¦Players on this map: ¦Jugadores en este mapa: ¦Игроков на карте: 
+517¦   |   Online in game: ¦   |   En línea en el juego: ¦   |   В игре онлайн: 
+518¦   |   Network: ¦   |   Red: ¦   |   Сеть: 
+519¦You: ¦Tú: ¦Ты: 
+520¦ — Lv ¦ — Nv ¦ — Ур 
+521¦ coins¦ monedas¦ монет
+522¦❓ How to play¦❓ Cómo jugar¦❓ Как играть
+523¦Empty bag. Mine, fish, gather and open chests!¦Bolsa vacía. ¡Mina, pesca, recolecta y abre cofres!¦Сумка пуста. Копай, рыбачь, собирай и открывай сундуки!
+524¦Use¦Usar¦Использовать
+525¦Sell items at the NPC shops.¦Vende objetos en las tiendas de los NPC.¦Продавай предметы в лавках NPC.
+526¦Daily quests¦Misiones diarias¦Ежедневные задания
+527¦📅 Streak: day ¦📅 Racha: día ¦📅 Серия: день 
+528¦✔ Claimed¦✔ Reclamada¦✔ Получено
+529¦ XP  +¦ XP  +¦ опыта  +
+530¦Contract (endless — the reward grows with your level)¦Contrato (infinitos — la recompensa crece con tu nivel)¦Контракт (бесконечные — награда растёт с уровнем)
+531¦ XP +¦ XP +¦ опыта +
+532¦📋 Take a new contract¦📋 Tomar un contrato nuevo¦📋 Взять новый контракт
+533¦NPC quests¦Misiones de NPC¦Задания NPC
+534¦None active. Talk to NPCs marked with ❗¦Ninguna activa. Habla con los NPC marcados con ❗¦Нет активных. Поговори с NPC, отмеченными ❗
+535¦🏆 Achievements ¦🏆 Logros ¦🏆 Достижения 
+536¦📖 Album¦📖 Álbum¦📖 Альбом
+537¦⭐ Talents¦⭐ Talentos¦⭐ Таланты
+538¦🎀 Accessories¦🎀 Accesorios¦🎀 Аксессуары
+539¦📖 Collection album¦📖 Álbum de colección¦📖 Альбом коллекций
+540¦Each complete collection gives 400 coins. New items appear here the first time you get them.¦Cada colección completa da 400 monedas. Los objetos nuevos entran aquí la primera vez que los consigues.¦Каждая собранная коллекция даёт 400 монет. Новые предметы попадают сюда при первом получении.
+541¦  ✔ complete¦  ✔ completa¦  ✔ собрана
+542¦You earn 1 point per level. Points available: ¦Ganas 1 punto por nivel. Puntos disponibles: ¦За уровень даётся 1 очко. Доступно очков: 
+543¦↺ Redistribute (100 coins)¦↺ Redistribuir (100 monedas)¦↺ Сбросить (100 монет)
+544¦Talents reset¦Talentos reiniciados¦Таланты сброшены
+545¦🎀 Earnable accessories¦🎀 Accesorios conseguibles¦🎀 Аксессуары за достижения
+546¦Not for sale: each one is unlocked by a feat. Tap to wear.¦No se compran: cada uno se desbloquea con una hazaña. Toca para ponértelo.¦Не продаются: каждый открывается за подвиг. Нажми, чтобы надеть.
+547¦No accessory¦Sin accesorio¦Без аксессуара
+548¦🏆 Achievements¦🏆 Logros¦🏆 Достижения
+549¦ — Level ¦ — Nivel ¦ — Уровень 
+550¦✏ Change name¦✏ Cambiar nombre¦✏ Сменить имя
+551¦ XP¦ XP¦ опыта
+552¦Profession: ¦Profesión: ¦Профессия: 
+553¦none (talk to Master Craft in the Village)¦ninguna (habla con el Maestro Oficio en la Villa)¦нет (поговори с Мастером Ремёсел в деревне)
+554¦   |   Friend code: ¦   |   Código de amigo: ¦   |   Код друга: 
+555¦Detail¦Detalle¦Детали
+556¦Hat¦Sombrero¦Шляпа
+557¦Ores ¦Minerales ¦Руды 
+558¦ · Hits ¦ · Golpes ¦ · Удары 
+559¦ · Wins ¦ · Victorias ¦ · Победы 
+560¦ · Fish ¦ · Peces ¦ · Рыба 
+561¦ · Chests ¦ · Cofres ¦ · Сундуки 
+562¦ · Secrets ¦ · Secretos ¦ · Секреты 
+563¦Your look is shown to other players (you see your paws in your fur color).¦Tu aspecto lo ven los demás jugadores (tú ves tus patas del color del pelaje).¦Твой облик видят другие игроки (ты видишь свои лапы цвета шерсти).
+564¦Emotes and gestures — other players see the animation¦Gestos — los demás jugadores ven la animación¦Эмоции и жесты — другие игроки видят анимацию
+565¦Petting: slowly move your paw over another cat's head (outside the fight zone).¦Caricia: pasa la pata despacio por la cabeza de otro gato (fuera de la zona de lucha).¦Погладить: медленно проведи лапой по голове другого кота (вне зоны боя).
+566¦Sitting/sleeping: press the trigger to get up.¦Sentado/dormido: pulsa el gatillo para levantarte.¦Сидишь/спишь: нажми курок, чтобы встать.
+567¦Performance (Thermal Controller)¦Rendimiento (Thermal Controller)¦Производительность (Thermal Controller)
+568¦Auto adjust: ¦Ajuste automático: ¦Автонастройка: 
+569¦NO¦NO¦НЕТ
+571¦ ms/frame  ·  load ¦ ms/fotograma  ·  carga ¦ мс/кадр  ·  нагрузка 
+572¦%  ·  quality level ¦%  ·  nivel de calidad ¦%  ·  уровень качества 
+573¦Resolution ¦Resolución ¦Разрешение 
+574¦%  ·  view ¦%  ·  visión ¦%  ·  обзор 
+576¦  ·  triangles ¦  ·  triángulos ¦  ·  треугольники 
+577¦  ·  JS memory ¦  ·  memoria JS ¦  ·  память JS 
+579¦No thermal sensor in the browser: load is estimated from frame time.¦Sin sensor térmico en el navegador: la carga se estima por el tiempo de fotograma.¦В браузере нет датчика температуры: нагрузка оценивается по времени кадра.
+580¦Volume¦Volumen¦Громкость
+581¦🎵 Music: ¦🎵 Música: ¦🎵 Музыка: 
+582¦Controller hand: ¦Mando en la mano: ¦Контроллер в руке: 
+583¦💾 Save now¦💾 Guardar ahora¦💾 Сохранить
+584¦Progress saved on the server¦Progreso guardado en el servidor¦Прогресс сохранён на сервере
+585¦Offline: saved only on this device¦Sin conexión: guardado solo en este dispositivo¦Офлайн: сохранено только на этом устройстве
+586¦🚪 Exit VR¦🚪 Salir del VR¦🚪 Выйти из VR
+587¦✋ Hands via camera: ¦✋ Manos por cámara: ¦✋ Руки через камеру: 
+588¦Exit VR Box¦Salir del VR Box¦Выйти из VR Box
+589¦🧭 Recenter¦🧭 Recentrar¦🧭 Центрировать
+590¦Hands: ¦Manos: ¦Руки: 
+592¦  ·  Gamepad/Joy-Con: ¦  ·  Gamepad/Joy-Con: ¦  ·  Геймпад/Joy-Con: 
+593¦not detected (press a button)¦no detectado (pulsa un botón)¦не найден (нажми кнопку)
+596¦Temporary ID of this device: ¦ID temporal de este dispositivo: ¦Временный ID устройства: 
+597¦OFFLINE (solo play, no cloud save)¦SIN CONEXIÓN (juego en solitario, sin guardar en la nube)¦ОФЛАЙН (одиночная игра без облачного сохранения)
+598¦Mouse: look and aim the paws · WASD: walk · Space: jump · Shift: run¦Ratón: mirar y apuntar las patas · WASD: andar · Espacio: saltar · Shift: correr¦Мышь: смотреть и наводить лапы · WASD: ходьба · Пробел: прыжок · Shift: бег
+599¦Click: trigger (grab surfaces, talk to NPCs, open chests, fish)¦Clic: gatillo (agarrar superficies, hablar con NPC, abrir cofres, pescar)¦Клик: курок (хватать поверхности, говорить с NPC, открывать сундуки, рыбачить)
+600¦Look at the ground and move the mouse to push with your paws (boost).¦Mira al suelo y mueve el ratón para empujar con las patas (impulso).¦Смотри на землю и двигай мышью, чтобы оттолкнуться лапами.
+601¦M/Tab: menu · B: quick menu · V: camera · R: record · T (hold): teleport · Enter: chat · Q/E: dodge · F: block¦M/Tab: menú · B: menú rápido · V: cámara · R: grabar · T (mantener): teletransporte · Enter: chat · Q/E: esquivar · F: bloquear¦M/Tab: меню · B: быстрое меню · V: камера · R: запись · T (держать): телепорт · Enter: чат · Q/E: уклон · F: блок
+602¦Punches: move your paws fast against the target (dummies, Master, players in the fight zone).¦Golpes: mueve las patas rápido contra el objetivo (muñecos, Maestro, jugadores en la zona de lucha).¦Удары: быстро двигай лапами по цели (манекены, Мастер, игроки в зоне боя).
+603¦BOOST: point the controller at the ground until the paws touch it and sweep back.¦IMPULSO: apunta el mando al suelo hasta que las patas toquen y barre hacia atrás.¦ТОЛЧОК: наведи контроллер на землю, пока лапы не коснутся, и махни назад.
+604¦CLIMB: touch a wall with your paws, HOLD the trigger, pull down and release.¦ESCALAR: apoya las patas en una pared, MANTÉN el gatillo, tira hacia abajo y suelta.¦ЛАЗАТЬ: коснись лапами стены, ДЕРЖИ курок, потяни вниз и отпусти.
+605¦WALK: hold the trigger with your paws in the air — you walk where you point.¦ANDAR: mantén el gatillo con las patas en el aire: caminas hacia donde apuntas.¦ХОДИТЬ: держи курок, когда лапы в воздухе — идёшь туда, куда указываешь.
+606¦POINT + TRIGGER: talk to NPCs, open chests, cast the fishing line into the water.¦APUNTAR + GATILLO: hablar con NPC, abrir cofres, lanzar la línea de pesca al agua.¦НАВЕСТИ + КУРОК: говорить с NPC, открывать сундуки, забрасывать удочку в воду.
+607¦The two paws are floating balls: one follows the controller and the other mirrors it. Oculus Go only tracks controller rotation (3DoF), so everything is built around turning your wrist.¦Las dos patas son bolitas flotantes: una sigue el mando y la otra refleja el movimiento. Oculus Go solo rastrea la rotación del mando (3DoF), así que todo se pensó para girar la muñeca.¦Две лапы — парящие шарики: одна следует за контроллером, другая зеркалит движение. Oculus Go отслеживает только поворот контроллера (3DoF), поэтому всё рассчитано на вращение кисти.
+608¦Rooms¦Salas¦Комнаты
+609¦Players¦Jugadores¦Игроки
+610¦Party¦Grupo¦Группа
+611¦Chat¦Chat¦Чат
+612¦Offline — no connection to the server.¦Sin conexión con el servidor.¦Офлайн — нет связи с сервером.
+613¦You joined the room ¦Entraste en la sala ¦Ты вошёл в комнату 
+614¦Current room: ¦Sala actual: ¦Текущая комната: 
+615¦private — share the code¦privada — comparte el código¦закрытая — поделись кодом
+616¦Loading rooms...¦Cargando salas...¦Загрузка комнат...
+617¦ online¦ en línea¦ онлайн
+618¦+ Public room¦+ Sala pública¦+ Открытая комната
+619¦+ Private room¦+ Sala privada¦+ Закрытая комната
+620¦🔑 Join by code¦🔑 Entrar por código¦🔑 Войти по коду
+621¦Room code¦Código de la sala¦Код комнаты
+622¦Room not found¦Sala no encontrada¦Комната не найдена
+623¦Error looking up room¦Error al buscar la sala¦Ошибка поиска комнаты
+624¦↻ Refresh¦↻ Actualizar¦↻ Обновить
+625¦Room name ¦Nombre de la sala ¦Название комнаты 
+626¦Room of ¦Sala de ¦Комната игрока 
+627¦Private room code: ¦Código de la sala privada: ¦Код закрытой комнаты: 
+628¦Could not create the room¦No se pudo crear la sala¦Не удалось создать комнату
+629¦Real players on this map and room: ¦Jugadores reales en este mapa y sala: ¦Живых игроков на карте и в комнате: 
+630¦Just you here right now. Invite friends with the room code!¦Solo tú por aquí ahora. ¡Invita amigos con el código de la sala!¦Сейчас здесь только ты. Пригласи друзей по коду комнаты!
+631¦  (Lv ¦  (Nv ¦  (Ур 
+632¦✔ Friend¦✔ Amigo¦✔ Друг
+633¦Accept friendship¦Aceptar amistad¦Принять дружбу
+634¦Request sent¦Solicitud enviada¦Запрос отправлен
+635¦+ Friend¦+ Amigo¦+ Друг
+636¦Now you are friends!¦¡Ahora sois amigos!¦Теперь вы друзья!
+637¦Friend request sent¦Solicitud de amistad enviada¦Запрос в друзья отправлен
+638¦👥 Invite to party¦👥 Invitar al grupo¦👥 Пригласить в группу
+639¦Party invite sent¦Invitación al grupo enviada¦Приглашение в группу отправлено

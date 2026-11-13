@@ -78,6 +78,7 @@ export const QUESTS = {
   i2: { npc: 'capitao', title: 'Pescaria', desc: 'Pesque 5 peixes.', goal: { t: 'fish', n: 5 }, xp: 120, coins: 110, after: 'i1' },
   i3: { npc: 'capitao', title: 'O navio naufragado', desc: 'Ache o segredo no mastro do naufrágio.', goal: { t: 'secret', k: 'island', n: 1 }, xp: 180, coins: 220, after: 'i2' },
   t1: { npc: 'sensei', title: 'Pista de obstáculos', desc: 'Complete a pista de escalada do Campo de Treino.', goal: { t: 'secret', k: 'training', n: 1 }, xp: 120, coins: 90 },
+  f4: { npc: 'salvia', title: 'Lenha para o inverno', desc: 'Corte 6 árvores com o machado (as de tronco marcado).', goal: { t: 'chop', n: 6 }, xp: 110, coins: 90, after: 'f1' },
   f3: { npc: 'salvia', title: 'Floresta assombrada', desc: 'Derrote 5 inimigos na Floresta.', goal: { t: 'kill', n: 5 }, xp: 150, coins: 120, after: 'f1' },
   m4: { npc: 'tunel', title: 'Orcs nos túneis', desc: 'Derrote 4 Orcs.', goal: { t: 'kill', k: 'orc', n: 4 }, xp: 200, coins: 180, after: 'm3' },
   d3: { npc: 'safira', title: 'Ossos do deserto', desc: 'Derrote 6 Esqueletos.', goal: { t: 'kill', k: 'skeleton', n: 6 }, xp: 180, coins: 150 },
@@ -96,7 +97,7 @@ export const DAILY = [
   { title: 'Visite 4 mapas', goal: { t: 'visit', n: 4 }, xp: 100, coins: 80 }, { title: 'Venda itens por 150 moedas', goal: { t: 'sold', n: 150 }, xp: 90, coins: 60 },
   { title: 'Use 5 emotes', goal: { t: 'emote', n: 5 }, xp: 60, coins: 50 }, { title: 'Desenterre 2 tesouros', goal: { t: 'dig', n: 2 }, xp: 110, coins: 90 },
   { title: 'Vença 1 luta', goal: { t: 'ko', n: 1 }, xp: 150, coins: 120 }, { title: 'Converse com 4 NPCs', goal: { t: 'talk', n: 4 }, xp: 70, coins: 50 },
-  { title: 'Derrote 8 inimigos', goal: { t: 'kill', n: 8 }, xp: 140, coins: 110 }, { title: 'Fabrique 1 item', goal: { t: 'craft', n: 1 }, xp: 80, coins: 60 }
+  { title: 'Derrote 8 inimigos', goal: { t: 'kill', n: 8 }, xp: 140, coins: 110 }, { title: 'Corte 8 árvores', goal: { t: 'chop', n: 8 }, xp: 100, coins: 80 }, { title: 'Fabrique 1 item', goal: { t: 'craft', n: 1 }, xp: 80, coins: 60 }
 ];
 // Conquistas: s = estatística, n = alvo
 export const ACHIEVEMENTS = [
@@ -113,7 +114,7 @@ export const ACHIEVEMENTS = [
   { id: 'co1', n: 'Pé-de-meia', d: 'Ganhe 1000 moedas no total', s: 'earned', v: 1000, c: 100 }, { id: 'so1', n: 'Sociável', d: 'Faça carinho em outro jogador', s: 'pat', v: 1, c: 40 },
   { id: 'em1', n: 'Expressivo', d: 'Use 20 emotes', s: 'emote', v: 20, c: 50 }, { id: 'qu1', n: 'Prestativo', d: 'Complete 10 missões', s: 'quests', v: 10, c: 300 },
   { id: 'ev1', n: 'Na hora certa', d: 'Participe de 1 evento mundial', s: 'event', v: 1, c: 100 }, { id: 'ki1', n: 'Caçador', d: 'Derrote 10 inimigos', s: 'kill', v: 10, c: 80 }, { id: 'ki2', n: 'Exterminador', d: 'Derrote 150 inimigos', s: 'kill', v: 150, c: 700 },
-  { id: 'cr1', n: 'Artesão', d: 'Fabrique 5 itens', s: 'craft', v: 5, c: 120 }, { id: 'sw1', n: 'Peixinho', d: 'Nade 500 metros', s: 'swim', v: 500, c: 150 }, { id: 'po1', n: 'Estoura-Bolhas', d: 'Estoure 100 bolhas', s: 'pop', v: 100, c: 150 },
+  { id: 'lu1', n: 'Lenhador', d: 'Corte 30 árvores', s: 'chop', v: 30, c: 150 }, { id: 'cr1', n: 'Artesão', d: 'Fabrique 5 itens', s: 'craft', v: 5, c: 120 }, { id: 'sw1', n: 'Peixinho', d: 'Nade 500 metros', s: 'swim', v: 500, c: 150 }, { id: 'po1', n: 'Estoura-Bolhas', d: 'Estoure 100 bolhas', s: 'pop', v: 100, c: 150 },
   { id: 'bo1', n: 'Mata-Chefe', d: 'Derrote 1 chefe', s: 'boss', v: 1, c: 200 }, { id: 'ct1', n: 'Contratado', d: 'Conclua 10 contratos', s: 'contracts', v: 10, c: 400 }, { id: 'al1', n: 'Colecionador', d: 'Complete 2 coleções do álbum', s: 'collections', v: 2, c: 500 },
   { id: 'fr1', n: 'Amigos', d: 'Adicione 1 amigo', s: 'friends', v: 1, c: 50 }
 ];
@@ -134,6 +135,7 @@ export const QUICK_CHAT = ['Oi!', 'Miau!', 'Vamos lutar?', 'Me segue!', 'Boa!', 
 // Itens de pata (menu rápido > Itens): aparecem na mão e dão bônus reais enquanto equipados.
 export const HELD = [
   { id: 'none', n: 'Patas livres', d: 'Nada na pata', price: 0 },
+  { id: 'axe', n: 'Machado', d: 'Corta árvores para pegar lenha', model: 'survival/tool-axe', s: 2.6, price: 0 },
   { id: 'pick', n: 'Picareta', d: 'Mineração +30%', model: 'survival/tool-pickaxe', s: 2.6, price: 0, mine: 1.3 },
   { id: 'sword', n: 'Espada de Treino', d: 'Dano +25%', model: 'dungeon/weapon-sword', s: 1.1, price: 300, dmg: 1.25 },
   { id: 'spear', n: 'Lança', d: 'Dano +15%, velocidade +10%', model: 'arena/weapon-spear', s: 1.3, price: 450, dmg: 1.15, speed: 1.1 },
@@ -200,7 +202,7 @@ export function titleFor(level) { let t = TITLES[0][1]; for (const x of TITLES) 
 export const CONTRACT_TYPES = [
   { t: 'mine', title: 'Minere %n nós', base: 10 }, { t: 'kill', title: 'Derrote %n inimigos', base: 6 }, { t: 'fish', title: 'Pesque %n peixes', base: 4 }, { t: 'chest', title: 'Abra %n baús', base: 3 },
   { t: 'forage', title: 'Colete %n itens da natureza', base: 8 }, { t: 'dig', title: 'Desenterre %n tesouros', base: 3 }, { t: 'hit', title: 'Acerte %n golpes', base: 30 }, { t: 'fling', title: 'Dê %n impulsos', base: 25 },
-  { t: 'swim', title: 'Nade %n metros', base: 120 }, { t: 'pop', title: 'Estoure %n bolhas', base: 15 }, { t: 'craft', title: 'Fabrique %n itens', base: 1 }
+  { t: 'swim', title: 'Nade %n metros', base: 120 }, { t: 'pop', title: 'Estoure %n bolhas', base: 15 }, { t: 'craft', title: 'Fabrique %n itens', base: 1 }, { t: 'chop', title: 'Corte %n árvores', base: 6 }
 ];
 // Álbum de coleção: categorias de itens; completar uma dá recompensa.
 export const ALBUM = { fish: 'Peixes', gem: 'Gemas', ore: 'Minérios', forage: 'Natureza', treasure: 'Tesouros' };

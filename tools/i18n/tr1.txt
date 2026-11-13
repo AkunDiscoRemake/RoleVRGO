@@ -1,0 +1,326 @@
+0|Common|Común|Обычный
+1|Uncommon|Poco común|Необычный
+2|Rare|Raro|Редкий
+3|Epic|Épico|Эпический
+4|Legendary|Legendario|Легендарный
+5|Stone|Piedra|Камень
+6|Coal|Carbón|Уголь
+7|Copper|Cobre|Медь
+8|Iron|Hierro|Железо
+9|Silver|Plata|Серебро
+10|Gold|Oro|Золото
+11|Blue Crystal|Cristal Azul|Синий кристалл
+12|Amethyst|Amatista|Аметист
+13|Emerald|Esmeralda|Изумруд
+14|Ruby|Rubí|Рубин
+15|Diamond|Diamante|Алмаз
+16|Ice Crystal|Cristal de Hielo|Ледяной кристалл
+17|Sunstone|Piedra del Sol|Солнечный камень
+18|Star Fragment|Fragmento Estelar|Звёздный осколок
+19|Mushroom|Seta|Гриб
+20|Wildflower|Flor Silvestre|Полевой цветок
+21|Shell|Concha|Ракушка
+22|Pumpkin|Calabaza|Тыква
+23|Cactus Fruit|Fruto de Cactus|Плод кактуса
+24|Package|Paquete|Посылка
+25|Firewood|Leña|Дрова
+26|Sardine|Sardina|Сардина
+27|Tilapia|Tilapia|Тилапия
+28|Sea Bass|Róbalo|Окунь
+29|Dorado|Dorado|Дорадо
+30|Koi Carp|Carpa Koi|Карп кои
+31|Old Coin|Moneda Antigua|Старинная монета
+32|Feline Relic|Reliquia Felina|Кошачья реликвия
+33|Golden Idol|Ídolo de Oro|Золотой идол
+34|Pearl|Perla|Жемчужина
+35|Shiny Coral|Coral Brillante|Сияющий коралл
+36|Snack|Bocadillo|Лакомство
+37|Wooden Pickaxe|Pico de Madera|Деревянная кирка
+38|Iron Pickaxe|Pico de Hierro|Железная кирка
+39|Golden Pickaxe|Pico de Oro|Золотая кирка
+40|Diamond Pickaxe|Pico de Diamante|Алмазная кирка
+41|Bare Paws|Patas Desnudas|Голые лапы
+42|Training Gloves|Guantes de Entrenamiento|Тренировочные перчатки
+43|Steel Gloves|Guantes de Acero|Стальные перчатки
+44|Champion Gloves|Guantes del Campeón|Перчатки чемпиона
+45|Twig Rod|Caña de Ramita|Удочка из прутика
+46|Bamboo Rod|Caña de Bambú|Бамбуковая удочка
+47|Golden Rod|Caña Dorada|Золотая удочка
+48|Miner|Minero|Шахтёр
+49|+25% ores and faster mining|+25% de minerales y minería más rápida|+25% руды и быстрее добыча
+50|Fighter|Luchador|Боец
+51|+15% damage and +20 health in the arena|+15% de daño y +20 de vida en la arena|+15% урона и +20 здоровья на арене
+52|Fisher|Pescador|Рыбак
+53|Fish bite faster and rare ones show up more|Los peces pican más rápido y los raros aparecen más|Рыба клюёт быстрее, редкая попадается чаще
+54|Explorer|Explorador|Исследователь
+55|+50% coins from chests and double XP from secrets|+50% de monedas en cofres y XP doble de secretos|+50% монет из сундуков и двойной опыт за секреты
+56|Merchant|Mercader|Торговец
+57|Sells 20% higher and buys 10% cheaper|Vende 20% más caro y compra 10% más barato|Продаёт на 20% дороже, покупает на 10% дешевле
+58|Welcome to the Village|Bienvenido a la Villa|Добро пожаловать в деревню
+59|Push the ground with your paws and do 5 boosts.|Empuja el suelo con las patas y da 5 impulsos.|Оттолкнись лапами от земли 5 раз.
+60|Getting to know the world|Conociendo el mundo|Знакомство с миром
+61|Visit 3 different maps through the portals.|Visita 3 mapas distintos por los portales.|Посети 3 разные карты через порталы.
+62|Fresh fish|Pescado fresco|Свежая рыба
+63|Deliver 3 fish of any kind... I mean, 3 sardines.|Entrega 3 peces cualquiera... digo, 3 sardinas.|Принеси 3 любые рыбы... то есть 3 сардины.
+64|Iron for the forge|Hierro para la forja|Железо для кузницы
+65|Bring 5 copper ores from the Mine.|Trae 5 minerales de cobre de la Mina.|Принеси 5 медной руды из шахты.
+66|Mushroom soup|Sopa de setas|Грибной суп
+67|Pick 6 mushrooms in the Forest.|Recoge 6 setas en el Bosque.|Собери 6 грибов в лесу.
+68|The treehouse|La casa del árbol|Домик на дереве
+69|Find the secret at the top of the great tree.|Encuentra el secreto en lo alto del gran árbol.|Найди секрет на вершине большого дерева.
+70|First swing|Primer picotazo|Первый удар киркой
+71|Mine 10 nodes of any ore.|Mina 10 nodos de cualquier mineral.|Добудь 10 любых жил.
+72|Glow in the dark|Brillo en la oscuridad|Свет во тьме
+73|Deliver 3 Blue Crystals.|Entrega 3 Cristales Azules.|Принеси 3 синих кристалла.
+74|Coal for the lanterns|Carbón para las linternas|Уголь для фонарей
+75|Deliver 8 coal.|Entrega 8 de carbón.|Принеси 8 угля.
+76|X marks the spot|La X marca el lugar|Крестик отмечает место
+77|Dig up 3 treasures in the Desert.|Desentierra 3 tesoros en el Desierto.|Выкопай 3 клада в пустыне.
+78|The top of the pyramid|La cima de la pirámide|Вершина пирамиды
+79|Climb the pyramid and find the secret.|Escala la pirámide y halla el secreto.|Заберись на пирамиду и найди секрет.
+80|Flowers of the cold|Flores del frío|Цветы холода
+81|Pick 5 Snowbells.|Recoge 5 Flores de Nieve.|Собери 5 подснежников.
+82|The summit|La cumbre|Вершина
+83|Climb to the flag at the top of the mountain.|Escala hasta la bandera en la cima de la montaña.|Заберись к флагу на вершине горы.
+84|Warm-up|Calentamiento|Разминка
+85|Land 20 hits (dummy, master or players).|Acierta 20 golpes (muñeco, maestro o jugadores).|Нанеси 20 ударов (манекен, мастер или игроки).
+86|Perfect sequence|Secuencia perfecta|Идеальная серия
+87|Do a 5-hit combo.|Haz un combo de 5 golpes.|Сделай комбо из 5 ударов.
+88|Win 1 fight (a player or the Master).|Gana 1 pelea (jugador o el Maestro).|Победи в 1 бою (игрока или Мастера).
+89|The royal treasure|El tesoro real|Королевское сокровище
+90|Open 3 chests on any map.|Abre 3 cofres en cualquier mapa.|Открой 3 сундука на любой карте.
+91|Guardian of the walls|Guardián de las murallas|Страж стен
+92|Climb the tallest tower of the Castle.|Sube a la torre más alta del Castillo.|Заберись на самую высокую башню замка.
+93|Royal banquet|Banquete real|Королевский пир
+94|Deliver 2 Sea Bass for the banquet.|Entrega 2 Róbalos para el banquete.|Принеси 2 окуня для пира.
+95|Express delivery|Entrega exprés|Срочная доставка
+96|Pick up 4 packages around the City and deliver them here.|Recoge 4 paquetes por la Ciudad y entrégalos aquí.|Собери 4 посылки по городу и принеси сюда.
+97|View from above|Vista desde lo alto|Вид сверху
+98|Reach the top of a skyscraper.|Llega a la cima de un rascacielos.|Доберись до крыши небоскрёба.
+99|Lucky shells|Conchas de la suerte|Счастливые ракушки
+100|Gather 6 shells on the beach.|Junta 6 conchas en la playa.|Собери 6 ракушек на пляже.
+101|Fishing trip|Pesca|Рыбалка
+102|Catch 5 fish.|Pesca 5 peces.|Поймай 5 рыб.
+103|The shipwreck|El barco naufragado|Затонувший корабль
+104|Find the secret on the mast of the shipwreck.|Halla el secreto en el mástil del naufragio.|Найди секрет на мачте затонувшего корабля.
+105|Obstacle course|Pista de obstáculos|Полоса препятствий
+106|Complete the climbing course at the Training Grounds.|Completa la pista de escalada del Campo de Entrenamiento.|Пройди скалолазную трассу на тренировочной площадке.
+107|Firewood for the winter|Leña para el invierno|Дрова на зиму
+108|Chop 6 trees with the axe (the ones with a stump).|Tala 6 árboles con el hacha (los que tienen tocón).|Сруби 6 деревьев топором (те, что с пнём).
+109|Haunted forest|Bosque embrujado|Лес с привидениями
+110|Defeat 5 enemies in the Forest.|Derrota 5 enemigos en el Bosque.|Победи 5 врагов в лесу.
+111|Orcs in the tunnels|Orcos en los túneles|Орки в туннелях
+112|Defeat 4 Orcs.|Derrota 4 Orcos.|Победи 4 орков.
+113|Bones of the desert|Huesos del desierto|Кости пустыни
+114|Defeat 6 Skeletons.|Derrota 6 Esqueletos.|Победи 6 скелетов.
+115|Get to work|Manos a la obra|За работу
+116|Craft 2 items (quick menu > Craft).|Fabrica 2 objetos (menú rápido > Fabricar).|Создай 2 предмета (быстрое меню > Создать).
+117|Maiden dive|Inmersión inaugural|Первое погружение
+118|Swim 150 meters in the Aero Paradise lake.|Nada 150 metros en el lago del Aero Paraíso.|Проплыви 150 метров в озере Аэро-Рая.
+119|Pearls of the deep|Perlas del fondo|Жемчуг глубин
+120|Deliver 8 Pearls gathered from the lake bottom.|Entrega 8 Perlas recogidas del fondo del lago.|Принеси 8 жемчужин со дна озера.
+121|The sunken dome|La cúpula sumergida|Подводный купол
+122|Find the secret at the bottom of the lake.|Halla el secreto en el fondo del lago.|Найди секрет на дне озера.
+123|Pop 25 floating bubbles with your paws.|Revienta 25 burbujas flotantes con las patas.|Лопни лапами 25 летающих пузырей.
+124|Defense first|Primero la defensa|Сначала защита
+125|Block 5 hits from the Master.|Bloquea 5 golpes del Maestro.|Заблокируй 5 ударов Мастера.
+126|Mine 15 nodes|Mina 15 nodos|Добудь 15 жил
+127|Catch 4 fish|Pesca 4 peces|Поймай 4 рыбы
+128|Open 3 chests|Abre 3 cofres|Открой 3 сундука
+129|Land 30 hits|Acierta 30 golpes|Нанеси 30 ударов
+130|Collect 10 nature items|Recoge 10 objetos de la naturaleza|Собери 10 даров природы
+131|Do 25 paw boosts|Da 25 impulsos con las patas|Оттолкнись лапами 25 раз
+132|Visit 4 maps|Visita 4 mapas|Посети 4 карты
+133|Sell items for 150 coins|Vende objetos por 150 monedas|Продай предметов на 150 монет
+134|Use 5 emotes|Usa 5 gestos|Используй 5 эмоций
+135|Dig up 2 treasures|Desentierra 2 tesoros|Выкопай 2 клада
+136|Win 1 fight|Gana 1 pelea|Победи в 1 бою
+137|Talk to 4 NPCs|Habla con 4 NPC|Поговори с 4 NPC
+138|Defeat 8 enemies|Derrota 8 enemigos|Победи 8 врагов
+139|Chop 8 trees|Tala 8 árboles|Сруби 8 деревьев
+140|Craft 1 item|Fabrica 1 objeto|Создай 1 предмет
+141|First Jump|Primer Salto|Первый прыжок
+142|Do 1 paw boost|Da 1 impulso con las patas|Оттолкнись лапами 1 раз
+143|Gorilla Cat|Gato Gorila|Кот-горилла
+144|200 boosts|200 impulsos|200 толчков
+145|Apprentice Miner|Minero Aprendiz|Шахтёр-ученик
+146|Mine 10 nodes|Mina 10 nodos|Добудь 10 жил
+147|Master Miner|Minero Maestro|Мастер-шахтёр
+148|Mine 250 nodes|Mina 250 nodos|Добудь 250 жил
+149|Lynx Eye|Ojo de Lince|Рысий глаз
+150|Find an epic gem or better|Halla una gema épica o mejor|Найди эпический самоцвет или лучше
+151|Land 50 hits|Acierta 50 golpes|Нанеси 50 ударов
+152|Knockouter|Noqueador|Нокаутёр
+153|Arena Champion|Campeón de la Arena|Чемпион арены
+154|Win 25 fights|Gana 25 peleas|Победи в 25 боях
+156|Do a 5 combo|Haz un combo de 5|Сделай комбо из 5
+157|Wall|Muralla|Стена
+158|Block 20 hits|Bloquea 20 golpes|Заблокируй 20 ударов
+159|Chest Hunter|Cazacofres|Охотник за сундуками
+160|Open 10 chests|Abre 10 cofres|Открой 10 сундуков
+161|Treasurer|Tesorero|Казначей
+162|Open 75 chests|Abre 75 cofres|Открой 75 сундуков
+163|Curious|Curioso|Любопытный
+164|Discover 1 secret|Descubre 1 secreto|Найди 1 секрет
+165|Discover 9 secrets|Descubre 9 secretos|Найди 9 секретов
+166|Traveler|Viajero|Путешественник
+167|Visit all 10 maps|Visita los 10 mapas|Посети все 10 карт
+168|Catch 10 fish|Pesca 10 peces|Поймай 10 рыб
+169|Legend of the Sea|Leyenda del Mar|Легенда моря
+170|Catch a Moonfish|Pesca un Pez Luna|Поймай рыбу-луну
+171|Archaeologist|Arqueólogo|Археолог
+172|Dig up 10 treasures|Desentierra 10 tesoros|Выкопай 10 кладов
+173|Level 5|Nivel 5|Уровень 5
+174|Reach level 5|Llega al nivel 5|Достигни 5 уровня
+175|Level 15|Nivel 15|Уровень 15
+176|Reach level 15|Llega al nivel 15|Достигни 15 уровня
+177|Nest Egg|Ahorrillos|Заначка
+178|Earn 1000 coins in total|Gana 1000 monedas en total|Заработай 1000 монет всего
+179|Sociable|Sociable|Общительный
+180|Pet another player|Acaricia a otro jugador|Погладь другого игрока
+181|Expressive|Expresivo|Выразительный
+182|Use 20 emotes|Usa 20 gestos|Используй 20 эмоций
+183|Helpful|Servicial|Отзывчивый
+184|Complete 10 quests|Completa 10 misiones|Выполни 10 заданий
+185|Right on time|Justo a tiempo|Вовремя
+186|Take part in 1 world event|Participa en 1 evento mundial|Поучаствуй в 1 мировом событии
+187|Hunter|Cazador|Охотник
+188|Defeat 10 enemies|Derrota 10 enemigos|Победи 10 врагов
+189|Exterminator|Exterminador|Истребитель
+190|Defeat 150 enemies|Derrota 150 enemigos|Победи 150 врагов
+191|Lumberjack|Leñador|Дровосек
+192|Chop 30 trees|Tala 30 árboles|Сруби 30 деревьев
+193|Artisan|Artesano|Ремесленник
+194|Craft 5 items|Fabrica 5 objetos|Создай 5 предметов
+195|Little Fish|Pececito|Рыбка
+196|Swim 500 meters|Nada 500 metros|Проплыви 500 метров
+197|Pop 100 bubbles|Revienta 100 burbujas|Лопни 100 пузырей
+198|Defeat 1 boss|Derrota 1 jefe|Победи 1 босса
+199|Contractor|Contratado|Наёмник
+200|Finish 10 contracts|Completa 10 contratos|Выполни 10 контрактов
+201|Collector|Coleccionista|Коллекционер
+202|Complete 2 album collections|Completa 2 colecciones del álbum|Собери 2 коллекции в альбоме
+203|Friends|Amigos|Друзья
+204|Add 1 friend|Añade 1 amigo|Добавь 1 друга
+205|Crystal Rain|Lluvia de Cristales|Кристальный дождь
+206|Star Fragments fell on|Cayeron Fragmentos Estelares en|Звёздные осколки упали на карте
+207|Golden Chest|Cofre Dorado|Золотой сундук
+208|A golden chest appeared in|Apareció un cofre dorado en|Золотой сундук появился на карте
+209|Training Hour|Hora de Entrenar|Час тренировки
+210|Double XP in|XP doble en|Двойной опыт на карте
+211|Shoal|Cardumen|Косяк рыбы
+212|Rare fish biting in|Peces raros picando en|Редкая рыба клюёт на карте
+213|Want to fight?|¿Peleamos?|Сразимся?
+214|Follow me!|¡Sígueme!|За мной!
+215|Where are you?|¿Dónde estás?|Ты где?
+217|I need help|Necesito ayuda|Нужна помощь
+218|Want to mine?|¿Vamos a minar?|Пойдём копать?
+219|Free paws|Patas libres|Свободные лапы
+220|Nothing in paw|Nada en la pata|В лапе пусто
+221|Axe|Hacha|Топор
+222|Chops trees for firewood|Tala árboles para conseguir leña|Рубит деревья на дрова
+223|Pickaxe|Pico|Кирка
+224|Mining +30%|Minería +30%|Добыча +30%
+225|Training Sword|Espada de Entrenamiento|Тренировочный меч
+226|Damage +25%|Daño +25%|Урон +25%
+227|Spear|Lanza|Копьё
+228|Damage +15%, speed +10%|Daño +15%, velocidad +10%|Урон +15%, скорость +10%
+229|Shield|Escudo|Щит
+230|Block absorbs 92%|El bloqueo absorbe 92%|Блок поглощает 92%
+231|Lucky Fish|Pez de la Suerte|Рыба удачи
+232|Speed +20%|Velocidad +20%|Скорость +20%
+233|Speed Potion|Poción Veloz|Зелье скорости
+234|Speed +35%, damage -10%|Velocidad +35%, daño -10%|Скорость +35%, урон -10%
+235|Heart|Corazón|Сердце
+236|Health regenerates 2x|La vida se regenera 2x|Здоровье восстанавливается 2x
+237|Lucky Star|Estrella de la Suerte|Звезда удачи
+239|📦 Crate|📦 Caja|📦 Ящик
+240|🛢 Barrel|🛢 Barril|🛢 Бочка
+241|🪑 Bench|🪑 Banco|🪑 Скамейка
+242|🌀 Trampoline|🌀 Trampolín|🌀 Батут
+243|🚩 Flag|🚩 Bandera|🚩 Флаг
+244|⛄ Snowman|⛄ Muñeco de nieve|⛄ Снеговик
+245|🔥 Campfire|🔥 Fogata|🔥 Костёр
+246|Fish snacks (x2)|Bocadillos de pescado (x2)|Рыбные лакомства (x2)
+247|Crown (hat)|Corona (sombrero)|Корона (шляпа)
+248|Miner helmet|Casco de minero|Шахтёрская каска
+249|Ghost|Fantasma|Призрак
+250|Skeleton|Esqueleto|Скелет
+251|Zombie|Zombi|Зомби
+252|Orc|Orco|Орк
+253|Elder Specter|Espectro Anciano|Древний призрак
+254|Skeleton King|Rey Esqueleto|Король скелетов
+255|Giant Zombie|Zombi Gigante|Гигантский зомби
+256|Orc Chief|Jefe Orco|Вождь орков
+257|None|Ninguno|Нет
+258|Sunglasses|Gafas de sol|Тёмные очки
+259|Reach level 3|Llega al nivel 3|Достигни 3 уровня
+260|Scarf|Bufanda|Шарф
+261|Bow tie|Pajarita|Галстук-бабочка
+262|Complete 5 quests|Completa 5 misiones|Выполни 5 заданий
+263|Backpack|Mochila|Рюкзак
+264|Visit 6 maps|Visita 6 mapas|Посети 6 карт
+265|Hero cape|Capa de héroe|Плащ героя
+266|Defeat 25 enemies|Derrota 25 enemigos|Победи 25 врагов
+267|Medal|Medalla|Медаль
+268|Win 5 fights|Gana 5 peleas|Победи в 5 боях
+269|Bubble wings|Alas de burbuja|Пузырьковые крылья
+270|Pop 60 bubbles in Aero Paradise|Revienta 60 burbujas en el Aero Paraíso|Лопни 60 пузырей в Аэро-Раю
+271|Snorkel|Esnórquel|Трубка для плавания
+272|Swim 300 meters|Nada 300 metros|Проплыви 300 метров
+273|Golden aura|Aura dorada|Золотая аура
+274|Reach level 20|Llega al nivel 20|Достигни 20 уровня
+275|Pearl necklace|Collar de perlas|Жемчужное ожерелье
+276|Collect 15 pearls|Recoge 15 perlas|Собери 15 жемчужин
+277|Boss horns|Cuernos de jefe|Рога босса
+278|Defeat 3 bosses|Derrota 3 jefes|Победи 3 боссов
+279|❤ Vitality|❤ Vitalidad|❤ Живучесть
+280|+10 health per point|+10 de vida por punto|+10 здоровья за очко
+281|🥊 Strength|🥊 Fuerza|🥊 Сила
+282|+6% damage per point|+6% de daño por punto|+6% урона за очко
+283|💨 Agility|💨 Agilidad|💨 Ловкость
+284|+4% speed per point|+4% de velocidad por punto|+4% скорости за очко
+285|🦘 Boost|🦘 Impulso|🦘 Толчок
+286|+6% jump power per point|+6% de fuerza en los saltos por punto|+6% силы прыжка за очко
+287|⛏ Prospecting|⛏ Minería|⛏ Старательство
+288|+12% mining per point|+12% de minería por punto|+12% добычи за очко
+289|🍀 Luck|🍀 Suerte|🍀 Удача
+290|+10% coins from chests and rare fish|+10% de monedas en cofres y peces raros|+10% монет из сундуков и редкой рыбы
+291|✨ Recovery|✨ Recuperación|✨ Восстановление
+292|+30% regeneration per point|+30% de regeneración por punto|+30% регенерации за очко
+293|📘 Wisdom|📘 Sabiduría|📘 Мудрость
+294|+5% XP per point|+5% de XP por punto|+5% опыта за очко
+295|Kitten|Cachorro|Котёнок
+296|Adventurer|Aventurero|Искатель приключений
+297|Veteran|Veterano|Ветеран
+298|Hero|Héroe|Герой
+299|Champion|Campeón|Чемпион
+300|Legend|Leyenda|Легенда
+301|Myth|Mito|Миф
+302|Mine %n nodes|Mina %n nodos|Добудь %n жил
+303|Defeat %n enemies|Derrota %n enemigos|Победи %n врагов
+304|Catch %n fish|Pesca %n peces|Поймай %n рыб
+305|Open %n chests|Abre %n cofres|Открой %n сундуков
+306|Collect %n nature items|Recoge %n objetos de la naturaleza|Собери %n даров природы
+307|Dig up %n treasures|Desentierra %n tesoros|Выкопай %n кладов
+308|Land %n hits|Acierta %n golpes|Нанеси %n ударов
+309|Do %n boosts|Da %n impulsos|Оттолкнись %n раз
+310|Swim %n meters|Nada %n metros|Проплыви %n метров
+311|Pop %n bubbles|Revienta %n burbujas|Лопни %n пузырей
+312|Craft %n items|Fabrica %n objetos|Создай %n предметов
+313|Chop %n trees|Tala %n árboles|Сруби %n деревьев
+314|Fish|Peces|Рыба
+315|Gems|Gemas|Самоцветы
+316|Ores|Minerales|Руды
+317|Nature|Naturaleza|Природа
+318|Treasures|Tesoros|Сокровища
+319|Whisker Village|Villa de los Bigotes|Усатая деревня
+321|Village Guide|Guía de la Villa|Проводник деревни
+322|Welcome to RoleVRGO! Point the controller at the ground and push to move like a gorilla.|¡Bienvenido a RoleVRGO! Apunta el mando al suelo y empuja para moverte como un gorila.|Добро пожаловать в RoleVRGO! Наведи контроллер на землю и отталкивайся, чтобы двигаться как горилла.
+323|Hold the trigger against a wall to grab and climb.|Mantén el gatillo pegado a una pared para agarrarte y escalar.|Удерживай курок у стены, чтобы схватиться и лезть.
+324|The stone rings are portals. Each one leads to a different map!|Los anillos de piedra son portales. ¡Cada uno lleva a un mapa distinto!|Каменные кольца — это порталы. Каждый ведёт на свою карту!
+325|Click the center of the touchpad to open the menu.|Pulsa el centro del touchpad para abrir el menú.|Нажми центр тачпада, чтобы открыть меню.
+326|Mrs. Wool|Doña Lana|Тётушка Шерсть
+327|Grocery|Tienda|Лавка
+328|Fresh snacks! They restore health.|¡Bocadillos fresquitos! Recuperan vida.|Свежие лакомства! Восстанавливают здоровье.
+329|I buy everything you find out there.|Compro todo lo que encuentres por ahí.|Покупаю всё, что найдёшь.

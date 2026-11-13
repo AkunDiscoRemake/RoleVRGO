@@ -22,7 +22,7 @@ const KIT_CAT = { nature: 'Natureza', town: 'Construção', castle: 'Construçã
 export const CAT_ORDER = ['Natureza', 'Construção', 'Cidade', 'Decoração', 'Formas', 'Jogo', 'Meus assets'];
 // entidades de jogo colocáveis: id -> rótulo
 export const ENTS = [['spawn', '🚩 Ponto de início'], ['npc', '🐱 NPC (com fala)'], ['sign', '🪧 Placa de texto'], ['spring', '🌀 Trampolim'], ['lamp', '💡 Luz'], ['chest:0', '📦 Baú comum'], ['chest:1', '📦 Baú raro'], ['chest:2', '📦 Baú épico'],
-  ['dummy', '🥊 Boneco de treino'], ['zone', '⚔ Zona de luta (PvP)'], ['secret', '⭐ Segredo'], ['dig', '❌ Tesouro enterrado'], ['fish', '🎣 Ponto de pesca'], ['portal', '🌀 Portal para a Vila'], ['bubbles', '🫧 Bolhas (20)']]
+  ['tree', '🪓 Árvore cortável'], ['dummy', '🥊 Boneco de treino'], ['zone', '⚔ Zona de luta (PvP)'], ['secret', '⭐ Segredo'], ['dig', '❌ Tesouro enterrado'], ['fish', '🎣 Ponto de pesca'], ['portal', '🌀 Portal para a Vila'], ['bubbles', '🫧 Bolhas (20)']]
   .concat(Object.keys(ORES).map((k) => ['ore:' + k, '⛏ ' + ITEMS[k].n])).concat(Object.keys(ENEMIES).map((k) => ['enemy:' + k, '👾 ' + ENEMIES[k].n])).concat(Object.keys(ENEMIES).map((k) => ['boss:' + k, '👑 Chefe ' + ENEMIES[k].n]))
   .concat(['mushroom', 'flower', 'shell', 'pearl', 'wood', 'snowbell', 'cactusfruit', 'package'].map((k) => ['collect:' + k, '🧺 ' + ITEMS[k].n]));
 const COLLECT_MODEL = { mushroom: 'nature/mushroom_red', flower: 'nature/flower_redA', shell: 'nature/rock_smallC', pearl: 'plat/jewel', wood: 'survival/resource-wood', snowbell: 'nature/flower_purpleC', cactusfruit: 'nature/cactus_short', package: 'survival/box' };
@@ -68,7 +68,7 @@ export const maker = {
             if (a === 'ore') E.ores.push({ type: b, x: o.x, z: o.z, fy: o.y }); else if (a === 'chest') E.chest('u' + E.chests.length, o.x, o.y, o.z, +b); else if (a === 'enemy' || a === 'boss') E.enemy(b, o.x, o.z, a === 'boss');
             else if (a === 'npc') { const d = o.d || {}; E.npcs.push({ id: 'u' + E.npcs.length, name: d.name || 'Gato', role: 'NPC do mapa', x: o.x, z: o.z, fy: o.y, yaw: o.ry, look: { fur: '#' + ('00000' + COLORS[(o.c || 5) % COLORS.length].toString(16)).slice(-6), fur2: '#f5f1e8', pattern: (o.c || 0) % 6, eyes: '#58c26a', hat: 0 }, lines: [d.text || 'Miau!'], wander: 0 }); }
             else if (a === 'sign') E.sign((o.d && o.d.text) || 'Placa', o.x, o.y + 2.4, o.z); else if (a === 'spring') E.springs.push({ x: o.x, z: o.z, p: 9 + o.s * 6, fy: o.y }); else if (a === 'lamp') E.lamp(o.x, o.y + 1.2, o.z, COLORS[o.c != null ? o.c : 6]);
-            else if (a === 'dummy') E.dummies.push({ x: o.x, z: o.z, fy: o.y }); else if (a === 'zone') E.zone('fight', o.x, o.z, 5 + o.s * 3); else if (a === 'secret') E.secret('u' + E.secrets.length, o.x, o.y + 0.6, o.z, 2.2); else if (a === 'dig') E.dig(o.x, o.z);
+            else if (a === 'tree') E.tree(o.x, o.z, 'nature/tree_default'); else if (a === 'dummy') E.dummies.push({ x: o.x, z: o.z, fy: o.y }); else if (a === 'zone') E.zone('fight', o.x, o.z, 5 + o.s * 3); else if (a === 'secret') E.secret('u' + E.secrets.length, o.x, o.y + 0.6, o.z, 2.2); else if (a === 'dig') E.dig(o.x, o.z);
             else if (a === 'fish') E.fish(o.x, o.z, 8); else if (a === 'portal') E.portal('village', o.x, o.z); else if (a === 'bubbles') bub += 20; else if (a === 'collect') E.collects.push({ item: b, model: COLLECT_MODEL[b], x: o.x, z: o.z, s: 2.4, fy: o.y, tint: b === 'pearl' ? [2.2, 2.2, 2.4] : b === 'shell' ? [1.5, 1.2, 1.3] : null }); }
         }
         if (bub) E.bubbles(Math.min(80, bub));

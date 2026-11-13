@@ -4,9 +4,10 @@
   "private": true,
   "description": "RoleVRGO — mundo multiplayer VR de gatos para Oculus Go (WebXR + Three.js + Supabase)",
   "scripts": {
-    "build": "esbuild src/main.js --bundle --minify --target=chrome66,firefox68,safari12 --outfile=dist/game.js",
-    "dev": "esbuild src/main.js --bundle --sourcemap --target=chrome66 --outfile=dist/game.js --servedir=. --serve=8080",
-    "bake": "node tools/bake-models.mjs"
+    "build": "node tools/build.mjs",
+    "dev": "node tools/build.mjs --dev",
+    "bake": "node tools/bake-models.mjs",
+    "i18n": "node tools/i18n/build-dict.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
@@ -15,6 +16,8 @@
   "devDependencies": {
     "@gltf-transform/core": "^4.0.0",
     "@gltf-transform/extensions": "^4.5.1",
+    "acorn": "^8.19.0",
+    "acorn-walk": "^8.3.5",
     "esbuild": "^0.21.5",
     "pngjs": "^7.0.0"
   }

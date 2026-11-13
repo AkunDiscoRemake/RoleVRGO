@@ -7,6 +7,7 @@ import { MAPS, MAP_ORDER, MAP_ICONS } from './maps.js';
 import { ITEMS, RARITY, QUESTS, ACHIEVEMENTS, PROFS, SHOPS, PICKS, GLOVES, RODS, QUICK_CHAT, currentEvent, HELD, PROPS, RECIPES, ACCS, PERKS, ALBUM } from './data.js';
 import { music } from './music.js';
 import { hands } from './hands.js';
+import { LANG, LANGS, setLang, langName } from './i18n.js';
 import { maker, SKIES, GROUNDS, MOODS, AMBS, COLORS, CAT_ORDER } from './maker.js';
 import { rec } from './rec.js';
 import { FUR_COLORS, EYE_COLORS, PATTERNS, HATS, EMOTES, roundRect } from './cat.js';
@@ -186,6 +187,7 @@ export const ui = {
     this.text(34, 404, 'Jogadores neste mapa: ' + (G.remotes.size + 1) + '   |   Online no jogo: ' + (net.online ? Math.max(1, net.onlineCount()) : 0) + '   |   Rede: ' + (net.online ? net.status : 'offline'), { fs: 17 });
     this.text(34, 430, 'Você: ' + S.name + ' — Nv ' + S.d.level + ' — ' + S.d.coins + ' moedas' + (S.d.prof ? ' — ' + PROFS[S.d.prof].n : ''), { fs: 17, c: '#9cf09c' });
     this.btn(20, 458, 160, 40, '❓ Como jogar', () => { this.page = 'help'; }, { bg: '#33355a', fs: 17 });
+    this.btn(190, 458, 200, 40, '🌐 ' + langName(), () => { const i = LANGS.findIndex((l) => l[0] === LANG); setLang(LANGS[(i + 1) % LANGS.length][0]); emit('saveNow'); this.msg = '...'; setTimeout(() => location.reload(), 600); }, { bg: '#33355a', fs: 17 });
   },
   p_bag() {
     const d = S.d; this.text(20, 78, '💰 ' + d.coins + ' moedas', { c: '#ffd76a', fs: 22 });

@@ -10,6 +10,7 @@ import { worldMat } from './world.js';
 import { CatAvatar, defaultLook, cleanLook, FUR_COLORS, EYE_COLORS, PATTERNS } from './cat.js';
 import { store, emit, on } from './util.js';
 import { rec } from './rec.js';
+import { LANG, LANGS, setLang, translateDOM } from './i18n.js';
 import { music } from './music.js';
 import { hands } from './hands.js';
 
@@ -56,6 +57,9 @@ function drawRooms(list) {
 }
 let roomList = [];
 async function boot() {
+  translateDOM(document.body);
+  const ls = $('lang'); LANGS.forEach((l) => { const o = document.createElement('option'); o.value = l[0]; o.textContent = l[1]; if (l[0] === LANG) o.selected = true; ls.appendChild(o); });
+  ls.onchange = () => { setLang(ls.value); store.set('name', $('name').value); location.reload(); };
   buildLobby(); setPreview(); resize();
   const st = $('status');
   try { st.textContent = 'Carregando modelos (Kenney)...'; await loadModels(); } catch (e) { st.textContent = 'Erro ao carregar os modelos: ' + e.message; return; }

@@ -59,7 +59,7 @@ export const G = {
     E.portal = (to, x, z) => E.portals.push({ to, x, z }); E.collect = (item, model, x, z, s, tint) => E.collects.push({ item, model, x, z, s: s || 2, tint });
     E.dig = (x, z) => E.digs.push({ x, z }); E.fish = (x, z, r) => E.fishes.push({ x, z, r }); E.secret = (key, x, y, z, r) => E.secrets.push({ key, x, y, z, r });
     E.dummy = (x, z) => E.dummies.push({ x, z }); E.zone = (type, x, z, r) => E.zones.push({ type, x, z, r }); E.lamp = (x, y, z, c) => E.lamps.push({ x, y, z, c: c || 0xffd890 });
-    E.sign = (text, x, y, z) => E.signs.push({ text, x, y, z }); E.board = (x, z, yaw) => E.boards.push({ x, z, yaw }); E.spring = (x, z, p) => E.springs.push({ x, z, p }); E.enemies = []; E.enemy = (type, x, z, boss) => E.enemies.push({ type, x, z, boss }); E.schools = []; E.school = (x, y, z, r, n) => E.schools.push({ x, y, z, r, n }); E.bubbleN = 0; E.bubbles = (n) => { E.bubbleN = n; }; E.rainbow = (x, z, r) => { E.rb = { x, z, r }; }; E.falls = []; E.waterfall = (x, y1, z, y0, wd) => E.falls.push({ x, y1, z, y0, wd });
+    E.sign = (text, x, y, z) => E.signs.push({ text, x, y, z }); E.board = (x, z, yaw) => E.boards.push({ x, z, yaw }); E.spring = (x, z, p) => E.springs.push({ x, z, p }); E.enemies = []; E.enemy = (type, x, z, boss) => E.enemies.push({ type, x, z, boss }); E.schools = []; E.school = (x, y, z, r, n) => E.schools.push({ x, y, z, r, n }); E.bubbleN = 0; E.bubbles = (n) => { E.bubbleN = n; }; E.rainbow = (x, z, r) => { E.rb = { x, z, r }; }; E.trees = []; E.tree = (x, z, model) => E.trees.push({ x, z, model: model || 'nature/tree_default' }); E.falls = []; E.waterfall = (x, y1, z, y0, wd) => E.falls.push({ x, y1, z, y0, wd });
     def.build(w, E, rng(hashStr(id)));
     w.swim = !!def.swim; matU.uGloss.value = id === 'aero' || (def.custom && def.sky[0] === 0x4cc6ff) ? 1 : 0; matU.uCaust.value = def.swim ? 1 : 0;
     this.world = w; this.E = E; this.def = def; this.mapId = id;
@@ -88,6 +88,10 @@ export const G = {
     this.oreMesh = inst(modelGeometry('survival/rock-b'), nOre); this.gemMesh = inst(modelGeometry('plat/jewel'), nOre);
     for (let i = 0; i < 8; i++) E.ores.push({ type: 'star', x: 0, z: 0, ev: true, alive: false });
     E.ores.forEach((o, i) => { o.i = i; o.y = o.fy != null ? o.fy : w.heightAt(o.x, o.z); o.hp = ORES[o.type].hp; if (o.alive == null) o.alive = true; o.ry = (i * 2.4) % 6.28; o.sc = 1.25 + (i % 3) * 0.2; this._oreVis(o); });
+    // árvores cortáveis (machado): um InstancedMesh por modelo, toco fixo embaixo, tronco com colisão removível
+    { const tg = {}; for (const t of E.trees) (tg[t.model] = tg[t.model] || []).push(t);
+      for (const k in tg) { const mesh = inst(modelGeometry(k), tg[k].length), sc = k.indexOf('plat/') === 0 ? 2.6 : k.indexOf('palm') >= 0 ? 4.6 : 4.4; tg[k].forEach((t, i) => { t.mesh = mesh; t.i = i; t.y = w.heightAt(t.x, t.z); t.s = sc * (0.9 + (i % 4) * 0.07); t.ry = i * 2.1; t.hp = 5; t.alive = true; t.fall = 0; setInst(mesh, i, t.x, t.y, t.z, t.s, t.ry); mesh.setColorAt(i, _col.setRGB(1.12, 1.05, 0.9)); w.put('nature/stump_round', t.x, t.z, { s: 2.2 }); t.box = [t.x - 0.35, t.y, t.z - 0.35, t.x + 0.35, t.y + 3.2, t.z + 0.35]; w.dyn.push(t.box); }); }
+      E.trees.forEach((t, i) => { t.n = i; }); }
     // baús (+1 vaga para o Baú Dourado)
     E.chests.push({ key: 'ev', x: 0, y: -999, z: 0, tier: 3, ev: true, hidden: true });
     this.chestMesh = inst(modelGeometry('plat/chest'), E.chests.length);
@@ -192,6 +196,7 @@ export const G = {
   _peerEvent(e) {
     const r = this.remotes.get(e.f), P = this.player;
     if (e.t === 'chat') { if (r) { r.av.say(e.x, 6); this._log(r.meta.name, e.x); play('msg', 0.4); } }
+    else if (e.t === 'tree') { const tr = this.E.trees[e.i]; if (tr && tr.alive) this._fell(tr, e.u, 0, 1); }
     else if (e.t === 'ore') { const o = this.E.ores[e.i]; if (o && o.alive) { o.alive = false; o.respawn = e.u; this._oreVis(o); } }
     else if (e.t === 'hit' && e.to === net.id) {
       if (!P.fightZone || S.hp <= 0) return;
@@ -330,7 +335,7 @@ export const G = {
     const P = this.player, h = S.held(); P.speedMul = (h.speed || 1) * (1 + S.perk('speed') * 0.04); P.jumpMul = 1 + S.perk('jump') * 0.06;
     // ferramenta de contexto: sem item escolhido, a picareta aparece perto de minério, a pá perto de um X e a vara ao pescar
     let tool = 0;
-    if (this.fishing) tool = 3; else if (h.id === 'none' || h.id === 'pick') { const px = P.pos.x, pz = P.pos.z; for (const o of this.E.ores) if (o.alive && Math.abs(o.x - px) < 3.5 && Math.abs(o.z - pz) < 3.5) { tool = 1; break; } if (!tool) for (const d of this.E.digs) if (d.alive && Math.abs(d.x - px) < 3.5 && Math.abs(d.z - pz) < 3.5) { tool = 2; break; } }
+    if (this.fishing) tool = 3; else if (h.id === 'none' || h.id === 'pick' || h.id === 'axe') { const px = P.pos.x, pz = P.pos.z; for (const o of this.E.ores) if (o.alive && Math.abs(o.x - px) < 3.5 && Math.abs(o.z - pz) < 3.5) { tool = 1; break; } if (!tool) for (const d of this.E.digs) if (d.alive && Math.abs(d.x - px) < 3.5 && Math.abs(d.z - pz) < 3.5) { tool = 2; break; } if (!tool) for (const tr of this.E.trees) if (tr.alive && Math.abs(tr.x - px) < 3.5 && Math.abs(tr.z - pz) < 3.5) { tool = 4; break; } }
     this.tool = tool;
     const vis = this._toolVis(this.heldMesh, tool === 3 || h.id === 'none' ? null : h, tool, S.d.equip.pick);
     this.heldMesh.visible = vis && !P.block && !P.emoteId;
@@ -344,7 +349,7 @@ export const G = {
   // escolhe o modelo mostrado na pata: item equipado ou ferramenta de contexto (1 picareta, 2 pá, 3 vara)
   _toolVis(mesh, held, tool, tier) {
     let key = null, sc = 1;
-    if (tool === 3) { key = 'prim/cyl'; sc = [0.035, 1.5, 0.035]; } else if (tool === 2) { key = 'survival/tool-shovel'; sc = 2.4; } else if (held && held.model && !(tool === 1 && held.id !== 'pick')) { key = held.model; sc = held.s; } else if (tool === 1 || (held && held.id === 'pick')) { key = tier >= 2 ? 'survival/tool-pickaxe-upgraded' : 'survival/tool-pickaxe'; sc = 2.8; }
+    if (tool === 3) { key = 'prim/cyl'; sc = [0.035, 1.5, 0.035]; } else if (tool === 2) { key = 'survival/tool-shovel'; sc = 2.4; } else if (tool === 4) { key = 'survival/tool-axe'; sc = 2.6; } else if (tool === 1 || (held && held.id === 'pick')) { key = tier >= 2 ? 'survival/tool-pickaxe-upgraded' : 'survival/tool-pickaxe'; sc = 2.8; } else if (held && held.model) { key = held.model; sc = held.s; }
     if (!key) return false; if (mesh.userData.key !== key) { mesh.userData.key = key; mesh.geometry = modelGeometry(key); if (typeof sc === 'number') mesh.scale.setScalar(sc); else mesh.scale.set(sc[0], sc[1], sc[2]); }
     return true;
   },
@@ -464,6 +469,17 @@ export const G = {
         if (o.hp <= 0) { o.alive = false; o.respawn = now + (o.ev ? 9e9 : 45000 + ORES[o.type].tier * 15000); this._oreVis(o); const n = 1 + (miner && Math.random() < 0.25 ? 1 : 0) + (d.gem ? 0 : Math.random() < 0.3 ? 1 : 0); S.addItem(o.type, n); S.addXp(d.xp); S.stat('mine', o.type); if (o.ev) S.stat('event'); play('mine_break', 0.6); this.fx.burst(o.x, o.y + 0.6, o.z, d.c, 18, 4); if (!o.ev) net.send('ore', { i: o.i, u: o.respawn }); }
       });
     }
+    // árvores: precisam do machado (aparece sozinho perto delas se a pata estiver livre)
+    const axe = this.tool === 4 || S.d.hand === 'axe';
+    for (const tr of E.trees) {
+      if (tr.fall > 0) { tr.fall -= dt; const k = 1 - Math.max(0, tr.fall) / 0.9; _q.setFromAxisAngle(_v.set(tr.fz, 0, -tr.fx), k * k * 1.5); _q.multiply(_q2.setFromAxisAngle(UP, tr.ry)); _m.compose(_p.set(tr.x, tr.y, tr.z), _q, _s.setScalar(tr.fall <= 0 ? 0 : tr.s)); tr.mesh.setMatrixAt(tr.i, _m); tr.mesh.instanceMatrix.needsUpdate = true; if (tr.fall <= 0) { play('thud', 0.6); this.fx.burst(tr.x + tr.fx * 2, tr.y + 0.4, tr.z + tr.fz * 2, 0x9cf09c, 14, 3); } continue; }
+      if (!tr.alive) { if (now > tr.respawn) { tr.alive = true; tr.hp = 5; setInst(tr.mesh, tr.i, tr.x, tr.y, tr.z, tr.s, tr.ry); this.world.dyn.push(tr.box); } continue; }
+      if (Math.abs(tr.x - px) > 3 || Math.abs(tr.z - pz) > 3) continue;
+      this._handHits(tr.x, tr.y + 1.0, tr.z, 0.55, 1.3, (h) => { if (t - (tr.last || 0) < 0.25) return; tr.last = t;
+        if (!axe) { if (t - (this._axeWarn || 0) > 3) { this._axeWarn = t; S.toast('Precisa do machado para cortar (menu rápido > Itens na pata)', '#ff9a8a'); } play('block', 0.4); return; }
+        tr.hp -= clamp(h.speed / 3, 0.7, 1.8); play('dig', 0.8); play('wood', 0.5); P.pulse(0.8, 30); this.fx.burst(tr.x, tr.y + 1, tr.z, 0xc8a070, 6, 2.5); setInst(tr.mesh, tr.i, tr.x, tr.y, tr.z, tr.s, tr.ry + Math.sin(t * 40) * 0.03);
+        if (tr.hp <= 0) { const n = 2 + (Math.random() < 0.5 ? 1 : 0), u = now + 70000, d = Math.hypot(tr.x - px, tr.z - pz) || 1; this._fell(tr, u, (tr.x - px) / d, (tr.z - pz) / d); S.addItem('wood', n); S.addXp(8); S.stat('chop'); net.send('tree', { i: tr.n, u }); } });
+    }
     // baús por toque
     for (const c of E.chests) if (!c.open && !c.hidden && Math.abs(c.x - px) < 2.5 && Math.abs(c.z - pz) < 2.5) this._handHits(c.x, c.y + 0.4, c.z, 0.55, 0, () => this.openChest(c));
     // coletáveis
@@ -473,6 +489,7 @@ export const G = {
     // bonecos de treino
     for (const d of E.dummies) { if (d.wob > 0) { d.wob -= dt; _q.setFromAxisAngle(_v.set(Math.cos(d.ry), 0, -Math.sin(d.ry)), Math.sin(d.wob * 22) * d.wob * 0.9); _q.multiply(_q2.setFromAxisAngle(UP, d.ry)); _m.compose(_p.set(d.x, d.y, d.z), _q, _s.set(1.7, 1.7, 1.7)); this.dummyMesh.setMatrixAt(d.i, _m); this.dummyMesh.instanceMatrix.needsUpdate = true; } if (Math.abs(d.x - px) > 3 || Math.abs(d.z - pz) > 3) continue; this._handHits(d.x, d.y + 0.8, d.z, 0.5, 1.5, (h) => { if (t - (d.last || 0) < 0.25) return; d.last = t; const dmg = this._damage(h); d.wob = 0.5; play(dmg > 14 ? 'punch_heavy' : 'punch', 0.8); P.pulse(0.9, 40); this.fx.text(d.x, d.y + 1.8, d.z, '-' + dmg, '#ffd040'); this.fx.burst(d.x, d.y + 0.9, d.z, 0xffb040, 6, 2.5); S.stat('hit'); this._combo(); S.addXp(1); }); }
   },
+  _fell(tr, until, fx, fz) { tr.alive = false; tr.respawn = until; tr.fall = 0.9; tr.fx = fx; tr.fz = fz; const i = this.world.dyn.indexOf(tr.box); if (i >= 0) this.world.dyn.splice(i, 1); play('wood', 0.8); },
   _damage(h) { return Math.round((5 + clamp(h.speed, 0, 9) * 2.2) * (S.held().dmg || 1) * (1 + S.perk('dmg') * 0.06) * GLOVES[S.d.equip.glove].p * (S.profBonus('fighter') ? 1.15 : 1) * (1 + Math.min(this.combo, 5) * 0.12)); },
 
   _npcs(dt) {
