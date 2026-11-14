@@ -15,6 +15,7 @@
   - Cristais para minerar nas crateras.
   - **Easter egg:** na cratera mais distante há uma homenagem à **Félicette**, a primeira (e única) gata a ir ao espaço, em 18/10/1963.
 - **⛳ Minigolfe dos Gatos:** 3 buracos com bordas, obstáculos, moinho e castelo.
+  - Correção: o gramado freava demais a bolinha e o buraco em uma era impossível. Agora dá para fazer, no buraco 1, com uma tacada forte com tabela na borda (é raro, mas existe).
   - Chegue perto da bolinha, **segure o gatilho** para carregar a força e **solte** para tacar. A mira é para onde você olha.
   - Placar por buraco, recorde pessoal e prêmio de moedas.
 - **🍔 Festival da Comida:** bolo de aniversário gigante no meio, hambúrguer, donut, sorvete e taça de sorvete enormes.
