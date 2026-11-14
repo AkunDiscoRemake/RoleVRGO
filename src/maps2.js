@@ -207,6 +207,8 @@ function tdir(s) { const a = tpt(s), b = tpt(s + 0.5), l = Math.hypot(b[0] - a[0
 const tdist = (x, z) => (Math.abs(x) <= 35 ? Math.min(Math.abs(z - 24), Math.abs(z + 24)) : Math.abs(Math.hypot(x - Math.sign(x) * 35, z) - 24));
 const infield = (x, z) => (Math.abs(x) <= 35 ? Math.abs(z) < 24 : Math.hypot(x - Math.sign(x) * 35, z) < 24);
 const GATES = [0, 1, 2, 3, 4, 5].map((k) => k * TL / 6), PADS = [20, 130, 160, 270];
+// 🤖 easter egg: o Claude (a IA que programou o jogo) tem um tempo no ranking. Dá para vencer!
+const CLAUDE = { name: '🤖 Claude', ms: 52000, mount: 'claude', bot: 1 };
 const mmss = (t) => { const m = Math.floor(t / 60), s2 = t - m * 60; return m + ':' + (s2 < 10 ? '0' : '') + s2.toFixed(1).replace('.', ','); };
 MAPS.track = {
   name: 'Autódromo das Patas', size: 170, surface: 'grass', sky: [0x8fd0f5, 0xffb27a, 0x0b1230], fog: 1.1, spawn: [0, 42, 0],
@@ -241,9 +243,9 @@ MAPS.track = {
   loadBoard() { if (!net.online) return; net.client.rpc('rv_race_top', { p_track: 'track' }).then(({ data }) => this.drawBoard(data || [])).catch(() => {}); },
   drawBoard(rows) {
     const b = this.board; if (!b) return; const g = b.c.getContext('2d'); g.fillStyle = '#141228'; g.fillRect(0, 0, 512, 512); g.fillStyle = '#ffd76a'; g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.fillText('🏁 Ranking da Corrida', 256, 48);
-    g.font = 'bold 24px sans-serif'; g.textAlign = 'left'; if (!rows) { g.fillStyle = '#aab'; g.fillText(net.online ? 'Carregando…' : 'Offline', 30, 110); }
-    else if (!rows.length) { g.fillStyle = '#aab'; g.fillText('Ninguém correu ainda. Seja o primeiro!', 24, 110); }
-    (rows || []).forEach((r, i) => { const y = 100 + i * 40, mt = MOUNT_BY[r.mount]; g.fillStyle = i === 0 ? '#ffd76a' : i < 3 ? '#e8e8f0' : '#aab'; g.fillText((i + 1) + '. ' + String(r.name).slice(0, 14), 24, y); g.textAlign = 'right'; g.fillText(mmss(r.ms / 1000) + (mt && mt.id !== 'none' ? '  🐎' : ''), 490, y); g.textAlign = 'left'; });
+    g.font = 'bold 24px sans-serif'; g.textAlign = 'left'; const list = (rows || []).concat([CLAUDE]).sort((a, b) => a.ms - b.ms).slice(0, 10);
+    list.forEach((r, i) => { const y = 100 + i * 40, mt = MOUNT_BY[r.mount]; g.fillStyle = r.bot ? '#c8a0ff' : i === 0 ? '#ffd76a' : i < 3 ? '#e8e8f0' : '#aab'; g.fillText((i + 1) + '. ' + String(r.name).slice(0, 14), 24, y); g.textAlign = 'right'; g.fillText(mmss(r.ms / 1000) + (r.bot ? '  ✨' : mt && mt.id !== 'none' ? '  🐎' : ''), 490, y); g.textAlign = 'left'; });
+    if (!rows) { g.fillStyle = '#aab'; g.font = '20px sans-serif'; g.fillText(net.online ? 'Carregando o ranking…' : 'Offline: só o Claude aparece', 24, 480); }
     b.tx.needsUpdate = true;
   },
   tick(dt, G) {
@@ -262,6 +264,7 @@ MAPS.track = {
     S.d.best = S.d.best || {}; const b = S.d.best.track, rec = !b || t < b; if (rec) S.d.best.track = Math.round(t * 10) / 10;
     S.addCoins(rec ? 60 : 25); S.addXp(rec ? 80 : 35); S.stat('trackRace'); S.touch(); G._confetti && G._confetti(40); play(rec ? 'win' : 'quest', 0.8);
     emit('banner', (rec ? '🏆 NOVO RECORDE: ' : '🏁 Chegou! ') + mmss(t), 4);
+    if (t * 1000 < CLAUDE.ms && !(S.d.stats.beatClaude > 0)) setTimeout(() => { emit('banner', '🤖 Você venceu o Claude!', 5); S.setStat('beatClaude', 1); play('secret', 0.8); }, 2500);
     if (net.online) net.rpc('rv_race_submit', { p_track: 'track', p_ms: Math.round(t * 1000), p_mount: mounts.cur() ? mounts.cur().id : '' }).then((r) => { if (r && r.ok) S.toast('🌐 Ranking online: #' + r.rank, '#ffd76a'); this.loadBoard(); }).catch(() => {});
   },
   amb() { return { wind: 0.25 }; }

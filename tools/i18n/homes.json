@@ -2633,5 +2633,35 @@
 "Permanent ban",
 "Baneo permanente",
 "Бессрочный бан"
+],
+"Carregando o ranking…": [
+"Loading the ranking…",
+"Cargando el ranking…",
+"Загрузка рейтинга…"
+],
+"Offline: só o Claude aparece": [
+"Offline: only Claude shows up",
+"Sin conexión: solo aparece Claude",
+"Офлайн: виден только Claude"
+],
+"🤖 Você venceu o Claude! Mais rápido que a IA!": [
+"🤖 You beat Claude! Faster than the AI!",
+"🤖 ¡Le ganaste a Claude! ¡Más rápido que la IA!",
+"🤖 Ты обогнал Claude! Быстрее ИИ!"
+],
+"Mais rápido que a IA": [
+"Faster than the AI",
+"Más rápido que la IA",
+"Быстрее ИИ"
+],
+"Vença o tempo do Claude no Autódromo das Patas": [
+"Beat Claude's time at the Paws Racetrack",
+"Supera el tiempo de Claude en el Autódromo de las Patas",
+"Побей время Claude на Автодроме Лап"
+],
+"🤖 Você venceu o Claude!": [
+"🤖 You beat Claude!",
+"🤖 ¡Le ganaste a Claude!",
+"🤖 Ты обогнал Claude!"
 ]
 }

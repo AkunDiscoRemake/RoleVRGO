@@ -17,6 +17,9 @@
   - admins não podem ser banidos.
 - Servidor: `supabase/moderation.sql`.
 
+### 🤖 Easter egg
+- O **Claude**, a IA que programou o jogo, aparece no ranking do Autódromo com **0:52,0**. Quem vencer esse tempo ganha a conquista secreta **Mais rápido que a IA** (+300 moedas).
+
 ## 0.0.5 — Montarias, profissões e clima
 
 ### 🐎 Montarias
