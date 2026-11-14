@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.0.7 — Gato-Anjo 🎹
+
+### 😇 Nível 100: Gato-Anjo, em homenagem ao Keyboard Cat
+- **A transformação:** ao chegar no nível 100, seu gato vira um **Gato-Anjo** igual ao Keyboard Cat (laranja rajado, camisa azul-clara), com auréola dourada, asas batendo e o teclado flutuando na frente.
+  - Os outros jogadores também veem a transformação.
+  - O jogo só mostra como anjo quem tem nível 100 ou mais.
+- **Flutua a 5 metros do chão**, balançando devagar, soltando penas e brilhos.
+  - No PC, Espaço sobe e C desce um pouco.
+  - O flutuar pode ser desligado no menu rápido, para minerar e escalar.
+- **🎹 Tocar o teclado:** uma musiquinha que todos por perto ouvem.
+- **Presentes:**
+
+  | Presente | Efeito |
+  |---|---|
+  | ✨ Machado Celestial | corta árvores 3x mais rápido, dano +40% |
+  | ✨ Espada Celestial | dano +100%, vida regenera 2x |
+  | ✨ Picareta Celestial | mineração +200% |
+  | 999 Petiscos de boa qualidade | +120 de vida cada |
+
+  - As três ferramentas são douradas e brilham. Não estão à venda.
+- **Dá para desligar antes de começar:** no lobby, quem tem nível 100 escolhe entre "😇 Gato-Anjo" e "🐱 Meu gato normal". Também dá para trocar no menu rápido, em 😇 Avatar e Gato-Anjo.
+- **Conquista nova:** "Keyboard Cat Eterno".
+- 🕊️ Em memória do Fatso, o Keyboard Cat original dos vídeos de Charlie Schmidt.
+
 ## 0.0.6 — Grande Prêmio Arco-Íris
 
 ### 🏁 Novo mapa de corrida

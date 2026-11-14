@@ -8,7 +8,7 @@ import { HATS } from './cat.js';
 export const S = {
   name: 'Gato', look: null,
   d: null, dirty: false, boostUntil: 0, hp: 100, combo: 0,
-  blank() { return { level: 1, xp: 0, coins: 30, inv: {}, equip: { pick: 0, glove: 0, rod: 0 }, hats: [0], prof: '', profXp: {}, q: { active: {}, done: [] }, daily: { day: 0, prog: [0, 0, 0], claimed: [] }, ach: [], stats: {}, chests: { day: 0, open: [] }, secrets: [], maps: [], party: '', held: ['none', 'pick'], hand: 'none', perks: {}, seen: {}, albumDone: [], accSeen: [], contract: null, streak: { day: 0, n: 0 }, pets: ['none'], pet: 'none', muted: [], mounts: ['none'], mount: 'none', best: {}, job: '', shop: {} }; },
+  blank() { return { level: 1, xp: 0, coins: 30, inv: {}, equip: { pick: 0, glove: 0, rod: 0 }, hats: [0], prof: '', profXp: {}, q: { active: {}, done: [] }, daily: { day: 0, prog: [0, 0, 0], claimed: [] }, ach: [], stats: {}, chests: { day: 0, open: [] }, secrets: [], maps: [], party: '', held: ['none', 'pick'], hand: 'none', perks: {}, seen: {}, albumDone: [], accSeen: [], contract: null, streak: { day: 0, n: 0 }, pets: ['none'], pet: 'none', muted: [], mounts: ['none'], mount: 'none', best: {}, job: '', shop: {}, angel: { got: 0, on: 1, hover: 1 } }; },
   load(data) {
     const b = this.blank(); const d = data && typeof data === 'object' ? data : {};
     for (const k in b) if (d[k] == null) d[k] = b[k];
@@ -56,11 +56,14 @@ export const S = {
     const d = this.d; d.xp += n; let up = false;
     while (d.xp >= this.xpNeed()) { d.xp -= this.xpNeed(); d.level++; up = true; }
     emit('xp', n);
-    if (up) { this.hp = this.maxHp(); this.toast('⭐ Nível ' + d.level + '!', '#ffd76a'); play('levelup', 0.7); this.addCoins(d.level * 10); this.setStat('level', d.level); emit('levelup', d.level); }
+    if (up) { this.hp = this.maxHp(); this.toast('⭐ Nível ' + d.level + '!', '#ffd76a'); play('levelup', 0.7); this.addCoins(d.level * 10); this.setStat('level', d.level); emit('levelup', d.level); if (d.level >= 100) this.angelCheck(); }
     this.touch();
   },
   addCoins(n) { if (!n || (this.sandbox && n > 0)) return; this.d.coins += n; if (n > 0) this.stat('earned', null, n); this.touch(); emit('coins'); },
   count(id) { return this.d.inv[id] || 0; },
+  // 😇 nível 100: vira Gato-Anjo (homenagem ao Keyboard Cat) e ganha as ferramentas celestiais e 999 petiscos bons
+  angelCheck() { const d = this.d; if (!d || this.sandbox || d.level < 100 || d.angel.got) return false; d.angel.got = 1; if (!d.angel.pref) d.angel.on = 1; for (const id of ['caxe', 'csword', 'cpick']) if (d.held.indexOf(id) < 0) d.held.push(id); this.addItem('snackq', 999, true); this.setStat('angel', 1); this.touch(); emit('angel'); return true; },
+  angelOn() { const d = this.d; return !!(d && d.level >= 100 && d.angel && d.angel.got && d.angel.on); },
   addItem(id, n, silent) {
     if (this.sandbox) { if (!silent && ITEMS[id]) this.toast('(' + ITEMS[id].n + ' — mapas criados não dão itens)', '#99a'); return; }
     n = n || 1; this.d.inv[id] = (this.d.inv[id] || 0) + n; const it = ITEMS[id];

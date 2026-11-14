@@ -27,7 +27,7 @@ export class Player {
     this.frozen = false; this.fightZone = false; this.emoteWave = 0; this.guardHold = false;
     this.pawMode = false; this.pawHold = false; this.pawX = 0; this.pawY = 0; this.reachMul = 1; this.keys = {}; this.desktop = true; this.locked = false; this.padWas = false;
     this.onTrigger = null; this.onRelease = null; this.onMenu = null; this.onBack = null; // callbacks do jogo
-    this.snapA = Math.PI / 6; this.smoothTurn = false; this.speedMul = 1; this.jumpMul = 1; this.gravMul = 1; this.fly = false; this.backWas = false; this.swimming = false; this.swimDist = 0;
+    this.snapA = Math.PI / 6; this.smoothTurn = false; this.speedMul = 1; this.jumpMul = 1; this.gravMul = 1; this.fly = false; this.hover = 0; this.hovering = false; this._hT = 0; this.backWas = false; this.swimming = false; this.swimDist = 0;
     // VR Box / Cardboard (giroscópio do celular), gamepads/Joy-Cons, rastreamento de mãos e teleporte
     this.card = false; this.devQ = new THREE.Quaternion(); this.devOK = false; this._yaw0 = 0; this.gpMove = { x: 0, y: 0 }; this.gpAim = { x: 0, y: 0 }; this._gb = []; this._gbPrev = []; this.gpTrig = false; this.gpBlock = false; this.gpFound = false;
     this.handTrack = null; this.tracked = false; this.tpHeld = false; this.tpWas = false; this.tpCd = 0; this.padT = 0; this.padCenter = false; this.xrTp = false;
@@ -308,6 +308,10 @@ export class Player {
         P.addScaledVector(vel, dt);
       } else {
       vel.y -= GRAVITY * this.gravMul * dt;
+      // 😇 Gato-Anjo: flutua a this.hover metros do chão, balançando devagar (Espaço/C sobem e descem um pouco)
+      this.hovering = false;
+      if (this.hover > 0 && !this.frozen) { this._hT += dt; const gy = world.heightAt(P.x, P.z), up = this.desktop ? ((this.keys.Space ? 1 : 0) - (this.keys.KeyC ? 1 : 0)) * 2.5 : 0, tg = gy + this.hover + up + Math.sin(this._hT * 1.7) * 0.25;
+        if (P.y < tg + 1.2) { this.hovering = P.y - gy > 0.6; vel.y += GRAVITY * this.gravMul * dt + ((tg - P.y) * 5 - vel.y * 3.4) * dt; } }
       // andar: gatilho (direção do controle) ou WASD
       let wx = 0, wz = 0;
       if (!this.frozen) {
@@ -319,7 +323,7 @@ export class Player {
         }
       }
       const sp = WALK_SPEED * this.speedMul * (this.block ? 0.45 : 1) * (this.inWater ? 0.55 : 1) * (this.keys.ShiftLeft ? 1.5 : 1);
-      if (this.grounded) {
+      if (this.grounded || this.hovering) {
         const k = Math.min(1, dt * (wx || wz ? 10 : 2.6)); // sem comando de andar, o impulso desliza antes de parar
         if (this.iframes <= 0) { vel.x += (wx * sp - vel.x) * k; vel.z += (wz * sp - vel.z) * k; }
         if (this.surfaceN.y < 0.72 && this.surfaceN.y > 0) { vel.x += this.surfaceN.x * 9 * dt; vel.z += this.surfaceN.z * 9 * dt; } // escorrega em ladeira íngreme

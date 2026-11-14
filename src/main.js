@@ -53,6 +53,12 @@ function setPreview() { if (pcat) { pv.remove(pcat.root); pcat.dispose(); } pcat
 // ---------- lobby (HTML) ----------
 let started = false, chosen = store.get('room', { code: 'PRACA', name: 'Praça Central', pub: true });
 function swatches(el, list, key) { el.innerHTML = ''; list.forEach((c) => { const b = document.createElement('button'); b.className = 'sw' + (look[key] === c ? ' on' : ''); b.style.background = c; b.onclick = () => { look[key] = c; store.set('look', look); setPreview(); swatches(el, list, key); }; el.appendChild(b); }); }
+function buildAngel() { // nível 100: escolher antes de começar se entra como Gato-Anjo (Keyboard Cat) ou com o seu gato normal
+  const box = $('angelBox'), el = $('angel'); if (!box) return; const ok = S.d && S.d.level >= 100; box.style.display = ok ? 'block' : 'none'; if (!ok) return;
+  const on = S.d.angel.got ? !!S.d.angel.on : !S.d.angel.pref || !!S.d.angel.on; el.innerHTML = '';
+  [[1, '😇 Gato-Anjo (Keyboard Cat)'], [0, '🐱 Meu gato normal']].forEach(([v, n]) => { const b = document.createElement('button'); b.className = 'chip' + (+on === v ? ' on' : ''); b.textContent = n; b.onclick = () => { S.d.angel.on = v; S.d.angel.pref = 1; S.touch(); look.angel = v; setPreview(); buildAngel(); }; el.appendChild(b); });
+  if (!!look.angel !== on) { look.angel = on ? 1 : 0; setPreview(); }
+}
 function buildLobby() {
   $('name').value = store.get('name', '') || 'Gato' + Math.floor(100 + Math.random() * 900);
   swatches($('fur'), FUR_COLORS, 'fur'); swatches($('fur2'), FUR_COLORS, 'fur2'); swatches($('eyes'), EYE_COLORS, 'eyes');
@@ -91,13 +97,14 @@ async function boot() {
     S.load(prof.data && Object.keys(prof.data).length ? prof.data : (saved ? saved.d : null));
     if (prof.name && !store.get('name', '')) $('name').value = prof.name;
     if (prof.look && prof.look.fur && !store.get('look', null)) { look = cleanLook(prof.look); buildLobby(); setPreview(); }
+    buildAngel();
     if (net.isAdmin) { admin.is = true; admin.ids.add(net.id); } admin.start(); refreshAdm();
     net.joinLobby(); on('lobby', () => { drawRooms(roomList); $('online').textContent = net.onlineCount() + ' gato(s) online agora'; });
     roomList = await net.rooms(); drawRooms(roomList);
     st.textContent = 'Conectado ✔  Seu código de amigo: ' + net.friendCode;
   } catch (e) {
     if (e && e.ban) { showBan(e.ban); return; }
-    console.warn(e); S.load(saved ? saved.d : null); net.online = false;
+    console.warn(e); S.load(saved ? saved.d : null); net.online = false; buildAngel();
     st.textContent = '⚠ Sem conexão com o servidor — modo solo offline (progresso salvo só neste aparelho).'; $('roomsBox').style.display = 'none';
   }
   $('play').disabled = false; $('card').disabled = false;
@@ -121,14 +128,14 @@ async function gate() {
 }
 function start() {
   if (started) return; started = true;
-  S.name = ($('name').value || 'Gato').trim().slice(0, 16) || 'Gato'; if (look._gift != null) { if (S.d && S.d.hats.indexOf(look._gift) < 0) S.d.hats.push(look._gift); delete look._gift; } S.look = look; store.set('name', S.name); store.set('look', look); store.set('room', chosen);
+  S.name = ($('name').value || 'Gato').trim().slice(0, 16) || 'Gato'; if (look._gift != null) { if (S.d && S.d.hats.indexOf(look._gift) < 0) S.d.hats.push(look._gift); delete look._gift; } S.look = look; look.angel = (S.d.angel.got ? S.angelOn() : S.d.level >= 100 && !(S.d.angel.pref && !S.d.angel.on)) ? 1 : 0; store.set('name', S.name); store.set('look', look); store.set('room', chosen);
   $('lobby').style.display = 'none'; $('hint').style.display = 'block';
   audioInit(); setVolume(store.get('vol', 0.8)); player.side = store.get('side', player.side); const tm = store.get('turn', 30); player.smoothTurn = tm === 0; player.snapA = (tm || 30) * Math.PI / 180;
   perf.setProfile(store.get('profile', 'balanced'));
   G.room = chosen.code; G.roomName = chosen.name; G.roomPublic = chosen.pub;
   G.init(scene, camera, renderer, player); ui.init(scene, camera, player);
   on('map', (id) => music.setMap(id)); music.start();
-  G.loadMap('village'); S.touch(); emit('saveNow'); S.streakCheck(); S.checkAccs();
+  G.loadMap('village'); S.touch(); emit('saveNow'); S.streakCheck(); S.checkAccs(); S.angelCheck();
   if (net.online) { G.refreshFriends(); if (S.d.party) net.joinParty(S.d.party); }
   if (!(S.d.stats.fling > 0)) setTimeout(() => S.toast('Fale com a Mimi (❗) à sua frente. Menu: touchpad / tecla M', '#bfe6ff'), 1500);
 }

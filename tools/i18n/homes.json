@@ -2898,5 +2898,165 @@
   "🏁 RAINBOW GRAND PRIX: a new 2-lap circuit with rainbow arches, boost pads and a grandstand. Race the bot (Easy, Normal, Hard, Extreme or Impossible, all beatable) or other players in the same room.",
   "🏁 GRAN PREMIO ARCOÍRIS: nuevo circuito de 2 vueltas con arcos iris, rampas de turbo y gradas. Corre contra el bot (Fácil, Normal, Difícil, Extremo o Imposible, todos se pueden vencer) o contra otros jugadores en la misma sala.",
   "🏁 РАДУЖНЫЙ ГРАН-ПРИ: новая трасса на 2 круга с радужными арками, ускорителями и трибуной. Гоняйся с ботом (Лёгкий, Нормальный, Сложный, Экстремальный или Невозможный — всех можно победить) или с другими игроками в той же комнате."
+ ],
+ "✨ Machado Celestial": [
+  "✨ Celestial Axe",
+  "✨ Hacha Celestial",
+  "✨ Небесный топор"
+ ],
+ "✨ Espada Celestial": [
+  "✨ Celestial Sword",
+  "✨ Espada Celestial",
+  "✨ Небесный меч"
+ ],
+ "✨ Picareta Celestial": [
+  "✨ Celestial Pickaxe",
+  "✨ Pico Celestial",
+  "✨ Небесная кирка"
+ ],
+ "Derruba árvores 3x mais rápido · dano +40%": [
+  "Chops trees 3x faster · damage +40%",
+  "Tala árboles 3x más rápido · daño +40%",
+  "Рубит деревья в 3 раза быстрее · урон +40%"
+ ],
+ "Dano +100% · vida regenera 2x": [
+  "Damage +100% · health regenerates 2x",
+  "Daño +100% · la vida se regenera 2x",
+  "Урон +100% · здоровье восстанавливается в 2 раза быстрее"
+ ],
+ "Mineração +200%": [
+  "Mining +200%",
+  "Minería +200%",
+  "Добыча +200%"
+ ],
+ "Petisco de boa qualidade": [
+  "Quality treat",
+  "Golosina de buena calidad",
+  "Качественное лакомство"
+ ],
+ "Keyboard Cat Eterno": [
+  "Eternal Keyboard Cat",
+  "Keyboard Cat Eterno",
+  "Вечный Keyboard Cat"
+ ],
+ "Chegue ao nível 100 e vire um Gato-Anjo": [
+  "Reach level 100 and become an Angel Cat",
+  "Llega al nivel 100 y conviértete en un Gato Ángel",
+  "Достигни 100 уровня и стань Котом-Ангелом"
+ ],
+ "😇 NÍVEL 100! Você virou um Gato-Anjo": [
+  "😇 LEVEL 100! You became an Angel Cat",
+  "😇 ¡NIVEL 100! Te convertiste en un Gato Ángel",
+  "😇 УРОВЕНЬ 100! Ты стал Котом-Ангелом"
+ ],
+ "🎹 Em memória do Keyboard Cat": [
+  "🎹 In memory of Keyboard Cat",
+  "🎹 En memoria de Keyboard Cat",
+  "🎹 В память о Keyboard Cat"
+ ],
+ "✨ Ganhou: Machado, Espada e Picareta Celestiais + 999 Petiscos de boa qualidade": [
+  "✨ You got: Celestial Axe, Sword and Pickaxe + 999 Quality treats",
+  "✨ Ganaste: Hacha, Espada y Pico Celestiales + 999 Golosinas de buena calidad",
+  "✨ Получено: Небесные топор, меч и кирка + 999 качественных лакомств"
+ ],
+ "😇 Avatar e Gato-Anjo": [
+  "😇 Avatar and Angel Cat",
+  "😇 Avatar y Gato Ángel",
+  "😇 Аватар и Кот-Ангел"
+ ],
+ "😇 Gato-Anjo": [
+  "😇 Angel Cat",
+  "😇 Gato Ángel",
+  "😇 Кот-Ангел"
+ ],
+ "😇 Forma de Gato-Anjo: LIGADA": [
+  "😇 Angel Cat form: ON",
+  "😇 Forma de Gato Ángel: ACTIVADA",
+  "😇 Облик Кота-Ангела: ВКЛ"
+ ],
+ "🐱 Forma de Gato-Anjo: desligada": [
+  "🐱 Angel Cat form: off",
+  "🐱 Forma de Gato Ángel: desactivada",
+  "🐱 Облик Кота-Ангела: выкл"
+ ],
+ "Asas, auréola e o teclado do Keyboard Cat · toque para voltar ao seu gato": [
+  "Wings, halo and Keyboard Cat's keyboard · tap to go back to your cat",
+  "Alas, aureola y el teclado de Keyboard Cat · toca para volver a tu gato",
+  "Крылья, нимб и клавиши Keyboard Cat · нажми, чтобы вернуть своего кота"
+ ],
+ "Toque para virar o Gato-Anjo de novo": [
+  "Tap to become the Angel Cat again",
+  "Toca para volver a ser el Gato Ángel",
+  "Нажми, чтобы снова стать Котом-Ангелом"
+ ],
+ "🪽 Flutuar a 5 m: ligado": [
+  "🪽 Float at 5 m: on",
+  "🪽 Flotar a 5 m: activado",
+  "🪽 Парить на 5 м: вкл"
+ ],
+ "🪽 Flutuar a 5 m: desligado": [
+  "🪽 Float at 5 m: off",
+  "🪽 Flotar a 5 m: desactivado",
+  "🪽 Парить на 5 м: выкл"
+ ],
+ "No PC, Espaço sobe e C desce um pouco · desligue para minerar e escalar": [
+  "On PC, Space goes up and C goes down a bit · turn off to mine and climb",
+  "En PC, Espacio sube y C baja un poco · desactívalo para minar y escalar",
+  "На ПК: Пробел — чуть выше, C — чуть ниже · выключи, чтобы копать и лазать"
+ ],
+ "Toque para planar a 5 metros do chão": [
+  "Tap to glide 5 meters above the ground",
+  "Toca para planear a 5 metros del suelo",
+  "Нажми, чтобы парить в 5 метрах над землёй"
+ ],
+ "🎹 Tocar o teclado": [
+  "🎹 Play the keyboard",
+  "🎹 Tocar el teclado",
+  "🎹 Сыграть на клавишах"
+ ],
+ "Uma musiquinha para quem está perto": [
+  "A little tune for everyone nearby",
+  "Una musiquita para quien esté cerca",
+  "Мелодия для всех рядом"
+ ],
+ "🐱 Editar avatar": [
+  "🐱 Edit avatar",
+  "🐱 Editar avatar",
+  "🐱 Изменить аватар"
+ ],
+ "Cores, chapéus e roupas do seu gato normal": [
+  "Colors, hats and clothes of your normal cat",
+  "Colores, sombreros y ropa de tu gato normal",
+  "Цвета, шляпы и одежда твоего обычного кота"
+ ],
+ "🎹 Em memória do Keyboard Cat: Fatso, o gato laranja de camisa azul que tocava teclado nos vídeos de Charlie Schmidt (1984). Descanse em paz, pequeno músico. 🕊️": [
+  "🎹 In memory of Keyboard Cat: Fatso, the orange cat in a blue shirt who played keyboard in Charlie Schmidt's videos (1984). Rest in peace, little musician. 🕊️",
+  "🎹 En memoria de Keyboard Cat: Fatso, el gato naranja de camisa azul que tocaba el teclado en los videos de Charlie Schmidt (1984). Descansa en paz, pequeño músico. 🕊️",
+  "🎹 В память о Keyboard Cat: Фатсо, рыжий кот в голубой рубашке, игравший на клавишах в видео Чарли Шмидта (1984). Покойся с миром, маленький музыкант. 🕊️"
+ ],
+ "😇 GATO-ANJO (nível 100): ao chegar no nível 100 você vira um Gato-Anjo com asas, auréola e o teclado do Keyboard Cat, em homenagem a ele. Ganha Machado, Espada e Picareta Celestiais e 999 Petiscos de boa qualidade, e flutua a 5 m do chão. Dá para desligar no lobby antes de começar.": [
+  "😇 ANGEL CAT (level 100): at level 100 you become an Angel Cat with wings, a halo and Keyboard Cat's keyboard, in his honor. You get the Celestial Axe, Sword and Pickaxe and 999 Quality treats, and float 5 m above the ground. You can turn it off in the lobby before starting.",
+  "😇 GATO ÁNGEL (nivel 100): al llegar al nivel 100 te conviertes en un Gato Ángel con alas, aureola y el teclado de Keyboard Cat, en su honor. Ganas Hacha, Espada y Pico Celestiales y 999 Golosinas de buena calidad, y flotas a 5 m del suelo. Se puede desactivar en el lobby antes de empezar.",
+  "😇 КОТ-АНГЕЛ (100 уровень): на 100 уровне ты становишься Котом-Ангелом с крыльями, нимбом и клавишами Keyboard Cat — в его честь. Получаешь Небесные топор, меч и кирку и 999 качественных лакомств и паришь в 5 м над землёй. Можно выключить в лобби перед началом."
+ ],
+ "😇 Raça especial (nível 100)": [
+  "😇 Special breed (level 100)",
+  "😇 Raza especial (nivel 100)",
+  "😇 Особая порода (100 уровень)"
+ ],
+ "😇 Gato-Anjo (Keyboard Cat)": [
+  "😇 Angel Cat (Keyboard Cat)",
+  "😇 Gato Ángel (Keyboard Cat)",
+  "😇 Кот-Ангел (Keyboard Cat)"
+ ],
+ "🐱 Meu gato normal": [
+  "🐱 My normal cat",
+  "🐱 Mi gato normal",
+  "🐱 Мой обычный кот"
+ ],
+ "😇 NÍVEL 100! Gato-Anjo liberado no menu rápido": [
+  "😇 LEVEL 100! Angel Cat unlocked in the quick menu",
+  "😇 ¡NIVEL 100! Gato Ángel desbloqueado en el menú rápido",
+  "😇 УРОВЕНЬ 100! Кот-Ангел открыт в быстром меню"
  ]
 }

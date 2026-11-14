@@ -3,7 +3,7 @@ import { World, worldMat, matU, glossify } from './world.js';
 import { MAPS, initPrims, PORTAL_COLORS, MAP_ICONS } from './maps.js';
 import './maps2.js';
 import { gp } from './gp.js';
-import { modelGeometry, play, playAt, meow, purr, pop, setUnder, ambience, chime, splashSfx, chirp, thunder, boing } from './assets.js';
+import { modelGeometry, play, playAt, meow, purr, pop, setUnder, ambience, chime, splashSfx, chirp, thunder, boing, keyboardTune } from './assets.js';
 import { CatAvatar, HandPool, EMOTES, AGE_EYE } from './cat.js';
 import { FX, LabelBatch } from './fx.js';
 import { Sky } from './sky.js';
@@ -31,6 +31,7 @@ const bubbleMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: fals
 const AMBIENT = { dark: 'ember', pool: '', aero: 'bubble', village: 'leaf', forest: 'fire', mine: 'spark', desert: 'dust', snow: 'snow', castle: 'leaf', island: 'leaf', training: 'leaf', arena: 'dust', nuke: 'dust', volcano: 'ember', neon: 'rain', sky: '' };
 const UP = new THREE.Vector3(0, 1, 0), ZERO = new THREE.Vector3(0, 0, 0);
 const instMat = new THREE.MeshLambertMaterial({ vertexColors: true }); glossify(instMat, 'rvinst', false);
+const celMat = new THREE.MeshLambertMaterial({ vertexColors: true, color: 0xfff2b0, emissive: 0x8a6a10 }); /* ferramentas celestiais: douradas e brilhando */
 const jellyMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, uniforms: { uTime: matU.uTime },
   vertexShader: 'uniform float uTime;\nvarying vec3 vN;\nvarying float vY;\nvoid main(){ vec3 p = position; float pl = 1.0 + sin(uTime * 2.4 + instanceMatrix[3][0]) * 0.14; p.xz *= pl; p.y /= pl; vY = position.y * 2.0; vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0); vN = normalize(normalMatrix * mat3(instanceMatrix) * normal); gl_Position = projectionMatrix * mv; }',
   fragmentShader: 'varying vec3 vN;\nvarying float vY;\nvoid main(){ float fr = pow(1.0 - abs(normalize(vN).z), 1.6); vec3 c = mix(vec3(1.0, 0.45, 0.85), vec3(0.6, 0.5, 1.0), vY) + fr * 0.6; gl_FragColor = vec4(c, 0.28 + fr * 0.6); }' });
@@ -189,13 +190,16 @@ export const G = {
   _chestVis(c) { const open = !c.ev && S.chestOpen(this.mapId + ':' + c.key); c.open = open; setInst(this.chestMesh, c.i, c.x, c.hidden ? -999 : c.y, c.z, c.ev ? 2.6 : 1.9, c.ry); this.chestMesh.setColorAt(c.i, c.ev ? _col.setRGB(2, 1.6, 0.4) : open ? _col.setRGB(0.35, 0.35, 0.4) : c.tier >= 2 ? _col.setRGB(1.3, 1.1, 1.6) : _col.setRGB(1.1, 1.1, 1.1)); this.chestMesh.instanceColor.needsUpdate = true; },
   _npcMarks() { for (const n of this.npcs) { let mark = ''; if (n.quests) for (const q of n.quests) { const st = S.questState(q); if (st === 'ready') { mark = '❓ '; break; } if (st === 'open' && !mark) mark = '❗ '; } n.av.setName(mark + n.name, n.role); } },
   _boards() { if (!this.E || !this.E.boards.length) return; const draw = (lb) => { for (const b of this.E.boards) { const g = b.canvas.getContext('2d'); g.fillStyle = '#1c1830'; g.fillRect(0, 0, 512, 512); g.fillStyle = '#ffd76a'; g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.fillText('🏆 Ranking da Arena', 256, 46); g.font = 'bold 24px sans-serif'; g.textAlign = 'left'; const rows = lb ? lb.wins : []; if (!lb) { g.fillStyle = '#aaa'; g.fillText(net.online ? 'Carregando...' : 'Offline', 40, 110); } else if (!rows.length) { g.fillStyle = '#aaa'; g.fillText('Ninguém venceu ainda. Seja o primeiro!', 30, 110); } rows.forEach((r, i) => { g.fillStyle = i === 0 ? '#ffd76a' : i < 3 ? '#e8e8f0' : '#aab'; g.fillText((i + 1) + '. ' + r.name, 30, 100 + i * 38); g.textAlign = 'right'; g.fillText(r.wins + ' vitórias  Nv ' + r.level, 490, 100 + i * 38); g.textAlign = 'left'; }); b.tex.needsUpdate = true; } }; draw(null); if (net.online) net.leaderboard().then(draw).catch(() => {}); },
+  // liga/desliga a forma de Gato-Anjo (só nível 100+)
+  setAngel(on) { if (on && !S.d.angel.got) return; S.d.angel.on = on ? 1 : 0; S.look.angel = S.angelOn() ? 1 : 0; emit('look'); emit('meta'); S.touch(); },
+  keyboard() { if (!S.angelOn()) return; const n = this.time; if (n - (this._kbT || -9) < 3) return; this._kbT = n; keyboardTune(1); if (net.online) net.send('kbd', {}); const p = this.player.pos; this.fx.burst(p.x, p.y + 1, p.z, 0xffe28a, 20, 2, 1.5); S.toast('🎹🎶', '#ffe28a'); },
   pushMeta() { net.setMeta({ name: /^hark/i.test(S.name) && !admin.is ? 'Gato' : S.name, look: S.look, level: S.d.level, sid: this.sid, pet: S.d.pet, admin: admin.is ? 1 : 0, prof: S.d.prof, party: net.partyCode, fc: net.friendCode, held: S.d.hand, vc: voice.on ? 1 : 0, mic: voice.mic ? 1 : 0, mount: mounts.cur() ? mounts.cur().id : '', job: S.d.job || '', sir: jobs.siren ? 1 : 0 }); },
 
   // ================= eventos de rede e de jogo =================
   _bindEvents() {
     on('questReady', () => this._npcMarks()); on('inv', () => { if (this.npcs.length) this._npcMarks(); });
-    on('peerJoin', (id, meta) => { if (!meta || this.remotes.has(id) || admin.banned.has(id)) return; /* banidos ficam invisíveis */ meta.name = cleanName(meta.name); const av = new CatAvatar(meta.look, (admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), { sub: 'Nv ' + (meta.level || 1) + ' · ' + (jobs.sub(meta) || titleFor(meta.level || 1)), tagColor: this._tagColor(id, meta) }); av.root.visible = false; this.scene.add(av.root); const r = { id, av, meta, has: false, x: 0, y: 0, z: 0, yaw: 0, hy: 0, hp: 0, h: [0, 0.6, -0.4, 0, 0.6, -0.4], flags: 1, life: 100, px: 0, pz: 0, hit: [0, 0], patT: 0 }; this.remotes.set(id, r); if (meta.sid) this.sids[meta.sid] = r; this._remoteHeld(r); setTimeout(() => this.props.forEach((p) => { if (p.owner === net.id) net.send('prop', { id: p.id, k: p.k, x: p.x, y: p.y, z: p.z, ry: p.ry }); }), 1500); emit('toast', meta.name + (this.mapId === 'home' && home.mine() ? ' veio te visitar! 🏠' : ' entrou'), '#bfe6ff'); if (home.mine()) setTimeout(() => home.share(), 1200); emit('players'); });
-    on('peerMeta', (id, meta) => { const r = this.remotes.get(id); if (!r || !meta) return; meta.name = cleanName(meta.name); if (JSON.stringify(meta.look) !== JSON.stringify(r.meta.look)) r.av.setLook(meta.look); r.meta = meta; this._remoteHeld(r); r.av.tagColor = this._tagColor(id, meta); r.av.setName((admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), 'Nv ' + (meta.level || 1) + ' · ' + (jobs.sub(meta) || titleFor(meta.level || 1))); if (meta.sid) this.sids[meta.sid] = r; emit('players'); });
+    on('peerJoin', (id, meta) => { if (!meta || this.remotes.has(id) || admin.banned.has(id)) return; if (meta.look && (meta.level | 0) < 100) meta.look.angel = 0; /* banidos ficam invisíveis */ meta.name = cleanName(meta.name); const av = new CatAvatar(meta.look, (admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), { sub: 'Nv ' + (meta.level || 1) + ' · ' + (jobs.sub(meta) || titleFor(meta.level || 1)), tagColor: this._tagColor(id, meta) }); av.root.visible = false; this.scene.add(av.root); const r = { id, av, meta, has: false, x: 0, y: 0, z: 0, yaw: 0, hy: 0, hp: 0, h: [0, 0.6, -0.4, 0, 0.6, -0.4], flags: 1, life: 100, px: 0, pz: 0, hit: [0, 0], patT: 0 }; this.remotes.set(id, r); if (meta.sid) this.sids[meta.sid] = r; this._remoteHeld(r); setTimeout(() => this.props.forEach((p) => { if (p.owner === net.id) net.send('prop', { id: p.id, k: p.k, x: p.x, y: p.y, z: p.z, ry: p.ry }); }), 1500); emit('toast', meta.name + (this.mapId === 'home' && home.mine() ? ' veio te visitar! 🏠' : ' entrou'), '#bfe6ff'); if (home.mine()) setTimeout(() => home.share(), 1200); emit('players'); });
+    on('peerMeta', (id, meta) => { const r = this.remotes.get(id); if (!r || !meta) return; if (meta.look && (meta.level | 0) < 100) meta.look.angel = 0; meta.name = cleanName(meta.name); if (JSON.stringify(meta.look) !== JSON.stringify(r.meta.look)) r.av.setLook(meta.look); r.meta = meta; this._remoteHeld(r); r.av.tagColor = this._tagColor(id, meta); r.av.setName((admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), 'Nv ' + (meta.level || 1) + ' · ' + (jobs.sub(meta) || titleFor(meta.level || 1))); if (meta.sid) this.sids[meta.sid] = r; emit('players'); });
     on('peerLeave', (id) => { voice.close(id); const r = this.remotes.get(id); if (!r) return; mounts.drop(r); if (r.pet && r.pet.av) r.pet.av.dispose(); if (r.heldMesh) this.scene.remove(r.heldMesh); this.props.forEach((p, k) => { if (p.owner === id) this._delProp(k); }); r.av.dispose(); this.remotes.delete(id); for (const k in this.sids) if (this.sids[k] === r) delete this.sids[k]; emit('players'); });
     on('peerState', (p) => { if (!Array.isArray(p) || p.length < 15) return; for (let i = 1; i < 15; i++) if (typeof p[i] !== 'number' || !Number.isFinite(p[i]) || Math.abs(p[i]) > 2000) return; const r = this.sids[p[0]]; if (!r) return; r.x = p[1]; r.y = p[2]; r.z = p[3]; r.yaw = p[4]; r.hy = p[5]; r.hp = p[6]; for (let i = 0; i < 6; i++) r.h[i] = p[7 + i]; const fl = p[13]; const em = (fl >> 4) & 15; r.tool = (fl >> 8) & 7; if (em !== r.av.emote) { r.av.setEmote(em); if (em === 7) playAt('click', r.av.root.position, this.camera, 0), meow(0.5, 1.1); } r.flags = fl; r.life = p[14]; if (!r.has) { r.has = true; r.av.root.position.set(r.x, r.y, r.z); r.av.root.visible = true; } });
     on('peerEvent', (e) => this._peerEvent(e));
@@ -216,7 +220,8 @@ export const G = {
     on('adminKick', (who) => { emit('banner', '🚪 ' + who + ' te mandou para a Vila', 5); if (this.mapId !== 'village') this.travel('village'); });
     on('adminTp', (d) => { if (d.map === (this.def.netKey || this.mapId)) { this.player.teleport(d.x, d.y + 0.2, d.z); this.fx.burst(d.x, d.y + 1, d.z, 0x60e8ff, 20, 3); play('portal', 0.6); } else if (MAPS[d.map]) this.travel(d.map); });
     on('adminEvent', (ev, late) => { this.admT = 0; if (ev && !late) { const n = { party: '🎉 FESTA!', invasion: '👾 INVASÃO!', goldrain: '💰 CHUVA DE OURO!', treasure: '🗝 CAÇA AO TESOURO!', xp2: '⭐ XP EM DOBRO!', night: '🌙 NOITE ETERNA', day: '☀ DIA ETERNO' }[ev.ev] || ev.ev; emit('banner', n + '  —  ' + ev.author, 6); play('event', 0.9); if (ev.ev !== 'night' && ev.ev !== 'day') this._confetti(30); } if (!ev) { this._tKey = ''; for (const c of this.tChests) c.gone = true; } });
-    on('meta', () => { if (net.online) this.pushMeta(); }); on('levelup', () => { if (net.online) this.pushMeta(); const p = this.player.pos; this.fx.burst(p.x, p.y + 1, p.z, 0xffd76a, 40, 4, 3); });
+    on('meta', () => { if (net.online) this.pushMeta(); });
+    on('angel', () => { this.setAngel(!!S.d.angel.on); emit('banner', S.d.angel.on ? '😇 NÍVEL 100! Você virou um Gato-Anjo' : '😇 NÍVEL 100! Gato-Anjo liberado no menu rápido', 6); setTimeout(() => emit('banner', '🎹 Em memória do Keyboard Cat', 6), 6500); S.toast('✨ Ganhou: Machado, Espada e Picareta Celestiais + 999 Petiscos de boa qualidade', '#ffe28a'); play('secret', 0.9); const p = this.player.pos; this.fx.burst(p.x, p.y + 1, p.z, 0xffffff, 60, 5, 3); this.fx.burst(p.x, p.y + 1.5, p.z, 0xffe28a, 50, 4, 2); }); on('levelup', () => { if (net.online) this.pushMeta(); const p = this.player.pos; this.fx.burst(p.x, p.y + 1, p.z, 0xffd76a, 40, 4, 3); });
   },
   muted(id) { return !!(S.d && S.d.muted && S.d.muted.indexOf(id) >= 0); },
   _tagColor(id, meta) { if (admin.ids.has(id)) return '#ffd040'; if (meta && meta.party && meta.party === net.partyCode && net.partyCode) return '#8fd0ff'; if (this.friends.some((f) => f.id === id && f.status === 'accepted')) return '#9cf09c'; return '#ffffff'; },
@@ -227,6 +232,7 @@ export const G = {
     if (['heal', 'class', 'whistle', 'ext', 'shopq', 'shopl', 'buy', 'sold'].indexOf(e.t) >= 0) { jobs.onNet(e); return; }
     if (e.t === 'nk') { infect.onNet(e); return; }
     if (e.t === 'gp') { gp.onNet(e); return; }
+    if (e.t === 'kbd') { const r = this.remotes.get(e.f); if (r && r.av.root.visible) { const p = r.av.root.position, d = Math.hypot(p.x - this.player.pos.x, p.z - this.player.pos.z); if (d < 30) { keyboardTune(Math.max(0.15, 1 - d / 30)); this.fx.burst(p.x, p.y + 1, p.z, 0xffe28a, 14, 2, 1.5); r.av.say('🎹🎶', 3); } } return; }
     if (e.t === 'zap') { if ([e.x, e.y, e.z].every((v) => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) < 2000)) { this._bolt(e.x, e.y, e.z, false); const r = this.remotes.get(e.f); if (r) this._log('⚡', r.meta.name + ' foi atingido por um raio!'); if (r) r.burntT = 25; } return; }
     if (e.t === 'chat') { if (r && !this.muted(e.f)) { const tx = String(e.x == null ? '' : e.x).slice(0, 80); r.av.say(tx, 6); this._log(r.meta.name, tx); play('msg', 0.4); } }
     else if (e.t === 'tree') { const tr = this.E.trees[e.i | 0]; if (tr && tr.alive) this._fell(tr, Math.min(Number(e.u) || 0, net.now() + 180000), 0, 1); }
@@ -424,7 +430,7 @@ export const G = {
   _toolVis(mesh, held, tool, tier) {
     let key = null, sc = 1;
     if (tool === 3) { key = 'prim/cyl'; sc = [0.035, 1.5, 0.035]; } else if (tool === 2) { key = 'survival/tool-shovel'; sc = 2.4; } else if (tool === 4) { key = 'survival/tool-axe'; sc = 2.6; } else if (tool === 1 || (held && held.id === 'pick')) { key = tier >= 2 ? 'survival/tool-pickaxe-upgraded' : 'survival/tool-pickaxe'; sc = 2.8; } else if (held && held.model) { key = held.model; sc = held.s; }
-    if (!key) return false; if (mesh.userData.key !== key) { mesh.userData.key = key; mesh.geometry = modelGeometry(key); if (typeof sc === 'number') mesh.scale.setScalar(sc); else mesh.scale.set(sc[0], sc[1], sc[2]); }
+    if (!key) return false; const mat = held && held.cel && key === held.model ? celMat : instMat; if (mesh.material !== mat) mesh.material = mat; if (mesh.userData.key !== key) { mesh.userData.key = key; mesh.geometry = modelGeometry(key); if (typeof sc === 'number') mesh.scale.setScalar(sc); else mesh.scale.set(sc[0], sc[1], sc[2]); }
     return true;
   },
   // ---------- seu próprio gato (visível em 2ª e 3ª pessoa) ----------
@@ -548,12 +554,13 @@ export const G = {
     const P = this.player, t = this.time;
     if (infect.myInf) P.speedMul *= 1.05; // infectado: +5% de velocidade
     { const mt = mounts.cur(); if (mt) { P.speedMul *= mt.speed; P.jumpMul *= 1.15; } if (this.trackBoost > 0) { this.trackBoost -= dt; P.speedMul *= 1.75; } } // montaria e turbo da pista
-    if (admin.has('speed')) P.speedMul *= 2.2; if (admin.has('jump')) P.jumpMul *= 2.3; P.gravMul = admin.has('lowgrav') ? 0.32 : 1; P.fly = admin.has('fly') || mounts.flying();
+    if (admin.has('speed')) P.speedMul *= 2.2; if (admin.has('jump')) P.jumpMul *= 2.3; P.gravMul = admin.has('lowgrav') ? 0.32 : 1; P.fly = admin.has('fly') || mounts.flying(); P.hover = S.look.angel && S.d.angel.hover && !P.fly && !mounts.cur() ? 5 : 0;
     const fr = admin.has('freeze'); if (fr && !this._admFrozen) { this._admFrozen = true; P.frozen = true; P.vel.set(0, 0, 0); } else if (!fr && this._admFrozen) { this._admFrozen = false; P.frozen = false; }
     if (fr && Math.random() < 0.3) this.fx.burst(P.pos.x, P.pos.y + 0.8, P.pos.z, 0xbfefff, 2, 1);
     this.pawColor = null;
     if (admin.has('rainbow')) { _col.setHSL((t * 0.4) % 1, 0.9, 0.6); this.pawColor = '#' + _col.getHexString(); if (Math.random() < 0.5) this.fx.burst(P.pos.x, P.pos.y + 0.4, P.pos.z, _col.getHex(), 1, 0.6, -0.5); }
     if (admin.has('gold')) { this.pawColor = '#ffd040'; if (Math.random() < 0.5) this.fx.burst(P.pos.x + (Math.random() - 0.5) * 0.6, P.pos.y + Math.random() * 1.3, P.pos.z + (Math.random() - 0.5) * 0.6, 0xffd040, 1, 0.4, -0.8); }
+    if (P.hovering && Math.random() < 0.25) this.fx.burst(P.pos.x + (Math.random() - 0.5) * 0.8, P.pos.y + 0.4, P.pos.z + (Math.random() - 0.5) * 0.8, Math.random() < 0.5 ? 0xffffff : 0xffe28a, 1, 0.4, -0.6); /* penas e brilhos do Gato-Anjo */
     if (P.fly && P.speed > 1 && Math.random() < 0.4) this.fx.burst(P.pos.x, P.pos.y + 0.3, P.pos.z, 0xffffff, 1, 0.3, 0.5);
   },
   _confetti(n) { const P = this.player.pos; for (let i = 0; i < 6; i++) { _col.setHSL(Math.random(), 0.9, 0.6); this.fx.burst(P.x + (Math.random() - 0.5) * 6, P.y + 3 + Math.random() * 2, P.z + (Math.random() - 0.5) * 6, _col.getHex(), Math.ceil(n / 6), 3, 3); } pop(0.5, 0.3); },
@@ -639,14 +646,14 @@ export const G = {
       });
     }
     // árvores: precisam do machado (aparece sozinho perto delas se a pata estiver livre)
-    const axe = this.tool === 4 || S.d.hand === 'axe';
+    const axe = this.tool === 4 || S.d.hand === 'axe' || S.d.hand === 'caxe';
     for (const tr of E.trees) {
       if (tr.fall > 0) { tr.fall -= dt; const k = 1 - Math.max(0, tr.fall) / 0.9; _q.setFromAxisAngle(_v.set(tr.fz, 0, -tr.fx), k * k * 1.5); _q.multiply(_q2.setFromAxisAngle(UP, tr.ry)); _m.compose(_p.set(tr.x, tr.y, tr.z), _q, _s.setScalar(tr.fall <= 0 ? 0 : tr.s)); tr.mesh.setMatrixAt(tr.i, _m); tr.mesh.instanceMatrix.needsUpdate = true; if (tr.fall <= 0) { play('thud', 0.6); this.fx.burst(tr.x + tr.fx * 2, tr.y + 0.4, tr.z + tr.fz * 2, 0x9cf09c, 14, 3); } continue; }
       if (!tr.alive) { if (now > tr.respawn) { tr.alive = true; tr.hp = 5; setInst(tr.mesh, tr.i, tr.x, tr.y, tr.z, tr.s, tr.ry); this.world.dyn.push(tr.box); } continue; }
       if (Math.abs(tr.x - px) > 3 || Math.abs(tr.z - pz) > 3) continue;
       this._handHits(tr.x, tr.y + 1.0, tr.z, 0.55, 1.3, (h) => { if (t - (tr.last || 0) < 0.25) return; tr.last = t;
         if (!axe) { if (t - (this._axeWarn || 0) > 3) { this._axeWarn = t; S.toast('Precisa do machado para cortar (menu rápido > Itens na pata)', '#ff9a8a'); } play('block', 0.4); return; }
-        tr.hp -= clamp(h.speed / 3, 0.7, 1.8); play('dig', 0.8); play('wood', 0.5); P.pulse(0.8, 30); this.fx.burst(tr.x, tr.y + 1, tr.z, 0xc8a070, 6, 2.5); setInst(tr.mesh, tr.i, tr.x, tr.y, tr.z, tr.s, tr.ry + Math.sin(t * 40) * 0.03);
+        tr.hp -= clamp(h.speed / 3, 0.7, 1.8) * (S.held().chop || 1); play('dig', 0.8); play('wood', 0.5); P.pulse(0.8, 30); this.fx.burst(tr.x, tr.y + 1, tr.z, 0xc8a070, 6, 2.5); setInst(tr.mesh, tr.i, tr.x, tr.y, tr.z, tr.s, tr.ry + Math.sin(t * 40) * 0.03);
         if (tr.hp <= 0) { const n = 2 + (Math.random() < 0.5 ? 1 : 0), u = now + 70000, d = Math.hypot(tr.x - px, tr.z - pz) || 1; this._fell(tr, u, (tr.x - px) / d, (tr.z - pz) / d); S.addItem('wood', n); S.addXp(8); S.stat('chop'); net.send('tree', { i: tr.n, u }); } });
     }
     // baús por toque
