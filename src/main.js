@@ -171,11 +171,11 @@ self.RVcard = { exit() { cardboard = false; player.card = false; renderer.setSci
 
 // ---------- loop ----------
 let photoReq = false, shotHud = null, comfortVig = store.get('vignette', true);
-self.RVphoto = () => { photoReq = true; }; self.RVvig = (v) => { if (v != null) { comfortVig = v; store.set('vignette', v); } return comfortVig; };
+self.RVphoto = () => { if (renderer.xr.isPresenting) { S.toast('📸 Dentro do VR, use a captura de tela do próprio headset', '#ffd76a'); return; } photoReq = true; }; self.RVvig = (v) => { if (v != null) { comfortVig = v; store.set('vignette', v); } return comfortVig; };
 const vig = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'), gr = g.createRadialGradient(64, 64, 22, 64, 64, 64); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(0.55, 'rgba(0,0,0,0.35)'); gr.addColorStop(1, 'rgba(0,0,0,1)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
   const m = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false })); m.position.z = -0.2; m.renderOrder = 998; m.visible = false; camera.add(m); return m; })();
-let last = 0, recFlip = false; const recCam = new THREE.PerspectiveCamera(80, 16 / 9, 0.05, 400); scene.add(recCam);
-addEventListener('keydown', (e) => { if (e.code === 'KeyP' && started && !(e.target && e.target.tagName === 'INPUT') && !(ui.open && ui.page === 'kb')) photoReq = true; if (e.code === 'KeyR' && started && !(e.target && e.target.tagName === 'INPUT') && !(ui.open && ui.page === 'kb')) { const m = rec.toggle(canvas); if (m) S.toast(m, '#ff9a8a'); } });
+let last = 0;
+addEventListener('keydown', (e) => { if (e.code === 'KeyP' && started && !(e.target && e.target.tagName === 'INPUT') && !(ui.open && ui.page === 'kb')) self.RVphoto(); if (e.code === 'KeyR' && started && !(e.target && e.target.tagName === 'INPUT') && !(ui.open && ui.page === 'kb')) { const m = rec.toggle(canvas); if (m) S.toast(m, '#ff9a8a'); } });
 renderer.setAnimationLoop((t, frame) => {
   const dt = Math.min(0.05, Math.max(0.001, (t - last) / 1000)); const raw = (t - last) / 1000; last = t;
   if (!started) { if (pcat) { pcat.root.rotation.y = Math.PI + Math.sin(t / 1400) * 0.9; pcat.speed = 1.2; pcat.update(dt); } pcam.aspect = innerWidth / innerHeight; pcam.updateProjectionMatrix(); renderer.render(pv, pcam); return; }
@@ -195,14 +195,9 @@ renderer.setAnimationLoop((t, frame) => {
     renderer.setScissorTest(false);
   } else
   renderer.render(scene, camera);
-  // gravando dentro do VR: o canvas da página não recebe a imagem dos olhos, então desenhamos nele uma visão extra (a cada 2 quadros)
-  if (rec.on && renderer.xr.isPresenting && (recFlip = !recFlip)) {
-    const rt = renderer.getRenderTarget(); renderer.xr.enabled = false; renderer.setRenderTarget(null);
-    camera.getWorldPosition(recCam.position); camera.getWorldQuaternion(recCam.quaternion); recCam.aspect = canvas.width / canvas.height; recCam.updateProjectionMatrix();
-    renderer.render(scene, recCam); renderer.xr.enabled = true; renderer.setRenderTarget(rt);
-  }
-  if (shot) { // foto: no VR desenha uma visão extra no canvas; depois baixa o PNG
-    if (renderer.xr.isPresenting) { const rt = renderer.getRenderTarget(); renderer.xr.enabled = false; renderer.setRenderTarget(null); camera.getWorldPosition(recCam.position); camera.getWorldQuaternion(recCam.quaternion); recCam.aspect = canvas.width / canvas.height; recCam.updateProjectionMatrix(); renderer.render(scene, recCam); renderer.xr.enabled = true; renderer.setRenderTarget(rt); }
+  // SEGURANÇA: nada de desenhar visões extras no meio de um quadro de VR (alternar imagens pisca a tela e pode causar crise epiléptica).
+  // Gravar vídeo e tirar foto só funcionam fora do VR; no headset use a captura do próprio aparelho.
+  if (shot) { // foto: baixa o PNG do canvas (fora do VR)
     canvas.toBlob((b) => { if (b) { downloadBlob(b, 'rolevrgo-foto-' + stamp() + '.png'); S.toast('📸 Foto salva em Downloads', '#9cf09c'); play('click', 0.8); } else S.toast('Não foi possível salvar a foto', '#ff9a8a'); }, 'image/png');
     [ui.hud.visible, ui.cross.visible, G.laser.visible, vig.visible] = shotHud;
   }
@@ -211,5 +206,6 @@ on('look', () => { /* a cor das patas vem de S.look a cada quadro */ });
 addEventListener('beforeunload', () => { net.leave(); });
 player.handTrack = hands;
 import('./maker.js').then(({ maker }) => { self.RV.maker = maker; const f = $('file'); if (f) f.onchange = () => { const file = f.files && f.files[0]; f.value = ''; if (!file) return; S.toast('Importando ' + file.name + '...', '#bfe6ff'); maker.importFile(file).then((e) => S.toast(e || 'Asset importado! Ele já está no pincel.', e ? '#ff9a8a' : '#9cf09c')).catch((e) => S.toast('Falha ao importar: ' + (e && e.message ? e.message : e), '#ff9a8a')); }; });
+rec.isVR = () => renderer.xr.isPresenting; renderer.xr.addEventListener('sessionstart', () => { if (rec.on) { rec.stop(); S.toast('⏹ Gravação parada: o gravador do jogo não funciona dentro do VR', '#ffd76a'); } });
 self.RV = { G, S, net, perf, player, ui, rec, music, hands, admin, home, voice, infect, weather, mounts, jobs, gp, CatAvatar, PRESETS }; // para depuração no console
 boot();

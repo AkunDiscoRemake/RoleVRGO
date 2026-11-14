@@ -386,7 +386,7 @@ export const G = {
     if (this.mapId === 'dark' || this.mapId === 'neon' || (weather.info().bolt && weather.k > 0.6)) { // relâmpagos com trovão (também nas tempestades)
       this.boltT = (this.boltT == null ? 6 : this.boltT) - dt;
       if (this.boltT <= 0) { this.boltT = 9 + Math.random() * 16; this.bolt = 0.45; setTimeout(() => thunder(0.8), 300 + Math.random() * 900); }
-      if (this.bolt > 0) { this.bolt -= dt; const k = this.bolt > 0.3 || (this.bolt > 0.12 && this.bolt < 0.2) ? 1 : 0.25; this.sky.hemi.intensity += k * 4; this.scene.background.lerp(_col.setHex(0xd8d0ff), k * 0.7); this.scene.fog.color.copy(this.scene.background); }
+      if (this.bolt > 0) { this.bolt -= dt; const k = Math.sin(Math.PI * Math.max(0, Math.min(1, 1 - this.bolt / 0.45))) * 0.55; /* SEGURANÇA: um único clarão suave, sem piscar liga/desliga (fotossensibilidade) */ this.sky.hemi.intensity += k * 2.5; this.scene.background.lerp(_col.setHex(0xd8d0ff), k * 0.6); this.scene.fog.color.copy(this.scene.background); }
     }
     matU.uTime.value = this.time; if (under !== this._wasUnder) { this._wasUnder = under; setUnder(under); }
     this._aero(dt);

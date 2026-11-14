@@ -2,7 +2,7 @@
 // do Supabase (feita para ficar no cliente); o banco só é acessado por RPCs.
 export const SUPABASE_URL = 'https://kxihxpuaywjfczihmlef.supabase.co';
 export const SUPABASE_KEY = 'sb_publishable_teK6wqcKvFojjPBZGh1-vA_t2nTUgX1';
-export const VERSION = '0.0.7';
+export const VERSION = '0.0.8';
 
 export const EYE = 1.0;          // altura dos olhos do gato (m)
 export const REACH = 0.95;       // alcance das patas flutuantes (m)

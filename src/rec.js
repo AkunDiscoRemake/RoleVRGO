@@ -6,11 +6,12 @@ import { audioStream } from './assets.js';
 export function downloadBlob(blob, name) { const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = name; a.style.display = 'none'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 4000); }
 export function stamp() { const d = new Date(), p = (n) => String(n).padStart(2, '0'); return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()); }
 export const rec = {
-  on: false, t0: 0, mr: null, chunks: [], max: 180,
+  on: false, isVR: null, t0: 0, mr: null, chunks: [], max: 180,
   supported() { return typeof MediaRecorder !== 'undefined' && !!HTMLCanvasElement.prototype.captureStream; },
   seconds() { return this.on ? (performance.now() - this.t0) / 1000 : 0; },
   start(canvas) {
     if (this.on) return ''; if (!this.supported()) return 'Este navegador não permite gravar';
+    if (this.isVR && this.isVR()) return 'Dentro do VR, grave com o botão de captura do próprio headset';
     try {
       const stream = canvas.captureStream(30); const a = audioStream(); if (a) a.getAudioTracks().forEach((t) => stream.addTrack(t));
       const types = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4']; let type = ''; for (const t of types) if (MediaRecorder.isTypeSupported(t)) { type = t; break; }

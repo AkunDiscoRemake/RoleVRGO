@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.8 — Correção de segurança (fotossensibilidade)
+
+- **⚠️ Gravador de vídeo no VR desativado.** Dentro do headset, o gravador desenhava uma imagem extra quadro sim, quadro não. Isso fazia a tela piscar rápido, o que pode causar crise epiléptica.
+  - Agora "Gravar vídeo" e "Tirar foto" só funcionam fora do VR. No headset, use a captura do próprio aparelho.
+  - Se você entrar no VR com uma gravação em andamento, ela para sozinha.
+  - No PC e no celular, gravar continua igual.
+- **Relâmpagos mais suaves:** as tempestades e os mapas Escuro e Neon trocaram o clarão duplo, que piscava, por um único clarão suave.
+
 ## 0.0.7 — Gato-Anjo 🎹
 
 ### 😇 Nível 100: Gato-Anjo, em homenagem ao Keyboard Cat
