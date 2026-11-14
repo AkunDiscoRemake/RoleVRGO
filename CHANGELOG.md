@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.0.9 — Lua, minigolfe, festival e celular sem óculos
+
+### 📱 Jogar no celular sem VR Box
+- Controles na tela aparecem sozinhos em celulares e tablets, fora do VR Box e do headset:
+  - **Joystick à esquerda.** Empurrar até a borda faz correr.
+  - **Arrastar o resto da tela** olha em volta.
+  - **Toque rápido** usa ou clica (mira no centro).
+  - Botões **⤒ pular**, **🐾 pata** (segurar), **🛡 bloquear**, **↺ esquivar**, **🎥 câmera**, **☰ menu rápido**, **📖 menu** e **💬 chat**. O chat abre o teclado do próprio celular.
+
+### 🗺️ 3 mapas novos (agora são 22)
+- **🌙 Base Lunar:** gravidade baixa (dá para pular quase 3 m), estrelas, a Terra no céu e chuva de meteoros.
+  - Foguete montado com trampolim de lançamento, hangares, domos e rovers.
+  - Cristais para minerar nas crateras.
+  - **Easter egg:** na cratera mais distante há uma homenagem à **Félicette**, a primeira (e única) gata a ir ao espaço, em 18/10/1963.
+- **⛳ Minigolfe dos Gatos:** 3 buracos com bordas, obstáculos, moinho e castelo.
+  - Chegue perto da bolinha, **segure o gatilho** para carregar a força e **solte** para tacar. A mira é para onde você olha.
+  - Placar por buraco, recorde pessoal e prêmio de moedas.
+- **🍔 Festival da Comida:** bolo de aniversário gigante no meio, hambúrguer, donut, sorvete e taça de sorvete enormes.
+  - Barraquinhas com comida no balcão, mesas de piquenique e estacionamento com carros.
+  - **Um trem** dá a volta no festival e apita. Se ficar nos trilhos, ele te empurra.
+  - **Segredos:** o topo da taça de sorvete e um petisco dourado atrás do bolo.
+
+### 🧱 Mais modelos da Kenney
+- 6 pacotes novos (Food, Furniture, Car, Space, Minigolf e Train Kit), com mais de 110 modelos.
+- **16 móveis novos nas casas:** cama moderna, sofá, TV, geladeira, escrivaninha com PC, estante, luminária, tapete, caixa de som de festa, bolo, ursinho, vaso sanitário, plantas e um carrinho de corrida tamanho gato.
+
+### 🥚 Easter eggs e conquistas
+- **🌈 Código Konami** (↑ ↑ ↓ ↓ ← → ← → B A, no PC): rastro de arco-íris por 1 minuto.
+- **Conquistas novas:**
+  - Buraco em Uma!
+  - Abaixo do Par
+  - Pulo Lunar
+  - Piuí! (secreta)
+  - Código Secreto (secreta)
+  - Visita à Félicette (secreta)
+
+### 😇 Gato-Anjo
+- Não flutua mais: fica no chão, só batendo as asas.
+
 ## 0.0.8 — Correção de segurança (fotossensibilidade)
 
 - **⚠️ Gravador de vídeo no VR desativado.** Dentro do headset, o gravador desenhava uma imagem extra quadro sim, quadro não. Isso fazia a tela piscar rápido, o que pode causar crise epiléptica.

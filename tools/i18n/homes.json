@@ -2989,26 +2989,6 @@
   "Toca para volver a ser el Gato Ángel",
   "Нажми, чтобы снова стать Котом-Ангелом"
  ],
- "🪽 Flutuar a 5 m: ligado": [
-  "🪽 Float at 5 m: on",
-  "🪽 Flotar a 5 m: activado",
-  "🪽 Парить на 5 м: вкл"
- ],
- "🪽 Flutuar a 5 m: desligado": [
-  "🪽 Float at 5 m: off",
-  "🪽 Flotar a 5 m: desactivado",
-  "🪽 Парить на 5 м: выкл"
- ],
- "No PC, Espaço sobe e C desce um pouco · desligue para minerar e escalar": [
-  "On PC, Space goes up and C goes down a bit · turn off to mine and climb",
-  "En PC, Espacio sube y C baja un poco · desactívalo para minar y escalar",
-  "На ПК: Пробел — чуть выше, C — чуть ниже · выключи, чтобы копать и лазать"
- ],
- "Toque para planar a 5 metros do chão": [
-  "Tap to glide 5 meters above the ground",
-  "Toca para planear a 5 metros del suelo",
-  "Нажми, чтобы парить в 5 метрах над землёй"
- ],
  "🎹 Tocar o teclado": [
   "🎹 Play the keyboard",
   "🎹 Tocar el teclado",
@@ -3034,11 +3014,6 @@
   "🎹 En memoria de Keyboard Cat: Fatso, el gato naranja de camisa azul que tocaba el teclado en los videos de Charlie Schmidt (1984). Descansa en paz, pequeño músico. 🕊️",
   "🎹 В память о Keyboard Cat: Фатсо, рыжий кот в голубой рубашке, игравший на клавишах в видео Чарли Шмидта (1984). Покойся с миром, маленький музыкант. 🕊️"
  ],
- "😇 GATO-ANJO (nível 100): ao chegar no nível 100 você vira um Gato-Anjo com asas, auréola e o teclado do Keyboard Cat, em homenagem a ele. Ganha Machado, Espada e Picareta Celestiais e 999 Petiscos de boa qualidade, e flutua a 5 m do chão. Dá para desligar no lobby antes de começar.": [
-  "😇 ANGEL CAT (level 100): at level 100 you become an Angel Cat with wings, a halo and Keyboard Cat's keyboard, in his honor. You get the Celestial Axe, Sword and Pickaxe and 999 Quality treats, and float 5 m above the ground. You can turn it off in the lobby before starting.",
-  "😇 GATO ÁNGEL (nivel 100): al llegar al nivel 100 te conviertes en un Gato Ángel con alas, aureola y el teclado de Keyboard Cat, en su honor. Ganas Hacha, Espada y Pico Celestiales y 999 Golosinas de buena calidad, y flotas a 5 m del suelo. Se puede desactivar en el lobby antes de empezar.",
-  "😇 КОТ-АНГЕЛ (100 уровень): на 100 уровне ты становишься Котом-Ангелом с крыльями, нимбом и клавишами Keyboard Cat — в его честь. Получаешь Небесные топор, меч и кирку и 999 качественных лакомств и паришь в 5 м над землёй. Можно выключить в лобби перед началом."
- ],
  "😇 Raça especial (nível 100)": [
   "😇 Special breed (level 100)",
   "😇 Raza especial (nivel 100)",
@@ -3058,5 +3033,405 @@
   "😇 LEVEL 100! Angel Cat unlocked in the quick menu",
   "😇 ¡NIVEL 100! Gato Ángel desbloqueado en el menú rápido",
   "😇 УРОВЕНЬ 100! Кот-Ангел открыт в быстром меню"
+ ],
+ "Base Lunar": [
+  "Moon Base",
+  "Base Lunar",
+  "Лунная база"
+ ],
+ "🌙 Base Lunar: a gravidade aqui é baixinha!": [
+  "🌙 Moon Base: gravity here is really low!",
+  "🌙 Base Lunar: ¡aquí la gravedad es bajita!",
+  "🌙 Лунная база: гравитация здесь очень слабая!"
+ ],
+ "🚀 Plataforma de lançamento": [
+  "🚀 Launch pad",
+  "🚀 Plataforma de lanzamiento",
+  "🚀 Стартовая площадка"
+ ],
+ "👽 Zorp diz: \"MIAU?\"": [
+  "👽 Zorp says: \"MEOW?\"",
+  "👽 Zorp dice: \"¿MIAU?\"",
+  "👽 Зорп говорит: «МЯУ?»"
+ ],
+ "Astronauta Lua": [
+  "Astronaut Luna",
+  "Astronauta Luna",
+  "Астронавт Луна"
+ ],
+ "Comandante da base": [
+  "Base commander",
+  "Comandante de la base",
+  "Командир базы"
+ ],
+ "Pule bem alto: aqui a gravidade é só 38% da Terra!": [
+  "Jump really high: gravity here is only 38% of Earth's!",
+  "¡Salta muy alto: aquí la gravedad es solo el 38% de la Tierra!",
+  "Прыгай высоко: гравитация здесь всего 38% земной!"
+ ],
+ "O trampolim do foguete te lança até as estrelas.": [
+  "The rocket's trampoline launches you to the stars.",
+  "El trampolín del cohete te lanza hasta las estrellas.",
+  "Батут у ракеты запустит тебя к звёздам."
+ ],
+ "Os cristais azuis e roxos das crateras podem ser minerados.": [
+  "The blue and purple crystals in the craters can be mined.",
+  "Los cristales azules y morados de los cráteres se pueden minar.",
+  "Синие и фиолетовые кристаллы в кратерах можно добывать."
+ ],
+ "Dizem que uma gata muito famosa descansa na cratera mais longe daqui...": [
+  "They say a very famous cat rests in the farthest crater from here...",
+  "Dicen que una gata muy famosa descansa en el cráter más lejano...",
+  "Говорят, в самом дальнем кратере покоится очень знаменитая кошка..."
+ ],
+ "Primeira gata no espaço (1963)": [
+  "First cat in space (1963)",
+  "Primera gata en el espacio (1963)",
+  "Первая кошка в космосе (1963)"
+ ],
+ "Miau! Em 18 de outubro de 1963 eu voei até o espaço num foguete e voltei em segurança.": [
+  "Meow! On October 18, 1963 I flew to space on a rocket and came back safely.",
+  "¡Miau! El 18 de octubre de 1963 volé al espacio en un cohete y volví a salvo.",
+  "Мяу! 18 октября 1963 года я слетала в космос на ракете и благополучно вернулась."
+ ],
+ "Fui a primeira gata a ir ao espaço. Até hoje sou a única!": [
+  "I was the first cat to go to space. To this day I'm the only one!",
+  "Fui la primera gata en ir al espacio. ¡Hasta hoy soy la única!",
+  "Я была первой кошкой в космосе. И до сих пор единственной!"
+ ],
+ "Obrigada por vir me visitar aqui na Lua. 🌙": [
+  "Thank you for visiting me here on the Moon. 🌙",
+  "Gracias por venir a visitarme aquí en la Luna. 🌙",
+  "Спасибо, что навестил меня здесь, на Луне. 🌙"
+ ],
+ "Os cientistas me chamavam de C 341. Os amigos, de Félicette.": [
+  "The scientists called me C 341. My friends, Félicette.",
+  "Los científicos me llamaban C 341. Mis amigos, Félicette.",
+  "Учёные звали меня C 341. Друзья — Фелисетт."
+ ],
+ "🐈‍⬛ Félicette — primeira gata no espaço (18/10/1963)": [
+  "🐈‍⬛ Félicette — first cat in space (Oct 18, 1963)",
+  "🐈‍⬛ Félicette — primera gata en el espacio (18/10/1963)",
+  "🐈‍⬛ Фелисетт — первая кошка в космосе (18.10.1963)"
+ ],
+ "🐈‍⬛ Obrigada pela visita! — Félicette, primeira gata no espaço (1963)": [
+  "🐈‍⬛ Thanks for visiting! — Félicette, first cat in space (1963)",
+  "🐈‍⬛ ¡Gracias por la visita! — Félicette, primera gata en el espacio (1963)",
+  "🐈‍⬛ Спасибо за визит! — Фелисетт, первая кошка в космосе (1963)"
+ ],
+ "Buraco 1 · Reta do Bigode": [
+  "Hole 1 · Whisker Straight",
+  "Hoyo 1 · Recta del Bigote",
+  "Лунка 1 · Усатая прямая"
+ ],
+ "Buraco 2 · Moinho": [
+  "Hole 2 · Windmill",
+  "Hoyo 2 · Molino",
+  "Лунка 2 · Мельница"
+ ],
+ "Buraco 3 · Castelo dos Diamantes": [
+  "Hole 3 · Diamond Castle",
+  "Hoyo 3 · Castillo de los Diamantes",
+  "Лунка 3 · Алмазный замок"
+ ],
+ "Minigolfe dos Gatos": [
+  "Cat Mini Golf",
+  "Minigolf de los Gatos",
+  "Кошачий минигольф"
+ ],
+ "⛳ Minigolfe dos Gatos": [
+  "⛳ Cat Mini Golf",
+  "⛳ Minigolf de los Gatos",
+  "⛳ Кошачий минигольф"
+ ],
+ " · par ": [
+  " · par ",
+  " · par ",
+  " · пар "
+ ],
+ "Caddie Pipoca": [
+  "Caddie Popcorn",
+  "Caddie Palomita",
+  "Кэдди Попкорн"
+ ],
+ "Minigolfe": [
+  "Mini golf",
+  "Minigolf",
+  "Минигольф"
+ ],
+ "Chegue perto da bolinha, SEGURE o gatilho para carregar a força e SOLTE para tacar!": [
+  "Get close to the ball, HOLD the trigger to charge and RELEASE to hit!",
+  "¡Acércate a la bola, MANTÉN el gatillo para cargar y SUELTA para golpear!",
+  "Подойди к мячу, ЗАЖМИ курок, чтобы набрать силу, и ОТПУСТИ для удара!"
+ ],
+ "Mire olhando para onde quer mandar a bola.": [
+  "Aim by looking where you want the ball to go.",
+  "Apunta mirando hacia donde quieres mandar la bola.",
+  "Целься, глядя туда, куда хочешь отправить мяч."
+ ],
+ "Buraco em 1 tacada? Isso vale uma conquista!": [
+  "Hole in one? That's worth an achievement!",
+  "¿Hoyo en uno? ¡Eso vale un logro!",
+  "Лунка с одного удара? Это достижение!"
+ ],
+ "Faça os 3 buracos e veja seu placar no fim.": [
+  "Play all 3 holes and see your score at the end.",
+  "Juega los 3 hoyos y mira tu puntuación al final.",
+  "Пройди все 3 лунки и посмотри счёт в конце."
+ ],
+ " · tacadas: ": [
+  " · strokes: ",
+  " · golpes: ",
+  " · удары: "
+ ],
+ "  ·  força ": [
+  "  ·  power ",
+  "  ·  fuerza ",
+  "  ·  сила "
+ ],
+ "🏆 BURACO EM UMA!": [
+  "🏆 HOLE IN ONE!",
+  "🏆 ¡HOYO EN UNO!",
+  "🏆 С ОДНОГО УДАРА!"
+ ],
+ "👍 Par!": [
+  "👍 Par!",
+  "👍 ¡Par!",
+  "👍 Пар!"
+ ],
+ " acima do par": [
+  " over par",
+  " sobre par",
+  " выше пара"
+ ],
+ " tacadas)": [
+  " strokes)",
+  " golpes)",
+  " ударов)"
+ ],
+ "⛳ Fim! Total: ": [
+  "⛳ Done! Total: ",
+  "⛳ ¡Fin! Total: ",
+  "⛳ Конец! Итого: "
+ ],
+ "🏅 Novo recorde no minigolfe: ": [
+  "🏅 New mini golf record: ",
+  "🏅 Nuevo récord en minigolf: ",
+  "🏅 Новый рекорд в минигольфе: "
+ ],
+ "⛳ Segure o gatilho para carregar e solte para tacar (mire olhando)": [
+  "⛳ Hold the trigger to charge and release to hit (aim by looking)",
+  "⛳ Mantén el gatillo para cargar y suelta para golpear (apunta mirando)",
+  "⛳ Зажми курок для силы и отпусти для удара (целься взглядом)"
+ ],
+ "Festival da Comida": [
+  "Food Festival",
+  "Festival de la Comida",
+  "Фестиваль еды"
+ ],
+ "🍔 Festival da Comida": [
+  "🍔 Food Festival",
+  "🍔 Festival de la Comida",
+  "🍔 Фестиваль еды"
+ ],
+ "🎂 Parabéns, RoleVRGO!": [
+  "🎂 Happy birthday, RoleVRGO!",
+  "🎂 ¡Feliz cumpleaños, RoleVRGO!",
+  "🎂 С днём рождения, RoleVRGO!"
+ ],
+ "Chef Bigodão": [
+  "Chef Big Whiskers",
+  "Chef Bigotón",
+  "Шеф Усач"
+ ],
+ "Bem-vinde ao festival! Tudo aqui é gigante, até o bolo.": [
+  "Welcome to the festival! Everything here is giant, even the cake.",
+  "¡Bienvenide al festival! Todo aquí es gigante, hasta el pastel.",
+  "Добро пожаловать на фестиваль! Здесь всё гигантское, даже торт."
+ ],
+ "Cuidado com o trem: ele não freia para gatos!": [
+  "Watch out for the train: it doesn't brake for cats!",
+  "¡Cuidado con el tren: no frena por los gatos!",
+  "Осторожно, поезд: он не тормозит ради котов!"
+ ],
+ "Dizem que quem sobe no topo da taça de sorvete ganha um segredo.": [
+  "They say whoever climbs to the top of the ice cream sundae finds a secret.",
+  "Dicen que quien sube a la cima de la copa de helado encuentra un secreto.",
+  "Говорят, кто заберётся на верх вазы с мороженым, найдёт секрет."
+ ],
+ "Procure o petisco dourado escondido atrás do bolo!": [
+  "Look for the golden treat hidden behind the cake!",
+  "¡Busca la golosina dorada escondida detrás del pastel!",
+  "Найди золотое лакомство, спрятанное за тортом!"
+ ],
+ "🚂 Piuí! Saia dos trilhos!": [
+  "🚂 Choo choo! Get off the tracks!",
+  "🚂 ¡Chu chu! ¡Sal de las vías!",
+  "🚂 Ту-ту! Сойди с рельсов!"
+ ],
+ "Cama de casal moderna": [
+  "Modern double bed",
+  "Cama doble moderna",
+  "Современная двуспальная кровать"
+ ],
+ "Ursinho de pelúcia": [
+  "Teddy bear",
+  "Osito de peluche",
+  "Плюшевый мишка"
+ ],
+ "Sofá moderno": [
+  "Modern sofa",
+  "Sofá moderno",
+  "Современный диван"
+ ],
+ "TV de tela plana": [
+  "Flat-screen TV",
+  "TV de pantalla plana",
+  "Плоский телевизор"
+ ],
+ "Luminária de chão": [
+  "Floor lamp",
+  "Lámpara de pie",
+  "Торшер"
+ ],
+ "Balcão de cozinha": [
+  "Kitchen counter",
+  "Encimera de cocina",
+  "Кухонная тумба"
+ ],
+ "Hambúrguer de enfeite": [
+  "Decorative burger",
+  "Hamburguesa de adorno",
+  "Декоративный бургер"
+ ],
+ "Escrivaninha com PC": [
+  "Desk with PC",
+  "Escritorio con PC",
+  "Стол с компьютером"
+ ],
+ "Estante aberta": [
+  "Open bookcase",
+  "Estantería abierta",
+  "Открытый стеллаж"
+ ],
+ "Caixa de som": [
+  "Speaker",
+  "Altavoz",
+  "Колонка"
+ ],
+ "Bolo de aniversário": [
+  "Birthday cake",
+  "Pastel de cumpleaños",
+  "Праздничный торт"
+ ],
+ "Carrinho de corrida (tamanho gato)": [
+  "Race car (cat-sized)",
+  "Coche de carreras (tamaño gato)",
+  "Гоночная машинка (кошачьего размера)"
+ ],
+ "Visite todos os 22 mapas": [
+  "Visit all 22 maps",
+  "Visita los 22 mapas",
+  "Посети все 22 карты"
+ ],
+ "Buraco em Uma!": [
+  "Hole in One!",
+  "¡Hoyo en Uno!",
+  "С одного удара!"
+ ],
+ "Acerte um buraco do minigolfe com uma tacada só": [
+  "Sink a mini golf hole in a single stroke",
+  "Mete un hoyo del minigolf de un solo golpe",
+  "Загони мяч в лунку минигольфа с одного удара"
+ ],
+ "Abaixo do Par": [
+  "Under Par",
+  "Bajo Par",
+  "Ниже пара"
+ ],
+ "Termine o minigolfe no par ou abaixo dele": [
+  "Finish mini golf at or under par",
+  "Termina el minigolf en par o por debajo",
+  "Пройди минигольф в пар или лучше"
+ ],
+ "Pulo Lunar": [
+  "Moon Jump",
+  "Salto Lunar",
+  "Лунный прыжок"
+ ],
+ "Dê um super pulo na Base Lunar": [
+  "Do a super jump on the Moon Base",
+  "Da un súper salto en la Base Lunar",
+  "Соверши суперпрыжок на Лунной базе"
+ ],
+ "Piuí!": [
+  "Choo Choo!",
+  "¡Chu Chu!",
+  "Ту-ту!"
+ ],
+ "Seja empurrado pelo trem do Festival da Comida": [
+  "Get pushed by the Food Festival train",
+  "Que te empuje el tren del Festival de la Comida",
+  "Попади под толчок поезда на Фестивале еды"
+ ],
+ "Código Secreto": [
+  "Secret Code",
+  "Código Secreto",
+  "Секретный код"
+ ],
+ "Visita à Félicette": [
+  "A Visit to Félicette",
+  "Visita a Félicette",
+  "В гостях у Фелисетт"
+ ],
+ "Encontre a homenagem à primeira gata no espaço": [
+  "Find the tribute to the first cat in space",
+  "Encuentra el homenaje a la primera gata en el espacio",
+  "Найди памятник первой кошке в космосе"
+ ],
+ "🌈 Código secreto ativado! Rastro de arco-íris por 1 minuto": [
+  "🌈 Secret code activated! Rainbow trail for 1 minute",
+  "🌈 ¡Código secreto activado! Estela arcoíris por 1 minuto",
+  "🌈 Секретный код активирован! Радужный след на 1 минуту"
+ ],
+ "📱 Joystick à esquerda para andar · arraste a tela para olhar · toque rápido para usar · ⤒ pula": [
+  "📱 Left joystick to walk · drag the screen to look · quick tap to use · ⤒ jumps",
+  "📱 Joystick a la izquierda para andar · arrastra la pantalla para mirar · toque rápido para usar · ⤒ salta",
+  "📱 Джойстик слева — ходить · проведи по экрану — смотреть · быстрое касание — действие · ⤒ прыжок"
+ ],
+ "Mensagem para a sala": [
+  "Message to the room",
+  "Mensaje para la sala",
+  "Сообщение для комнаты"
+ ],
+ "📸 Dentro do VR, use a captura de tela do próprio headset": [
+  "📸 In VR, use your headset's own screenshot",
+  "📸 Dentro del VR, usa la captura de pantalla del propio visor",
+  "📸 В VR используй снимок экрана самого шлема"
+ ],
+ "⏹ Gravação parada: o gravador do jogo não funciona dentro do VR": [
+  "⏹ Recording stopped: the game recorder doesn't work in VR",
+  "⏹ Grabación detenida: la grabadora del juego no funciona dentro del VR",
+  "⏹ Запись остановлена: рекордер игры не работает в VR"
+ ],
+ "Dentro do VR, grave com o botão de captura do próprio headset": [
+  "In VR, record with your headset's own capture button",
+  "Dentro del VR, graba con el botón de captura del propio visor",
+  "В VR записывай кнопкой записи самого шлема"
+ ],
+ "⏺ Gravar vídeo (só fora do VR)": [
+  "⏺ Record video (outside VR only)",
+  "⏺ Grabar video (solo fuera del VR)",
+  "⏺ Записать видео (только вне VR)"
+ ],
+ "🌙⛳🍔 3 MAPAS NOVOS: Base Lunar (gravidade baixa, foguete e a homenagem à Félicette, a primeira gata no espaço), Minigolfe dos Gatos (3 buracos, tacada carregando o gatilho) e Festival da Comida (comidas gigantes e trem). 📱 Agora dá para jogar no celular SEM óculos: joystick, pulo e botões na tela. 🛋 16 móveis novos nas casas.": [
+  "🌙⛳🍔 3 NEW MAPS: Moon Base (low gravity, a rocket and a tribute to Félicette, the first cat in space), Cat Mini Golf (3 holes, charge the trigger to hit) and Food Festival (giant food and a train). 📱 You can now play on your phone WITHOUT a headset: joystick, jump and on-screen buttons. 🛋 16 new pieces of furniture for homes.",
+  "🌙⛳🍔 3 MAPAS NUEVOS: Base Lunar (gravedad baja, cohete y el homenaje a Félicette, la primera gata en el espacio), Minigolf de los Gatos (3 hoyos, carga el gatillo para golpear) y Festival de la Comida (comida gigante y tren). 📱 Ahora se puede jugar en el móvil SIN gafas: joystick, salto y botones en pantalla. 🛋 16 muebles nuevos para las casas.",
+  "🌙⛳🍔 3 НОВЫЕ КАРТЫ: Лунная база (слабая гравитация, ракета и памятник Фелисетт — первой кошке в космосе), Кошачий минигольф (3 лунки, зажми курок для удара) и Фестиваль еды (гигантская еда и поезд). 📱 Теперь можно играть на телефоне БЕЗ шлема: джойстик, прыжок и кнопки на экране. 🛋 16 новых предметов мебели для домов."
+ ],
+ "😇 GATO-ANJO (nível 100): ao chegar no nível 100 você vira um Gato-Anjo com asas que batem, auréola e o teclado do Keyboard Cat, em homenagem a ele. Ganha Machado, Espada e Picareta Celestiais e 999 Petiscos de boa qualidade. Dá para desligar no lobby antes de começar.": [
+  "😇 ANGEL CAT (level 100): at level 100 you become an Angel Cat with flapping wings, a halo and Keyboard Cat's keyboard, in his honor. You get the Celestial Axe, Sword and Pickaxe and 999 Quality treats. You can turn it off in the lobby before starting.",
+  "😇 GATO ÁNGEL (nivel 100): al llegar al nivel 100 te conviertes en un Gato Ángel con alas que aletean, aureola y el teclado de Keyboard Cat, en su honor. Ganas Hacha, Espada y Pico Celestiales y 999 Golosinas de buena calidad. Se puede desactivar en el lobby antes de empezar.",
+  "😇 КОТ-АНГЕЛ (100 уровень): на 100 уровне ты становишься Котом-Ангелом с машущими крыльями, нимбом и клавишами Keyboard Cat — в его честь. Получаешь Небесные топор, меч и кирку и 999 качественных лакомств. Можно выключить в лобби перед началом."
  ]
 }

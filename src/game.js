@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { World, worldMat, matU, glossify } from './world.js';
 import { MAPS, initPrims, PORTAL_COLORS, MAP_ICONS } from './maps.js';
 import './maps2.js';
+import './maps3.js';
 import { gp } from './gp.js';
 import { modelGeometry, play, playAt, meow, purr, pop, setUnder, ambience, chime, splashSfx, chirp, thunder, boing, keyboardTune } from './assets.js';
 import { CatAvatar, HandPool, EMOTES, AGE_EYE } from './cat.js';
@@ -52,7 +53,7 @@ export const G = {
     this.fadeMesh = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 6), new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false })); this.fadeMesh.renderOrder = 999; this.fadeMesh.visible = false; camera.add(this.fadeMesh);
     this.bobber = new THREE.Mesh(new THREE.IcosahedronGeometry(0.09, 0), new THREE.MeshBasicMaterial({ color: 0xff4040 })); this.bobber.visible = false; scene.add(this.bobber);
     this.line = new THREE.Line(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3)), new THREE.LineBasicMaterial({ color: 0xffffff })); this.line.frustumCulled = false; this.line.visible = false; scene.add(this.line);
-    player.onTrigger = () => this.onTrigger();
+    player.onTrigger = () => this.onTrigger(); player.onRelease = () => { if (this.def && this.def.release) this.def.release(this); };
     this.tpBall = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22, 1), new THREE.MeshBasicMaterial({ color: 0x60e8ff, transparent: true, opacity: 0.85, fog: false })); this.tpBall.visible = false; this.tpBall.renderOrder = 8; scene.add(this.tpBall);
     this.tpArc = new THREE.Line(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(player.tp.pts, 3).setUsage(THREE.DynamicDrawUsage)), new THREE.LineBasicMaterial({ color: 0x60e8ff, transparent: true, opacity: 0.9, fog: false })); this.tpArc.frustumCulled = false; this.tpArc.visible = false; scene.add(this.tpArc);
     on('teleported', () => { play('portal', 0.45, 0, 1.5); const p = player.pos; this.fx.burst(p.x, p.y + 0.6, p.z, 0x60e8ff, 18, 3, 1); });
@@ -310,6 +311,7 @@ export const G = {
     if (this.uiClick && this.uiClick()) return true;
     if (maker.editing && this.mapId === 'custom') { maker.act(); return true; }
     if (home.editing && home.mine()) { home.act(); return true; }
+    if (this.def && this.def.press && this.def.press(this)) return true;
     if (this.fishing) { this._reel(true); return true; }
     if (this.myEmote === 3 || this.myEmote === 4) { this.myEmote = 0; this.emoteT = 0; this.player.frozen = false; this.player.emoteId = 0; return true; }
     const a = this.aim();
@@ -378,7 +380,7 @@ export const G = {
     hp.end(perf.shadows > 0);
     // lanternas e céu
     this.camera.getWorldPosition(_v); const under = W.swim && _v.y < W.waterY - 0.05; this.under = under;
-    const skyNow = admin.eventOn('night') ? DAY_LENGTH * 750 : admin.eventOn('day') ? DAY_LENGTH * 250 : this.mapId === 'dark' ? DAY_LENGTH * 985 : this.mapId === 'neon' ? DAY_LENGTH * 760 : this.mapId === 'volcano' ? DAY_LENGTH * 455 : now; // Reino Sombrio: crepúsculo eterno
+    const skyNow = admin.eventOn('night') ? DAY_LENGTH * 750 : admin.eventOn('day') ? DAY_LENGTH * 250 : this.mapId === 'dark' ? DAY_LENGTH * 985 : this.mapId === 'neon' ? DAY_LENGTH * 760 : this.mapId === 'volcano' ? DAY_LENGTH * 455 : this.def && this.def.skyT != null ? DAY_LENGTH * this.def.skyT : now; // Reino Sombrio: crepúsculo eterno
     weather.update(dt, this.mapId, this.def); this.sky.wx = weather.wx();
     this.sky.update(skyNow, this.def, P.pos, perf, under); this._adminTick(dt, now); { const wi = weather.info(); matU.uGloss.value = Math.max(this.baseGloss || 0, wi.wet ? 0.6 * weather.k : 0); } // chão molhado brilha na chuva
     if (weather.season === 'newyear' && this.sky.night > 0.5 && !this.def.indoor) { this.fwT = (this.fwT || 0) - dt; if (this.fwT <= 0) { this.fwT = 0.8 + Math.random() * 1.6; const fx2 = P.pos.x + (Math.random() - 0.5) * 60, fz = P.pos.z + (Math.random() - 0.5) * 60, fy = P.pos.y + 22 + Math.random() * 18, c = [0xff4040, 0x40ff80, 0xffe040, 0x40a0ff, 0xff60e0][Math.floor(Math.random() * 5)]; this.fx.burst(fx2, fy, fz, c, 40, 9, 2); this.fx.burst(fx2, fy, fz, 0xffffff, 12, 4, 2); setTimeout(() => thunder(0.15), 400); } } // 🎆 fogos de Ano Novo
@@ -554,12 +556,13 @@ export const G = {
     const P = this.player, t = this.time;
     if (infect.myInf) P.speedMul *= 1.05; // infectado: +5% de velocidade
     { const mt = mounts.cur(); if (mt) { P.speedMul *= mt.speed; P.jumpMul *= 1.15; } if (this.trackBoost > 0) { this.trackBoost -= dt; P.speedMul *= 1.75; } } // montaria e turbo da pista
-    if (admin.has('speed')) P.speedMul *= 2.2; if (admin.has('jump')) P.jumpMul *= 2.3; P.gravMul = admin.has('lowgrav') ? 0.32 : 1; P.fly = admin.has('fly') || mounts.flying(); P.hover = 0; /* o Gato-Anjo não flutua: só bate as asas */
+    if (admin.has('speed')) P.speedMul *= 2.2; if (admin.has('jump')) P.jumpMul *= 2.3; P.gravMul = (admin.has('lowgrav') ? 0.32 : 1) * (this.def && this.def.grav || 1); P.fly = admin.has('fly') || mounts.flying(); P.hover = 0; /* o Gato-Anjo não flutua: só bate as asas */
     const fr = admin.has('freeze'); if (fr && !this._admFrozen) { this._admFrozen = true; P.frozen = true; P.vel.set(0, 0, 0); } else if (!fr && this._admFrozen) { this._admFrozen = false; P.frozen = false; }
     if (fr && Math.random() < 0.3) this.fx.burst(P.pos.x, P.pos.y + 0.8, P.pos.z, 0xbfefff, 2, 1);
     this.pawColor = null;
     if (admin.has('rainbow')) { _col.setHSL((t * 0.4) % 1, 0.9, 0.6); this.pawColor = '#' + _col.getHexString(); if (Math.random() < 0.5) this.fx.burst(P.pos.x, P.pos.y + 0.4, P.pos.z, _col.getHex(), 1, 0.6, -0.5); }
     if (admin.has('gold')) { this.pawColor = '#ffd040'; if (Math.random() < 0.5) this.fx.burst(P.pos.x + (Math.random() - 0.5) * 0.6, P.pos.y + Math.random() * 1.3, P.pos.z + (Math.random() - 0.5) * 0.6, 0xffd040, 1, 0.4, -0.8); }
+    if (this.rainbowT > 0) { this.rainbowT -= dt; if (P.speed > 0.3 || Math.random() < 0.2) this.fx.burst(P.pos.x, P.pos.y + 0.4, P.pos.z, new THREE.Color().setHSL((this.time * 0.6) % 1, 1, 0.6).getHex(), 2, 0.6, 0.3); }
     if (S.look.angel && P.speed > 0.5 && Math.random() < 0.06) this.fx.burst(P.pos.x + (Math.random() - 0.5) * 0.8, P.pos.y + 0.6, P.pos.z + (Math.random() - 0.5) * 0.8, Math.random() < 0.5 ? 0xffffff : 0xffe28a, 1, 0.4, -0.6); /* penas e brilhos do Gato-Anjo */
     if (P.fly && P.speed > 1 && Math.random() < 0.4) this.fx.burst(P.pos.x, P.pos.y + 0.3, P.pos.z, 0xffffff, 1, 0.3, 0.5);
   },

@@ -21,7 +21,9 @@ const kitDirs = {
   pirate: 'pirate-kit/Models/GLB format', survival: 'survival-kit/Models/GLB format',
   arena: 'mini-arena/Models/GLB format', holiday: 'holiday-kit/Models/GLB format',
   plat: 'platformer-kit/Models/GLB format', dungeon: 'mini-dungeon/Models/GLB format',
-  grave: 'graveyard-kit/Models/GLB format'
+  grave: 'graveyard-kit/Models/GLB format',
+  food: 'food-kit/Models/GLB format', fur: 'furniture-kit/Models/GLTF format', car: 'car-kit/Models/GLB format',
+  space: 'space-kit/Models/GLTF format', golf: 'minigolf-kit/Models/GLB format', train: 'train-kit/Models/GLB format'
 };
 const lin2srgb = (c) => Math.round(255 * Math.min(1, Math.max(0, c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055)));
 const texCache = new Map();
@@ -83,6 +85,11 @@ for (const key of manifest) {
   const nv = P.length / 3;
   const bb = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
   for (let i = 0; i < nv; i++) for (let k = 0; k < 3; k++) { bb[k] = Math.min(bb[k], P[i * 3 + k]); bb[k + 3] = Math.max(bb[k + 3], P[i * 3 + k]); }
+  if (kit === 'space' || kit === 'fur') { // estes kits vêm deslocados da origem: centraliza em X/Z e apoia no chão
+    const cx = (bb[0] + bb[3]) / 2, cz = (bb[2] + bb[5]) / 2, cy = bb[1];
+    for (let i = 0; i < nv; i++) { P[i * 3] -= cx; P[i * 3 + 1] -= cy; P[i * 3 + 2] -= cz; }
+    bb[0] -= cx; bb[3] -= cx; bb[1] -= cy; bb[4] -= cy; bb[2] -= cz; bb[5] -= cz;
+  }
   if (info) { console.log(key.padEnd(40), 'v', String(nv).padStart(5), 'tri', String(I.length / 3).padStart(5), 'bb', bb.map((v) => v.toFixed(2)).join(' ')); continue; }
   if (nv > 65535) { console.error('GRANDE DEMAIS', key); continue; }
   const pad4 = (n) => (n + 3) & ~3;

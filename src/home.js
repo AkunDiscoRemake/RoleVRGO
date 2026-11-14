@@ -100,7 +100,24 @@ export const FURN = [
   { id: 'cerca', n: 'Cerca', cat: 'Jardim', price: 30, c: 0, sz: [3.5, 1, 0.3], p: [['nature/fence_simple', 0, 0, 0, 3.5]] },
   { id: 'bau', n: 'Baú', cat: 'Jardim', price: 100, c: 0, sz: [1, 0.8, 0.7], p: [['plat/chest', 0, 0, 0, 1.9]] },
   { id: 'trampolim', n: 'Trampolim', cat: 'Jardim', price: 250, c: 0, sz: [1.2, 0.4, 1.2], act: 'spring', nocol: 1, p: [] },
-  { id: 'fogueira', n: 'Fogueira', cat: 'Jardim', price: 80, c: 0, sz: [1.2, 0.6, 1.2], light: [0.5, 0xff8030], p: [['nature/campfire_stones', 0, 0, 0, 3.2], ['k', 0, 0.1, 0, 0.4, 0.55, 0.4, 0xff9030, 1], ['k', 0, 0.1, 0, 0.22, 0.38, 0.22, 0xffe070, 1]] }
+  { id: 'fogueira', n: 'Fogueira', cat: 'Jardim', price: 80, c: 0, sz: [1.2, 0.6, 1.2], light: [0.5, 0xff8030], p: [['nature/campfire_stones', 0, 0, 0, 3.2], ['k', 0, 0.1, 0, 0.4, 0.55, 0.4, 0xff9030, 1], ['k', 0, 0.1, 0, 0.22, 0.38, 0.22, 0xffe070, 1]] },
+  // ---- móveis da Kenney (Furniture/Food/Car Kit) ----
+  { id: 'k_cama', n: 'Cama de casal moderna', cat: 'Quarto', price: 420, c: 0xffffff, sz: [2.1, 0.85, 2.5], act: 'sleep', p: [['fur/bedDouble', 0, 0, 0, 2.2]] },
+  { id: 'k_urso', n: 'Ursinho de pelúcia', cat: 'Quarto', price: 90, c: 0xffffff, sz: [0.8, 0.9, 0.6], p: [['fur/bear', 0, 0, 0, 2]] },
+  { id: 'k_sofa', n: 'Sofá moderno', cat: 'Sala', price: 380, c: 0xffffff, sz: [2.2, 1.0, 0.95], act: 'sit', p: [['fur/loungeSofa', 0, 0, 0, 2.2]] },
+  { id: 'k_tv', n: 'TV de tela plana', cat: 'Sala', price: 350, c: 0xffffff, sz: [1.5, 1.0, 0.3], light: [0.6, 0x9fd8ff], p: [['fur/televisionModern', 0, 0, 0, 2.2]] },
+  { id: 'k_tapete', n: 'Tapete redondo', cat: 'Sala', price: 80, c: 0xffffff, sz: [2.4, 0.05, 2.4], nocol: 1, p: [['fur/rugRound', 0, 0.01, 0, 1.3]] },
+  { id: 'k_luminaria', n: 'Luminária de chão', cat: 'Sala', price: 140, c: 0xffffff, sz: [0.5, 1.9, 0.5], light: [1.7, 0xffe0a0], p: [['fur/lampRoundFloor', 0, 0, 0, 2.2]] },
+  { id: 'k_geladeira', n: 'Geladeira', cat: 'Cozinha', price: 400, c: 0xffffff, sz: [1.0, 2.0, 0.7], p: [['fur/kitchenFridge', 0, 0, 0, 2.2]] },
+  { id: 'k_balcao', n: 'Balcão de cozinha', cat: 'Cozinha', price: 220, c: 0xffffff, sz: [1.0, 1.0, 1.0], p: [['fur/kitchenCabinet', 0, 0, 0, 2.2]] },
+  { id: 'k_hamburguer', n: 'Hambúrguer de enfeite', cat: 'Cozinha', price: 60, c: 0xffffff, sz: [0.8, 0.6, 0.8], p: [['food/burger', 0, 0, 0, 2]] },
+  { id: 'k_pc', n: 'Escrivaninha com PC', cat: 'Escola', price: 450, c: 0xffffff, sz: [1.6, 1.5, 0.9], light: [1.2, 0x9fd8ff], p: [['fur/desk', 0, 0, 0, 2.2], ['fur/computerScreen', 0, 0.84, 0.1, 2.2]] },
+  { id: 'k_estante', n: 'Estante aberta', cat: 'Escola', price: 260, c: 0xffffff, sz: [0.9, 1.95, 0.6], p: [['fur/bookcaseOpen', 0, 0, 0, 2.2]] },
+  { id: 'k_privada', n: 'Vaso sanitário', cat: 'Banheiro', price: 200, c: 0xffffff, sz: [0.7, 1.0, 1.0], act: 'sit', p: [['fur/toilet', 0, 0, 0, 2]] },
+  { id: 'k_som', n: 'Caixa de som', cat: 'Festa e Natal', price: 300, c: 0xffffff, sz: [0.6, 1.3, 0.6], act: 'party', p: [['fur/speaker', 0, 0, 0, 2]] },
+  { id: 'k_bolo', n: 'Bolo de aniversário', cat: 'Festa e Natal', price: 150, c: 0xffffff, sz: [1.0, 0.6, 1.0], p: [['food/cake-birthday', 0, 0, 0, 1.6]] },
+  { id: 'k_vaso', n: 'Vaso de planta', cat: 'Jardim', price: 90, c: 0xffffff, sz: [0.6, 1.4, 0.6], p: [['fur/pottedPlant', 0, 0, 0, 2.2]] },
+  { id: 'k_carro', n: 'Carrinho de corrida (tamanho gato)', cat: 'Jardim', price: 900, c: 0xffffff, sz: [1.4, 0.9, 2.7], act: 'sit', p: [['car/race', 0, 0, 0, 1.05]] },
 ];
 export const FURN_BY = {}; for (const f of FURN) FURN_BY[f.id] = f;
 const MAXI = 150;

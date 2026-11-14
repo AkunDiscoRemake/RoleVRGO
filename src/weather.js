@@ -33,7 +33,7 @@ export const weather = {
   // atualiza por quadro: tipo e intensidade (sobe/desce em ~25 s na troca)
   update(dt, map, def) {
     this.season = this.seasonNow(); const now = net.online ? net.now() : Date.now(), block = Math.floor(now / BLOCK), into = (now % BLOCK) / 1000;
-    let want = def && (def.indoor || def.custom || def.home) ? 'clear' : this.force || this.pick(map, block);
+    let want = def && (def.indoor || def.custom || def.home || def.noWx) ? 'clear' : this.force || this.pick(map, block);
     if (map !== this.map) { this.map = map; this.kind = want; this.k = want === 'clear' ? 0 : 1; this._last = map + want; return; }
     const next = this.force || this.pick(map, block + 1), fadeOut = (BLOCK / 1000 - into) < 25 && next !== want;
     if (want !== this.kind) { this.k = Math.max(0, this.k - dt / 6); if (this.k <= 0.01) { this.kind = want; } } else this.k = Math.min(1, this.k + dt / 25);

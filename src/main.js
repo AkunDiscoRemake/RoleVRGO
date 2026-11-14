@@ -208,6 +208,10 @@ on('look', () => { /* a cor das patas vem de S.look a cada quadro */ });
 addEventListener('beforeunload', () => { net.leave(); });
 player.handTrack = hands;
 import('./maker.js').then(({ maker }) => { self.RV.maker = maker; const f = $('file'); if (f) f.onchange = () => { const file = f.files && f.files[0]; f.value = ''; if (!file) return; S.toast('Importando ' + file.name + '...', '#bfe6ff'); maker.importFile(file).then((e) => S.toast(e || 'Asset importado! Ele já está no pincel.', e ? '#ff9a8a' : '#9cf09c')).catch((e) => S.toast('Falha ao importar: ' + (e && e.message ? e.message : e), '#ff9a8a')); }; });
+{ // 🌈 easter egg: código Konami (↑↑↓↓←→←→BA) deixa um rastro de arco-íris por 1 minuto
+  const K = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA']; let ki = 0;
+  addEventListener('keydown', (e) => { if (!started) return; ki = e.code === K[ki] ? ki + 1 : e.code === K[0] ? 1 : 0; if (ki === K.length) { ki = 0; G.rainbowT = 60; S.stat('konami'); S.toast('🌈 Código secreto ativado! Rastro de arco-íris por 1 minuto', '#ff9ad0'); emit('banner', '🌈 ↑↑↓↓←→←→BA', 3); G._confetti && G._confetti(60); } });
+}
 rec.isVR = () => renderer.xr.isPresenting; renderer.xr.addEventListener('sessionend', () => { if (!cardboard && touch.el) touch.show(true); }); on('openChat', () => { const t = prompt('Mensagem para a sala'); if (t && t.trim()) G.say(t.trim().slice(0, 60)); }); renderer.xr.addEventListener('sessionstart', () => { touch.show(false); if (rec.on) { rec.stop(); S.toast('⏹ Gravação parada: o gravador do jogo não funciona dentro do VR', '#ffd76a'); } });
 self.RV = { touch, G, S, net, perf, player, ui, rec, music, hands, admin, home, voice, infect, weather, mounts, jobs, gp, CatAvatar, PRESETS }; // para depuração no console
 boot();

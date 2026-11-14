@@ -92,8 +92,8 @@ export const MAPS = {
       ring(8, 14.5, (x, z) => lampPost(w, E, x, z), PI / 8);
       ring(8, 11, (x, z, a) => w.put('grave/bench', x, z, { s: 2, ry: -a + H, col: 'box' }), PI / 8);
       // portais para os outros mapas
-      const dest = ['forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero', 'dark', 'pool', 'nuke', 'sky', 'volcano', 'neon', 'track', 'gp'];
-      ring(18, 24.5, (x, z, a, i) => E.portal(dest[i], x, z), -H + PI / 10);
+      const dest = ['forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero', 'dark', 'pool', 'nuke', 'sky', 'volcano', 'neon', 'track', 'gp', 'moon', 'golf', 'food'];
+      ring(21, 24.5, (x, z, a, i) => E.portal(dest[i], x, z), -H + PI / 10);
       // casas
       ring(10, 33, (x, z, a, i) => { const ry = Math.round(Math.atan2(z, -x) / H) * H; house(w, x, z, ry, { wood: i % 2, floors: 1 + (i % 3 === 0 ? 1 : 0), chimney: i % 2, s: 4.6, roof: i % 3 === 1 ? 'town/roof-point' : 'town/roof-high-point' }); }, 0.3);
       ring(7, 47, (x, z, a, i) => { if (Math.hypot(x - pond[0], z - pond[1]) < 16) return; const ry = Math.round(Math.atan2(z, -x) / H) * H; house(w, x, z, ry, { wood: (i + 1) % 2, s: 4.2 }); }, 0.9);

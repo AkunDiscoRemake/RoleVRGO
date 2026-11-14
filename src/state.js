@@ -134,7 +134,7 @@ export const S = {
   chestOpen(key) { if (this.sandbox) return (this._sbChests || []).indexOf(key) >= 0; return this.d.chests.open.indexOf(key) >= 0; },
   markChest(key) { if (this.sandbox) { (this._sbChests = this._sbChests || []).push(key); return; } this.d.chests.open.push(key); this.touch(); },
   visit(map) { if (this.d.maps.indexOf(map) < 0) { this.d.maps.push(map); this.setStat('maps', this.d.maps.length); this.addXp(25); } this.stat('visit', map, 1); },
-  secret(key, map) { if (this.sandbox) { this.toast('✨ Segredo do mapa encontrado!', '#c06bff'); play('secret', 0.7); return true; } if (this.d.secrets.indexOf(key) >= 0) return false; this.d.secrets.push(key); const xp = this.d.prof === 'explorer' ? 160 : 80; this.toast('✨ Segredo descoberto! +' + xp + ' XP', '#c06bff'); play('secret', 0.7); this.addXp(xp); this.stat('secret', map, 1); return true; },
+  secret(key, map) { if (this.sandbox) { this.toast('✨ Segredo do mapa encontrado!', '#c06bff'); play('secret', 0.7); return true; } if (this.d.secrets.indexOf(key) >= 0) return false; this.d.secrets.push(key); if (/moon_felicette$/.test(key)) { this.stat('felicette'); this.toast('🐈‍⬛ Obrigada pela visita! — Félicette, primeira gata no espaço (1963)', '#ffe0a0'); } const xp = this.d.prof === 'explorer' ? 160 : 80; this.toast('✨ Segredo descoberto! +' + xp + ' XP', '#c06bff'); play('secret', 0.7); this.addXp(xp); this.stat('secret', map, 1); return true; },
   profBonus(p) { return this.d.prof === p; }
 };
 // salvamento periódico

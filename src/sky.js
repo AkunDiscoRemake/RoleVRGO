@@ -57,7 +57,7 @@ export class Sky {
     this.dome.visible = !def.indoor && !under; this.dome.position.set(center.x, center.y - 20, center.z);
     this.domeT -= 1; if (this.dome.visible && this.domeT <= 0) { this.domeT = 30; const top = this._top.copy(col).multiplyScalar(0.55); top.b = Math.min(1, top.b * 1.35 + 0.04); const C = this.dome.geometry.attributes.color, Pp = this.dome.geometry.attributes.position; for (let i = 0; i < C.count; i++) { const k = Math.pow(clamp(Pp.getY(i) / 330, 0, 1), 0.6); C.setXYZ(i, col.r + (top.r - col.r) * k, col.g + (top.g - col.g) * k, col.b + (top.b - col.b) * k); } C.needsUpdate = true; }
     // nuvens: giram devagar em volta do jogador
-    const cv = !def.indoor && perf.level >= 1; this.clouds.visible = cv; this.glow.visible = !def.indoor && perf.level >= 1;
+    const cv = !def.indoor && !def.noClouds && perf.level >= 1; this.clouds.visible = cv; this.glow.visible = !def.indoor && perf.level >= 1;
     if (cv) { const tt = nowMs / 1000; for (let i = 0; i < this.cl.length; i++) { const c = this.cl[i], a = c.a + tt * c.v; this._m.compose(this._p.set(center.x + Math.cos(a) * c.r, c.y, center.z + Math.sin(a) * c.r), this._q, this._s.set(c.s, c.s * 0.7, c.s)); this.clouds.setMatrixAt(i, this._m); } this.clouds.instanceMatrix.needsUpdate = true; this.clouds.material.color.copy(this._b.setHex(0x9098b8).lerp(this._c.setHex(0xffffff), day)).lerp(this._c.setHex(0xffb890), dusk * 0.5); this.clouds.material.emissive.setScalar(0.1 + day * 0.12); }
     if (this.glow.visible) { this.glow.position.copy(this.orb.position); this.glow.material.color.copy(this.orb.material.color); this.glow.material.opacity = (0.55 + dusk * 0.35) * (wx ? 1 - wx.d : 1); }
   }
