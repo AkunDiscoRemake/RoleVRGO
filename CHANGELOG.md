@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.0.5 — Montarias, profissões e clima
+
+### 🐎 Montarias
+- **Montarias novas:**
+  - **Gatão**, **Tigre** e **Pantera Neon**: felinos de quatro patas que galopam;
+  - **Skate Aero**, com luz neon embaixo;
+  - **Nuvem Voadora** e **Dragãozinho**, que voam (o dragão bate as asas e pede nível 20).
+- Quem está montado anda bem mais rápido e vê o mundo mais do alto, e os outros jogadores veem a sua montaria.
+- Ficam em Menu rápido → 🐾 Bichinho e montaria → 🐎 Montarias. No PC, a tecla **J** monta e desmonta.
+- **Novo mapa: Autódromo das Patas 🏁.**
+  - Pista oval de 2 voltas, com 6 portais em ordem e faixas de turbo.
+  - Arquibancada, montaria emprestada grátis no estábulo e placar com **ranking online** (top 10).
+  - A Corrida nas Nuvens também entra no ranking online.
+
+### 💼 Profissões e lojinhas
+- **7 profissões**, cada uma com uniforme (roupas e chapéus novos), ações próprias e salário em moedas e XP:
+  - **Cozinheiro(a):** 6 receitas (sushi, peixe assado, sopa, torta, suco, sorvete);
+  - **Vendedor(a):** +25% de bônus nas vendas;
+  - **Médico(a):** cura quem está perto;
+  - **Policial:** sirene com luzes vermelha e azul, apito e salário por patrulha;
+  - **Bombeiro(a):** mangueira que apaga fogueiras;
+  - **Entregador(a):** leva encomendas até os NPCs, seguindo um brilho dourado;
+  - **Professor(a):** dá aulas que dão XP a quem está perto.
+- O nome dos outros jogadores mostra a profissão.
+- **Lojinha:**
+  - O móvel novo **Caixa da lojinha 🛒** transforma a casa numa loja; o dono escolhe na vitrine o que vender da bolsa.
+  - Os visitantes compram no Caixa. A compra é entre jogadores reais: a moeda sai de um e entra no outro.
+- Conquistas **Trabalhador** e **Comerciante**. A página de comida mostra todas as comidas.
+
+### 🌦️ Clima e estações
+- **Clima que muda a cada 8 minutos**, igual para todos da sala: céu limpo, nublado, chuva, tempestade com raios, neblina, nevasca e tempestade de areia.
+- Cada mapa só tem os climas que fazem sentido para ele.
+- No mau tempo, o céu e as nuvens escurecem, a luz cai e a neblina fecha. Na chuva o chão fica brilhando de molhado, e há som de chuva e de vento.
+- **Datas comemorativas automáticas:**
+  - **Natal:** árvores, presentes, boneco de neve, rena, baú diário, neve e NPCs de gorro;
+  - **Halloween:** abóboras, lápides, neblina e NPCs de chapéu de bruxo;
+  - **Ano Novo:** fogos de artifício à noite.
+- A tela do mapa no menu mostra o clima e a data comemorativa.
+
+### Servidor
+- `supabase/races.sql` (ranking das corridas), já aplicado.
+
 ## 0.0.4 — Céu, Vulcão e Neon
 
 ### Mapas novos (agora são 17)

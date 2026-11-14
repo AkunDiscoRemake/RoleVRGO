@@ -62,6 +62,7 @@ export const FURN = [
   { id: 'fogao', n: 'Fogão', cat: 'Cozinha', price: 350, c: WH, sz: [0.8, 0.95, 0.7], p: [['b', 0, 0, 0, 0.8, 0.9, 0.7, M], ['b', 0, 0.9, 0, 0.8, 0.02, 0.7, BK, 1], ['c', -0.18, 0.91, -0.15, 0.22, 0.02, 0.22, 0x555560, 1], ['c', 0.18, 0.91, -0.15, 0.22, 0.02, 0.22, 0x555560, 1], ['c', -0.18, 0.91, 0.15, 0.22, 0.02, 0.22, 0x555560, 1], ['c', 0.18, 0.91, 0.15, 0.22, 0.02, 0.22, 0x555560, 1], ['b', 0, 0.2, -0.355, 0.6, 0.4, 0.02, 0x303038, 1]] },
   { id: 'balcao', n: 'Balcão', cat: 'Cozinha', price: 200, c: 0xd8b088, sz: [1.2, 0.92, 0.65], p: [['b', 0, 0, 0, 1.2, 0.88, 0.62, M], ['b', 0, 0.88, 0, 1.24, 0.05, 0.66, 0xe8e4dc], ['b', -0.3, 0.1, -0.315, 0.56, 0.7, 0.02, 'L', 1], ['b', 0.3, 0.1, -0.315, 0.56, 0.7, 0.02, 'L', 1]] },
   { id: 'pia', n: 'Pia', cat: 'Cozinha', price: 220, c: 0xd8b088, sz: [1.2, 1.2, 0.65], p: [['b', 0, 0, 0, 1.2, 0.88, 0.62, M], ['b', 0, 0.88, 0, 1.24, 0.05, 0.66, 0xe8e4dc], ['b', 0, 0.9, -0.02, 0.6, 0.03, 0.4, 0x9aa0aa, 1], ['c', 0, 0.93, 0.22, 0.05, 0.3, 0.05, 0xc0c4cc, 1]] },
+  { id: 'caixareg', n: 'Caixa da lojinha 🛒', cat: 'Cozinha', price: 300, c: 0x3a9a5a, sz: [1.6, 1.3, 0.8], act: 'shop', light: [1.4, 0xffe080], p: [['b', 0, 0, 0, 1.6, 0.95, 0.75, M], ['b', 0, 0.95, 0, 1.7, 0.06, 0.82, 0xe8e4dc], ['b', -0.4, 1.01, 0, 0.5, 0.25, 0.4, 0x3b3b45], ['b', -0.4, 1.26, 0.05, 0.4, 0.22, 0.04, 0x60e0ff, 1], ['b', 0.35, 1.01, 0, 0.4, 0.04, 0.3, 0xd8c098, 1], ['b', 0, 0.3, -0.38, 1.4, 0.3, 0.02, 'L', 1]] },
   { id: 'mesajantar', n: 'Mesa de jantar', cat: 'Cozinha', price: 250, c: WD, sz: [2, 0.78, 1.1], p: [['b', 0, 0.72, 0, 2, 0.06, 1.1, M]].concat(legs4(2, 1.1, 0.72, WDD)) },
   { id: 'cadeira', n: 'Cadeira', cat: 'Cozinha', price: 60, c: WD, sz: [0.5, 1, 0.5], act: 'sit', p: [['b', 0, 0.42, 0, 0.5, 0.06, 0.5, M], ['b', 0, 0.48, 0.22, 0.5, 0.55, 0.06, M]].concat(legs4(0.5, 0.5, 0.42, WDD)) },
   { id: 'tigela', n: 'Tigela de ração', cat: 'Gatos', price: 20, c: 0xe05050, sz: [0.45, 0.16, 0.45], nocol: 1, p: [['c', 0, 0, 0, 0.45, 0.14, 0.45, M], ['c', 0, 0.02, 0, 0.36, 0.14, 0.36, 0xa86a3a]] },
@@ -265,6 +266,7 @@ export const home = {
     if (G.mapId !== 'home' || !G.def || !G.def.acts) return false; const P = G.player.pos; let best = null, bd = 1.6;
     for (const a of G.def.acts) { const d = Math.hypot(a.x - P.x, a.z - P.z); if (d < bd && Math.abs(a.y - P.y) < 1.5) { bd = d; best = a; } }
     if (!best || best.act === 'spring') return false;
+    if (best.act === 'shop') { emit('shopOpen', this.mine()); return true; }
     if (best.act === 'party') { G.fx.burst(best.x, best.y + 1, best.z, 0xff60e0, 30, 4, 2); play('event', 0.6); S.toast('🪩 Festa!', '#ff9ad8'); G.emote(2); return true; }
     G.emote(best.act === 'sleep' ? 4 : 3); return true;
   }

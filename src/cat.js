@@ -4,13 +4,13 @@ import { clamp } from './util.js';
 // Gato low-poly procedural: UMA malha por gato; pernas, cabeça e cauda são
 // animadas no vertex shader (atributos aPart/aPivot), então cada gato custa 1 draw call.
 export const PATTERNS = ['Liso', 'Barriga clara', 'Siamês', 'Tigrado', 'Malhado', 'Meias'];
-export const HATS = ['Nenhum', 'Cartola', 'Coroa', 'Laço', 'Chapéu de palha', 'Capacete de minerador', 'Gorro', 'Bandana pirata', 'Chapéu de mago', 'Auréola'];
+export const HATS = ['Nenhum', 'Cartola', 'Coroa', 'Laço', 'Chapéu de palha', 'Capacete de minerador', 'Gorro', 'Bandana pirata', 'Chapéu de mago', 'Auréola', 'Chapéu de chef', 'Quepe de policial', 'Capacete de bombeiro'];
 export const FUR_COLORS = ['#f2a65a', '#3b3b45', '#f5f1e8', '#8a8f98', '#c9793d', '#6b4a36', '#e8c27a', '#b8b0d8', '#7fb7c9', '#e39ab0', '#5d8f5a', '#d9d9d9'];
 export const EYE_COLORS = ['#58c26a', '#4aa3e0', '#e0b030', '#c86a2a', '#9b6ad6', '#e0e0e0'];
 // idades para roleplay: tamanho geral e proporção da cabeça (filhote = cabeção fofo)
 export const AGES = ['Adulto', 'Adolescente', 'Filhote'];
 export const AGE_SCALE = [1, 0.8, 0.6], AGE_HEAD = [1, 1.12, 1.32], AGE_EYE = [1, 0.86, 0.68];
-export const OUTFITS = ['Nenhuma', 'Suéter de flocos', 'Suéter listrado', 'Suéter natalino', 'Moletom', 'Camiseta', 'Vestido', 'Macacão', 'Jaleco', 'Uniforme escolar', 'Pijama'];
+export const OUTFITS = ['Nenhuma', 'Suéter de flocos', 'Suéter listrado', 'Suéter natalino', 'Moletom', 'Camiseta', 'Vestido', 'Macacão', 'Jaleco', 'Uniforme escolar', 'Pijama', 'Avental de chef', 'Uniforme policial', 'Uniforme de bombeiro', 'Avental de vendedor'];
 export const LASERS = [['Nenhum', null], ['Rosa', [255, 70, 220]], ['Azul', [70, 160, 255]], ['Verde', [90, 255, 120]], ['Vermelho', [255, 60, 60]], ['Dourado', [255, 215, 80]]];
 // avatares prontos (o Trio da Ceia é um easter egg: os gatos natalinos de suéter e olhos de laser)
 export const PRESETS = [
@@ -135,6 +135,9 @@ export function buildCatGeometry(look, extra) {
   else if (H === 6) { b.cyl(0.19, 0.22, 0.07, 8, 0, top + 0.03, -0.02, [245, 245, 245], 1, NECK); b.cone(0.18, 0.24, 8, 0, top + 0.18, -0.02, [200, 50, 60], 1, NECK); b.box(0.06, 0.06, 0.06, 0, top + 0.32, -0.02, [245, 245, 245], 1, NECK); }
   else if (H === 7) { b.box(0.45, 0.08, 0.37, 0, top - 0.02, -0.02, [190, 40, 50], 1, NECK); b.box(0.06, 0.12, 0.04, 0.2, top - 0.08, 0.17, [190, 40, 50], 1, NECK); }
   else if (H === 8) { b.cyl(0.27, 0.27, 0.015, 10, 0, top + 0.01, -0.02, [80, 60, 160], 1, NECK); b.cone(0.16, 0.36, 8, 0, top + 0.19, -0.02, [80, 60, 160], 1, NECK); b.box(0.05, 0.05, 0.02, 0, top + 0.1, -0.17, [245, 215, 80], 1, NECK); }
+  else if (H === 10) { b.cyl(0.2, 0.2, 0.08, 10, 0, top + 0.04, -0.02, [245, 245, 248], 1, NECK); b.cyl(0.26, 0.2, 0.22, 10, 0, top + 0.19, -0.02, [250, 250, 252], 1, NECK); const g = new THREE.SphereGeometry(0.17, 8, 6); g.translate(0, top + 0.32, -0.02); b.add(g, [255, 255, 255], 1, NECK); }
+  else if (H === 11) { b.cyl(0.2, 0.21, 0.12, 10, 0, top + 0.06, -0.02, [30, 40, 90], 1, NECK); b.cyl(0.23, 0.2, 0.06, 10, 0, top + 0.15, -0.02, [30, 40, 90], 1, NECK); b.box(0.3, 0.025, 0.14, 0, top + 0.01, -0.2, [20, 20, 26], 1, NECK); b.box(0.06, 0.06, 0.02, 0, top + 0.1, -0.215, [240, 200, 60], 1, NECK); }
+  else if (H === 12) { b.cyl(0.21, 0.23, 0.17, 10, 0, top + 0.085, -0.02, [210, 40, 40], 1, NECK); b.cyl(0.3, 0.3, 0.025, 12, 0, top + 0.01, 0.0, [190, 30, 30], 1, NECK); b.box(0.1, 0.12, 0.03, 0, top + 0.1, -0.235, [245, 200, 60], 1, NECK); b.box(0.04, 0.2, 0.3, 0, top + 0.15, -0.02, [230, 50, 50], 1, NECK); }
   else if (H === 9) { const g = new THREE.TorusGeometry(0.13, 0.018, 4, 10); g.rotateX(Math.PI / 2); g.translate(0, top + 0.16, -0.02); b.add(g, [255, 235, 120], 1, NECK); }
   // acessórios conquistáveis
   const A = look.acc, gold = [245, 200, 50], white = [245, 245, 250];
@@ -177,6 +180,10 @@ function outfit(b, o) {
   else if (o === 7) { const J = [60, 100, 170]; b.box(0.39, 0.22, 0.31, 0, 0.43, 0, J, 0); b.box(0.24, 0.16, 0.012, 0, 0.6, -0.158, J, 0); b.box(0.04, 0.22, 0.32, -0.12, 0.62, 0, J, 0); b.box(0.04, 0.22, 0.32, 0.12, 0.62, 0, J, 0); b.box(0.03, 0.03, 0.01, -0.1, 0.66, -0.165, [240, 200, 60], 0); b.box(0.03, 0.03, 0.01, 0.1, 0.66, -0.165, [240, 200, 60], 0); legs(J, 0.12); }
   else if (o === 8) { body(W, 0.74, 0.26); b.box(0.012, 0.42, 0.01, 0, 0.5, -0.158, [200, 200, 210], 0); b.box(0.07, 0.07, 0.012, 0.1, 0.62, -0.16, [80, 160, 230], 0); b.box(0.02, 0.06, 0.01, 0.1, 0.62, -0.168, [230, 60, 60], 0); b.box(0.06, 0.02, 0.01, 0.1, 0.62, -0.168, [230, 60, 60], 0); }
   else if (o === 9) { body([40, 50, 100]); band(W, 0.73); b.box(0.045, 0.2, 0.012, 0, 0.6, -0.16, [200, 40, 52], 0); b.box(0.07, 0.06, 0.012, -0.1, 0.62, -0.158, [255, 215, 80], 0); }
+  else if (o === 11) { body(W); b.box(0.3, 0.36, 0.012, 0, 0.47, -0.16, [250, 250, 252], 0); for (let i = 0; i < 3; i++) for (const sx of [-0.07, 0.07]) b.box(0.025, 0.025, 0.01, sx, 0.68 - i * 0.07, -0.168, [60, 60, 70], 0); b.box(0.42, 0.03, 0.33, 0, 0.42, 0, [60, 60, 70], 0); }
+  else if (o === 12) { const N = [36, 48, 110]; body(N); b.box(0.4, 0.04, 0.32, 0, 0.42, 0, [20, 20, 26], 0); b.box(0.06, 0.04, 0.01, 0, 0.42, -0.165, [220, 200, 120], 0); b.box(0.07, 0.08, 0.012, -0.09, 0.62, -0.16, [240, 200, 60], 0); b.box(0.12, 0.03, 0.31, -0.2, 0.72, 0, [240, 200, 60], 0); b.box(0.12, 0.03, 0.31, 0.2, 0.72, 0, [240, 200, 60], 0); legs(N, 0.1); }
+  else if (o === 13) { const R = [150, 110, 60], Y = [240, 230, 60]; body(R, 0.74, 0.28); band(Y, 0.4); band([200, 200, 200], 0.43); band(Y, 0.6); b.box(0.04, 0.3, 0.012, -0.05, 0.56, -0.162, [40, 40, 40], 0); legs(R, 0.08); b.box(0.15, 0.045, 0.17, -0.1, 0.22, 0, Y, 2, HL); b.box(0.15, 0.045, 0.17, 0.1, 0.22, 0, Y, 3, HR); }
+  else if (o === 14) { const G2 = [60, 150, 80]; b.box(0.32, 0.4, 0.012, 0, 0.5, -0.16, G2, 0); b.box(0.36, 0.03, 0.33, 0, 0.6, 0, G2, 0); b.box(0.14, 0.08, 0.014, 0, 0.42, -0.168, [40, 110, 60], 0); b.box(0.05, 0.05, 0.01, 0.09, 0.62, -0.168, [255, 230, 120], 0); }
   else if (o === 10) { const P = [170, 200, 255]; body(P); for (let i = 0; i < 4; i++) b.box(0.4, 0.03, 0.32, 0, 0.38 + i * 0.1, 0, [255, 255, 255], 0); legs(P, 0.1); }
 }
 

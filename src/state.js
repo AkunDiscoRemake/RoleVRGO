@@ -8,7 +8,7 @@ import { HATS } from './cat.js';
 export const S = {
   name: 'Gato', look: null,
   d: null, dirty: false, boostUntil: 0, hp: 100, combo: 0,
-  blank() { return { level: 1, xp: 0, coins: 30, inv: {}, equip: { pick: 0, glove: 0, rod: 0 }, hats: [0], prof: '', profXp: {}, q: { active: {}, done: [] }, daily: { day: 0, prog: [0, 0, 0], claimed: [] }, ach: [], stats: {}, chests: { day: 0, open: [] }, secrets: [], maps: [], party: '', held: ['none', 'pick'], hand: 'none', perks: {}, seen: {}, albumDone: [], accSeen: [], contract: null, streak: { day: 0, n: 0 }, pets: ['none'], pet: 'none', muted: [], mounts: ['none'], mount: 'none', best: {} }; },
+  blank() { return { level: 1, xp: 0, coins: 30, inv: {}, equip: { pick: 0, glove: 0, rod: 0 }, hats: [0], prof: '', profXp: {}, q: { active: {}, done: [] }, daily: { day: 0, prog: [0, 0, 0], claimed: [] }, ach: [], stats: {}, chests: { day: 0, open: [] }, secrets: [], maps: [], party: '', held: ['none', 'pick'], hand: 'none', perks: {}, seen: {}, albumDone: [], accSeen: [], contract: null, streak: { day: 0, n: 0 }, pets: ['none'], pet: 'none', muted: [], mounts: ['none'], mount: 'none', best: {}, job: '', shop: {} }; },
   load(data) {
     const b = this.blank(); const d = data && typeof data === 'object' ? data : {};
     for (const k in b) if (d[k] == null) d[k] = b[k];
