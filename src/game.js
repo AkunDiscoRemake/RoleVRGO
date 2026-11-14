@@ -386,9 +386,9 @@ export const G = {
     if (weather.season === 'newyear' && this.sky.night > 0.5 && !this.def.indoor) { this.fwT = (this.fwT || 0) - dt; if (this.fwT <= 0) { this.fwT = 0.8 + Math.random() * 1.6; const fx2 = P.pos.x + (Math.random() - 0.5) * 60, fz = P.pos.z + (Math.random() - 0.5) * 60, fy = P.pos.y + 22 + Math.random() * 18, c = [0xff4040, 0x40ff80, 0xffe040, 0x40a0ff, 0xff60e0][Math.floor(Math.random() * 5)]; this.fx.burst(fx2, fy, fz, c, 40, 9, 2); this.fx.burst(fx2, fy, fz, 0xffffff, 12, 4, 2); setTimeout(() => thunder(0.15), 400); } } // 🎆 fogos de Ano Novo
     if (this.mapId === 'pool') { this.sky.hemi.groundColor.setHex(0xcfeef2); this.sky.hemi.color.setHex(0xffffff); this.sky.sun.color.setHex(0xf4fbff); } // luz fluorescente fria
     if (this.mapId === 'dark' || this.mapId === 'neon' || (weather.info().bolt && weather.k > 0.6)) { // relâmpagos com trovão (também nas tempestades)
-      this.boltT = (this.boltT == null ? 6 : this.boltT) - dt;
-      if (this.boltT <= 0) { this.boltT = 9 + Math.random() * 16; this.bolt = 0.45; setTimeout(() => thunder(0.8), 300 + Math.random() * 900); }
-      if (this.bolt > 0) { this.bolt -= dt; const k = Math.sin(Math.PI * Math.max(0, Math.min(1, 1 - this.bolt / 0.45))) * 0.55; /* SEGURANÇA: um único clarão suave, sem piscar liga/desliga (fotossensibilidade) */ this.sky.hemi.intensity += k * 2.5; this.scene.background.lerp(_col.setHex(0xd8d0ff), k * 0.6); this.scene.fog.color.copy(this.scene.background); }
+      this.boltT = (this.boltT == null ? 40 + Math.random() * 40 : this.boltT) - dt;
+      if (this.boltT <= 0) { this.boltT = 90 + Math.random() * 90; this.bolt = 0.45; /* relâmpago raro: a cada 1,5–3 min */ setTimeout(() => thunder(0.8), 300 + Math.random() * 900); }
+      if (this.bolt > 0) { this.bolt -= dt; const k = Math.sin(Math.PI * Math.max(0, Math.min(1, 1 - this.bolt / 0.45))) * 0.55; /* SEGURANÇA: um único clarão suave, sem piscar liga/desliga (fotossensibilidade) */ this.sky.hemi.intensity += k * 1.4; this.scene.background.lerp(_col.setHex(0xd8d0ff), k * 0.35); this.scene.fog.color.copy(this.scene.background); }
     }
     matU.uTime.value = this.time; if (under !== this._wasUnder) { this._wasUnder = under; setUnder(under); }
     this._aero(dt);

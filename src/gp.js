@@ -75,7 +75,7 @@ export const gp = {
   host() { let h = this.me(); this.G.remotes.forEach((r, id) => { if (id < h) h = id; }); return h; },
   cruise() { const m = mounts.cur(); return WALK_SPEED * (m ? m.speed : 1) * (this.G.player.desktop ? 1.5 : 1); }, // sua velocidade máxima sem turbo
   choose(mode, diff) {
-    const G = this.G; this.reset(); this.mode = mode; this.diff = diff || 0;
+    const G = this.G; if (!G || !this.active) return; this.reset(); this.mode = mode; this.diff = diff || 0;
     MAPS.gp.netKey = mode === 'mp' ? undefined : 'gp_solo_' + this.me().slice(0, 8); if (net.online) { net.join(G.room, MAPS.gp.netKey || 'gp', G.roomPublic); G.pushMeta(); }
     if (mode === 'bot') this.countdown([this.me(), 'bot']);
     else if (mode === 'solo') this.countdown([this.me()]);
