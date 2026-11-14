@@ -25,7 +25,7 @@ export const host = {
   },
   _bootLua(list) {
     const f = this.frame = document.createElement('iframe'); f.setAttribute('sandbox', 'allow-scripts'); f.style.display = 'none'; f.title = 'scripts';
-    f.srcdoc = '<!doctype html><meta charset="utf-8"><script src="' + VENDOR() + '"></script><script>(' + iframeBoot.toString() + ')()</script>';
+    f.srcdoc = '<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'unsafe-inline\' \'unsafe-eval\' ' + new URL(VENDOR()).origin + '">' + '<script src="' + VENDOR() + '"></script><script>(' + iframeBoot.toString() + ')()</script>';
     f.onload = () => f.contentWindow.postMessage({ __rvh: 1, op: 'boot', prelude: PRELUDE, scripts: list }, '*');
     document.body.appendChild(f);
   },
@@ -33,7 +33,8 @@ export const host = {
   _bootMod(m) {
     const f = document.createElement('iframe'); f.setAttribute('sandbox', 'allow-scripts'); f.title = m.n || 'mod'; f.className = 'rvmod';
     Object.assign(f.style, { position: 'fixed', inset: '0', width: '100%', height: '100%', border: '0', background: 'transparent', zIndex: 15, pointerEvents: m.interactive ? 'auto' : 'none' }); f.allowTransparency = 'true';
-    const api = '<script>(' + modApi.toString() + ')()</script>';
+    const csp = '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'unsafe-inline\' \'unsafe-eval\'; style-src \'unsafe-inline\'; img-src data: blob:; media-src data: blob:; font-src data:">'; // sem rede: mods da comunidade não conseguem rastrear ninguém
+    const api = csp + '<script>(' + modApi.toString() + ')()</script>';
     f.srcdoc = /<head[^>]*>/i.test(m.html) ? m.html.replace(/<head[^>]*>/i, (h) => h + api) : api + m.html;
     document.body.appendChild(f); this.mods.push({ f, m });
   },
@@ -70,7 +71,7 @@ export const host = {
     switch (n) {
       case 'toast': emit('toast', String(a[0]).slice(0, 120), typeof a[1] === 'string' ? a[1] : '#bfe6ff'); break;
       case 'banner': emit('banner', String(a[0]).slice(0, 80), Math.min(10, +a[1] || 3)); break;
-      case 'say': G.say(String(a[0]).slice(0, 80)); break;
+      case 'say': { const t = performance.now(); if (t - (this._sayT || -1e9) < 5000) break; this._sayT = t; G.say(String(a[0]).slice(0, 80)); break; } // no máximo 1 mensagem a cada 5 s
       case 'play': play(String(a[0]).replace(/[^a-z_0-9]/gi, ''), Math.min(1, +a[1] || 0.7)); break;
       case 'fx': G.fx.burst(+a[0], +a[1], +a[2], +a[3] | 0, Math.min(80, +a[4] || 20), 3, 2); break;
       case 'teleport': if ([a[0], a[1], a[2]].every(Number.isFinite)) P.teleport(a[0], a[1], a[2], P.yaw); break;
@@ -113,7 +114,7 @@ export const host = {
       case 'Visible': st.display = v ? (g.cls === 'ScreenGui' ? 'block' : 'flex') : 'none'; break;
       case 'Position': if (g.cls !== 'ScreenGui') { st.left = 'calc(' + v[0] * 100 + '% + ' + v[1] + 'px)'; st.top = 'calc(' + v[2] * 100 + '% + ' + v[3] + 'px)'; } break;
       case 'Size': if (g.cls !== 'ScreenGui') { st.width = 'calc(' + v[0] * 100 + '% + ' + v[1] + 'px)'; st.height = 'calc(' + v[2] * 100 + '% + ' + v[3] + 'px)'; } break;
-      case 'Image': if (g.cls === 'ImageLabel' && /^(data:image\/|https:\/\/)/.test(String(v))) { st.backgroundImage = 'url("' + String(v).replace(/"/g, '') + '")'; st.backgroundSize = 'contain'; st.backgroundRepeat = 'no-repeat'; st.backgroundPosition = 'center'; } break; } },
+      case 'Image': if (g.cls === 'ImageLabel' && /^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(String(v))) { st.backgroundImage = 'url("' + String(v).replace(/"/g, '') + '")'; st.backgroundSize = 'contain'; st.backgroundRepeat = 'no-repeat'; st.backgroundPosition = 'center'; } break; } },
   // ---------- a cada quadro ----------
   tick(dt) {
     if (!this.running || !this.G) return; const P = this.G.player, pp = P.pos, touch = [], pos = [];
