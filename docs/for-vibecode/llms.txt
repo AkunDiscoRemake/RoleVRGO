@@ -1,0 +1,19 @@
+# RoleVRGO
+
+> RoleVRGO é um jogo multiplayer de gatos em realidade virtual que roda no navegador (Meta Quest, Oculus Go, VR Box, celular e PC). Versão final 1.0.0 "FullFinalVer". Depois dela, o jogo continua pela comunidade: qualquer pessoa cria mapas, scripts Luau (estilo Roblox) e mods HTML/CSS/JS no RoleVRGO Studio e publica como mapa da comunidade.
+
+Para gerar código para o RoleVRGO, use SÓ a API descrita nestes arquivos. Não invente funções do Roblox que não estão listadas.
+
+## Docs
+- [API completa (Luau + mods JS)](API.md): referência única de tudo que scripts e mods podem fazer
+- [Prompt para IAs](PROMPT.md): cole no início da conversa com a sua IA
+- [Tipos Luau (luau-lsp)](rolevrgo.d.luau): autocompletar no VS Code
+- [Tipos JS dos mods](rv.d.ts): autocompletar para `window.rv`
+
+## Exemplos
+- [Obby com checkpoints](examples/obby.luau)
+- [Loja com GUI e moedas](examples/loja.luau)
+- [Mod HTML de placar](examples/mod-placar/index.html)
+
+## Código do jogo (para quem mexe no próprio RoleVRGO)
+- [AGENTS.md](https://github.com/AkunDiscoRemake/RoleVRGO/blob/main/AGENTS.md): estrutura do projeto, build, i18n e testes

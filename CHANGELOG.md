@@ -1,5 +1,47 @@
 # Changelog
 
+## 1.0.0 — FullFinalVer (versão final)
+
+**Esta é a última versão oficial do RoleVRGO.** Daqui em diante o jogo é da comunidade: mapas, minigames, scripts e mods feitos no **RoleVRGO Studio** e publicados para todo mundo.
+
+### 🛠 RoleVRGO Studio
+- **Botão novo na tela inicial**, antes de entrar no VR. O Studio abre um projeto com scripts de exemplo rodando e um painel lateral. **F2** mostra ou esconde o painel; no celular, use o botão 🛠.
+- **Scripts em Luau, no estilo Roblox:**
+  - classes: `Instance.new`, `Part` (`Touched`/`TouchEnded`, física simples), `Model`/`Folder`, valores, `Humanoid` (`Health`, `WalkSpeed`, `JumpPower`, `Died`);
+  - interface: `ScreenGui`/`Frame`/`TextLabel`/`TextButton`/`ImageLabel`;
+  - tipos de dados: `Vector3`, `Color3`, `UDim2`, `Enum`, `TweenInfo`;
+  - serviços: `RunService`, `UserInputService`, `TweenService`, `Debris`, `Lighting`, `Players`;
+  - agendador: `task.wait/spawn/delay`;
+  - extras `RoleVR.*`: avisos, sons, efeitos, os mais de 330 modelos da Kenney, NPCs, voo e céu;
+  - Luau suportado: tipos, `type`, `+=`, `continue` e strings com interpolação.
+- **Mods HTML/CSS/JS:** importe um **.zip** (`index.html` + css + js + imagens) ou arquivos soltos (`.html`, `.css`, `.js`, `.lua`). O mod vira uma página por cima do jogo, com a API `window.rv`.
+- **Poderes de desenvolvedor:** voar, velocidade, gravidade, hora do dia, moedas infinitas e definir o spawn. Tudo em sandbox, sem mexer no seu save.
+- **Projeto:**
+  - exportar e importar `.zip`;
+  - salvar privado;
+  - **publicar para a comunidade**: quem entrar no seu mapa roda seus scripts e mods.
+- **Segurança:** scripts e mods rodam em iframes isolados, **sem rede** e sem acesso à conta, ao login ou ao save. O chat por script é limitado a 1 mensagem a cada 5 s. Imagens só embutidas.
+
+### ➕ Rastreamento pelo "+" desenhado em papel
+- Menu > ⚙ Config > **➕ Marcador + na câmera**, com tamanho do "+" (10–50 cm) e **↺ Calibrar**.
+- **Qualquer estilo de "+":** grosso, fino, caneta colorida, lápis claro, vazado, girado ou em "×", feito à mão, claro em papel escuro, com o papel inclinado e no meio de rabiscos. Círculos, quadrados, traços, "T", "L", estrelas e texto são ignorados (22 de 22 nos testes).
+- **VR Box, celular e PC:** andar, chegar perto e se afastar do papel move o gato. No teste, um movimento real de 40 cm para a frente e 30 cm para o lado virou 35 e 28 cm.
+- **Meta Quest:** o Quest já rastreia a posição. Se o navegador liberar a câmera, o "+" vira uma âncora que mantém o mundo alinhado ao papel.
+
+### 📖 Documentação e versões para IAs
+- **Docs:** `/docs/`, com guia do Studio, referência completa da API e guia do marcador.
+- **For-VibeCode** (`/docs/for-vibecode/`):
+  - `API.md`: referência num arquivo só;
+  - `PROMPT.md`: para colar no ChatGPT, Claude, Gemini ou Cursor;
+  - `llms.txt`;
+  - tipos `rolevrgo.d.luau` (luau-lsp) e `rv.d.ts`;
+  - exemplos: obby, loja e mod de placar.
+- **`AGENTS.md`:** guia para IAs que forem mexer no código do jogo.
+
+### 🐛 Correções e ajustes
+- **Relâmpagos bem mais raros e suaves:** a cada 1,5–3 min (antes 9–25 s), com clarão mais fraco.
+- Abrir o modo de corrida fora do Grande Prêmio não quebra mais o jogo. O erro foi achado num teste automático de 1.260 cliques aleatórios em 10 mapas, que não encontrou outros erros.
+
 ## 0.0.9 — Lua, minigolfe, festival e celular sem óculos
 
 ### 📱 Jogar no celular sem VR Box

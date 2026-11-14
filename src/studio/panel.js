@@ -136,7 +136,7 @@ export const studio = {
     const el = this.el; if (!el) return; const h = this.h.bind(this), m = this.map() || { scripts: [], mods: [] }; const ta = el.querySelector('textarea'); const caret = ta ? [ta.selectionStart, ta.scrollTop] : null; el.innerHTML = '';
     el.appendChild(h('div', { class: 'bar' }, [h('button', { class: 'g tg', text: el.classList.contains('min') ? '🛠 Studio' : '🛠 —', on: { click: () => { el.classList.toggle('min'); this.render(); } } }),
       host.running ? h('button', { class: 's', text: '⏹ Parar', on: { click: () => this.stopRun() } }) : h('button', { class: 'r', text: '▶ Rodar', on: { click: () => this.run() } }),
-      h('button', { class: maker.editing ? 'on' : 'g', text: maker.editing ? '✎ Editando mapa' : '✎ Editar mapa', on: { click: () => { host.stop(); maker.setEditing(!maker.editing); if (maker.editing) emit('toast', 'Edição: abra o menu (M/B) > Criador para escolher modelos; aponte e clique para colocar', '#bfe6ff'); this.render(); } } }),
+      h('button', { class: maker.editing ? 'on' : 'g', text: maker.editing ? '✎ Editando mapa' : '✎ Editar mapa', on: { click: () => { host.stop(); maker.setEditing(!maker.editing); if (maker.editing) emit('toast', 'Edição: abra o menu (M) > 🛠 Criar para escolher modelos; aponte e clique para colocar', '#bfe6ff'); this.render(); } } }),
       h('button', { class: 'g', text: '📖 API', on: { click: () => window.open('docs/', '_blank', 'noopener') } })]));
     const tabs = [['scripts', '📜 Scripts'], ['mods', '🧩 Mods'], ['out', '🖨 Saída'], ['pw', '⚡ Poderes'], ['proj', '📦 Projeto']];
     el.appendChild(h('div', { class: 'tabs' }, tabs.map(([k, n]) => h('button', { class: this.tab === k ? 'on' : '', text: n, on: { click: () => { this.tab = k; this.render(); } } }))));
@@ -174,7 +174,7 @@ export const studio = {
       pg.appendChild(rng('🏃 Velocidade ' + w.speed.toFixed(1) + 'x', 0.2, 6, 0.1, w.speed, (v) => { w.speed = v; P.scriptWalk = v; }));
       pg.appendChild(rng('🪐 Gravidade ' + w.grav.toFixed(2) + 'x', 0, 3, 0.05, w.grav, (v) => { w.grav = v; G.scriptGrav = v; }));
       pg.appendChild(rng('🕒 Hora do dia ' + (w.time == null ? 'real' : w.time.toFixed(1) + 'h'), 0, 24, 0.25, w.time == null ? 12 : w.time, (v) => { w.time = v; G.scriptTime = v; }));
-      pg.appendChild(h('small', { text: 'Céu, chão, água, tamanho do mapa e todos os modelos ficam no criador de mapas (✎ Editar mapa > menu > Criador). Scripts também podem mudar tudo pela API.' }));
+      pg.appendChild(h('small', { text: 'Céu, chão, água, tamanho do mapa e todos os modelos ficam no criador de mapas (✎ Editar mapa > menu > 🛠 Criar). Scripts também podem mudar tudo pela API.' }));
     } else if (this.tab === 'proj') {
       const imp = h('input', { type: 'file', accept: '.zip,.json', style: 'display:none' }); imp.addEventListener('change', () => this.importProject(imp.files[0])); pg.appendChild(imp);
       pg.appendChild(h('div', { class: 'row' }, [h('span', { text: '📦 ' + (m.name || 'Projeto') + ' · ' + (m.objs ? m.objs.length : 0) + ' objetos · ' + m.scripts.length + ' scripts · ' + m.mods.length + ' mods' })]));
@@ -183,7 +183,7 @@ export const studio = {
         h('button', { class: 's', text: '🆕 Novo projeto', on: { click: () => { if (!confirm('Começar um projeto novo? (exporte antes se quiser guardar)')) return; store.set('studioDraft', null); host.stop(); const nm = maker.blank('Meu jogo no Studio'); nm.scripts = []; nm.mods = []; maker.open(this.G, nm, null, true, false); this.render(); } } })]));
       pg.appendChild(h('div', { class: 'row' }, [h('button', { class: 'r', text: '🌍 Publicar para a comunidade', on: { click: async () => { this.save(); const r = await maker.save(true); emit('toast', r, /^(Publicado|Salvo)/.test(r) ? '#9cf09c' : '#ff9a8a'); this.render(); } } }),
         h('button', { class: 'g', text: '💾 Salvar (privado)', on: { click: async () => { this.save(); const r = await maker.save(false); emit('toast', r, /^(Publicado|Salvo)/.test(r) ? '#9cf09c' : '#ff9a8a'); } } })]));
-      pg.appendChild(h('small', { text: 'Publicado, o mapa aparece no menu > Criador > Mapas da comunidade. Quem entrar roda seus scripts e mods isolados (sem acesso à conta). Limite: 900 KB por projeto.' + (maker.id ? '  Código: ' + maker.id : '') }));
+      pg.appendChild(h('small', { text: 'Publicado, o mapa aparece no menu > 🛠 Criar > 🌍 Comunidade. Quem entrar roda seus scripts e mods isolados (sem acesso à conta). Limite: 900 KB por projeto.' + (maker.id ? '  Código: ' + maker.id : '') }));
     }
   },
   async importFiles(fl) {

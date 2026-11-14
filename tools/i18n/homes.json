@@ -3433,5 +3433,90 @@
   "😇 ANGEL CAT (level 100): at level 100 you become an Angel Cat with flapping wings, a halo and Keyboard Cat's keyboard, in his honor. You get the Celestial Axe, Sword and Pickaxe and 999 Quality treats. You can turn it off in the lobby before starting.",
   "😇 GATO ÁNGEL (nivel 100): al llegar al nivel 100 te conviertes en un Gato Ángel con alas que aletean, aureola y el teclado de Keyboard Cat, en su honor. Ganas Hacha, Espada y Pico Celestiales y 999 Golosinas de buena calidad. Se puede desactivar en el lobby antes de empezar.",
   "😇 КОТ-АНГЕЛ (100 уровень): на 100 уровне ты становишься Котом-Ангелом с машущими крыльями, нимбом и клавишами Keyboard Cat — в его честь. Получаешь Небесные топор, меч и кирку и 999 качественных лакомств. Можно выключить в лобби перед началом."
+ ],
+ "🏁 1.0.0 FULLFINALVER, a versão final! Novo RoleVRGO Studio (botão na tela inicial): scripts em Luau no estilo Roblox, mods HTML/CSS/JS por .zip e publicação como mapa da comunidade. Daqui em diante o jogo cresce com o que vocês criarem. ➕ Novo: desenhe um + num papel e a câmera rastreia o seu movimento (VR Box, celular, PC; âncora no Quest). Relâmpagos bem mais raros.": [
+  "🏁 1.0.0 FULLFINALVER, the final version! New RoleVRGO Studio (button on the start screen): Roblox-style Luau scripts, HTML/CSS/JS mods via .zip and publishing as a community map. From now on the game grows with what you create. ➕ New: draw a + on paper and the camera tracks your movement (VR Box, phone, PC; anchor on Quest). Lightning is much rarer.",
+  "🏁 1.0.0 FULLFINALVER, ¡la versión final! Nuevo RoleVRGO Studio (botón en la pantalla inicial): scripts en Luau estilo Roblox, mods HTML/CSS/JS por .zip y publicación como mapa de la comunidad. A partir de ahora el juego crece con lo que ustedes creen. ➕ Nuevo: dibuja un + en un papel y la cámara rastrea tu movimiento (VR Box, móvil, PC; ancla en Quest). Rayos mucho más raros.",
+  "🏁 1.0.0 FULLFINALVER — финальная версия! Новый RoleVRGO Studio (кнопка на стартовом экране): скрипты на Luau в стиле Roblox, моды HTML/CSS/JS через .zip и публикация как карта сообщества. Дальше игра растёт благодаря тому, что создадите вы. ➕ Новое: нарисуй + на бумаге, и камера отследит твоё движение (VR Box, телефон, ПК; якорь на Quest). Молнии теперь гораздо реже."
+ ],
+ "desligado": [
+  "off",
+  "apagado",
+  "выкл"
+ ],
+ "abrindo câmera...": [
+  "opening camera...",
+  "abriendo cámara...",
+  "открываю камеру..."
+ ],
+ "procurando o +...": [
+  "looking for the +...",
+  "buscando el +...",
+  "ищу +..."
+ ],
+ "vendo o + a ": [
+  "seeing the + at ",
+  "viendo el + a ",
+  "вижу + на "
+ ],
+ "sem câmera neste navegador": [
+  "no camera in this browser",
+  "sin cámara en este navegador",
+  "нет камеры в этом браузере"
+ ],
+ "Este navegador não libera a câmera": [
+  "This browser does not allow the camera",
+  "Este navegador no permite la cámara",
+  "Этот браузер не даёт доступ к камере"
+ ],
+ "permissão da câmera negada": [
+  "camera permission denied",
+  "permiso de cámara denegado",
+  "доступ к камере запрещён"
+ ],
+ "câmera indisponível": [
+  "camera unavailable",
+  "cámara no disponible",
+  "камера недоступна"
+ ],
+ "Não foi possível abrir a câmera (": [
+  "Could not open the camera (",
+  "No se pudo abrir la cámara (",
+  "Не удалось открыть камеру ("
+ ],
+ "➕ Câmera ligada: aponte para o + desenhado no papel": [
+  "➕ Camera on: point at the + drawn on paper",
+  "➕ Cámara encendida: apunta al + dibujado en el papel",
+  "➕ Камера включена: наведи на + на бумаге"
+ ],
+ "➕ Calibrado: este é o novo ponto de partida": [
+  "➕ Calibrated: this is the new starting point",
+  "➕ Calibrado: este es el nuevo punto de partida",
+  "➕ Откалибровано: это новая точка отсчёта"
+ ],
+ "➕ Âncora fixada no papel": [
+  "➕ Anchor locked to the paper",
+  "➕ Ancla fijada en el papel",
+  "➕ Якорь закреплён на бумаге"
+ ],
+ "➕ Marcador + na câmera: ": [
+  "➕ Camera + marker: ",
+  "➕ Marcador + en la cámara: ",
+  "➕ Метка + в камере: "
+ ],
+ "Tamanho: ": [
+  "Size: ",
+  "Tamaño: ",
+  "Размер: "
+ ],
+ "↺ Calibrar +": [
+  "↺ Calibrate +",
+  "↺ Calibrar +",
+  "↺ Калибровать +"
+ ],
+ "🧩 Este mapa tem scripts da comunidade (rodando isolados, sem acesso à sua conta)": [
+  "🧩 This map has community scripts (running isolated, with no access to your account)",
+  "🧩 Este mapa tiene scripts de la comunidad (aislados, sin acceso a tu cuenta)",
+  "🧩 На этой карте есть скрипты сообщества (изолированы, без доступа к аккаунту)"
  ]
 }

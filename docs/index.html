@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RoleVRGO Docs</title>
+<meta name="description" content="Documentação do RoleVRGO 1.0.0 FullFinalVer: Studio, API Luau estilo Roblox, mods HTML/CSS/JS, marcador + e versões para IAs.">
+<style>
+:root{--bg:#f7f6fb;--fg:#1d1b2e;--mut:#5d5a78;--card:#fff;--line:#e3e0f0;--acc:#5b3fd0;--acc2:#c9871a;--code:#f0eef8;--codefg:#2a2350}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#12111f;--fg:#ecebf7;--mut:#a9a6c6;--card:#1b1a2e;--line:#2d2b47;--acc:#a993ff;--acc2:#ffcf6a;--code:#0d0c19;--codefg:#d8d2ff}}
+:root[data-theme=dark]{--bg:#12111f;--fg:#ecebf7;--mut:#a9a6c6;--card:#1b1a2e;--line:#2d2b47;--acc:#a993ff;--acc2:#ffcf6a;--code:#0d0c19;--codefg:#d8d2ff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+a{color:var(--acc)}header{padding:48px 16px 24px;text-align:center;border-bottom:1px solid var(--line)}
+header h1{font-size:clamp(34px,7vw,56px);margin:0;letter-spacing:-.02em}header h1 b{color:var(--acc2)}header p{color:var(--mut);margin:8px auto 0;max-width:640px}
+.badge{display:inline-block;background:var(--acc);color:#fff;border-radius:999px;padding:4px 12px;font:700 13px system-ui;margin-bottom:14px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);display:flex;gap:4px;overflow-x:auto;padding:8px 16px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--fg);padding:6px 12px;border-radius:8px;font-weight:600;font-size:14px}nav a:hover{background:var(--code)}
+main{max-width:880px;margin:0 auto;padding:16px}section{padding:24px 0;border-bottom:1px solid var(--line)}h2{font-size:28px;margin:8px 0 12px}h3{margin:22px 0 8px}h4{margin:16px 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}.card b{display:block;margin-bottom:4px}
+code{background:var(--code);color:var(--codefg);border-radius:5px;padding:1px 5px;font:14px ui-monospace,Menlo,Consolas,monospace}pre{background:var(--code);color:var(--codefg);border-radius:12px;padding:14px;overflow:auto;font:13.5px/1.5 ui-monospace,Menlo,Consolas,monospace}pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14.5px;display:block;overflow-x:auto}th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}th{background:var(--code)}
+blockquote{margin:10px 0;padding:8px 14px;border-left:4px solid var(--acc2);background:var(--card);border-radius:0 10px 10px 0;color:var(--mut)}
+.plus{font-size:96px;line-height:1;text-align:center;font-weight:900}.muted{color:var(--mut)}.btn{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:10px 16px;border-radius:10px;font-weight:700;margin:4px 6px 4px 0}
+footer{text-align:center;color:var(--mut);padding:30px 16px;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <div class="badge">1.0.0 · FullFinalVer</div>
+  <h1>Role<b>VR</b>GO Docs</h1>
+  <p>Tudo para criar no RoleVRGO: o Studio, a API em Luau no estilo Roblox, mods HTML/CSS/JS, o rastreamento pelo "+" no papel e uma versão destes documentos feita para IAs.</p>
+  <p><a class="btn" href="../">🎮 Abrir o jogo</a><a class="btn" href="for-vibecode/llms.txt">🤖 For-VibeCode</a></p>
+</header>
+<nav><a href="#comecar">Começar</a><a href="#studio">Studio</a><a href="#api">API</a><a href="#marcador">Marcador +</a><a href="#ia">Para IAs</a><a href="#final">FullFinalVer</a></nav>
+<main>
+<section id="comecar">
+  <h2>Começar em 2 minutos</h2>
+  <ol>
+    <li>Abra o <a href="../">jogo</a> no PC ou no celular.</li>
+    <li>Na tela inicial, clique em <b>🛠 RoleVRGO Studio</b>.</li>
+    <li>O Studio já abre com um script de exemplo rodando. Na aba <b>📜 Scripts</b>, escolha outro em <b>📚 Exemplos</b> e aperte <b>▶ Rodar</b> (ou Ctrl+Enter).</li>
+    <li>Para montar o cenário, use <b>✎ Editar mapa</b>: são as ferramentas do criador de mapas, com mais de 330 modelos.</li>
+    <li>Quando estiver pronto, vá em <b>📦 Projeto</b> &gt; <b>🌍 Publicar para a comunidade</b>.</li>
+  </ol>
+  <div class="grid">
+    <div class="card"><b>📜 Scripts Luau</b>Código no estilo Roblox: <code>Instance.new("Part")</code>, <code>Touched:Connect</code>, <code>TweenService</code>, GUI...</div>
+    <div class="card"><b>🧩 Mods HTML/CSS/JS</b>Importe um .zip (ou arquivos soltos). Vira uma página por cima do jogo, com a API <code>window.rv</code>.</div>
+    <div class="card"><b>⚡ Poderes</b>Voar, velocidade, gravidade, hora do dia e moedas infinitas. Tudo em sandbox, sem mexer no seu save.</div>
+    <div class="card"><b>🌍 Comunidade</b>Mapas publicados aparecem para todos. Os scripts rodam isolados, sem acesso à conta de ninguém.</div>
+  </div>
+</section>
+<section id="studio">
+  <h2>O Studio</h2>
+  <p>O painel fica à direita. <b>F2</b> mostra ou esconde, e no celular use o botão <b>🛠</b>.</p>
+  <table><tr><th>Aba</th><th>Para quê</th></tr>
+    <tr><td>📜 Scripts</td><td>criar, renomear, pausar e apagar scripts; editor com Tab e Ctrl+Enter; exemplos prontos</td></tr>
+    <tr><td>🧩 Mods</td><td>importar <code>.zip .html .css .js .lua .luau</code> e imagens/sons; marcar como "clicável" ou "só visual"</td></tr>
+    <tr><td>🖨 Saída</td><td><code>print</code>, <code>warn</code> e erros dos scripts</td></tr>
+    <tr><td>⚡ Poderes</td><td>voar, velocidade, gravidade, hora, moedas infinitas, ir para o spawn, definir o spawn</td></tr>
+    <tr><td>📦 Projeto</td><td>renomear, exportar/importar <code>.zip</code>, salvar privado, publicar, projeto novo</td></tr>
+  </table>
+  <blockquote>Os scripts rodam no aparelho de cada jogador (como LocalScripts do Roblox). Ainda não há servidor de script, RemoteEvents nem dados salvos por script.</blockquote>
+</section>
+<section id="api">
+  <h2>Referência da API</h2>
+  <p class="muted">Esta seção é carregada de <a href="for-vibecode/API.md">for-vibecode/API.md</a>, o mesmo arquivo que as IAs leem.</p>
+  <div id="apiDoc"><p>Carregando…</p></div>
+</section>
+<section id="marcador">
+  <h2>➕ Rastreamento pelo "+" no papel</h2>
+  <div class="plus">+</div>
+  <p>Desenhe um <b>+</b> numa folha (qualquer estilo: caneta, lápis, canetinha colorida, grosso ou fino, vazado, torto, até um <b>×</b>) e cole na parede ou deixe na mesa, na frente de onde você vai jogar.</p>
+  <ol>
+    <li>No jogo: <b>Menu &gt; Config &gt; ➕ Marcador + na câmera</b> (o navegador pede a câmera).</li>
+    <li>Em <b>Tamanho</b>, escolha o tamanho real do seu "+" de ponta a ponta: 10, 15, 20, 30 ou 50 cm. Um "+" de 20 cm numa folha A4 funciona bem a 1–2 m.</li>
+    <li>Olhe para o papel. Quando o jogo achar o "+", o botão mostra a distância. <b>↺ Calibrar +</b> zera o ponto de partida.</li>
+  </ol>
+  <table><tr><th>Aparelho</th><th>O que o "+" faz</th></tr>
+    <tr><td>VR Box / celular</td><td>usa a câmera traseira. Andar, chegar perto e se afastar do papel move o gato (posição de verdade em um aparelho que só tem giroscópio)</td></tr>
+    <tr><td>PC com webcam</td><td>igual ao celular, com a webcam</td></tr>
+    <tr><td>Meta Quest</td><td>o Quest já rastreia a posição sozinho. Se o navegador do Quest liberar a câmera, o "+" vira uma <b>âncora</b>: o mundo fica alinhado ao papel e a deriva é corrigida aos poucos</td></tr>
+    <tr><td>Oculus Go</td><td>não tem câmera, então o marcador não está disponível</td></tr>
+  </table>
+  <p class="muted">Dicas: boa luz, papel claro e o "+" inteiro dentro da imagem. A detecção roda a 20 vezes por segundo e procura quatro braços a 90°, então funciona com qualquer cor e mesmo com o papel inclinado. Círculos, quadrados, traços, "T", "L" e texto são ignorados.</p>
+</section>
+<section id="ia">
+  <h2>🤖 For-VibeCode: versões para IAs</h2>
+  <p>Arquivos feitos para colar ou anexar no ChatGPT, Claude, Gemini, Cursor ou Copilot e gerar scripts e mods corretos:</p>
+  <div class="grid">
+    <div class="card"><b><a href="for-vibecode/PROMPT.md">PROMPT.md</a></b>Instruções para colar no início da conversa, com as regras e o resumo da API.</div>
+    <div class="card"><b><a href="for-vibecode/API.md">API.md</a></b>Referência completa num arquivo só.</div>
+    <div class="card"><b><a href="for-vibecode/llms.txt">llms.txt</a></b>Índice no padrão <code>llms.txt</code>, para ferramentas que leem sites.</div>
+    <div class="card"><b><a href="for-vibecode/rolevrgo.d.luau">rolevrgo.d.luau</a> · <a href="for-vibecode/rv.d.ts">rv.d.ts</a></b>Tipos para autocompletar (luau-lsp e TypeScript).</div>
+    <div class="card"><b>Exemplos</b><a href="for-vibecode/examples/obby.luau">obby.luau</a> · <a href="for-vibecode/examples/loja.luau">loja.luau</a> · <a href="for-vibecode/examples/mod-placar/index.html">mod-placar</a></div>
+    <div class="card"><b><a href="https://github.com/AkunDiscoRemake/RoleVRGO/blob/main/AGENTS.md">AGENTS.md</a></b>Para IAs que vão mexer no código do próprio jogo.</div>
+  </div>
+</section>
+<section id="final">
+  <h2>1.0.0 · FullFinalVer</h2>
+  <p>Esta é a <b>última versão oficial</b> do RoleVRGO. Daqui em diante o jogo cresce pela comunidade: mapas, minigames e mods feitos no Studio e publicados para todo mundo jogar. O <a href="https://github.com/AkunDiscoRemake/RoleVRGO">código</a> continua aberto.</p>
+  <p class="muted">Criado por hark · programado com Claude (Anthropic) · modelos e sons: Kenney.nl (CC0) · Lua no navegador: fengari (MIT).</p>
+</section>
+</main>
+<footer>RoleVRGO Docs · <a href="../">jogar</a> · <a href="../lancamento/">lançamento</a></footer>
+<script>
+// mini renderizador de Markdown (títulos, listas, tabelas, código, citações, negrito, código inline, links)
+function md(src) {
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const inl = (s) => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  const L = src.split('\n'), out = []; let i = 0;
+  while (i < L.length) { const l = L[i];
+    if (/^```/.test(l)) { const buf = []; i++; while (i < L.length && !/^```/.test(L[i])) buf.push(L[i++]); i++; out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>'); continue; }
+    let m;
+    if ((m = l.match(/^(#{1,4})\s+(.*)/))) { const lv = Math.min(4, m[1].length + 1); out.push('<h' + lv + '>' + inl(m[2]) + '</h' + lv + '>'); i++; continue; }
+    if (/^\|/.test(l)) { const rows = []; while (i < L.length && /^\|/.test(L[i])) rows.push(L[i++]); const cells = (r) => r.replace(/^\||\|$/g, '').split(/(?<!\\)\|/).map((c) => c.trim());
+      let h = '<table><tr>' + cells(rows[0]).map((c) => '<th>' + inl(c) + '</th>').join('') + '</tr>'; for (const r of rows.slice(2)) h += '<tr>' + cells(r).map((c) => '<td>' + inl(c) + '</td>').join('') + '</tr>'; out.push(h + '</table>'); continue; }
+    if (/^>\s?/.test(l)) { const buf = []; while (i < L.length && /^>\s?/.test(L[i])) buf.push(L[i++].replace(/^>\s?/, '')); out.push('<blockquote>' + inl(buf.join(' ')) + '</blockquote>'); continue; }
+    if (/^\s*[-*]\s+/.test(l)) { const buf = []; while (i < L.length && /^\s*[-*]\s+/.test(L[i])) buf.push('<li>' + inl(L[i++].replace(/^\s*[-*]\s+/, '')) + '</li>'); out.push('<ul>' + buf.join('') + '</ul>'); continue; }
+    if (/^\d+\.\s+/.test(l)) { const buf = []; while (i < L.length && /^\d+\.\s+/.test(L[i])) buf.push('<li>' + inl(L[i++].replace(/^\d+\.\s+/, '')) + '</li>'); out.push('<ol>' + buf.join('') + '</ol>'); continue; }
+    if (/^---+\s*$/.test(l) || !l.trim()) { i++; continue; }
+    const buf = []; while (i < L.length && L[i].trim() && !/^(#|```|\||>|\s*[-*]\s|\d+\.\s|---)/.test(L[i])) buf.push(L[i++]); out.push('<p>' + inl(buf.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+fetch('for-vibecode/API.md').then((r) => r.text()).then((t) => { document.getElementById('apiDoc').innerHTML = md(t.replace(/^# .*\n/, '')); }).catch(() => { document.getElementById('apiDoc').innerHTML = '<p>Abra <a href="for-vibecode/API.md">API.md</a>.</p>'; });
+</script>
+</body>
+</html>

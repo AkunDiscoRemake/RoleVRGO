@@ -61,7 +61,7 @@ export const host = {
       case 'set': { const p = this.parts.get(d.id); const val = this._val(d.t, d.v); if (p && !p.light) this._setPart(p, d.k, val); else if (this.gui.has(d.id)) this._setGui(this.gui.get(d.id), d.k, val); break; }
       case 'parent': { const g = this.gui.get(d.id); if (g) { const par = this.gui.get(d.v); (par ? par.el : this._root()).appendChild(g.el); } break; }
       case 'del': { const p = this.parts.get(d.id); if (p) { this._dropPart(p); this.parts.delete(d.id); } const g = this.gui.get(d.id); if (g) { g.el.remove(); this.gui.delete(d.id); } const x = this.extra.find((e) => e.userData.sid === d.id); if (x) { x.parent && x.parent.remove(x); } break; }
-      case 'sound': play(/^[a-z_]+$/i.test(d.k) ? d.k : 'pop', Math.min(1, +d.v || 0.6)); break;
+      case 'sound': play(/^[a-z_]+$/i.test(d.k) ? d.k : 'click', Math.min(1, +d.v || 0.6)); break;
       case 'api': this._api(d.id, d.v || [], mod); break;
       case 'interactive': if (mod) mod.f.style.pointerEvents = d.v ? 'auto' : 'none'; break;
     }
@@ -108,10 +108,10 @@ export const host = {
     if (cls === 'ScreenGui') Object.assign(el.style, { inset: '0', background: 'transparent', display: 'block' }); else { el.style.background = 'rgb(33,31,51)'; el.style.color = '#fff'; el.style.left = '0px'; el.style.top = '0px'; el.style.width = '200px'; el.style.height = '50px'; }
     if (cls === 'TextButton') { el.style.pointerEvents = 'auto'; el.style.cursor = 'pointer'; el.onclick = (e) => { e.stopPropagation(); this._send({ op: 'gui', a: id }); }; }
     const par = this.gui.get(parentId); (par ? par.el : this._root()).appendChild(el); this.gui.set(id, g); },
-  _setGui(g, k, v) { if (g.cls === 'ScreenGui' && k !== 'Visible') return; const st = g.el.style, col = (c) => 'rgb(' + Math.round(c.r * 255) + ',' + Math.round(c.g * 255) + ',' + Math.round(c.b * 255) + ')';
+  _setGui(g, k, v) { if (g.cls === 'ScreenGui' && k !== 'Visible' && k !== 'Enabled') return; const st = g.el.style, col = (c) => 'rgb(' + Math.round(c.r * 255) + ',' + Math.round(c.g * 255) + ',' + Math.round(c.b * 255) + ')';
     switch (k) { case 'Text': g.el.textContent = String(v).slice(0, 400); break; case 'TextSize': st.fontSize = Math.max(6, Math.min(120, +v)) + 'px'; break; case 'TextColor3': st.color = col(v); break;
       case 'BackgroundColor3': g.bg = col(v); st.background = g.bg; break; case 'BackgroundTransparency': st.background = v >= 1 ? 'transparent' : g.bg || 'rgb(33,31,51)'; if (v > 0 && v < 1) st.opacity = 1 - v * 0.5; break;
-      case 'Visible': st.display = v ? (g.cls === 'ScreenGui' ? 'block' : 'flex') : 'none'; break;
+      case 'Enabled': case 'Visible': st.display = v ? (g.cls === 'ScreenGui' ? 'block' : 'flex') : 'none'; break;
       case 'Position': if (g.cls !== 'ScreenGui') { st.left = 'calc(' + v[0] * 100 + '% + ' + v[1] + 'px)'; st.top = 'calc(' + v[2] * 100 + '% + ' + v[3] + 'px)'; } break;
       case 'Size': if (g.cls !== 'ScreenGui') { st.width = 'calc(' + v[0] * 100 + '% + ' + v[1] + 'px)'; st.height = 'calc(' + v[2] * 100 + '% + ' + v[3] + 'px)'; } break;
       case 'Image': if (g.cls === 'ImageLabel' && /^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(String(v))) { st.backgroundImage = 'url("' + String(v).replace(/"/g, '') + '")'; st.backgroundSize = 'contain'; st.backgroundRepeat = 'no-repeat'; st.backgroundPosition = 'center'; } break; } },

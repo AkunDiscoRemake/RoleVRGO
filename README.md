@@ -1,10 +1,27 @@
-# RoleVRGO 🐱🥽 (0.0.5)
+# RoleVRGO 🐱🥽 (1.0.0 FullFinalVer)
 
-Mundo multiplayer VR de gatos feito para **Oculus Go** (WebXR, controle 3DoF) e **Meta Quest** (controles 6DoF e rastreamento de mãos): Gorilla Locomotion, luta PvP, mineração, pesca, missões, roleplay com idades (adulto, adolescente, filhote), casas customizáveis com 53 móveis e visitas, pega-pega Infecção Nuclear ☢️ (bots ou multiplayer), montarias, profissões com lojinhas, clima dinâmico, chat de voz e 18 mapas (incluindo Ilhas do Céu, Vulcão Ardente e Neon City). Também roda no navegador do computador (teclado + mouse).
+> **Versão final.** A 1.0.0 "FullFinalVer" é a última versão oficial. Daqui em diante o RoleVRGO é mantido pela **comunidade**: mapas, minigames, scripts Luau (estilo Roblox) e mods HTML/CSS/JS feitos no **RoleVRGO Studio** e publicados para todos. Documentação: https://akundiscoremake.github.io/RoleVRGO/docs/ · versão para IAs: [docs/for-vibecode](docs/for-vibecode/) · guia para quem mexe no motor: [AGENTS.md](AGENTS.md)
+
+Mundo multiplayer VR de gatos feito para **Oculus Go** (WebXR, controle 3DoF) e **Meta Quest** (controles 6DoF e rastreamento de mãos): Gorilla Locomotion, luta PvP, mineração, pesca, missões, roleplay com idades (adulto, adolescente, filhote), casas customizáveis com 53 móveis e visitas, pega-pega Infecção Nuclear ☢️ (bots ou multiplayer), montarias, profissões com lojinhas, clima dinâmico, chat de voz, 22 mapas (incluindo Base Lunar, Minigolfe, Festival da Comida e Grande Prêmio), Studio com scripts e mods, rastreamento por um "+" desenhado em papel e controles de toque no celular. Também roda no navegador do computador (teclado + mouse).
 
 **Jogar:** https://akundiscoremake.github.io/RoleVRGO/ · **Página de lançamento:** https://akundiscoremake.github.io/RoleVRGO/lancamento/ · **Novidades:** [CHANGELOG.md](CHANGELOG.md) · **Guia de testes:** [BETA.md](BETA.md)
 
 Também funciona em **VR Box / Cardboard** (tela dividida + sensor do celular), com **rastreamento de mãos pela câmera (MediaPipe)** opcional e **Joy-Cons/gamepads** (sem usar o giroscópio do controle).
+
+## 🛠 RoleVRGO Studio (1.0.0)
+
+Botão **🛠 RoleVRGO Studio** na tela inicial. Tudo roda em sandbox (não mexe no seu save):
+
+- **Scripts Luau no estilo Roblox:** `Instance.new("Part")`, `Touched:Connect`, `TweenService`, `UserInputService`, `ScreenGui`/`TextButton`, `Humanoid`, `task.wait`... Roda sobre o [fengari](https://github.com/fengari-lua/fengari-web) (Lua 5.3, MIT), com conversão de Luau (tipos, `+=`, `continue` e interpolação).
+- **Mods HTML/CSS/JS:** importe um `.zip` ou arquivos soltos; vira uma página por cima do jogo com a API `window.rv`.
+- **Poderes de desenvolvedor**, **exportar/importar** projeto e **publicar** como mapa da comunidade (quem entra roda os scripts isolados).
+- Segurança: scripts e mods rodam em iframes `sandbox` sem origem e sem rede (CSP), sem acesso à conta, ao login ou ao save.
+
+Documentação completa em [`docs/`](docs/) e, para IAs, em [`docs/for-vibecode/`](docs/for-vibecode/) (`API.md`, `PROMPT.md`, `llms.txt`, tipos `.d.luau`/`.d.ts` e exemplos).
+
+## ➕ Rastreamento pelo "+" no papel
+
+Menu > ⚙ Config > **➕ Marcador + na câmera**. Desenhe um "+" (qualquer estilo) numa folha. No **VR Box/celular/PC**, andar em relação ao papel move o gato; no **Meta Quest** (se o navegador liberar a câmera), o "+" vira âncora contra a deriva. Detector próprio, sem bibliotecas (`src/plusdetect.js`).
 
 ## Idiomas
 
