@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.0.6 — Grande Prêmio Arco-Íris
+
+### 🏁 Novo mapa de corrida
+- **Grande Prêmio Arco-Íris:** circuito fechado de 2 voltas, com zebras coloridas, arcos-íris, rampas de turbo, arquibancada e a mecânica Faísca. O portal fica na vila.
+- **Contra o bot**, em 5 dificuldades. Todas dá para vencer:
+
+  | Dificuldade | Montaria do bot | Prêmio |
+  |---|---|---|
+  | Fácil | Gatão | 20 moedas |
+  | Normal | Skate Aero | 40 moedas |
+  | Difícil | Tigre | 70 moedas |
+  | Extremo | Pantera Neon | 110 moedas |
+  | Impossível | Dragãozinho | 180 moedas |
+
+  - O Impossível corre só um pouco acima da velocidade máxima de uma montaria. Usando as rampas de turbo e fazendo boas curvas, dá para ganhar.
+  - O bot alivia quando abre mais de um quarto de volta de vantagem.
+- **Contra jogadores:** todo mundo no mapa escolhe "Contra jogadores" e alguém aperta Largar.
+  - Há contagem sincronizada, grid de largada e colocação ao vivo (1º, 2º...).
+  - Os prêmios vão de 60 a 10 moedas, conforme a colocação.
+- **Treino livre:** corrida sozinho, contra o relógio.
+- **Conquistas novas:** primeira vitória contra o bot, vencer o Impossível e vencer outros jogadores.
+
 ## 0.0.5 — Moderação (atualização)
 
 ### 🛡️ Banimentos e denúncias

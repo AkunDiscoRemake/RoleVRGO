@@ -19,7 +19,7 @@ export const MOUNT_BY = {}; for (const m of MOUNTS) MOUNT_BY[m.id] = m;
 function mat(c, e) { return new THREE.MeshLambertMaterial({ color: c, emissive: e || 0x000000 }); }
 function bx(g, w, h, d, x, y, z, m) { const me = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); me.position.set(x, y, z); g.add(me); return me; }
 // monta o visual de cada tipo; update(dt, velocidade, voando) anima
-function buildRig(m) {
+export function buildRig(m) {
   const root = new THREE.Group(), mats = [];
   const M = (c, e) => { const k = mat(c, e); mats.push(k); return k; };
   if (m.kind === 'cat') { // felino de quatro patas: corpo deitado, patas que alternam, cabeça, cauda e listras

@@ -9,7 +9,7 @@ const MOODS = {
   village: M(60, MAJ, [0, 5, 7, 5], 76, 0.45), forest: M(57, MIN, [0, 3, 7, 5], 60, 0.3), mine: M(50, MIN, [0, 0, 3, 5], 52, 0.18, { dark: 1 }),
   desert: M(52, PHR, [0, 1, 0, 5], 64, 0.3), snow: M(65, LYD, [0, 7, 2, 7], 58, 0.5), arena: M(50, DOR, [0, 5, 3, 7], 96, 0.35),
   castle: M(55, DOR, [0, 7, 5, 3], 68, 0.3), city: M(58, MAJ, [0, 9, 5, 7], 88, 0.4), island: M(67, MAJ, [0, 5, 0, 7], 84, 0.55),
-  training: M(62, MAJ, [0, 7, 5, 7], 92, 0.4), dark: M(45, PHR, [0, 1, 0, 8], 54, 0.2, { dark: 1 }), nuke: M(46, PHR, [0, 1, 6, 1], 104, 0.22, { dark: 1 }), sky: M(67, LYD, [0, 7, 4, 9], 88, 0.5, { bright: 1 }), volcano: M(43, PHR, [0, 1, 5, 1], 76, 0.25, { dark: 1 }), neon: M(57, MIN, [0, 8, 3, 10], 100, 0.35), track: M(62, MAJ, [0, 5, 7, 9], 120, 0.5), pool: M(66, LYD, [0, 4, 0, 9], 58, 0.22, { bright: 1, bubbles: 1 }), aero: M(64, LYD, [0, 4, 9, 7], 96, 0.75, { bright: 1, bubbles: 1, arp: 1 })
+  training: M(62, MAJ, [0, 7, 5, 7], 92, 0.4), dark: M(45, PHR, [0, 1, 0, 8], 54, 0.2, { dark: 1 }), nuke: M(46, PHR, [0, 1, 6, 1], 104, 0.22, { dark: 1 }), sky: M(67, LYD, [0, 7, 4, 9], 88, 0.5, { bright: 1 }), volcano: M(43, PHR, [0, 1, 5, 1], 76, 0.25, { dark: 1 }), neon: M(57, MIN, [0, 8, 3, 10], 100, 0.35), track: M(62, MAJ, [0, 5, 7, 9], 120, 0.5), gp: M(64, MAJ, [0, 7, 9, 5], 126, 0.55, { bright: 1 }), pool: M(66, LYD, [0, 4, 0, 9], 58, 0.22, { bright: 1, bubbles: 1 }), aero: M(64, LYD, [0, 4, 9, 7], 96, 0.75, { bright: 1, bubbles: 1, arp: 1 })
 };
 export const music = {
   on: store.get('music', true), mood: null, t: 0, beat: 0, timer: null, gain: null, delay: null,

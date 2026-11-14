@@ -1,2667 +1,2902 @@
 {
-"🏠 Casa": [
-"🏠 Home",
-"🏠 Casa",
-"🏠 Дом"
-],
-" (decorando)": [
-" (decorating)",
-" (decorando)",
-" (обустройство)"
-],
-"Idade (roleplay)": [
-"Age (roleplay)",
-"Edad (roleplay)",
-"Возраст (ролевая игра)"
-],
-"Roupa": [
-"Outfit",
-"Ropa",
-"Одежда"
-],
-"Olhos de laser": [
-"Laser eyes",
-"Ojos láser",
-"Лазерные глаза"
-],
-"✨ Avatares prontos": [
-"✨ Ready-made avatars",
-"✨ Avatares listos",
-"✨ Готовые аватары"
-],
-"Família, escola, Trio da Ceia 🎄...": [
-"Family, school, Christmas Dinner Trio 🎄...",
-"Familia, escuela, Trío de la Cena 🎄...",
-"Семья, школа, Рождественское трио 🎄..."
-],
-"Filhotes e adolescentes são menores e veem o mundo mais de baixo.": [
-"Kittens and teens are smaller and see the world from lower down.",
-"Los cachorros y adolescentes son más pequeños y ven el mundo desde más abajo.",
-"Котята и подростки меньше и видят мир снизу."
-],
-"▼ Idade, roupa, laser e avatares prontos": [
-"▼ Age, outfit, laser and ready-made avatars",
-"▼ Edad, ropa, láser y avatares listos",
-"▼ Возраст, одежда, лазер и готовые аватары"
-],
-" · laser ": [
-" · laser ",
-" · láser ",
-" · лазер "
-],
-"🎄 Easter egg: Trio da Ceia (homenagem a @frostyresenha)": [
-"🎄 Easter egg: Christmas Dinner Trio (tribute to @frostyresenha)",
-"🎄 Easter egg: Trío de la Cena (homenaje a @frostyresenha)",
-"🎄 Пасхалка: Рождественское трио (в честь @frostyresenha)"
-],
-"Seu acessório conquistado continua. Ajuste depois em Avatar.": [
-"Your earned accessory stays. Adjust it later in Avatar.",
-"Tu accesorio ganado se mantiene. Ajústalo luego en Avatar.",
-"Заработанный аксессуар остаётся. Настрой его потом в «Аватаре»."
-],
-"🏠 Ir para minha casa": [
-"🏠 Go to my home",
-"🏠 Ir a mi casa",
-"🏠 Домой"
-],
-" móveis": [
-" furniture",
-" muebles",
-" предметов мебели"
-],
-"🏡 Trocar / comprar casa": [
-"🏡 Change / buy house",
-"🏡 Cambiar / comprar casa",
-"🏡 Сменить / купить дом"
-],
-" casas": [
-" houses",
-" casas",
-" домов"
-],
-"🔒 Visitas: ": [
-"🔒 Visitors: ",
-"🔒 Visitas: ",
-"🔒 Гости: "
-],
-"Todos": [
-"Everyone",
-"Todos",
-"Все"
-],
-"Só amigos": [
-"Friends only",
-"Solo amigos",
-"Только друзья"
-],
-"Trancada": [
-"Locked",
-"Cerrada",
-"Заперто"
-],
-"Amigos": [
-"Friends",
-"Amigos",
-"Друзья"
-],
-"Quem pode entrar na sua casa": [
-"Who can enter your home",
-"Quién puede entrar en tu casa",
-"Кто может войти в твой дом"
-],
-"Você está visitando: ": [
-"You are visiting: ",
-"Estás visitando: ",
-"Ты в гостях у: "
-],
-"Visite amigos em Social (botão 🏠).": [
-"Visit friends in Social (🏠 button).",
-"Visita amigos en Social (botón 🏠).",
-"Ходи в гости через «Общение» (кнопка 🏠)."
-],
-"✏ Decorar: LIGADO": [
-"✏ Decorate: ON",
-"✏ Decorar: ACTIVADO",
-"✏ Обустройство: ВКЛ"
-],
-"✏ Decorar: desligado": [
-"✏ Decorate: off",
-"✏ Decorar: apagado",
-"✏ Обустройство: выкл."
-],
-"Guardando móveis": [
-"Storing furniture",
-"Guardando muebles",
-"Убираю мебель"
-],
-"Colocando: ": [
-"Placing: ",
-"Colocando: ",
-"Ставлю: "
-],
-"Escolha um móvel": [
-"Choose a piece of furniture",
-"Elige un mueble",
-"Выбери мебель"
-],
-"Liga o modo de colocar móveis": [
-"Turns on furniture placing",
-"Activa el modo de colocar muebles",
-"Включает режим расстановки мебели"
-],
-"🛋 Catálogo de móveis": [
-"🛋 Furniture catalog",
-"🛋 Catálogo de muebles",
-"🛋 Каталог мебели"
-],
-" móveis · 💰 ": [
-" items · 💰 ",
-" muebles · 💰 ",
-" предметов · 💰 "
-],
-"⟲ Girar": [
-"⟲ Rotate",
-"⟲ Girar",
-"⟲ Повернуть"
-],
-"⟳ Girar": [
-"⟳ Rotate",
-"⟳ Girar",
-"⟳ Повернуть"
-],
-"📦 Guardar ✔": [
-"📦 Store ✔",
-"📦 Guardar ✔",
-"📦 Убрать ✔"
-],
-"📦 Guardar": [
-"📦 Store",
-"📦 Guardar",
-"📦 Убрать"
-],
-"↩ Desfazer": [
-"↩ Undo",
-"↩ Deshacer",
-"↩ Отменить"
-],
-"🎨 Cor: ": [
-"🎨 Color: ",
-"🎨 Color: ",
-"🎨 Цвет: "
-],
-"🧱 Parede": [
-"🧱 Wall",
-"🧱 Pared",
-"🧱 Стены"
-],
-"🪵 Chão": [
-"🪵 Floor",
-"🪵 Suelo",
-"🪵 Пол"
-],
-"🏡 Casas": [
-"🏡 Houses",
-"🏡 Casas",
-"🏡 Дома"
-],
-"🧹 Guardar tudo": [
-"🧹 Store all",
-"🧹 Guardar todo",
-"🧹 Убрать всё"
-],
-"🚪 Ir à Vila": [
-"🚪 Go to Village",
-"🚪 Ir a la Villa",
-"🚪 В деревню"
-],
-"🛋 Catálogo": [
-"🛋 Catalog",
-"🛋 Catálogo",
-"🛋 Каталог"
-],
-"Festa e Natal": [
-"Party & Christmas",
-"Fiesta y Navidad",
-"Праздник и Рождество"
-],
-"Compre uma vez e recoloque à vontade. Guardar devolve o móvel ao estoque.": [
-"Buy once and re-place freely. Storing returns the item to your stock.",
-"Compra una vez y recoloca cuando quieras. Guardar devuelve el mueble al inventario.",
-"Купи один раз и переставляй сколько хочешь. «Убрать» возвращает мебель на склад."
-],
-"No estoque: ": [
-"In stock: ",
-"En inventario: ",
-"На складе: "
-],
-" (grátis)": [
-" (free)",
-" (gratis)",
-" (бесплатно)"
-],
-" colocado(s)": [
-" placed",
-" colocado(s)",
-" расставлено"
-],
-" · moedas insuficientes": [
-" · not enough coins",
-" · monedas insuficientes",
-" · не хватает монет"
-],
-"Vá para sua casa para decorar": [
-"Go to your home to decorate",
-"Ve a tu casa para decorar",
-"Иди домой, чтобы обустраивать"
-],
-" · mire no chão (ou na parede) e aperte o gatilho": [
-" · aim at the floor (or wall) and press the trigger",
-" · apunta al suelo (o a la pared) y pulsa el gatillo",
-" · наведи на пол (или стену) и нажми курок"
-],
-"Sua casa atual": [
-"Your current home",
-"Tu casa actual",
-"Твой текущий дом"
-],
-"Toque para morar aqui (os móveis de cada casa ficam salvos)": [
-"Tap to live here (each house keeps its furniture)",
-"Toca para vivir aquí (los muebles de cada casa se guardan)",
-"Нажми, чтобы жить здесь (мебель каждого дома сохраняется)"
-],
-"Não foi possível abrir a casa": [
-"Couldn't open the house",
-"No se pudo abrir la casa",
-"Не удалось открыть дом"
-],
-" veio te visitar! 🏠": [
-" came to visit you! 🏠",
-" vino a visitarte! 🏠",
-" пришёл в гости! 🏠"
-],
-"Adulto": [
-"Adult",
-"Adulto",
-"Взрослый"
-],
-"Adolescente": [
-"Teen",
-"Adolescente",
-"Подросток"
-],
-"Filhote": [
-"Kitten",
-"Cachorro",
-"Котёнок"
-],
-"Nenhuma": [
-"None",
-"Ninguna",
-"Нет"
-],
-"Suéter de flocos": [
-"Snowflake sweater",
-"Suéter de copos",
-"Свитер со снежинками"
-],
-"Suéter listrado": [
-"Striped sweater",
-"Suéter a rayas",
-"Полосатый свитер"
-],
-"Suéter natalino": [
-"Christmas sweater",
-"Suéter navideño",
-"Рождественский свитер"
-],
-"Moletom": [
-"Hoodie",
-"Sudadera",
-"Толстовка"
-],
-"Camiseta": [
-"T-shirt",
-"Camiseta",
-"Футболка"
-],
-"Vestido": [
-"Dress",
-"Vestido",
-"Платье"
-],
-"Macacão": [
-"Overalls",
-"Overol",
-"Комбинезон"
-],
-"Jaleco": [
-"Lab coat",
-"Bata",
-"Халат"
-],
-"Uniforme escolar": [
-"School uniform",
-"Uniforme escolar",
-"Школьная форма"
-],
-"Pijama": [
-"Pajamas",
-"Pijama",
-"Пижама"
-],
-"Rosa": [
-"Pink",
-"Rosa",
-"Розовый"
-],
-"Azul": [
-"Blue",
-"Azul",
-"Синий"
-],
-"Verde": [
-"Green",
-"Verde",
-"Зелёный"
-],
-"Vermelho": [
-"Red",
-"Rojo",
-"Красный"
-],
-"Dourado": [
-"Gold",
-"Dorado",
-"Золотой"
-],
-"🎄 Laranjinha da Ceia": [
-"🎄 Ginger of the Feast",
-"🎄 Naranjito de la Cena",
-"🎄 Рыжик с праздника"
-],
-"🎄 Frajola da Ceia": [
-"🎄 Tuxedo of the Feast",
-"🎄 Esmoquin de la Cena",
-"🎄 Фрачник с праздника"
-],
-"🎄 Rajado da Ceia": [
-"🎄 Tabby of the Feast",
-"🎄 Atigrado de la Cena",
-"🎄 Полосатик с праздника"
-],
-"🍼 Filhote Laranja": [
-"🍼 Orange Kitten",
-"🍼 Cachorro Naranja",
-"🍼 Рыжий котёнок"
-],
-"🍼 Filhote Siamês": [
-"🍼 Siamese Kitten",
-"🍼 Cachorro Siamés",
-"🍼 Сиамский котёнок"
-],
-"🎒 Adolescente Estudante": [
-"🎒 Student Teen",
-"🎒 Adolescente Estudiante",
-"🎒 Подросток-школьник"
-],
-"🛹 Adolescente de Moletom": [
-"🛹 Hoodie Teen",
-"🛹 Adolescente con Sudadera",
-"🛹 Подросток в толстовке"
-],
-"👗 Mamãe Gata": [
-"👗 Mommy Cat",
-"👗 Mamá Gata",
-"👗 Мама-кошка"
-],
-"👔 Papai Gato": [
-"👔 Daddy Cat",
-"👔 Papá Gato",
-"👔 Папа-кот"
-],
-"🩺 Doutor Gato": [
-"🩺 Doctor Cat",
-"🩺 Doctor Gato",
-"🩺 Доктор Кот"
-],
-"🧰 Gato Fazendeiro": [
-"🧰 Farmer Cat",
-"🧰 Gato Granjero",
-"🧰 Кот-фермер"
-],
-"Original": [
-"Original",
-"Original",
-"Исходный"
-],
-"Laranja": [
-"Orange",
-"Naranja",
-"Оранжевый"
-],
-"Amarelo": [
-"Yellow",
-"Amarillo",
-"Жёлтый"
-],
-"Turquesa": [
-"Turquoise",
-"Turquesa",
-"Бирюзовый"
-],
-"Anil": [
-"Indigo",
-"Añil",
-"Индиго"
-],
-"Roxo": [
-"Purple",
-"Morado",
-"Фиолетовый"
-],
-"Branco": [
-"White",
-"Blanco",
-"Белый"
-],
-"Grafite": [
-"Graphite",
-"Grafito",
-"Графит"
-],
-"Madeira": [
-"Wood",
-"Madera",
-"Дерево"
-],
-"Cabana de Madeira": [
-"Wooden Cabin",
-"Cabaña de Madera",
-"Деревянная хижина"
-],
-"Casinha Colorida": [
-"Colorful Cottage",
-"Casita de Colores",
-"Цветной домик"
-],
-"Chalé na Neve": [
-"Snow Chalet",
-"Chalé en la Nieve",
-"Шале в снегу"
-],
-"Casa de Praia": [
-"Beach House",
-"Casa de Playa",
-"Пляжный дом"
-],
-"Bolha Aero": [
-"Aero Bubble",
-"Burbuja Aero",
-"Аэро-пузырь"
-],
-"Torre Sombria": [
-"Shadow Tower",
-"Torre Sombría",
-"Мрачная башня"
-],
-"Apê Poolrooms": [
-"Poolrooms Flat",
-"Depa Poolrooms",
-"Квартира Poolrooms"
-],
-"Mansão": [
-"Mansion",
-"Mansión",
-"Особняк"
-],
-"Sala": [
-"Living room",
-"Sala",
-"Гостиная"
-],
-"Quarto": [
-"Bedroom",
-"Dormitorio",
-"Спальня"
-],
-"Cozinha": [
-"Kitchen",
-"Cocina",
-"Кухня"
-],
-"Gatos": [
-"Cats",
-"Gatos",
-"Кошкам"
-],
-"Banheiro": [
-"Bathroom",
-"Baño",
-"Ванная"
-],
-"Escola": [
-"School",
-"Escuela",
-"Школа"
-],
-"Jardim": [
-"Garden",
-"Jardín",
-"Сад"
-],
-"Sofá": [
-"Sofa",
-"Sofá",
-"Диван"
-],
-"Poltrona": [
-"Armchair",
-"Sillón",
-"Кресло"
-],
-"Mesa de centro": [
-"Coffee table",
-"Mesa de centro",
-"Журнальный столик"
-],
-"Tapete": [
-"Rug",
-"Alfombra",
-"Ковёр"
-],
-"Tapete redondo": [
-"Round rug",
-"Alfombra redonda",
-"Круглый ковёр"
-],
-"Estante de livros": [
-"Bookshelf",
-"Estantería",
-"Книжный шкаф"
-],
-"Luminária": [
-"Floor lamp",
-"Lámpara",
-"Торшер"
-],
-"Lareira": [
-"Fireplace",
-"Chimenea",
-"Камин"
-],
-"Quadro (parede)": [
-"Painting (wall)",
-"Cuadro (pared)",
-"Картина (на стену)"
-],
-"Vaso de planta": [
-"Potted plant",
-"Maceta",
-"Растение в горшке"
-],
-"Piano": [
-"Piano",
-"Piano",
-"Пианино"
-],
-"Relógio de pé": [
-"Grandfather clock",
-"Reloj de pie",
-"Напольные часы"
-],
-"Cama de casal": [
-"Double bed",
-"Cama de matrimonio",
-"Двуспальная кровать"
-],
-"Cama de solteiro": [
-"Single bed",
-"Cama individual",
-"Односпальная кровать"
-],
-"Berço": [
-"Crib",
-"Cuna",
-"Детская кроватка"
-],
-"Caminha de gato": [
-"Cat bed",
-"Camita de gato",
-"Кошачья лежанка"
-],
-"Guarda-roupa": [
-"Wardrobe",
-"Armario",
-"Шкаф"
-],
-"Criado-mudo": [
-"Nightstand",
-"Mesita de noche",
-"Тумбочка"
-],
-"Escrivaninha": [
-"Desk",
-"Escritorio",
-"Письменный стол"
-],
-"Geladeira": [
-"Fridge",
-"Nevera",
-"Холодильник"
-],
-"Fogão": [
-"Stove",
-"Cocina (horno)",
-"Плита"
-],
-"Balcão": [
-"Counter",
-"Encimera",
-"Кухонная тумба"
-],
-"Pia": [
-"Sink",
-"Fregadero",
-"Раковина"
-],
-"Mesa de jantar": [
-"Dining table",
-"Mesa de comedor",
-"Обеденный стол"
-],
-"Cadeira": [
-"Chair",
-"Silla",
-"Стул"
-],
-"Tigela de ração": [
-"Food bowl",
-"Plato de comida",
-"Миска с кормом"
-],
-"Torre arranhador": [
-"Scratching tower",
-"Torre rascador",
-"Когтеточка-башня"
-],
-"Caixa de papelão": [
-"Cardboard box",
-"Caja de cartón",
-"Картонная коробка"
-],
-"Novelo de lã": [
-"Ball of yarn",
-"Ovillo de lana",
-"Клубок шерсти"
-],
-"Casinha de gato": [
-"Cat house",
-"Casita de gato",
-"Кошачий домик"
-],
-"Banheira": [
-"Bathtub",
-"Bañera",
-"Ванна"
-],
-"Vaso sanitário": [
-"Toilet",
-"Inodoro",
-"Унитаз"
-],
-"Espelho (parede)": [
-"Mirror (wall)",
-"Espejo (pared)",
-"Зеркало (на стену)"
-],
-"Árvore de Natal": [
-"Christmas tree",
-"Árbol de Navidad",
-"Ёлка"
-],
-"Mesa da Ceia 🦃": [
-"Christmas Feast Table 🦃",
-"Mesa de la Cena 🦃",
-"Праздничный стол 🦃"
-],
-"Globo de laser 🪩": [
-"Laser globe 🪩",
-"Globo láser 🪩",
-"Лазерный шар 🪩"
-],
-"Presentes": [
-"Presents",
-"Regalos",
-"Подарки"
-],
-"Boneco de neve": [
-"Snowman",
-"Muñeco de nieve",
-"Снеговик"
-],
-"Pisca-pisca": [
-"Fairy lights",
-"Luces navideñas",
-"Гирлянда"
-],
-"Balões": [
-"Balloons",
-"Globos",
-"Шарики"
-],
-"Lousa (parede)": [
-"Blackboard (wall)",
-"Pizarra (pared)",
-"Доска (на стену)"
-],
-"Carteira escolar": [
-"School desk",
-"Pupitre",
-"Школьная парта"
-],
-"Globo terrestre": [
-"Globe",
-"Globo terráqueo",
-"Глобус"
-],
-"Árvore": [
-"Tree",
-"Árbol",
-"Дерево"
-],
-"Canteiro de flores": [
-"Flower bed",
-"Macizo de flores",
-"Клумба"
-],
-"Banco de praça": [
-"Park bench",
-"Banco de parque",
-"Скамейка"
-],
-"Fonte": [
-"Fountain",
-"Fuente",
-"Фонтан"
-],
-"Poste de luz": [
-"Lamp post",
-"Farola",
-"Фонарь"
-],
-"Cerca": [
-"Fence",
-"Valla",
-"Забор"
-],
-"Baú": [
-"Chest",
-"Cofre",
-"Сундук"
-],
-"Trampolim": [
-"Trampoline",
-"Trampolín",
-"Батут"
-],
-"Fogueira": [
-"Campfire",
-"Fogata",
-"Костёр"
-],
-"Minha casa": [
-"My home",
-"Mi casa",
-"Мой дом"
-],
-"Casa de ": [
-"Home of ",
-"Casa de ",
-"Дом: "
-],
-"Offline: não dá para visitar agora": [
-"Offline: can't visit right now",
-"Sin conexión: no se puede visitar ahora",
-"Нет сети: сейчас нельзя в гости"
-],
-"O servidor ainda não tem casas (rode supabase/homes.sql)": [
-"The server has no houses yet (run supabase/homes.sql)",
-"El servidor aún no tiene casas (ejecuta supabase/homes.sql)",
-"На сервере ещё нет домов (запусти supabase/homes.sql)"
-],
-"Jogador não encontrado": [
-"Player not found",
-"Jugador no encontrado",
-"Игрок не найден"
-],
-" só recebe amigos": [
-" only lets friends in",
-" solo recibe amigos",
-" пускает только друзей"
-],
-"🔒 A casa de ": [
-"🔒 The home of ",
-"🔒 La casa de ",
-"🔒 Дом игрока "
-],
-" está trancada": [
-" is locked",
-" está cerrada",
-" заперт"
-],
-"✏ Decorando: ": [
-"✏ Decorating: ",
-"✏ Decorando: ",
-"✏ Обустройство: "
-],
-" — gatilho coloca": [
-" — trigger places it",
-" — el gatillo lo coloca",
-" — курок ставит"
-],
-"✏ Escolha um móvel no catálogo": [
-"✏ Choose furniture in the catalog",
-"✏ Elige un mueble en el catálogo",
-"✏ Выбери мебель в каталоге"
-],
-"Casa inválida": [
-"Invalid house",
-"Casa inválida",
-"Неверный дом"
-],
-"🏠 Nova casa: ": [
-"🏠 New house: ",
-"🏠 Nueva casa: ",
-"🏠 Новый дом: "
-],
-"Nada para guardar aqui": [
-"Nothing to store here",
-"Nada que guardar aquí",
-"Здесь нечего убирать"
-],
-"Escolha um móvel no catálogo": [
-"Choose furniture in the catalog",
-"Elige un mueble en el catálogo",
-"Выбери мебель в каталоге"
-],
-" guardado (pode recolocar de graça)": [
-" stored (re-place it for free)",
-" guardado (puedes recolocarlo gratis)",
-" убрано (можно поставить снова бесплатно)"
-],
-"Limite de ": [
-"Limit of ",
-"Límite de ",
-"Лимит: "
-],
-" móveis nesta casa": [
-" items in this house",
-" muebles en esta casa",
-" предметов в этом доме"
-],
-" moedas para ": [
-" coins for ",
-" monedas para ",
-" монет на "
-],
-"🪩 Festa!": [
-"🪩 Party!",
-"🪩 ¡Fiesta!",
-"🪩 Вечеринка!"
-],
-"Faltam ": [
-"Need ",
-"Faltan ",
-"Не хватает "
-],
-"🏠 CASAS: 8 estilos para morar, 53 móveis, cor de parede e chão (Menu rápido > Casa).": [
-"🏠 HOMES: 8 styles to live in, 53 furniture items, wall and floor colors (Quick menu > Home).",
-"🏠 CASAS: 8 estilos para vivir, 53 muebles, color de pared y suelo (Menú rápido > Casa).",
-"🏠 ДОМА: 8 стилей, 53 предмета мебели, цвет стен и пола (Быстрое меню > Дом)."
-],
-"Visite a casa dos amigos pelo botão 🏠 em Social (aberta, só amigos ou trancada).": [
-"Visit your friends' homes with the 🏠 button in Social (open, friends only or locked).",
-"Visita la casa de tus amigos con el botón 🏠 en Social (abierta, solo amigos o cerrada).",
-"Ходи в гости к друзьям кнопкой 🏠 в «Общении» (открыто, только друзья или заперто)."
-],
-"Idades para roleplay: adulto, adolescente e filhote, e 10 roupas novas.": [
-"Roleplay ages: adult, teen and kitten, plus 10 new outfits.",
-"Edades para roleplay: adulto, adolescente y cachorro, y 10 ropas nuevas.",
-"Возраст для ролевой игры: взрослый, подросток и котёнок, плюс 10 новых нарядов."
-],
-"Avatares prontos, incluindo o Trio da Ceia 🎄 com olhos de laser (easter egg).": [
-"Ready-made avatars, including the Christmas Dinner Trio 🎄 with laser eyes (easter egg).",
-"Avatares listos, incluido el Trío de la Cena 🎄 con ojos láser (easter egg).",
-"Готовые аватары, включая Рождественское трио 🎄 с лазерными глазами (пасхалка)."
-],
-"Criado por hark  ·  Programado com Claude (Anthropic) 🤖💛": [
-"Created by hark  ·  Coded with Claude (Anthropic) 🤖💛",
-"Creado por hark  ·  Programado con Claude (Anthropic) 🤖💛",
-"Автор: hark  ·  Код написан вместе с Claude (Anthropic) 🤖💛"
-],
-"🐾 Patas no mouse: LIGADO (H desliga) · rodinha = alcance": [
-"🐾 Paws on mouse: ON (H turns off) · wheel = reach",
-"🐾 Patas con el ratón: ACTIVADO (H desactiva) · rueda = alcance",
-"🐾 Лапы на мыши: ВКЛ (H — выкл.) · колёсико = дальность"
-],
-"🐾 Patas no mouse: desligado (mouse volta a olhar)": [
-"🐾 Paws on mouse: off (mouse looks around again)",
-"🐾 Patas con el ratón: desactivado (el ratón vuelve a mirar)",
-"🐾 Лапы на мыши: выкл. (мышь снова вращает камеру)"
-],
-"• PC: H liga \"patas no mouse\" (ou segure o botão do meio): o mouse move as patas e a câmera fica parada. Encoste no chão, segure o clique e arraste o mouse para trás para se impulsionar, como no Gorilla Tag. Rodinha = alcance.": [
-"• PC: H turns on \"paws on mouse\" (or hold the middle button): the mouse moves the paws and the camera stays still. Touch the ground, hold click and drag the mouse back to push yourself, like Gorilla Tag. Wheel = reach.",
-"• PC: H activa \"patas con el ratón\" (o mantén el botón central): el ratón mueve las patas y la cámara se queda quieta. Toca el suelo, mantén el clic y arrastra el ratón hacia atrás para impulsarte, como en Gorilla Tag. Rueda = alcance.",
-"• ПК: H включает «лапы на мыши» (или зажми среднюю кнопку): мышь двигает лапы, камера стоит на месте. Коснись земли, зажми клик и тяни мышь назад, чтобы оттолкнуться, как в Gorilla Tag. Колёсико = дальность."
-],
-"💬 Chat": [
-"💬 Chat",
-"💬 Chat",
-"💬 Чат"
-],
-"🎙 Voz: ": [
-"🎙 Voice: ",
-"🎙 Voz: ",
-"🎙 Голос: "
-],
-"microfone ligado": [
-"mic on",
-"micrófono activado",
-"микрофон вкл."
-],
-"só ouvindo": [
-"listening only",
-"solo escuchando",
-"только слушаю"
-],
-"desligada": [
-"off",
-"apagada",
-"выкл."
-],
-"🎙 Chat de voz": [
-"🎙 Voice chat",
-"🎙 Chat de voz",
-"🎙 Голосовой чат"
-],
-"Este navegador não tem chat de voz.": [
-"This browser has no voice chat.",
-"Este navegador no tiene chat de voz.",
-"В этом браузере нет голосового чата."
-],
-"Este navegador não tem chat de voz": [
-"This browser has no voice chat",
-"Este navegador no tiene chat de voz",
-"В этом браузере нет голосового чата"
-],
-"🎙 Microfone: LIGADO": [
-"🎙 Microphone: ON",
-"🎙 Micrófono: ACTIVADO",
-"🎙 Микрофон: ВКЛ"
-],
-"🎙 Microfone: desligado": [
-"🎙 Microphone: off",
-"🎙 Micrófono: apagado",
-"🎙 Микрофон: выкл."
-],
-"Todos perto de você ouvem · toque para desligar": [
-"Everyone near you can hear · tap to turn off",
-"Todos cerca de ti te oyen · toca para apagar",
-"Тебя слышат все рядом · нажми, чтобы выключить"
-],
-"Toque para falar com quem está perto": [
-"Tap to talk to people nearby",
-"Toca para hablar con quien está cerca",
-"Нажми, чтобы говорить с теми, кто рядом"
-],
-"🔊 Ouvir vozes: ligado": [
-"🔊 Hear voices: on",
-"🔊 Oír voces: activado",
-"🔊 Слышать голоса: вкл."
-],
-"🔇 Ouvir vozes: desligado": [
-"🔇 Hear voices: off",
-"🔇 Oír voces: apagado",
-"🔇 Слышать голоса: выкл."
-],
-"Desligar também fecha o seu microfone": [
-"Turning off also closes your mic",
-"Apagar también cierra tu micrófono",
-"Выключение также закрывает микрофон"
-],
-"👥 Com quem: ": [
-"👥 With: ",
-"👥 Con quién: ",
-"👥 С кем: "
-],
-"Só amigos e grupo": [
-"Friends and party only",
-"Solo amigos y grupo",
-"Только друзья и группа"
-],
-"Toque para trocar": [
-"Tap to change",
-"Toca para cambiar",
-"Нажми, чтобы сменить"
-],
-"Conectados por voz: ": [
-"Voice connected: ",
-"Conectados por voz: ",
-"На голосовой связи: "
-],
-"  (sem microfone)": [
-"  (no mic)",
-"  (sin micrófono)",
-"  (без микрофона)"
-],
-"Nunca diga seu endereço, telefone ou senhas.": [
-"Never share your address, phone number or passwords.",
-"Nunca digas tu dirección, teléfono o contraseñas.",
-"Никогда не называй адрес, телефон или пароли."
-],
-"Microfone bloqueado: permita o acesso ao microfone no navegador": [
-"Microphone blocked: allow microphone access in the browser",
-"Micrófono bloqueado: permite el acceso al micrófono en el navegador",
-"Микрофон заблокирован: разреши доступ к микрофону в браузере"
-],
-"🎙 Microfone ligado (N desliga)": [
-"🎙 Microphone on (N turns off)",
-"🎙 Micrófono activado (N apaga)",
-"🎙 Микрофон вкл. (N — выкл.)"
-],
-"🎙 Microfone desligado": [
-"🎙 Microphone off",
-"🎙 Micrófono apagado",
-"🎙 Микрофон выкл."
-],
-"Mais perto = mais alto. Silenciar: Social > Jogadores.": [
-"Closer = louder. Mute: Social > Players.",
-"Más cerca = más alto. Silenciar: Social > Jugadores.",
-"Ближе = громче. Заглушить: Общение > Игроки."
-],
-"Infecção Nuclear ☢️": [
-"Nuclear Infection ☢️",
-"Infección Nuclear ☢️",
-"Ядерная инфекция ☢️"
-],
-"☢ INFECÇÃO NUCLEAR": [
-"☢ NUCLEAR INFECTION",
-"☢ INFECCIÓN NUCLEAR",
-"☢ ЯДЕРНАЯ ИНФЕКЦИЯ"
-],
-"Pega-pega: encoste a pata para infectar!": [
-"Tag: touch with your paw to infect!",
-"Pilla-pilla: ¡toca con la pata para infectar!",
-"Салки: коснись лапой, чтобы заразить!"
-],
-"☢ Infecção Nuclear": [
-"☢ Nuclear Infection",
-"☢ Infección Nuclear",
-"☢ Ядерная инфекция"
-],
-"Pega-pega radioativo! Um gato começa INFECTADO. Para infectar, encoste a PATA em quem não está infectado.": [
-"Radioactive tag! One cat starts INFECTED. To infect, touch an uninfected cat with your PAW.",
-"¡Pilla-pilla radiactivo! Un gato empieza INFECTADO. Para infectar, toca con la PATA a quien no esté infectado.",
-"Радиоактивные салки! Один кот начинает ЗАРАЖЁННЫМ. Чтобы заразить, коснись ЛАПОЙ незаражённого."
-],
-"☣ Infectados: acessórios derretem, dentes enormes, olhos verdes e +5% de velocidade.": [
-"☣ Infected: accessories melt, huge teeth, green eyes and +5% speed.",
-"☣ Infectados: los accesorios se derriten, dientes enormes, ojos verdes y +5% de velocidad.",
-"☣ Заражённые: аксессуары плавятся, огромные зубы, зелёные глаза и +5% скорости."
-],
-"🐱 Sobreviva até o tempo acabar para ganhar a rodada.": [
-"🐱 Survive until time runs out to win the round.",
-"🐱 Sobrevive hasta que se acabe el tiempo para ganar la ronda.",
-"🐱 Продержись до конца времени, чтобы выиграть раунд."
-],
-"🤖 Jogar com bots": [
-"🤖 Play with bots",
-"🤖 Jugar con bots",
-"🤖 Играть с ботами"
-],
-"👥 Multiplayer real": [
-"👥 Real multiplayer",
-"👥 Multijugador real",
-"👥 Настоящий мультиплеер"
-],
-"No multiplayer, todos da sua sala neste mapa jogam juntos.": [
-"In multiplayer, everyone in your room on this map plays together.",
-"En multijugador, todos los de tu sala en este mapa juegan juntos.",
-"В мультиплеере вместе играют все из твоей комнаты на этой карте."
-],
-"🚪 Voltar para a Vila": [
-"🚪 Back to the Village",
-"🚪 Volver a la Villa",
-"🚪 Вернуться в деревню"
-],
-"☢ Infecção: trocar modo": [
-"☢ Infection: change mode",
-"☢ Infección: cambiar modo",
-"☢ Инфекция: сменить режим"
-],
-"🤖 Modo com bots: ": [
-"🤖 Bots mode: ",
-"🤖 Modo con bots: ",
-"🤖 Режим с ботами: "
-],
-" bots entraram": [
-" bots joined",
-" bots entraron",
-" ботов вошли"
-],
-"👥 Multiplayer: esperando pelo menos 2 jogadores": [
-"👥 Multiplayer: waiting for at least 2 players",
-"👥 Multijugador: esperando al menos 2 jugadores",
-"👥 Мультиплеер: ждём минимум 2 игроков"
-],
-"☢ Esperando jogadores (": [
-"☢ Waiting for players (",
-"☢ Esperando jugadores (",
-"☢ Ждём игроков ("
-],
-"☢ Rodada começa em ": [
-"☢ Round starts in ",
-"☢ La ronda empieza en ",
-"☢ Раунд начнётся через "
-],
-"☣ INFECTADO": [
-"☣ INFECTED",
-"☣ INFECTADO",
-"☣ ЗАРАЖЁН"
-],
-"🏃 FUJA!": [
-"🏃 RUN!",
-"🏃 ¡HUYE!",
-"🏃 БЕГИ!"
-],
-"☣ Os infectados venceram!": [
-"☣ The infected won!",
-"☣ ¡Ganaron los infectados!",
-"☣ Заражённые победили!"
-],
-"🐱 Os sobreviventes venceram!": [
-"🐱 The survivors won!",
-"🐱 ¡Ganaron los supervivientes!",
-"🐱 Выжившие победили!"
-],
-"☣ VOCÊ É O PACIENTE ZERO! Pegue todo mundo!": [
-"☣ YOU ARE PATIENT ZERO! Catch everyone!",
-"☣ ¡ERES EL PACIENTE CERO! ¡Atrapa a todos!",
-"☣ ТЫ НУЛЕВОЙ ПАЦИЕНТ! Поймай всех!"
-],
-"☢ Rodada ": [
-"☢ Round ",
-"☢ Ronda ",
-"☢ Раунд "
-],
-": fuja do infectado!": [
-": run from the infected!",
-": ¡huye del infectado!",
-": беги от заражённого!"
-],
-"☣ VOCÊ FOI INFECTADO! Agora pegue os outros!": [
-"☣ YOU GOT INFECTED! Now catch the others!",
-"☣ ¡TE INFECTARON! ¡Ahora atrapa a los demás!",
-"☣ ТЕБЯ ЗАРАЗИЛИ! Теперь лови остальных!"
-],
-" foi infectado!": [
-" got infected!",
-" fue infectado!",
-" заражён!"
-],
-"🏆 Você sobreviveu! +40 XP, +30 moedas": [
-"🏆 You survived! +40 XP, +30 coins",
-"🏆 ¡Sobreviviste! +40 XP, +30 monedas",
-"🏆 Ты выжил! +40 опыта, +30 монет"
-],
-"☣ Infecção total! +20 XP, +10 moedas": [
-"☣ Total infection! +20 XP, +10 coins",
-"☣ ¡Infección total! +20 XP, +10 monedas",
-"☣ Полное заражение! +20 опыта, +10 монет"
-],
-"Visite todos os 14 mapas": [
-"Visit all 14 maps",
-"Visita los 14 mapas",
-"Посети все 14 карт"
-],
-"Paciente Zero": [
-"Patient Zero",
-"Paciente Cero",
-"Нулевой пациент"
-],
-"Infecte 25 gatos na Infecção Nuclear": [
-"Infect 25 cats in Nuclear Infection",
-"Infecta 25 gatos en Infección Nuclear",
-"Зарази 25 котов в «Ядерной инфекции»"
-],
-"Imune": [
-"Immune",
-"Inmune",
-"Иммунный"
-],
-"Sobreviva a 5 rodadas da Infecção Nuclear": [
-"Survive 5 rounds of Nuclear Infection",
-"Sobrevive 5 rondas de Infección Nuclear",
-"Переживи 5 раундов «Ядерной инфекции»"
-],
-"☢️ NOVO MAPA: Infecção Nuclear, pega-pega com bots ou multiplayer real. Encoste a pata para infectar!": [
-"☢️ NEW MAP: Nuclear Infection, tag with bots or real multiplayer. Touch with your paw to infect!",
-"☢️ NUEVO MAPA: Infección Nuclear, pilla-pilla con bots o multijugador real. ¡Toca con la pata para infectar!",
-"☢️ НОВАЯ КАРТА: Ядерная инфекция, салки с ботами или с живыми игроками. Коснись лапой, чтобы заразить!"
-],
-"🎙 Chat de voz posicional e 💬 chat no VR pelo menu rápido. PC: H = patas no mouse, N = microfone.": [
-"🎙 Positional voice chat and 💬 chat in VR from the quick menu. PC: H = paws on mouse, N = microphone.",
-"🎙 Chat de voz posicional y 💬 chat en VR desde el menú rápido. PC: H = patas con el ratón, N = micrófono.",
-"🎙 Позиционный голосовой чат и 💬 чат в VR через быстрое меню. ПК: H — лапы на мыши, N — микрофон."
-],
-"Azarado e ao mesmo tempo sortudo": [
-"Unlucky and lucky at the same time",
-"Desafortunado y afortunado a la vez",
-"Невезучий и везучий одновременно"
-],
-"❓ Conquista secreta": [
-"❓ Secret achievement",
-"❓ Logro secreto",
-"❓ Секретное достижение"
-],
-" foi atingido por um raio!": [
-" got struck by lightning!",
-" fue alcanzado por un rayo!",
-" поражён молнией!"
-],
-"⚡ Você levou um RAIO e ficou todo torrado!": [
-"⚡ Lightning struck you and you're totally toasted!",
-"⚡ ¡Te cayó un RAYO y quedaste todo tostado!",
-"⚡ В тебя ударила МОЛНИЯ, и ты весь поджарился!"
-],
-"Levou um raio na cabeça e ficou torrado (0,001% por milissegundo)": [
-"Got struck by lightning and toasted (0.001% per millisecond)",
-"Le cayó un rayo y quedó tostado (0,001% por milisegundo)",
-"Получил молнией и поджарился (0,001% в миллисекунду)"
-],
-"Visite todos os 17 mapas": [
-"Visit all 17 maps",
-"Visita los 17 mapas",
-"Посети все 17 карт"
-],
-"Rei das Nuvens": [
-"King of the Clouds",
-"Rey de las Nubes",
-"Король облаков"
-],
-"Complete a Corrida nas Nuvens nas Ilhas do Céu": [
-"Finish the Cloud Race on the Sky Islands",
-"Completa la Carrera en las Nubes en las Islas del Cielo",
-"Пройди «Гонку в облаках» на Небесных островах"
-],
-"Pé Quente": [
-"Hot Feet",
-"Pies Calientes",
-"Горячие пятки"
-],
-"Encoste na lava 5 vezes no Vulcão Ardente": [
-"Touch the lava 5 times in the Burning Volcano",
-"Toca la lava 5 veces en el Volcán Ardiente",
-"Коснись лавы 5 раз в Огненном вулкане"
-],
-"Ilhas do Céu": [
-"Sky Islands",
-"Islas del Cielo",
-"Небесные острова"
-],
-"🏆 CHEGADA": [
-"🏆 FINISH",
-"🏆 META",
-"🏆 ФИНИШ"
-],
-"🏁 Corrida nas Nuvens: chegue ao troféu!": [
-"🏁 Cloud Race: reach the trophy!",
-"🏁 Carrera en las Nubes: ¡llega al trofeo!",
-"🏁 Гонка в облаках: доберись до кубка!"
-],
-"🌀 Trampolins e anéis te lançam longe": [
-"🌀 Trampolines and rings launch you far",
-"🌀 Trampolines y anillos te lanzan lejos",
-"🌀 Батуты и кольца далеко подбрасывают"
-],
-"🏆 Recorde: ": [
-"🏆 Record: ",
-"🏆 Récord: ",
-"🏆 Рекорд: "
-],
-"🏁 Corrida nas Nuvens": [
-"🏁 Cloud Race",
-"🏁 Carrera en las Nubes",
-"🏁 Гонка в облаках"
-],
-"⏱ Valendo! Chegue ao troféu": [
-"⏱ Go! Reach the trophy",
-"⏱ ¡Ya! Llega al trofeo",
-"⏱ Старт! Доберись до кубка"
-],
-"🚩 Checkpoint!": [
-"🚩 Checkpoint!",
-"🚩 ¡Punto de control!",
-"🚩 Чекпоинт!"
-],
-"Atalho detectado: o tempo não vale como recorde": [
-"Shortcut detected: this time doesn't count as a record",
-"Atajo detectado: el tiempo no cuenta como récord",
-"Обнаружен срез: время не засчитано"
-],
-"🏆 NOVO RECORDE: ": [
-"🏆 NEW RECORD: ",
-"🏆 NUEVO RÉCORD: ",
-"🏆 НОВЫЙ РЕКОРД: "
-],
-"🏁 Chegou! ": [
-"🏁 Finished! ",
-"🏁 ¡Llegaste! ",
-"🏁 Финиш! "
-],
-" (recorde ": [
-" (record ",
-" (récord ",
-" (рекорд "
-],
-"☁ Caiu nas nuvens! Voltando ao checkpoint": [
-"☁ Fell into the clouds! Back to the checkpoint",
-"☁ ¡Caíste en las nubes! Volviendo al punto de control",
-"☁ Упал в облака! Возврат к чекпоинту"
-],
-"  ·  recorde ": [
-"  ·  record ",
-"  ·  récord ",
-"  ·  рекорд "
-],
-"Vulcão Ardente": [
-"Burning Volcano",
-"Volcán Ardiente",
-"Огненный вулкан"
-],
-"🌋 Vulcão Ardente: não pise na lava!": [
-"🌋 Burning Volcano: don't step in the lava!",
-"🌋 Volcán Ardiente: ¡no pises la lava!",
-"🌋 Огненный вулкан: не наступай в лаву!"
-],
-"! −18 de vida": [
-"! −18 health",
-"! −18 de vida",
-"! −18 здоровья"
-],
-"Lava": [
-"Lava",
-"Lava",
-"Лава"
-],
-"a lava 🔥": [
-"the lava 🔥",
-"la lava 🔥",
-"лава 🔥"
-],
-"uma bola de fogo 🔥": [
-"a fireball 🔥",
-"una bola de fuego 🔥",
-"огненный шар 🔥"
-],
-"Bola de fogo": [
-"Fireball",
-"Bola de fuego",
-"Огненный шар"
-],
-"Neon City": [
-"Neon City",
-"Neon City",
-"Неон-Сити"
-],
-"🌃 Neon City": [
-"🌃 Neon City",
-"🌃 Neon City",
-"🌃 Неон-Сити"
-],
-"Guia da Neon City": [
-"Neon City guide",
-"Guía de Neon City",
-"Гид Неон-Сити"
-],
-"Bem-vinde à Neon City! Os trampolins levam aos telhados.": [
-"Welcome to Neon City! The trampolines take you to the rooftops.",
-"¡Bienvenide a Neon City! Los trampolines llevan a los tejados.",
-"Добро пожаловать в Неон-Сити! Батуты ведут на крыши."
-],
-"Já viu o holograma da praça? Ele dança a noite toda.": [
-"Have you seen the hologram in the square? It dances all night.",
-"¿Viste el holograma de la plaza? Baila toda la noche.",
-"Видел голограмму на площади? Она танцует всю ночь."
-],
-"Dizem que tem caixas perdidas nos telhados...": [
-"They say there are lost boxes on the rooftops...",
-"Dicen que hay cajas perdidas en los tejados...",
-"Говорят, на крышах потерялись коробки..."
-],
-"☁️🌋🌃 3 MAPAS NOVOS: Ilhas do Céu (corrida com cronômetro), Vulcão Ardente (lava e erupções) e Neon City (chuva, holograma e carros voadores).": [
-"☁️🌋🌃 3 NEW MAPS: Sky Islands (timed race), Burning Volcano (lava and eruptions) and Neon City (rain, hologram and flying cars).",
-"☁️🌋🌃 3 MAPAS NUEVOS: Islas del Cielo (carrera con cronómetro), Volcán Ardiente (lava y erupciones) y Neon City (lluvia, holograma y coches voladores).",
-"☁️🌋🌃 3 НОВЫЕ КАРТЫ: Небесные острова (гонка на время), Огненный вулкан (лава и извержения) и Неон-Сити (дождь, голограмма и летающие машины)."
-],
-"✨ Efeitos novos: rastros de velocidade, portais com partículas, lava animada, chuva e sons novos (boing, whoosh, lava, chuva).": [
-"✨ New effects: speed trails, particle portals, animated lava, rain and new sounds (boing, whoosh, lava, rain).",
-"✨ Efectos nuevos: estelas de velocidad, portales con partículas, lava animada, lluvia y sonidos nuevos (boing, whoosh, lava, lluvia).",
-"✨ Новые эффекты: следы скорости, порталы с частицами, анимированная лава, дождь и новые звуки (боинг, вжух, лава, дождь)."
-],
-"Visite todos os 18 mapas": [
-"Visit all 18 maps",
-"Visita los 18 mapas",
-"Посети все 18 карт"
-],
-"Piloto": [
-"Racer",
-"Piloto",
-"Гонщик"
-],
-"Complete uma corrida no Autódromo das Patas": [
-"Finish a race at the Paws Racetrack",
-"Completa una carrera en el Autódromo de las Patas",
-"Пройди гонку на Автодроме Лап"
-],
-"🐾 Bichinho e montaria": [
-"🐾 Pet and mount",
-"🐾 Mascota y montura",
-"🐾 Питомец и ездовое"
-],
-"🐎 Montarias": [
-"🐎 Mounts",
-"🐎 Monturas",
-"🐎 Ездовые"
-],
-" (montado)": [
-" (riding)",
-" (montado)",
-" (верхом)"
-],
-"🔒 Precisa do nível ": [
-"🔒 Requires level ",
-"🔒 Requiere nivel ",
-"🔒 Нужен уровень "
-],
-"Montado · ": [
-"Riding · ",
-"Montado · ",
-"Верхом · "
-],
-"Toque para montar · ": [
-"Tap to ride · ",
-"Toca para montar · ",
-"Нажми, чтобы сесть · "
-],
-"PC: tecla J monta/desmonta · Corrida de montaria no Autódromo": [
-"PC: J key mounts/dismounts · Mount races at the Racetrack",
-"PC: tecla J monta/desmonta · Carreras en el Autódromo",
-"ПК: J — сесть/слезть · Гонки на Автодроме"
-],
-"🎄 Natal": [
-"🎄 Christmas",
-"🎄 Navidad",
-"🎄 Рождество"
-],
-"🎃 Halloween": [
-"🎃 Halloween",
-"🎃 Halloween",
-"🎃 Хэллоуин"
-],
-"🎆 Ano Novo": [
-"🎆 New Year",
-"🎆 Año Nuevo",
-"🎆 Новый год"
-],
-"🌐 Ranking online: #": [
-"🌐 Online ranking: #",
-"🌐 Ranking en línea: #",
-"🌐 Онлайн-рейтинг: #"
-],
-"Autódromo das Patas": [
-"Paws Racetrack",
-"Autódromo de las Patas",
-"Автодром Лап"
-],
-"🏁 LARGADA / CHEGADA": [
-"🏁 START / FINISH",
-"🏁 SALIDA / META",
-"🏁 СТАРТ / ФИНИШ"
-],
-"🏆 AUTÓDROMO DAS PATAS": [
-"🏆 PAWS RACETRACK",
-"🏆 AUTÓDROMO DE LAS PATAS",
-"🏆 АВТОДРОМ ЛАП"
-],
-"🐎 Montaria grátis: pise no círculo": [
-"🐎 Free mount: step on the circle",
-"🐎 Montura gratis: pisa el círculo",
-"🐎 Бесплатное ездовое: встань в круг"
-],
-"Locutor Bigode": [
-"Announcer Whiskers",
-"Locutor Bigote",
-"Комментатор Усач"
-],
-"Narrador da corrida": [
-"Race announcer",
-"Narrador de la carrera",
-"Комментатор гонки"
-],
-"Duas voltas, passando pelos 5 portais em ordem! As faixas amarelas dão turbo.": [
-"Two laps, going through the 5 gates in order! The yellow strips give a boost.",
-"¡Dos vueltas, pasando por los 5 portales en orden! Las franjas amarillas dan turbo.",
-"Два круга через 5 ворот по порядку! Жёлтые полосы дают ускорение."
-],
-"Sem montaria? Pegue uma grátis no estábulo!": [
-"No mount? Grab a free one at the stable!",
-"¿Sin montura? ¡Toma una gratis en el establo!",
-"Нет ездового? Возьми бесплатно в конюшне!"
-],
-"O melhor tempo de cada um vai para o ranking online!": [
-"Everyone's best time goes to the online ranking!",
-"¡El mejor tiempo de cada uno va al ranking en línea!",
-"Лучшее время каждого попадает в онлайн-рейтинг!"
-],
-"🏁 Ranking da Corrida": [
-"🏁 Race Ranking",
-"🏁 Ranking de la Carrera",
-"🏁 Рейтинг гонки"
-],
-"Ninguém correu ainda. Seja o primeiro!": [
-"Nobody has raced yet. Be the first!",
-"Nadie ha corrido aún. ¡Sé el primero!",
-"Ещё никто не гонял. Будь первым!"
-],
-"🏁 Valendo! ": [
-"🏁 Go! ",
-"🏁 ¡Ya! ",
-"🏁 Старт! "
-],
-" voltas pelos portais": [
-" laps through the gates",
-" vueltas por los portales",
-" круга через ворота"
-],
-"🔁 Última volta!": [
-"🔁 Final lap!",
-"🔁 ¡Última vuelta!",
-"🔁 Последний круг!"
-],
-"🏁 Volta ": [
-"🏁 Lap ",
-"🏁 Vuelta ",
-"🏁 Круг "
-],
-"  ·  portal ": [
-"  ·  gate ",
-"  ·  portal ",
-"  ·  ворота "
-],
-"🏆 Seu recorde: ": [
-"🏆 Your record: ",
-"🏆 Tu récord: ",
-"🏆 Твой рекорд: "
-],
-"🏁 Passe pela largada para começar": [
-"🏁 Cross the start line to begin",
-"🏁 Pasa por la salida para empezar",
-"🏁 Пересеки старт, чтобы начать"
-],
-"Atalho detectado: o tempo não vale": [
-"Shortcut detected: time doesn't count",
-"Atajo detectado: el tiempo no cuenta",
-"Обнаружен срез: время не засчитано"
-],
-"A pé": [
-"On foot",
-"A pie",
-"Пешком"
-],
-"Sem montaria": [
-"No mount",
-"Sin montura",
-"Без ездового"
-],
-"Gatão": [
-"Big Cat",
-"Gatazo",
-"Котище"
-],
-"+70% de velocidade": [
-"+70% speed",
-"+70% de velocidad",
-"+70% скорости"
-],
-"Skate Aero": [
-"Aero Skateboard",
-"Skate Aero",
-"Аэро-скейт"
-],
-"+110% de velocidade, com luz neon": [
-"+110% speed, with neon light",
-"+110% de velocidad, con luz neón",
-"+110% скорости и неоновая подсветка"
-],
-"Tigre": [
-"Tiger",
-"Tigre",
-"Тигр"
-],
-"+95% de velocidade": [
-"+95% speed",
-"+95% de velocidad",
-"+95% скорости"
-],
-"Pantera Neon": [
-"Neon Panther",
-"Pantera Neón",
-"Неоновая пантера"
-],
-"+115% de velocidade e olhos de laser": [
-"+115% speed and laser eyes",
-"+115% de velocidad y ojos láser",
-"+115% скорости и лазерные глаза"
-],
-"Nuvem Voadora": [
-"Flying Cloud",
-"Nube Voladora",
-"Летающее облако"
-],
-"VOA! Espaço sobe, C desce (no VR: aponte e segure o gatilho)": [
-"FLIES! Space goes up, C goes down (in VR: point and hold the trigger)",
-"¡VUELA! Espacio sube, C baja (en VR: apunta y mantén el gatillo)",
-"ЛЕТАЕТ! Пробел — вверх, C — вниз (в VR: наведи и держи курок)"
-],
-"Dragãozinho": [
-"Little Dragon",
-"Dragoncito",
-"Дракончик"
-],
-"VOA rápido! Precisa do nível 20": [
-"FLIES fast! Requires level 20",
-"¡VUELA rápido! Requiere nivel 20",
-"Быстро ЛЕТАЕТ! Нужен 20 уровень"
-],
-"Precisa do nível ": [
-"Requires level ",
-"Requiere nivel ",
-"Нужен уровень "
-],
-"🐎 Nova montaria: ": [
-"🐎 New mount: ",
-"🐎 Nueva montura: ",
-"🐎 Новое ездовое: "
-],
-"Você ainda não tem essa montaria": [
-"You don't have this mount yet",
-"Aún no tienes esta montura",
-"У тебя ещё нет этого ездового"
-],
-"🐎 Montado: ": [
-"🐎 Riding: ",
-"🐎 Montado: ",
-"🐎 Верхом: "
-],
-"🚶 Desmontou": [
-"🚶 Dismounted",
-"🚶 Desmontaste",
-"🚶 Слез"
-],
-"Você ainda não tem montaria (Menu rápido > 🐾 > Montarias)": [
-"You don't have a mount yet (Quick menu > 🐾 > Mounts)",
-"Aún no tienes montura (Menú rápido > 🐾 > Monturas)",
-"У тебя ещё нет ездового (Быстрое меню > 🐾 > Ездовые)"
-],
-"🐎 Montaria emprestada: ": [
-"🐎 Borrowed mount: ",
-"🐎 Montura prestada: ",
-"🐎 Ездовое напрокат: "
-],
-" (só neste mapa)": [
-" (this map only)",
-" (solo en este mapa)",
-" (только на этой карте)"
-],
-"Céu limpo": [
-"Clear sky",
-"Cielo despejado",
-"Ясно"
-],
-"Nublado": [
-"Cloudy",
-"Nublado",
-"Облачно"
-],
-"Chuva": [
-"Rain",
-"Lluvia",
-"Дождь"
-],
-"Tempestade": [
-"Storm",
-"Tormenta",
-"Гроза"
-],
-"Neblina": [
-"Fog",
-"Niebla",
-"Туман"
-],
-"Nevasca": [
-"Blizzard",
-"Nevada",
-"Метель"
-],
-"Tempestade de areia": [
-"Sandstorm",
-"Tormenta de arena",
-"Песчаная буря"
-],
-" chegando…": [
-" coming…",
-" llegando…",
-" приближается…"
-],
-"🎄 Feliz Natal!": [
-"🎄 Merry Christmas!",
-"🎄 ¡Feliz Navidad!",
-"🎄 С Рождеством!"
-],
-"🎃 Feliz Halloween!": [
-"🎃 Happy Halloween!",
-"🎃 ¡Feliz Halloween!",
-"🎃 Счастливого Хэллоуина!"
-],
-"🎆 Feliz Ano Novo!": [
-"🎆 Happy New Year!",
-"🎆 ¡Feliz Año Nuevo!",
-"🎆 С Новым годом!"
-],
-"Sushi": [
-"Sushi",
-"Sushi",
-"Суши"
-],
-"Peixe Assado": [
-"Grilled Fish",
-"Pescado Asado",
-"Жареная рыба"
-],
-"Sopa de Cogumelo": [
-"Mushroom Soup",
-"Sopa de Setas",
-"Грибной суп"
-],
-"Torta de Abóbora": [
-"Pumpkin Pie",
-"Tarta de Calabaza",
-"Тыквенный пирог"
-],
-"Suco de Cacto": [
-"Cactus Juice",
-"Jugo de Cactus",
-"Кактусовый сок"
-],
-"Sorvete de Neve": [
-"Snow Ice Cream",
-"Helado de Nieve",
-"Снежное мороженое"
-],
-"Trabalhador": [
-"Hard Worker",
-"Trabajador",
-"Трудяга"
-],
-"Faça 20 ações de profissão": [
-"Do 20 job actions",
-"Haz 20 acciones de profesión",
-"Сделай 20 рабочих действий"
-],
-"Comerciante": [
-"Merchant",
-"Comerciante",
-"Торговец"
-],
-"Venda 10 itens na sua lojinha": [
-"Sell 10 items in your shop",
-"Vende 10 objetos en tu tiendita",
-"Продай 10 предметов в своём магазинчике"
-],
-"💼 Trabalho: ": [
-"💼 Job: ",
-"💼 Trabajo: ",
-"💼 Работа: "
-],
-" · 🍖 comida": [
-" · 🍖 food",
-" · 🍖 comida",
-" · 🍖 еда"
-],
-"🍖 Comida": [
-"🍖 Food",
-"🍖 Comida",
-"🍖 Еда"
-],
-"+20% de XP por ": [
-"+20% XP for ",
-"+20% de XP por ",
-"+20% опыта на "
-],
-" · comida nas mercearias ou feita por cozinheiros": [
-" · food at grocers or made by cooks",
-" · comida en tiendas o hecha por cocineros",
-" · еда в лавках или от поваров"
-],
-"🍳 Cozinhar": [
-"🍳 Cook",
-"🍳 Cocinar",
-"🍳 Готовить"
-],
-"Pratos com peixe, cogumelo, abóbora…": [
-"Dishes with fish, mushroom, pumpkin…",
-"Platos con pescado, setas, calabaza…",
-"Блюда из рыбы, грибов, тыквы…"
-],
-"🛒 Minha lojinha": [
-"🛒 My shop",
-"🛒 Mi tiendita",
-"🛒 Мой магазинчик"
-],
-"Escolha o que vender (precisa do Caixa na casa)": [
-"Choose what to sell (needs the Shop Counter at home)",
-"Elige qué vender (necesita la Caja en casa)",
-"Выбери, что продавать (нужна касса дома)"
-],
-"🩺 Curar quem está perto": [
-"🩺 Heal someone nearby",
-"🩺 Curar a quien esté cerca",
-"🩺 Вылечить ближайшего"
-],
-"Cura total no jogador mais próximo (até 3 m)": [
-"Full heal on the nearest player (up to 3 m)",
-"Curación total al jugador más cercano (hasta 3 m)",
-"Полное лечение ближайшему игроку (до 3 м)"
-],
-"🚨 Sirene: LIGADA": [
-"🚨 Siren: ON",
-"🚨 Sirena: ENCENDIDA",
-"🚨 Сирена: ВКЛ"
-],
-"🚨 Sirene: desligada": [
-"🚨 Siren: off",
-"🚨 Sirena: apagada",
-"🚨 Сирена: выкл."
-],
-"📢 Apito": [
-"📢 Whistle",
-"📢 Silbato",
-"📢 Свисток"
-],
-"Todos perto ouvem": [
-"Everyone nearby hears it",
-"Todos cerca lo oyen",
-"Слышат все рядом"
-],
-"💧 Mangueira (5 s)": [
-"💧 Hose (5 s)",
-"💧 Manguera (5 s)",
-"💧 Шланг (5 с)"
-],
-"Mire numa fogueira (Colocar objetos > fogo)": [
-"Aim at a fire (Place objects > fire)",
-"Apunta a una fogata (Colocar objetos > fuego)",
-"Наведи на костёр (Поставить объекты > огонь)"
-],
-"📦 Entregar para ": [
-"📦 Deliver to ",
-"📦 Entregar a ",
-"📦 Доставить: "
-],
-"📦 Pegar uma entrega": [
-"📦 Take a delivery",
-"📦 Tomar una entrega",
-"📦 Взять доставку"
-],
-"Siga o brilho dourado": [
-"Follow the golden glow",
-"Sigue el brillo dorado",
-"Следуй за золотым сиянием"
-],
-"+12 moedas por entrega": [
-"+12 coins per delivery",
-"+12 monedas por entrega",
-"+12 монет за доставку"
-],
-"📚 Dar aula": [
-"📚 Teach a class",
-"📚 Dar clase",
-"📚 Провести урок"
-],
-"Quem estiver perto ganha +15 XP": [
-"Anyone nearby gets +15 XP",
-"Quien esté cerca gana +15 XP",
-"Все рядом получают +15 опыта"
-],
-"👔 Escolher profissão": [
-"👔 Choose a job",
-"👔 Elegir profesión",
-"👔 Выбрать профессию"
-],
-"Atual: ": [
-"Current: ",
-"Actual: ",
-"Сейчас: "
-],
-"Cozinheiro, médico, policial, bombeiro…": [
-"Cook, doctor, police, firefighter…",
-"Cocinero, médico, policía, bombero…",
-"Повар, врач, полицейский, пожарный…"
-],
-"Roupa e chapéu da profissão": [
-"Job outfit and hat",
-"Ropa y gorro de la profesión",
-"Форма и шапка профессии"
-],
-"🍖 Comer": [
-"🍖 Eat",
-"🍖 Comer",
-"🍖 Поесть"
-],
-"Comidas da bolsa": [
-"Food in your bag",
-"Comida de la bolsa",
-"Еда из сумки"
-],
-"👔 Profissões": [
-"👔 Jobs",
-"👔 Profesiones",
-"👔 Профессии"
-],
-"Sua bolsa não tem itens vendáveis.": [
-"Your bag has no sellable items.",
-"Tu bolsa no tiene objetos vendibles.",
-"В сумке нет товаров для продажи."
-],
-"✔ À venda: ": [
-"✔ For sale: ",
-"✔ A la venta: ",
-"✔ В продаже: "
-],
-" 💰 cada · toque para ": [
-" 💰 each · tap to ",
-" 💰 cada uno · toca para ",
-" 💰 за шт. · нажми, чтобы "
-],
-"tirar da vitrine": [
-"remove from display",
-"quitar del escaparate",
-"убрать с витрины"
-],
-"colocar à venda": [
-"put up for sale",
-"poner a la venta",
-"выставить на продажу"
-],
-"🟢 Loja ABERTA: visitantes compram no Caixa": [
-"🟢 Shop OPEN: visitors buy at the Counter",
-"🟢 Tienda ABIERTA: los visitantes compran en la Caja",
-"🟢 Магазин ОТКРЫТ: гости покупают на кассе"
-],
-"🔴 Fechada: fique na sua casa com um Caixa da lojinha": [
-"🔴 Closed: stay home with a Shop Counter",
-"🔴 Cerrada: quédate en tu casa con una Caja",
-"🔴 Закрыто: будь дома, где стоит касса"
-],
-"Vendas nesta sessão: ": [
-"Sales this session: ",
-"Ventas en esta sesión: ",
-"Продажи за сессию: "
-],
-" · +25% de bônus": [
-" · +25% bonus",
-" · +25% de bono",
-" · +25% бонус"
-],
-"🛍️ Lojinha": [
-"🛍️ Shop",
-"🛍️ Tiendita",
-"🛍️ Магазинчик"
-],
-"Abrindo a lojinha…": [
-"Opening the shop…",
-"Abriendo la tiendita…",
-"Открываю магазинчик…"
-],
-"O dono não está na loja agora.": [
-"The owner isn't at the shop right now.",
-"El dueño no está en la tienda ahora.",
-"Хозяина сейчас нет в магазине."
-],
-"A vitrine está vazia.": [
-"The display is empty.",
-"El escaparate está vacío.",
-"Витрина пуста."
-],
-"Estoque: ": [
-"Stock: ",
-"Existencias: ",
-"В наличии: "
-],
-"Chapéu de chef": [
-"Chef hat",
-"Gorro de chef",
-"Поварской колпак"
-],
-"Quepe de policial": [
-"Police cap",
-"Gorra de policía",
-"Полицейская фуражка"
-],
-"Capacete de bombeiro": [
-"Firefighter helmet",
-"Casco de bombero",
-"Пожарная каска"
-],
-"Avental de chef": [
-"Chef apron",
-"Delantal de chef",
-"Фартук повара"
-],
-"Uniforme policial": [
-"Police uniform",
-"Uniforme de policía",
-"Полицейская форма"
-],
-"Uniforme de bombeiro": [
-"Firefighter uniform",
-"Uniforme de bombero",
-"Форма пожарного"
-],
-"Avental de vendedor": [
-"Shopkeeper apron",
-"Delantal de vendedor",
-"Фартук продавца"
-],
-"Caixa da lojinha 🛒": [
-"Shop Counter 🛒",
-"Caja de la tiendita 🛒",
-"Касса магазинчика 🛒"
-],
-"Sem profissão": [
-"No job",
-"Sin profesión",
-"Без профессии"
-],
-"Escolha uma profissão para fazer roleplay e ganhar salário": [
-"Choose a job to roleplay and earn a salary",
-"Elige una profesión para hacer roleplay y ganar salario",
-"Выбери профессию для ролевой игры и зарплаты"
-],
-"Cozinheiro(a)": [
-"Cook",
-"Cocinero(a)",
-"Повар"
-],
-"Vendedor(a)": [
-"Shopkeeper",
-"Vendedor(a)",
-"Продавец"
-],
-"Médico(a)": [
-"Doctor",
-"Médico(a)",
-"Врач"
-],
-"Policial": [
-"Police",
-"Policía",
-"Полицейский"
-],
-"Bombeiro(a)": [
-"Firefighter",
-"Bombero(a)",
-"Пожарный"
-],
-"Entregador(a)": [
-"Courier",
-"Repartidor(a)",
-"Курьер"
-],
-"Professor(a)": [
-"Teacher",
-"Profesor(a)",
-"Учитель"
-],
-"Cozinhe pratos com o que pesca e coleta e venda na lojinha": [
-"Cook dishes from what you fish and gather, and sell them in your shop",
-"Cocina platos con lo que pescas y recolectas y véndelos en tu tiendita",
-"Готовь блюда из улова и находок и продавай в магазинчике"
-],
-"Lojinha na sua casa: +25% de bônus em cada venda": [
-"Shop at your home: +25% bonus on every sale",
-"Tiendita en tu casa: +25% de bono en cada venta",
-"Магазинчик дома: +25% к каждой продаже"
-],
-"Cure os jogadores que estiverem perto": [
-"Heal players who are nearby",
-"Cura a los jugadores cercanos",
-"Лечи игроков поблизости"
-],
-"Sirene, apito e salário por patrulhar": [
-"Siren, whistle and pay for patrolling",
-"Sirena, silbato y salario por patrullar",
-"Сирена, свисток и зарплата за патруль"
-],
-"Apague fogueiras com a mangueira": [
-"Put out fires with the hose",
-"Apaga fogatas con la manguera",
-"Туши костры из шланга"
-],
-"Leve encomendas até os NPCs do mapa": [
-"Carry packages to the map's NPCs",
-"Lleva paquetes a los NPC del mapa",
-"Доставляй посылки NPC на карте"
-],
-"Dê aulas: quem está perto ganha XP": [
-"Teach classes: anyone nearby gets XP",
-"Da clases: quien esté cerca gana XP",
-"Проводи уроки: все рядом получают опыт"
-],
-"💼 Agora você é ": [
-"💼 You are now ",
-"💼 Ahora eres ",
-"💼 Теперь ты "
-],
-"👔 Uniforme vestido!": [
-"👔 Uniform on!",
-"👔 ¡Uniforme puesto!",
-"👔 Форма надета!"
-],
-" moedas · ": [
-" coins · ",
-" monedas · ",
-" монет · "
-],
-"Faltam ingredientes": [
-"Missing ingredients",
-"Faltan ingredientes",
-"Не хватает ингредиентов"
-],
-"cozinhou ": [
-"cooked ",
-"cocinó ",
-"приготовил: "
-],
-"Chegue perto de um jogador (até 3 m)": [
-"Get close to a player (up to 3 m)",
-"Acércate a un jugador (hasta 3 m)",
-"Подойди к игроку (до 3 м)"
-],
-"Esse paciente acabou de ser atendido (": [
-"This patient was just treated (",
-"Este paciente acaba de ser atendido (",
-"Этого пациента только что лечили ("
-],
-"atendeu ": [
-"treated ",
-"atendió a ",
-"вылечил "
-],
-"Nenhum NPC longe o bastante neste mapa (vá para a Vila)": [
-"No NPC far enough on this map (go to the Village)",
-"Ningún NPC lo bastante lejos en este mapa (ve a la Villa)",
-"Нет достаточно далёких NPC (иди в деревню)"
-],
-"📦 Leve a encomenda para ": [
-"📦 Take the package to ",
-"📦 Lleva el paquete a ",
-"📦 Отнеси посылку: "
-],
-" (siga o brilho!)": [
-" (follow the glow!)",
-" (¡sigue el brillo!)",
-" (следуй за сиянием!)"
-],
-"Próxima aula em ": [
-"Next class in ",
-"Próxima clase en ",
-"Следующий урок через "
-],
-"aula para ": [
-"class for ",
-"clase para ",
-"урок для "
-],
-" aluno(s)": [
-" student(s)",
-" alumno(s)",
-" учеников"
-],
-" curou você!": [
-" healed you!",
-" te curó!",
-" вылечил тебя!"
-],
-"📚 Aula de ": [
-"📚 Class by ",
-"📚 Clase de ",
-"📚 Урок от "
-],
-": +15 XP": [
-": +15 XP",
-": +15 XP",
-": +15 опыта"
-],
-" comprou ": [
-" bought ",
-" compró ",
-" купил "
-],
-" (com bônus)": [
-" (with bonus)",
-" (con bono)",
-" (с бонусом)"
-],
-"Não deu: o item acabou ou a loja fechou": [
-"Didn't work: item sold out or the shop closed",
-"No se pudo: se agotó o la tienda cerró",
-"Не вышло: товар закончился или магазин закрыт"
-],
-"🛍️ Você comprou ": [
-"🛍️ You bought ",
-"🛍️ Compraste ",
-"🛍️ Ты купил "
-],
-"apagou um fogo": [
-"put out a fire",
-"apagó un fuego",
-"потушил огонь"
-],
-"📦 Obrigado!": [
-"📦 Thanks!",
-"📦 ¡Gracias!",
-"📦 Спасибо!"
-],
-"entrega para ": [
-"delivery to ",
-"entrega para ",
-"доставка: "
-],
-"patrulha": [
-"patrol",
-"patrulla",
-"патруль"
-],
-"🐎 MONTARIAS: Gatão, Tigre, Pantera Neon, Skate Aero, Nuvem Voadora e Dragãozinho (voam!). Corrida no novo Autódromo das Patas com ranking online.": [
-"🐎 MOUNTS: Big Cat, Tiger, Neon Panther, Aero Skateboard, Flying Cloud and Little Dragon (they fly!). Race at the new Paws Racetrack with an online ranking.",
-"🐎 MONTURAS: Gatazo, Tigre, Pantera Neón, Skate Aero, Nube Voladora y Dragoncito (¡vuelan!). Carreras en el nuevo Autódromo de las Patas con ranking en línea.",
-"🐎 ЕЗДОВЫЕ: Котище, Тигр, Неоновая пантера, Аэро-скейт, Летающее облако и Дракончик (летают!). Гонки на новом Автодроме Лап с онлайн-рейтингом."
-],
-"💼 PROFISSÕES: cozinheiro, vendedor, médico, policial, bombeiro, entregador e professor, com uniformes, salário e lojinha na sua casa.": [
-"💼 JOBS: cook, shopkeeper, doctor, police, firefighter, courier and teacher, with uniforms, salary and a shop in your home.",
-"💼 PROFESIONES: cocinero, vendedor, médico, policía, bombero, repartidor y profesor, con uniformes, salario y tiendita en tu casa.",
-"💼 ПРОФЕССИИ: повар, продавец, врач, полицейский, пожарный, курьер и учитель — с формой, зарплатой и магазинчиком дома."
-],
-"🌦️ CLIMA: chuva, tempestade, neblina, nevasca e tempestade de areia, iguais para todos. Natal, Halloween e Ano Novo automáticos.": [
-"🌦️ WEATHER: rain, storms, fog, blizzards and sandstorms, the same for everyone. Christmas, Halloween and New Year happen automatically.",
-"🌦️ CLIMA: lluvia, tormenta, niebla, nevada y tormenta de arena, igual para todos. Navidad, Halloween y Año Nuevo automáticos.",
-"🌦️ ПОГОДА: дождь, гроза, туман, метель и песчаная буря — одинаково для всех. Рождество, Хэллоуин и Новый год автоматически."
-],
-"🚩 Denunciar ": [
-"🚩 Report ",
-"🚩 Denunciar a ",
-"🚩 Пожаловаться на "
-],
-"Escolha o motivo. A denúncia vai para o admin com as últimas mensagens desse jogador.": [
-"Choose a reason. The report goes to the admin with this player's latest messages.",
-"Elige el motivo. La denuncia va al admin con los últimos mensajes de este jugador.",
-"Выбери причину. Жалоба уйдёт админу вместе с последними сообщениями игрока."
-],
-"🤬 Xingamento ou ofensa": [
-"🤬 Insults or offense",
-"🤬 Insultos u ofensas",
-"🤬 Оскорбления"
-],
-"😠 Assédio ou bullying": [
-"😠 Harassment or bullying",
-"😠 Acoso o bullying",
-"😠 Травля или домогательства"
-],
-"🎮 Trapaça ou hack": [
-"🎮 Cheating or hacking",
-"🎮 Trampa o hack",
-"🎮 Читы или взлом"
-],
-"🏷 Nome ou visual impróprio": [
-"🏷 Inappropriate name or look",
-"🏷 Nombre o aspecto inapropiado",
-"🏷 Неприемлемое имя или вид"
-],
-"📢 Spam": [
-"📢 Spam",
-"📢 Spam",
-"📢 Спам"
-],
-"❓ Outro motivo": [
-"❓ Other reason",
-"❓ Otro motivo",
-"❓ Другая причина"
-],
-"✏ Detalhes: ": [
-"✏ Details: ",
-"✏ Detalles: ",
-"✏ Подробности: "
-],
-"✏ Escrever detalhes (opcional)": [
-"✏ Write details (optional)",
-"✏ Escribir detalles (opcional)",
-"✏ Написать подробности (необязательно)"
-],
-"Detalhes da denúncia": [
-"Report details",
-"Detalles de la denuncia",
-"Подробности жалобы"
-],
-"🚩 Enviar denúncia": [
-"🚩 Send report",
-"🚩 Enviar denuncia",
-"🚩 Отправить жалобу"
-],
-"Escolha um motivo": [
-"Choose a reason",
-"Elige un motivo",
-"Выбери причину"
-],
-"🚩 Denúncia enviada. Obrigado por ajudar!": [
-"🚩 Report sent. Thanks for helping!",
-"🚩 Denuncia enviada. ¡Gracias por ayudar!",
-"🚩 Жалоба отправлена. Спасибо за помощь!"
-],
-"Se alguém te incomodar, você também pode silenciar (🔇) em Social > Jogadores.": [
-"If someone bothers you, you can also mute them (🔇) in Social > Players.",
-"Si alguien te molesta, también puedes silenciarlo (🔇) en Social > Jugadores.",
-"Если кто-то мешает, его можно заглушить (🔇) в «Общение > Игроки»."
-],
-"◀ Voltar": [
-"◀ Back",
-"◀ Volver",
-"◀ Назад"
-],
-"⛔ Banir ": [
-"⛔ Ban ",
-"⛔ Banear a ",
-"⛔ Забанить "
-],
-"Motivo:": [
-"Reason:",
-"Motivo:",
-"Причина:"
-],
-"Xingamento": [
-"Insults",
-"Insultos",
-"Оскорбления"
-],
-"Assédio": [
-"Harassment",
-"Acoso",
-"Травля"
-],
-"Trapaça": [
-"Cheating",
-"Trampa",
-"Читы"
-],
-"Nome impróprio": [
-"Bad name",
-"Nombre inapropiado",
-"Плохое имя"
-],
-"Spam": [
-"Spam",
-"Spam",
-"Спам"
-],
-"Outro": [
-"Other",
-"Otro",
-"Другое"
-],
-"Duração:": [
-"Duration:",
-"Duración:",
-"Срок:"
-],
-"1 hora": [
-"1 hour",
-"1 hora",
-"1 час"
-],
-"1 dia": [
-"1 day",
-"1 día",
-"1 день"
-],
-"7 dias": [
-"7 days",
-"7 días",
-"7 дней"
-],
-"Permanente": [
-"Permanent",
-"Permanente",
-"Навсегда"
-],
-"O banimento vale no servidor: a pessoa não consegue entrar, salvar nem aparecer para os outros até o prazo acabar.": [
-"The ban is enforced by the server: the person can't log in, save or appear to others until it ends.",
-"El baneo lo aplica el servidor: la persona no puede entrar, guardar ni aparecer para los demás hasta que termine.",
-"Бан действует на сервере: человек не сможет войти, сохраняться и быть видимым до конца срока."
-],
-"⛔ Confirmar banimento": [
-"⛔ Confirm ban",
-"⛔ Confirmar baneo",
-"⛔ Подтвердить бан"
-],
-"◀ Cancelar": [
-"◀ Cancel",
-"◀ Cancelar",
-"◀ Отмена"
-],
-" foi banido": [
-" was banned",
-" fue baneado",
-" забанен"
-],
-"🚩 Denúncias": [
-"🚩 Reports",
-"🚩 Denuncias",
-"🚩 Жалобы"
-],
-"⛔ Banidos": [
-"⛔ Banned",
-"⛔ Baneados",
-"⛔ Баны"
-],
-"⛔ Banir": [
-"⛔ Ban",
-"⛔ Banear",
-"⛔ Бан"
-],
-"⬅ Puxar": [
-"⬅ Pull",
-"⬅ Traer",
-"⬅ Притянуть"
-],
-"\"Vila\" e \"Puxar\" dependem do jogo do jogador obedecer. O ⛔ Banir vale no servidor.": [
-"\"Village\" and \"Pull\" depend on the player's game obeying. ⛔ Ban is enforced by the server.",
-"\"Villa\" y \"Traer\" dependen de que el juego del jugador obedezca. ⛔ Banear lo aplica el servidor.",
-"«Деревня» и «Притянуть» зависят от игры игрока. ⛔ Бан действует на сервере."
-],
-"Carregando denúncias…": [
-"Loading reports…",
-"Cargando denuncias…",
-"Загрузка жалоб…"
-],
-" denúncia(s) aberta(s)": [
-" open report(s)",
-" denuncia(s) abierta(s)",
-" открытых жалоб"
-],
-"Nenhuma denúncia aberta. 🎉": [
-"No open reports. 🎉",
-"Ninguna denuncia abierta. 🎉",
-"Открытых жалоб нет. 🎉"
-],
-" denúncias)": [
-" reports)",
-" denuncias)",
-" жалоб)"
-],
-"por ": [
-"by ",
-"por ",
-"от "
-],
-"sem mensagens no chat": [
-"no chat messages",
-"sin mensajes en el chat",
-"нет сообщений в чате"
-],
-"✔ Resolvida": [
-"✔ Resolved",
-"✔ Resuelta",
-"✔ Решено"
-],
-"Carregando…": [
-"Loading…",
-"Cargando…",
-"Загрузка…"
-],
-" jogador(es) banido(s)": [
-" banned player(s)",
-" jugador(es) baneado(s)",
-" забаненных игроков"
-],
-"Ninguém banido agora.": [
-"Nobody is banned right now.",
-"Nadie baneado ahora.",
-"Сейчас никто не забанен."
-],
-"sem motivo": [
-"no reason",
-"sin motivo",
-"без причины"
-],
-"até ": [
-"until ",
-"hasta ",
-"до "
-],
-"permanente": [
-"permanent",
-"permanente",
-"навсегда"
-],
-" · por ": [
-" · by ",
-" · por ",
-" · от "
-],
-"✅ Desbanir": [
-"✅ Unban",
-"✅ Desbanear",
-"✅ Разбанить"
-],
-" desbanido": [
-" unbanned",
-" desbaneado",
-" разбанен"
-],
-"Você já denunciou muito na última hora. Tente mais tarde.": [
-"You've reported a lot in the last hour. Try again later.",
-"Ya denunciaste mucho en la última hora. Inténtalo más tarde.",
-"Ты отправил много жалоб за час. Попробуй позже."
-],
-"Você já denunciou esse jogador agora há pouco.": [
-"You just reported this player.",
-"Ya denunciaste a este jugador hace poco.",
-"Ты уже жаловался на этого игрока недавно."
-],
-"Não foi possível enviar a denúncia": [
-"Couldn't send the report",
-"No se pudo enviar la denuncia",
-"Не удалось отправить жалобу"
-],
-"Não dá para banir outro admin": [
-"You can't ban another admin",
-"No se puede banear a otro admin",
-"Нельзя забанить другого админа"
-],
-"👥 Convidar": [
-"👥 Invite",
-"👥 Invitar",
-"👥 Позвать"
-],
-"Você foi banido do RoleVRGO": [
-"You were banned from RoleVRGO",
-"Fuiste baneado de RoleVRGO",
-"Тебя забанили в RoleVRGO"
-],
-"Se você acha que foi um engano, fale com o admin.": [
-"If you think this was a mistake, talk to the admin.",
-"Si crees que fue un error, habla con el admin.",
-"Если считаешь это ошибкой, напиши админу."
-],
-"Motivo: ": [
-"Reason: ",
-"Motivo: ",
-"Причина: "
-],
-"regras do jogo": [
-"game rules",
-"reglas del juego",
-"правила игры"
-],
-"Até ": [
-"Until ",
-"Hasta ",
-"До "
-],
-"Banimento permanente": [
-"Permanent ban",
-"Baneo permanente",
-"Бессрочный бан"
-],
-"Carregando o ranking…": [
-"Loading the ranking…",
-"Cargando el ranking…",
-"Загрузка рейтинга…"
-],
-"Offline: só o Claude aparece": [
-"Offline: only Claude shows up",
-"Sin conexión: solo aparece Claude",
-"Офлайн: виден только Claude"
-],
-"🤖 Você venceu o Claude! Mais rápido que a IA!": [
-"🤖 You beat Claude! Faster than the AI!",
-"🤖 ¡Le ganaste a Claude! ¡Más rápido que la IA!",
-"🤖 Ты обогнал Claude! Быстрее ИИ!"
-],
-"Mais rápido que a IA": [
-"Faster than the AI",
-"Más rápido que la IA",
-"Быстрее ИИ"
-],
-"Vença o tempo do Claude no Autódromo das Patas": [
-"Beat Claude's time at the Paws Racetrack",
-"Supera el tiempo de Claude en el Autódromo de las Patas",
-"Побей время Claude на Автодроме Лап"
-],
-"🤖 Você venceu o Claude!": [
-"🤖 You beat Claude!",
-"🤖 ¡Le ganaste a Claude!",
-"🤖 Ты обогнал Claude!"
-]
+ "🏠 Casa": [
+  "🏠 Home",
+  "🏠 Casa",
+  "🏠 Дом"
+ ],
+ " (decorando)": [
+  " (decorating)",
+  " (decorando)",
+  " (обустройство)"
+ ],
+ "Idade (roleplay)": [
+  "Age (roleplay)",
+  "Edad (roleplay)",
+  "Возраст (ролевая игра)"
+ ],
+ "Roupa": [
+  "Outfit",
+  "Ropa",
+  "Одежда"
+ ],
+ "Olhos de laser": [
+  "Laser eyes",
+  "Ojos láser",
+  "Лазерные глаза"
+ ],
+ "✨ Avatares prontos": [
+  "✨ Ready-made avatars",
+  "✨ Avatares listos",
+  "✨ Готовые аватары"
+ ],
+ "Família, escola, Trio da Ceia 🎄...": [
+  "Family, school, Christmas Dinner Trio 🎄...",
+  "Familia, escuela, Trío de la Cena 🎄...",
+  "Семья, школа, Рождественское трио 🎄..."
+ ],
+ "Filhotes e adolescentes são menores e veem o mundo mais de baixo.": [
+  "Kittens and teens are smaller and see the world from lower down.",
+  "Los cachorros y adolescentes son más pequeños y ven el mundo desde más abajo.",
+  "Котята и подростки меньше и видят мир снизу."
+ ],
+ "▼ Idade, roupa, laser e avatares prontos": [
+  "▼ Age, outfit, laser and ready-made avatars",
+  "▼ Edad, ropa, láser y avatares listos",
+  "▼ Возраст, одежда, лазер и готовые аватары"
+ ],
+ " · laser ": [
+  " · laser ",
+  " · láser ",
+  " · лазер "
+ ],
+ "🎄 Easter egg: Trio da Ceia (homenagem a @frostyresenha)": [
+  "🎄 Easter egg: Christmas Dinner Trio (tribute to @frostyresenha)",
+  "🎄 Easter egg: Trío de la Cena (homenaje a @frostyresenha)",
+  "🎄 Пасхалка: Рождественское трио (в честь @frostyresenha)"
+ ],
+ "Seu acessório conquistado continua. Ajuste depois em Avatar.": [
+  "Your earned accessory stays. Adjust it later in Avatar.",
+  "Tu accesorio ganado se mantiene. Ajústalo luego en Avatar.",
+  "Заработанный аксессуар остаётся. Настрой его потом в «Аватаре»."
+ ],
+ "🏠 Ir para minha casa": [
+  "🏠 Go to my home",
+  "🏠 Ir a mi casa",
+  "🏠 Домой"
+ ],
+ " móveis": [
+  " furniture",
+  " muebles",
+  " предметов мебели"
+ ],
+ "🏡 Trocar / comprar casa": [
+  "🏡 Change / buy house",
+  "🏡 Cambiar / comprar casa",
+  "🏡 Сменить / купить дом"
+ ],
+ " casas": [
+  " houses",
+  " casas",
+  " домов"
+ ],
+ "🔒 Visitas: ": [
+  "🔒 Visitors: ",
+  "🔒 Visitas: ",
+  "🔒 Гости: "
+ ],
+ "Todos": [
+  "Everyone",
+  "Todos",
+  "Все"
+ ],
+ "Só amigos": [
+  "Friends only",
+  "Solo amigos",
+  "Только друзья"
+ ],
+ "Trancada": [
+  "Locked",
+  "Cerrada",
+  "Заперто"
+ ],
+ "Amigos": [
+  "Friends",
+  "Amigos",
+  "Друзья"
+ ],
+ "Quem pode entrar na sua casa": [
+  "Who can enter your home",
+  "Quién puede entrar en tu casa",
+  "Кто может войти в твой дом"
+ ],
+ "Você está visitando: ": [
+  "You are visiting: ",
+  "Estás visitando: ",
+  "Ты в гостях у: "
+ ],
+ "Visite amigos em Social (botão 🏠).": [
+  "Visit friends in Social (🏠 button).",
+  "Visita amigos en Social (botón 🏠).",
+  "Ходи в гости через «Общение» (кнопка 🏠)."
+ ],
+ "✏ Decorar: LIGADO": [
+  "✏ Decorate: ON",
+  "✏ Decorar: ACTIVADO",
+  "✏ Обустройство: ВКЛ"
+ ],
+ "✏ Decorar: desligado": [
+  "✏ Decorate: off",
+  "✏ Decorar: apagado",
+  "✏ Обустройство: выкл."
+ ],
+ "Guardando móveis": [
+  "Storing furniture",
+  "Guardando muebles",
+  "Убираю мебель"
+ ],
+ "Colocando: ": [
+  "Placing: ",
+  "Colocando: ",
+  "Ставлю: "
+ ],
+ "Escolha um móvel": [
+  "Choose a piece of furniture",
+  "Elige un mueble",
+  "Выбери мебель"
+ ],
+ "Liga o modo de colocar móveis": [
+  "Turns on furniture placing",
+  "Activa el modo de colocar muebles",
+  "Включает режим расстановки мебели"
+ ],
+ "🛋 Catálogo de móveis": [
+  "🛋 Furniture catalog",
+  "🛋 Catálogo de muebles",
+  "🛋 Каталог мебели"
+ ],
+ " móveis · 💰 ": [
+  " items · 💰 ",
+  " muebles · 💰 ",
+  " предметов · 💰 "
+ ],
+ "⟲ Girar": [
+  "⟲ Rotate",
+  "⟲ Girar",
+  "⟲ Повернуть"
+ ],
+ "⟳ Girar": [
+  "⟳ Rotate",
+  "⟳ Girar",
+  "⟳ Повернуть"
+ ],
+ "📦 Guardar ✔": [
+  "📦 Store ✔",
+  "📦 Guardar ✔",
+  "📦 Убрать ✔"
+ ],
+ "📦 Guardar": [
+  "📦 Store",
+  "📦 Guardar",
+  "📦 Убрать"
+ ],
+ "↩ Desfazer": [
+  "↩ Undo",
+  "↩ Deshacer",
+  "↩ Отменить"
+ ],
+ "🎨 Cor: ": [
+  "🎨 Color: ",
+  "🎨 Color: ",
+  "🎨 Цвет: "
+ ],
+ "🧱 Parede": [
+  "🧱 Wall",
+  "🧱 Pared",
+  "🧱 Стены"
+ ],
+ "🪵 Chão": [
+  "🪵 Floor",
+  "🪵 Suelo",
+  "🪵 Пол"
+ ],
+ "🏡 Casas": [
+  "🏡 Houses",
+  "🏡 Casas",
+  "🏡 Дома"
+ ],
+ "🧹 Guardar tudo": [
+  "🧹 Store all",
+  "🧹 Guardar todo",
+  "🧹 Убрать всё"
+ ],
+ "🚪 Ir à Vila": [
+  "🚪 Go to Village",
+  "🚪 Ir a la Villa",
+  "🚪 В деревню"
+ ],
+ "🛋 Catálogo": [
+  "🛋 Catalog",
+  "🛋 Catálogo",
+  "🛋 Каталог"
+ ],
+ "Festa e Natal": [
+  "Party & Christmas",
+  "Fiesta y Navidad",
+  "Праздник и Рождество"
+ ],
+ "Compre uma vez e recoloque à vontade. Guardar devolve o móvel ao estoque.": [
+  "Buy once and re-place freely. Storing returns the item to your stock.",
+  "Compra una vez y recoloca cuando quieras. Guardar devuelve el mueble al inventario.",
+  "Купи один раз и переставляй сколько хочешь. «Убрать» возвращает мебель на склад."
+ ],
+ "No estoque: ": [
+  "In stock: ",
+  "En inventario: ",
+  "На складе: "
+ ],
+ " (grátis)": [
+  " (free)",
+  " (gratis)",
+  " (бесплатно)"
+ ],
+ " colocado(s)": [
+  " placed",
+  " colocado(s)",
+  " расставлено"
+ ],
+ " · moedas insuficientes": [
+  " · not enough coins",
+  " · monedas insuficientes",
+  " · не хватает монет"
+ ],
+ "Vá para sua casa para decorar": [
+  "Go to your home to decorate",
+  "Ve a tu casa para decorar",
+  "Иди домой, чтобы обустраивать"
+ ],
+ " · mire no chão (ou na parede) e aperte o gatilho": [
+  " · aim at the floor (or wall) and press the trigger",
+  " · apunta al suelo (o a la pared) y pulsa el gatillo",
+  " · наведи на пол (или стену) и нажми курок"
+ ],
+ "Sua casa atual": [
+  "Your current home",
+  "Tu casa actual",
+  "Твой текущий дом"
+ ],
+ "Toque para morar aqui (os móveis de cada casa ficam salvos)": [
+  "Tap to live here (each house keeps its furniture)",
+  "Toca para vivir aquí (los muebles de cada casa se guardan)",
+  "Нажми, чтобы жить здесь (мебель каждого дома сохраняется)"
+ ],
+ "Não foi possível abrir a casa": [
+  "Couldn't open the house",
+  "No se pudo abrir la casa",
+  "Не удалось открыть дом"
+ ],
+ " veio te visitar! 🏠": [
+  " came to visit you! 🏠",
+  " vino a visitarte! 🏠",
+  " пришёл в гости! 🏠"
+ ],
+ "Adulto": [
+  "Adult",
+  "Adulto",
+  "Взрослый"
+ ],
+ "Adolescente": [
+  "Teen",
+  "Adolescente",
+  "Подросток"
+ ],
+ "Filhote": [
+  "Kitten",
+  "Cachorro",
+  "Котёнок"
+ ],
+ "Nenhuma": [
+  "None",
+  "Ninguna",
+  "Нет"
+ ],
+ "Suéter de flocos": [
+  "Snowflake sweater",
+  "Suéter de copos",
+  "Свитер со снежинками"
+ ],
+ "Suéter listrado": [
+  "Striped sweater",
+  "Suéter a rayas",
+  "Полосатый свитер"
+ ],
+ "Suéter natalino": [
+  "Christmas sweater",
+  "Suéter navideño",
+  "Рождественский свитер"
+ ],
+ "Moletom": [
+  "Hoodie",
+  "Sudadera",
+  "Толстовка"
+ ],
+ "Camiseta": [
+  "T-shirt",
+  "Camiseta",
+  "Футболка"
+ ],
+ "Vestido": [
+  "Dress",
+  "Vestido",
+  "Платье"
+ ],
+ "Macacão": [
+  "Overalls",
+  "Overol",
+  "Комбинезон"
+ ],
+ "Jaleco": [
+  "Lab coat",
+  "Bata",
+  "Халат"
+ ],
+ "Uniforme escolar": [
+  "School uniform",
+  "Uniforme escolar",
+  "Школьная форма"
+ ],
+ "Pijama": [
+  "Pajamas",
+  "Pijama",
+  "Пижама"
+ ],
+ "Rosa": [
+  "Pink",
+  "Rosa",
+  "Розовый"
+ ],
+ "Azul": [
+  "Blue",
+  "Azul",
+  "Синий"
+ ],
+ "Verde": [
+  "Green",
+  "Verde",
+  "Зелёный"
+ ],
+ "Vermelho": [
+  "Red",
+  "Rojo",
+  "Красный"
+ ],
+ "Dourado": [
+  "Gold",
+  "Dorado",
+  "Золотой"
+ ],
+ "🎄 Laranjinha da Ceia": [
+  "🎄 Ginger of the Feast",
+  "🎄 Naranjito de la Cena",
+  "🎄 Рыжик с праздника"
+ ],
+ "🎄 Frajola da Ceia": [
+  "🎄 Tuxedo of the Feast",
+  "🎄 Esmoquin de la Cena",
+  "🎄 Фрачник с праздника"
+ ],
+ "🎄 Rajado da Ceia": [
+  "🎄 Tabby of the Feast",
+  "🎄 Atigrado de la Cena",
+  "🎄 Полосатик с праздника"
+ ],
+ "🍼 Filhote Laranja": [
+  "🍼 Orange Kitten",
+  "🍼 Cachorro Naranja",
+  "🍼 Рыжий котёнок"
+ ],
+ "🍼 Filhote Siamês": [
+  "🍼 Siamese Kitten",
+  "🍼 Cachorro Siamés",
+  "🍼 Сиамский котёнок"
+ ],
+ "🎒 Adolescente Estudante": [
+  "🎒 Student Teen",
+  "🎒 Adolescente Estudiante",
+  "🎒 Подросток-школьник"
+ ],
+ "🛹 Adolescente de Moletom": [
+  "🛹 Hoodie Teen",
+  "🛹 Adolescente con Sudadera",
+  "🛹 Подросток в толстовке"
+ ],
+ "👗 Mamãe Gata": [
+  "👗 Mommy Cat",
+  "👗 Mamá Gata",
+  "👗 Мама-кошка"
+ ],
+ "👔 Papai Gato": [
+  "👔 Daddy Cat",
+  "👔 Papá Gato",
+  "👔 Папа-кот"
+ ],
+ "🩺 Doutor Gato": [
+  "🩺 Doctor Cat",
+  "🩺 Doctor Gato",
+  "🩺 Доктор Кот"
+ ],
+ "🧰 Gato Fazendeiro": [
+  "🧰 Farmer Cat",
+  "🧰 Gato Granjero",
+  "🧰 Кот-фермер"
+ ],
+ "Original": [
+  "Original",
+  "Original",
+  "Исходный"
+ ],
+ "Laranja": [
+  "Orange",
+  "Naranja",
+  "Оранжевый"
+ ],
+ "Amarelo": [
+  "Yellow",
+  "Amarillo",
+  "Жёлтый"
+ ],
+ "Turquesa": [
+  "Turquoise",
+  "Turquesa",
+  "Бирюзовый"
+ ],
+ "Anil": [
+  "Indigo",
+  "Añil",
+  "Индиго"
+ ],
+ "Roxo": [
+  "Purple",
+  "Morado",
+  "Фиолетовый"
+ ],
+ "Branco": [
+  "White",
+  "Blanco",
+  "Белый"
+ ],
+ "Grafite": [
+  "Graphite",
+  "Grafito",
+  "Графит"
+ ],
+ "Madeira": [
+  "Wood",
+  "Madera",
+  "Дерево"
+ ],
+ "Cabana de Madeira": [
+  "Wooden Cabin",
+  "Cabaña de Madera",
+  "Деревянная хижина"
+ ],
+ "Casinha Colorida": [
+  "Colorful Cottage",
+  "Casita de Colores",
+  "Цветной домик"
+ ],
+ "Chalé na Neve": [
+  "Snow Chalet",
+  "Chalé en la Nieve",
+  "Шале в снегу"
+ ],
+ "Casa de Praia": [
+  "Beach House",
+  "Casa de Playa",
+  "Пляжный дом"
+ ],
+ "Bolha Aero": [
+  "Aero Bubble",
+  "Burbuja Aero",
+  "Аэро-пузырь"
+ ],
+ "Torre Sombria": [
+  "Shadow Tower",
+  "Torre Sombría",
+  "Мрачная башня"
+ ],
+ "Apê Poolrooms": [
+  "Poolrooms Flat",
+  "Depa Poolrooms",
+  "Квартира Poolrooms"
+ ],
+ "Mansão": [
+  "Mansion",
+  "Mansión",
+  "Особняк"
+ ],
+ "Sala": [
+  "Living room",
+  "Sala",
+  "Гостиная"
+ ],
+ "Quarto": [
+  "Bedroom",
+  "Dormitorio",
+  "Спальня"
+ ],
+ "Cozinha": [
+  "Kitchen",
+  "Cocina",
+  "Кухня"
+ ],
+ "Gatos": [
+  "Cats",
+  "Gatos",
+  "Кошкам"
+ ],
+ "Banheiro": [
+  "Bathroom",
+  "Baño",
+  "Ванная"
+ ],
+ "Escola": [
+  "School",
+  "Escuela",
+  "Школа"
+ ],
+ "Jardim": [
+  "Garden",
+  "Jardín",
+  "Сад"
+ ],
+ "Sofá": [
+  "Sofa",
+  "Sofá",
+  "Диван"
+ ],
+ "Poltrona": [
+  "Armchair",
+  "Sillón",
+  "Кресло"
+ ],
+ "Mesa de centro": [
+  "Coffee table",
+  "Mesa de centro",
+  "Журнальный столик"
+ ],
+ "Tapete": [
+  "Rug",
+  "Alfombra",
+  "Ковёр"
+ ],
+ "Tapete redondo": [
+  "Round rug",
+  "Alfombra redonda",
+  "Круглый ковёр"
+ ],
+ "Estante de livros": [
+  "Bookshelf",
+  "Estantería",
+  "Книжный шкаф"
+ ],
+ "Luminária": [
+  "Floor lamp",
+  "Lámpara",
+  "Торшер"
+ ],
+ "Lareira": [
+  "Fireplace",
+  "Chimenea",
+  "Камин"
+ ],
+ "Quadro (parede)": [
+  "Painting (wall)",
+  "Cuadro (pared)",
+  "Картина (на стену)"
+ ],
+ "Vaso de planta": [
+  "Potted plant",
+  "Maceta",
+  "Растение в горшке"
+ ],
+ "Piano": [
+  "Piano",
+  "Piano",
+  "Пианино"
+ ],
+ "Relógio de pé": [
+  "Grandfather clock",
+  "Reloj de pie",
+  "Напольные часы"
+ ],
+ "Cama de casal": [
+  "Double bed",
+  "Cama de matrimonio",
+  "Двуспальная кровать"
+ ],
+ "Cama de solteiro": [
+  "Single bed",
+  "Cama individual",
+  "Односпальная кровать"
+ ],
+ "Berço": [
+  "Crib",
+  "Cuna",
+  "Детская кроватка"
+ ],
+ "Caminha de gato": [
+  "Cat bed",
+  "Camita de gato",
+  "Кошачья лежанка"
+ ],
+ "Guarda-roupa": [
+  "Wardrobe",
+  "Armario",
+  "Шкаф"
+ ],
+ "Criado-mudo": [
+  "Nightstand",
+  "Mesita de noche",
+  "Тумбочка"
+ ],
+ "Escrivaninha": [
+  "Desk",
+  "Escritorio",
+  "Письменный стол"
+ ],
+ "Geladeira": [
+  "Fridge",
+  "Nevera",
+  "Холодильник"
+ ],
+ "Fogão": [
+  "Stove",
+  "Cocina (horno)",
+  "Плита"
+ ],
+ "Balcão": [
+  "Counter",
+  "Encimera",
+  "Кухонная тумба"
+ ],
+ "Pia": [
+  "Sink",
+  "Fregadero",
+  "Раковина"
+ ],
+ "Mesa de jantar": [
+  "Dining table",
+  "Mesa de comedor",
+  "Обеденный стол"
+ ],
+ "Cadeira": [
+  "Chair",
+  "Silla",
+  "Стул"
+ ],
+ "Tigela de ração": [
+  "Food bowl",
+  "Plato de comida",
+  "Миска с кормом"
+ ],
+ "Torre arranhador": [
+  "Scratching tower",
+  "Torre rascador",
+  "Когтеточка-башня"
+ ],
+ "Caixa de papelão": [
+  "Cardboard box",
+  "Caja de cartón",
+  "Картонная коробка"
+ ],
+ "Novelo de lã": [
+  "Ball of yarn",
+  "Ovillo de lana",
+  "Клубок шерсти"
+ ],
+ "Casinha de gato": [
+  "Cat house",
+  "Casita de gato",
+  "Кошачий домик"
+ ],
+ "Banheira": [
+  "Bathtub",
+  "Bañera",
+  "Ванна"
+ ],
+ "Vaso sanitário": [
+  "Toilet",
+  "Inodoro",
+  "Унитаз"
+ ],
+ "Espelho (parede)": [
+  "Mirror (wall)",
+  "Espejo (pared)",
+  "Зеркало (на стену)"
+ ],
+ "Árvore de Natal": [
+  "Christmas tree",
+  "Árbol de Navidad",
+  "Ёлка"
+ ],
+ "Mesa da Ceia 🦃": [
+  "Christmas Feast Table 🦃",
+  "Mesa de la Cena 🦃",
+  "Праздничный стол 🦃"
+ ],
+ "Globo de laser 🪩": [
+  "Laser globe 🪩",
+  "Globo láser 🪩",
+  "Лазерный шар 🪩"
+ ],
+ "Presentes": [
+  "Presents",
+  "Regalos",
+  "Подарки"
+ ],
+ "Boneco de neve": [
+  "Snowman",
+  "Muñeco de nieve",
+  "Снеговик"
+ ],
+ "Pisca-pisca": [
+  "Fairy lights",
+  "Luces navideñas",
+  "Гирлянда"
+ ],
+ "Balões": [
+  "Balloons",
+  "Globos",
+  "Шарики"
+ ],
+ "Lousa (parede)": [
+  "Blackboard (wall)",
+  "Pizarra (pared)",
+  "Доска (на стену)"
+ ],
+ "Carteira escolar": [
+  "School desk",
+  "Pupitre",
+  "Школьная парта"
+ ],
+ "Globo terrestre": [
+  "Globe",
+  "Globo terráqueo",
+  "Глобус"
+ ],
+ "Árvore": [
+  "Tree",
+  "Árbol",
+  "Дерево"
+ ],
+ "Canteiro de flores": [
+  "Flower bed",
+  "Macizo de flores",
+  "Клумба"
+ ],
+ "Banco de praça": [
+  "Park bench",
+  "Banco de parque",
+  "Скамейка"
+ ],
+ "Fonte": [
+  "Fountain",
+  "Fuente",
+  "Фонтан"
+ ],
+ "Poste de luz": [
+  "Lamp post",
+  "Farola",
+  "Фонарь"
+ ],
+ "Cerca": [
+  "Fence",
+  "Valla",
+  "Забор"
+ ],
+ "Baú": [
+  "Chest",
+  "Cofre",
+  "Сундук"
+ ],
+ "Trampolim": [
+  "Trampoline",
+  "Trampolín",
+  "Батут"
+ ],
+ "Fogueira": [
+  "Campfire",
+  "Fogata",
+  "Костёр"
+ ],
+ "Minha casa": [
+  "My home",
+  "Mi casa",
+  "Мой дом"
+ ],
+ "Casa de ": [
+  "Home of ",
+  "Casa de ",
+  "Дом: "
+ ],
+ "Offline: não dá para visitar agora": [
+  "Offline: can't visit right now",
+  "Sin conexión: no se puede visitar ahora",
+  "Нет сети: сейчас нельзя в гости"
+ ],
+ "O servidor ainda não tem casas (rode supabase/homes.sql)": [
+  "The server has no houses yet (run supabase/homes.sql)",
+  "El servidor aún no tiene casas (ejecuta supabase/homes.sql)",
+  "На сервере ещё нет домов (запусти supabase/homes.sql)"
+ ],
+ "Jogador não encontrado": [
+  "Player not found",
+  "Jugador no encontrado",
+  "Игрок не найден"
+ ],
+ " só recebe amigos": [
+  " only lets friends in",
+  " solo recibe amigos",
+  " пускает только друзей"
+ ],
+ "🔒 A casa de ": [
+  "🔒 The home of ",
+  "🔒 La casa de ",
+  "🔒 Дом игрока "
+ ],
+ " está trancada": [
+  " is locked",
+  " está cerrada",
+  " заперт"
+ ],
+ "✏ Decorando: ": [
+  "✏ Decorating: ",
+  "✏ Decorando: ",
+  "✏ Обустройство: "
+ ],
+ " — gatilho coloca": [
+  " — trigger places it",
+  " — el gatillo lo coloca",
+  " — курок ставит"
+ ],
+ "✏ Escolha um móvel no catálogo": [
+  "✏ Choose furniture in the catalog",
+  "✏ Elige un mueble en el catálogo",
+  "✏ Выбери мебель в каталоге"
+ ],
+ "Casa inválida": [
+  "Invalid house",
+  "Casa inválida",
+  "Неверный дом"
+ ],
+ "🏠 Nova casa: ": [
+  "🏠 New house: ",
+  "🏠 Nueva casa: ",
+  "🏠 Новый дом: "
+ ],
+ "Nada para guardar aqui": [
+  "Nothing to store here",
+  "Nada que guardar aquí",
+  "Здесь нечего убирать"
+ ],
+ "Escolha um móvel no catálogo": [
+  "Choose furniture in the catalog",
+  "Elige un mueble en el catálogo",
+  "Выбери мебель в каталоге"
+ ],
+ " guardado (pode recolocar de graça)": [
+  " stored (re-place it for free)",
+  " guardado (puedes recolocarlo gratis)",
+  " убрано (можно поставить снова бесплатно)"
+ ],
+ "Limite de ": [
+  "Limit of ",
+  "Límite de ",
+  "Лимит: "
+ ],
+ " móveis nesta casa": [
+  " items in this house",
+  " muebles en esta casa",
+  " предметов в этом доме"
+ ],
+ " moedas para ": [
+  " coins for ",
+  " monedas para ",
+  " монет на "
+ ],
+ "🪩 Festa!": [
+  "🪩 Party!",
+  "🪩 ¡Fiesta!",
+  "🪩 Вечеринка!"
+ ],
+ "Faltam ": [
+  "Need ",
+  "Faltan ",
+  "Не хватает "
+ ],
+ "🏠 CASAS: 8 estilos para morar, 53 móveis, cor de parede e chão (Menu rápido > Casa).": [
+  "🏠 HOMES: 8 styles to live in, 53 furniture items, wall and floor colors (Quick menu > Home).",
+  "🏠 CASAS: 8 estilos para vivir, 53 muebles, color de pared y suelo (Menú rápido > Casa).",
+  "🏠 ДОМА: 8 стилей, 53 предмета мебели, цвет стен и пола (Быстрое меню > Дом)."
+ ],
+ "Visite a casa dos amigos pelo botão 🏠 em Social (aberta, só amigos ou trancada).": [
+  "Visit your friends' homes with the 🏠 button in Social (open, friends only or locked).",
+  "Visita la casa de tus amigos con el botón 🏠 en Social (abierta, solo amigos o cerrada).",
+  "Ходи в гости к друзьям кнопкой 🏠 в «Общении» (открыто, только друзья или заперто)."
+ ],
+ "Idades para roleplay: adulto, adolescente e filhote, e 10 roupas novas.": [
+  "Roleplay ages: adult, teen and kitten, plus 10 new outfits.",
+  "Edades para roleplay: adulto, adolescente y cachorro, y 10 ropas nuevas.",
+  "Возраст для ролевой игры: взрослый, подросток и котёнок, плюс 10 новых нарядов."
+ ],
+ "Avatares prontos, incluindo o Trio da Ceia 🎄 com olhos de laser (easter egg).": [
+  "Ready-made avatars, including the Christmas Dinner Trio 🎄 with laser eyes (easter egg).",
+  "Avatares listos, incluido el Trío de la Cena 🎄 con ojos láser (easter egg).",
+  "Готовые аватары, включая Рождественское трио 🎄 с лазерными глазами (пасхалка)."
+ ],
+ "Criado por hark  ·  Programado com Claude (Anthropic) 🤖💛": [
+  "Created by hark  ·  Coded with Claude (Anthropic) 🤖💛",
+  "Creado por hark  ·  Programado con Claude (Anthropic) 🤖💛",
+  "Автор: hark  ·  Код написан вместе с Claude (Anthropic) 🤖💛"
+ ],
+ "🐾 Patas no mouse: LIGADO (H desliga) · rodinha = alcance": [
+  "🐾 Paws on mouse: ON (H turns off) · wheel = reach",
+  "🐾 Patas con el ratón: ACTIVADO (H desactiva) · rueda = alcance",
+  "🐾 Лапы на мыши: ВКЛ (H — выкл.) · колёсико = дальность"
+ ],
+ "🐾 Patas no mouse: desligado (mouse volta a olhar)": [
+  "🐾 Paws on mouse: off (mouse looks around again)",
+  "🐾 Patas con el ratón: desactivado (el ratón vuelve a mirar)",
+  "🐾 Лапы на мыши: выкл. (мышь снова вращает камеру)"
+ ],
+ "• PC: H liga \"patas no mouse\" (ou segure o botão do meio): o mouse move as patas e a câmera fica parada. Encoste no chão, segure o clique e arraste o mouse para trás para se impulsionar, como no Gorilla Tag. Rodinha = alcance.": [
+  "• PC: H turns on \"paws on mouse\" (or hold the middle button): the mouse moves the paws and the camera stays still. Touch the ground, hold click and drag the mouse back to push yourself, like Gorilla Tag. Wheel = reach.",
+  "• PC: H activa \"patas con el ratón\" (o mantén el botón central): el ratón mueve las patas y la cámara se queda quieta. Toca el suelo, mantén el clic y arrastra el ratón hacia atrás para impulsarte, como en Gorilla Tag. Rueda = alcance.",
+  "• ПК: H включает «лапы на мыши» (или зажми среднюю кнопку): мышь двигает лапы, камера стоит на месте. Коснись земли, зажми клик и тяни мышь назад, чтобы оттолкнуться, как в Gorilla Tag. Колёсико = дальность."
+ ],
+ "💬 Chat": [
+  "💬 Chat",
+  "💬 Chat",
+  "💬 Чат"
+ ],
+ "🎙 Voz: ": [
+  "🎙 Voice: ",
+  "🎙 Voz: ",
+  "🎙 Голос: "
+ ],
+ "microfone ligado": [
+  "mic on",
+  "micrófono activado",
+  "микрофон вкл."
+ ],
+ "só ouvindo": [
+  "listening only",
+  "solo escuchando",
+  "только слушаю"
+ ],
+ "desligada": [
+  "off",
+  "apagada",
+  "выкл."
+ ],
+ "🎙 Chat de voz": [
+  "🎙 Voice chat",
+  "🎙 Chat de voz",
+  "🎙 Голосовой чат"
+ ],
+ "Este navegador não tem chat de voz.": [
+  "This browser has no voice chat.",
+  "Este navegador no tiene chat de voz.",
+  "В этом браузере нет голосового чата."
+ ],
+ "Este navegador não tem chat de voz": [
+  "This browser has no voice chat",
+  "Este navegador no tiene chat de voz",
+  "В этом браузере нет голосового чата"
+ ],
+ "🎙 Microfone: LIGADO": [
+  "🎙 Microphone: ON",
+  "🎙 Micrófono: ACTIVADO",
+  "🎙 Микрофон: ВКЛ"
+ ],
+ "🎙 Microfone: desligado": [
+  "🎙 Microphone: off",
+  "🎙 Micrófono: apagado",
+  "🎙 Микрофон: выкл."
+ ],
+ "Todos perto de você ouvem · toque para desligar": [
+  "Everyone near you can hear · tap to turn off",
+  "Todos cerca de ti te oyen · toca para apagar",
+  "Тебя слышат все рядом · нажми, чтобы выключить"
+ ],
+ "Toque para falar com quem está perto": [
+  "Tap to talk to people nearby",
+  "Toca para hablar con quien está cerca",
+  "Нажми, чтобы говорить с теми, кто рядом"
+ ],
+ "🔊 Ouvir vozes: ligado": [
+  "🔊 Hear voices: on",
+  "🔊 Oír voces: activado",
+  "🔊 Слышать голоса: вкл."
+ ],
+ "🔇 Ouvir vozes: desligado": [
+  "🔇 Hear voices: off",
+  "🔇 Oír voces: apagado",
+  "🔇 Слышать голоса: выкл."
+ ],
+ "Desligar também fecha o seu microfone": [
+  "Turning off also closes your mic",
+  "Apagar también cierra tu micrófono",
+  "Выключение также закрывает микрофон"
+ ],
+ "👥 Com quem: ": [
+  "👥 With: ",
+  "👥 Con quién: ",
+  "👥 С кем: "
+ ],
+ "Só amigos e grupo": [
+  "Friends and party only",
+  "Solo amigos y grupo",
+  "Только друзья и группа"
+ ],
+ "Toque para trocar": [
+  "Tap to change",
+  "Toca para cambiar",
+  "Нажми, чтобы сменить"
+ ],
+ "Conectados por voz: ": [
+  "Voice connected: ",
+  "Conectados por voz: ",
+  "На голосовой связи: "
+ ],
+ "  (sem microfone)": [
+  "  (no mic)",
+  "  (sin micrófono)",
+  "  (без микрофона)"
+ ],
+ "Nunca diga seu endereço, telefone ou senhas.": [
+  "Never share your address, phone number or passwords.",
+  "Nunca digas tu dirección, teléfono o contraseñas.",
+  "Никогда не называй адрес, телефон или пароли."
+ ],
+ "Microfone bloqueado: permita o acesso ao microfone no navegador": [
+  "Microphone blocked: allow microphone access in the browser",
+  "Micrófono bloqueado: permite el acceso al micrófono en el navegador",
+  "Микрофон заблокирован: разреши доступ к микрофону в браузере"
+ ],
+ "🎙 Microfone ligado (N desliga)": [
+  "🎙 Microphone on (N turns off)",
+  "🎙 Micrófono activado (N apaga)",
+  "🎙 Микрофон вкл. (N — выкл.)"
+ ],
+ "🎙 Microfone desligado": [
+  "🎙 Microphone off",
+  "🎙 Micrófono apagado",
+  "🎙 Микрофон выкл."
+ ],
+ "Mais perto = mais alto. Silenciar: Social > Jogadores.": [
+  "Closer = louder. Mute: Social > Players.",
+  "Más cerca = más alto. Silenciar: Social > Jugadores.",
+  "Ближе = громче. Заглушить: Общение > Игроки."
+ ],
+ "Infecção Nuclear ☢️": [
+  "Nuclear Infection ☢️",
+  "Infección Nuclear ☢️",
+  "Ядерная инфекция ☢️"
+ ],
+ "☢ INFECÇÃO NUCLEAR": [
+  "☢ NUCLEAR INFECTION",
+  "☢ INFECCIÓN NUCLEAR",
+  "☢ ЯДЕРНАЯ ИНФЕКЦИЯ"
+ ],
+ "Pega-pega: encoste a pata para infectar!": [
+  "Tag: touch with your paw to infect!",
+  "Pilla-pilla: ¡toca con la pata para infectar!",
+  "Салки: коснись лапой, чтобы заразить!"
+ ],
+ "☢ Infecção Nuclear": [
+  "☢ Nuclear Infection",
+  "☢ Infección Nuclear",
+  "☢ Ядерная инфекция"
+ ],
+ "Pega-pega radioativo! Um gato começa INFECTADO. Para infectar, encoste a PATA em quem não está infectado.": [
+  "Radioactive tag! One cat starts INFECTED. To infect, touch an uninfected cat with your PAW.",
+  "¡Pilla-pilla radiactivo! Un gato empieza INFECTADO. Para infectar, toca con la PATA a quien no esté infectado.",
+  "Радиоактивные салки! Один кот начинает ЗАРАЖЁННЫМ. Чтобы заразить, коснись ЛАПОЙ незаражённого."
+ ],
+ "☣ Infectados: acessórios derretem, dentes enormes, olhos verdes e +5% de velocidade.": [
+  "☣ Infected: accessories melt, huge teeth, green eyes and +5% speed.",
+  "☣ Infectados: los accesorios se derriten, dientes enormes, ojos verdes y +5% de velocidad.",
+  "☣ Заражённые: аксессуары плавятся, огромные зубы, зелёные глаза и +5% скорости."
+ ],
+ "🐱 Sobreviva até o tempo acabar para ganhar a rodada.": [
+  "🐱 Survive until time runs out to win the round.",
+  "🐱 Sobrevive hasta que se acabe el tiempo para ganar la ronda.",
+  "🐱 Продержись до конца времени, чтобы выиграть раунд."
+ ],
+ "🤖 Jogar com bots": [
+  "🤖 Play with bots",
+  "🤖 Jugar con bots",
+  "🤖 Играть с ботами"
+ ],
+ "👥 Multiplayer real": [
+  "👥 Real multiplayer",
+  "👥 Multijugador real",
+  "👥 Настоящий мультиплеер"
+ ],
+ "No multiplayer, todos da sua sala neste mapa jogam juntos.": [
+  "In multiplayer, everyone in your room on this map plays together.",
+  "En multijugador, todos los de tu sala en este mapa juegan juntos.",
+  "В мультиплеере вместе играют все из твоей комнаты на этой карте."
+ ],
+ "🚪 Voltar para a Vila": [
+  "🚪 Back to the Village",
+  "🚪 Volver a la Villa",
+  "🚪 Вернуться в деревню"
+ ],
+ "☢ Infecção: trocar modo": [
+  "☢ Infection: change mode",
+  "☢ Infección: cambiar modo",
+  "☢ Инфекция: сменить режим"
+ ],
+ "🤖 Modo com bots: ": [
+  "🤖 Bots mode: ",
+  "🤖 Modo con bots: ",
+  "🤖 Режим с ботами: "
+ ],
+ " bots entraram": [
+  " bots joined",
+  " bots entraron",
+  " ботов вошли"
+ ],
+ "👥 Multiplayer: esperando pelo menos 2 jogadores": [
+  "👥 Multiplayer: waiting for at least 2 players",
+  "👥 Multijugador: esperando al menos 2 jugadores",
+  "👥 Мультиплеер: ждём минимум 2 игроков"
+ ],
+ "☢ Esperando jogadores (": [
+  "☢ Waiting for players (",
+  "☢ Esperando jugadores (",
+  "☢ Ждём игроков ("
+ ],
+ "☢ Rodada começa em ": [
+  "☢ Round starts in ",
+  "☢ La ronda empieza en ",
+  "☢ Раунд начнётся через "
+ ],
+ "☣ INFECTADO": [
+  "☣ INFECTED",
+  "☣ INFECTADO",
+  "☣ ЗАРАЖЁН"
+ ],
+ "🏃 FUJA!": [
+  "🏃 RUN!",
+  "🏃 ¡HUYE!",
+  "🏃 БЕГИ!"
+ ],
+ "☣ Os infectados venceram!": [
+  "☣ The infected won!",
+  "☣ ¡Ganaron los infectados!",
+  "☣ Заражённые победили!"
+ ],
+ "🐱 Os sobreviventes venceram!": [
+  "🐱 The survivors won!",
+  "🐱 ¡Ganaron los supervivientes!",
+  "🐱 Выжившие победили!"
+ ],
+ "☣ VOCÊ É O PACIENTE ZERO! Pegue todo mundo!": [
+  "☣ YOU ARE PATIENT ZERO! Catch everyone!",
+  "☣ ¡ERES EL PACIENTE CERO! ¡Atrapa a todos!",
+  "☣ ТЫ НУЛЕВОЙ ПАЦИЕНТ! Поймай всех!"
+ ],
+ "☢ Rodada ": [
+  "☢ Round ",
+  "☢ Ronda ",
+  "☢ Раунд "
+ ],
+ ": fuja do infectado!": [
+  ": run from the infected!",
+  ": ¡huye del infectado!",
+  ": беги от заражённого!"
+ ],
+ "☣ VOCÊ FOI INFECTADO! Agora pegue os outros!": [
+  "☣ YOU GOT INFECTED! Now catch the others!",
+  "☣ ¡TE INFECTARON! ¡Ahora atrapa a los demás!",
+  "☣ ТЕБЯ ЗАРАЗИЛИ! Теперь лови остальных!"
+ ],
+ " foi infectado!": [
+  " got infected!",
+  " fue infectado!",
+  " заражён!"
+ ],
+ "🏆 Você sobreviveu! +40 XP, +30 moedas": [
+  "🏆 You survived! +40 XP, +30 coins",
+  "🏆 ¡Sobreviviste! +40 XP, +30 monedas",
+  "🏆 Ты выжил! +40 опыта, +30 монет"
+ ],
+ "☣ Infecção total! +20 XP, +10 moedas": [
+  "☣ Total infection! +20 XP, +10 coins",
+  "☣ ¡Infección total! +20 XP, +10 monedas",
+  "☣ Полное заражение! +20 опыта, +10 монет"
+ ],
+ "Visite todos os 14 mapas": [
+  "Visit all 14 maps",
+  "Visita los 14 mapas",
+  "Посети все 14 карт"
+ ],
+ "Paciente Zero": [
+  "Patient Zero",
+  "Paciente Cero",
+  "Нулевой пациент"
+ ],
+ "Infecte 25 gatos na Infecção Nuclear": [
+  "Infect 25 cats in Nuclear Infection",
+  "Infecta 25 gatos en Infección Nuclear",
+  "Зарази 25 котов в «Ядерной инфекции»"
+ ],
+ "Imune": [
+  "Immune",
+  "Inmune",
+  "Иммунный"
+ ],
+ "Sobreviva a 5 rodadas da Infecção Nuclear": [
+  "Survive 5 rounds of Nuclear Infection",
+  "Sobrevive 5 rondas de Infección Nuclear",
+  "Переживи 5 раундов «Ядерной инфекции»"
+ ],
+ "☢️ NOVO MAPA: Infecção Nuclear, pega-pega com bots ou multiplayer real. Encoste a pata para infectar!": [
+  "☢️ NEW MAP: Nuclear Infection, tag with bots or real multiplayer. Touch with your paw to infect!",
+  "☢️ NUEVO MAPA: Infección Nuclear, pilla-pilla con bots o multijugador real. ¡Toca con la pata para infectar!",
+  "☢️ НОВАЯ КАРТА: Ядерная инфекция, салки с ботами или с живыми игроками. Коснись лапой, чтобы заразить!"
+ ],
+ "🎙 Chat de voz posicional e 💬 chat no VR pelo menu rápido. PC: H = patas no mouse, N = microfone.": [
+  "🎙 Positional voice chat and 💬 chat in VR from the quick menu. PC: H = paws on mouse, N = microphone.",
+  "🎙 Chat de voz posicional y 💬 chat en VR desde el menú rápido. PC: H = patas con el ratón, N = micrófono.",
+  "🎙 Позиционный голосовой чат и 💬 чат в VR через быстрое меню. ПК: H — лапы на мыши, N — микрофон."
+ ],
+ "Azarado e ao mesmo tempo sortudo": [
+  "Unlucky and lucky at the same time",
+  "Desafortunado y afortunado a la vez",
+  "Невезучий и везучий одновременно"
+ ],
+ "❓ Conquista secreta": [
+  "❓ Secret achievement",
+  "❓ Logro secreto",
+  "❓ Секретное достижение"
+ ],
+ " foi atingido por um raio!": [
+  " got struck by lightning!",
+  " fue alcanzado por un rayo!",
+  " поражён молнией!"
+ ],
+ "⚡ Você levou um RAIO e ficou todo torrado!": [
+  "⚡ Lightning struck you and you're totally toasted!",
+  "⚡ ¡Te cayó un RAYO y quedaste todo tostado!",
+  "⚡ В тебя ударила МОЛНИЯ, и ты весь поджарился!"
+ ],
+ "Levou um raio na cabeça e ficou torrado (0,001% por milissegundo)": [
+  "Got struck by lightning and toasted (0.001% per millisecond)",
+  "Le cayó un rayo y quedó tostado (0,001% por milisegundo)",
+  "Получил молнией и поджарился (0,001% в миллисекунду)"
+ ],
+ "Visite todos os 17 mapas": [
+  "Visit all 17 maps",
+  "Visita los 17 mapas",
+  "Посети все 17 карт"
+ ],
+ "Rei das Nuvens": [
+  "King of the Clouds",
+  "Rey de las Nubes",
+  "Король облаков"
+ ],
+ "Complete a Corrida nas Nuvens nas Ilhas do Céu": [
+  "Finish the Cloud Race on the Sky Islands",
+  "Completa la Carrera en las Nubes en las Islas del Cielo",
+  "Пройди «Гонку в облаках» на Небесных островах"
+ ],
+ "Pé Quente": [
+  "Hot Feet",
+  "Pies Calientes",
+  "Горячие пятки"
+ ],
+ "Encoste na lava 5 vezes no Vulcão Ardente": [
+  "Touch the lava 5 times in the Burning Volcano",
+  "Toca la lava 5 veces en el Volcán Ardiente",
+  "Коснись лавы 5 раз в Огненном вулкане"
+ ],
+ "Ilhas do Céu": [
+  "Sky Islands",
+  "Islas del Cielo",
+  "Небесные острова"
+ ],
+ "🏆 CHEGADA": [
+  "🏆 FINISH",
+  "🏆 META",
+  "🏆 ФИНИШ"
+ ],
+ "🏁 Corrida nas Nuvens: chegue ao troféu!": [
+  "🏁 Cloud Race: reach the trophy!",
+  "🏁 Carrera en las Nubes: ¡llega al trofeo!",
+  "🏁 Гонка в облаках: доберись до кубка!"
+ ],
+ "🌀 Trampolins e anéis te lançam longe": [
+  "🌀 Trampolines and rings launch you far",
+  "🌀 Trampolines y anillos te lanzan lejos",
+  "🌀 Батуты и кольца далеко подбрасывают"
+ ],
+ "🏆 Recorde: ": [
+  "🏆 Record: ",
+  "🏆 Récord: ",
+  "🏆 Рекорд: "
+ ],
+ "🏁 Corrida nas Nuvens": [
+  "🏁 Cloud Race",
+  "🏁 Carrera en las Nubes",
+  "🏁 Гонка в облаках"
+ ],
+ "⏱ Valendo! Chegue ao troféu": [
+  "⏱ Go! Reach the trophy",
+  "⏱ ¡Ya! Llega al trofeo",
+  "⏱ Старт! Доберись до кубка"
+ ],
+ "🚩 Checkpoint!": [
+  "🚩 Checkpoint!",
+  "🚩 ¡Punto de control!",
+  "🚩 Чекпоинт!"
+ ],
+ "Atalho detectado: o tempo não vale como recorde": [
+  "Shortcut detected: this time doesn't count as a record",
+  "Atajo detectado: el tiempo no cuenta como récord",
+  "Обнаружен срез: время не засчитано"
+ ],
+ "🏆 NOVO RECORDE: ": [
+  "🏆 NEW RECORD: ",
+  "🏆 NUEVO RÉCORD: ",
+  "🏆 НОВЫЙ РЕКОРД: "
+ ],
+ "🏁 Chegou! ": [
+  "🏁 Finished! ",
+  "🏁 ¡Llegaste! ",
+  "🏁 Финиш! "
+ ],
+ " (recorde ": [
+  " (record ",
+  " (récord ",
+  " (рекорд "
+ ],
+ "☁ Caiu nas nuvens! Voltando ao checkpoint": [
+  "☁ Fell into the clouds! Back to the checkpoint",
+  "☁ ¡Caíste en las nubes! Volviendo al punto de control",
+  "☁ Упал в облака! Возврат к чекпоинту"
+ ],
+ "  ·  recorde ": [
+  "  ·  record ",
+  "  ·  récord ",
+  "  ·  рекорд "
+ ],
+ "Vulcão Ardente": [
+  "Burning Volcano",
+  "Volcán Ardiente",
+  "Огненный вулкан"
+ ],
+ "🌋 Vulcão Ardente: não pise na lava!": [
+  "🌋 Burning Volcano: don't step in the lava!",
+  "🌋 Volcán Ardiente: ¡no pises la lava!",
+  "🌋 Огненный вулкан: не наступай в лаву!"
+ ],
+ "! −18 de vida": [
+  "! −18 health",
+  "! −18 de vida",
+  "! −18 здоровья"
+ ],
+ "Lava": [
+  "Lava",
+  "Lava",
+  "Лава"
+ ],
+ "a lava 🔥": [
+  "the lava 🔥",
+  "la lava 🔥",
+  "лава 🔥"
+ ],
+ "uma bola de fogo 🔥": [
+  "a fireball 🔥",
+  "una bola de fuego 🔥",
+  "огненный шар 🔥"
+ ],
+ "Bola de fogo": [
+  "Fireball",
+  "Bola de fuego",
+  "Огненный шар"
+ ],
+ "Neon City": [
+  "Neon City",
+  "Neon City",
+  "Неон-Сити"
+ ],
+ "🌃 Neon City": [
+  "🌃 Neon City",
+  "🌃 Neon City",
+  "🌃 Неон-Сити"
+ ],
+ "Guia da Neon City": [
+  "Neon City guide",
+  "Guía de Neon City",
+  "Гид Неон-Сити"
+ ],
+ "Bem-vinde à Neon City! Os trampolins levam aos telhados.": [
+  "Welcome to Neon City! The trampolines take you to the rooftops.",
+  "¡Bienvenide a Neon City! Los trampolines llevan a los tejados.",
+  "Добро пожаловать в Неон-Сити! Батуты ведут на крыши."
+ ],
+ "Já viu o holograma da praça? Ele dança a noite toda.": [
+  "Have you seen the hologram in the square? It dances all night.",
+  "¿Viste el holograma de la plaza? Baila toda la noche.",
+  "Видел голограмму на площади? Она танцует всю ночь."
+ ],
+ "Dizem que tem caixas perdidas nos telhados...": [
+  "They say there are lost boxes on the rooftops...",
+  "Dicen que hay cajas perdidas en los tejados...",
+  "Говорят, на крышах потерялись коробки..."
+ ],
+ "☁️🌋🌃 3 MAPAS NOVOS: Ilhas do Céu (corrida com cronômetro), Vulcão Ardente (lava e erupções) e Neon City (chuva, holograma e carros voadores).": [
+  "☁️🌋🌃 3 NEW MAPS: Sky Islands (timed race), Burning Volcano (lava and eruptions) and Neon City (rain, hologram and flying cars).",
+  "☁️🌋🌃 3 MAPAS NUEVOS: Islas del Cielo (carrera con cronómetro), Volcán Ardiente (lava y erupciones) y Neon City (lluvia, holograma y coches voladores).",
+  "☁️🌋🌃 3 НОВЫЕ КАРТЫ: Небесные острова (гонка на время), Огненный вулкан (лава и извержения) и Неон-Сити (дождь, голограмма и летающие машины)."
+ ],
+ "✨ Efeitos novos: rastros de velocidade, portais com partículas, lava animada, chuva e sons novos (boing, whoosh, lava, chuva).": [
+  "✨ New effects: speed trails, particle portals, animated lava, rain and new sounds (boing, whoosh, lava, rain).",
+  "✨ Efectos nuevos: estelas de velocidad, portales con partículas, lava animada, lluvia y sonidos nuevos (boing, whoosh, lava, lluvia).",
+  "✨ Новые эффекты: следы скорости, порталы с частицами, анимированная лава, дождь и новые звуки (боинг, вжух, лава, дождь)."
+ ],
+ "Visite todos os 18 mapas": [
+  "Visit all 18 maps",
+  "Visita los 18 mapas",
+  "Посети все 18 карт"
+ ],
+ "Piloto": [
+  "Racer",
+  "Piloto",
+  "Гонщик"
+ ],
+ "Complete uma corrida no Autódromo das Patas": [
+  "Finish a race at the Paws Racetrack",
+  "Completa una carrera en el Autódromo de las Patas",
+  "Пройди гонку на Автодроме Лап"
+ ],
+ "🐾 Bichinho e montaria": [
+  "🐾 Pet and mount",
+  "🐾 Mascota y montura",
+  "🐾 Питомец и ездовое"
+ ],
+ "🐎 Montarias": [
+  "🐎 Mounts",
+  "🐎 Monturas",
+  "🐎 Ездовые"
+ ],
+ " (montado)": [
+  " (riding)",
+  " (montado)",
+  " (верхом)"
+ ],
+ "🔒 Precisa do nível ": [
+  "🔒 Requires level ",
+  "🔒 Requiere nivel ",
+  "🔒 Нужен уровень "
+ ],
+ "Montado · ": [
+  "Riding · ",
+  "Montado · ",
+  "Верхом · "
+ ],
+ "Toque para montar · ": [
+  "Tap to ride · ",
+  "Toca para montar · ",
+  "Нажми, чтобы сесть · "
+ ],
+ "PC: tecla J monta/desmonta · Corrida de montaria no Autódromo": [
+  "PC: J key mounts/dismounts · Mount races at the Racetrack",
+  "PC: tecla J monta/desmonta · Carreras en el Autódromo",
+  "ПК: J — сесть/слезть · Гонки на Автодроме"
+ ],
+ "🎄 Natal": [
+  "🎄 Christmas",
+  "🎄 Navidad",
+  "🎄 Рождество"
+ ],
+ "🎃 Halloween": [
+  "🎃 Halloween",
+  "🎃 Halloween",
+  "🎃 Хэллоуин"
+ ],
+ "🎆 Ano Novo": [
+  "🎆 New Year",
+  "🎆 Año Nuevo",
+  "🎆 Новый год"
+ ],
+ "🌐 Ranking online: #": [
+  "🌐 Online ranking: #",
+  "🌐 Ranking en línea: #",
+  "🌐 Онлайн-рейтинг: #"
+ ],
+ "Autódromo das Patas": [
+  "Paws Racetrack",
+  "Autódromo de las Patas",
+  "Автодром Лап"
+ ],
+ "🏁 LARGADA / CHEGADA": [
+  "🏁 START / FINISH",
+  "🏁 SALIDA / META",
+  "🏁 СТАРТ / ФИНИШ"
+ ],
+ "🏆 AUTÓDROMO DAS PATAS": [
+  "🏆 PAWS RACETRACK",
+  "🏆 AUTÓDROMO DE LAS PATAS",
+  "🏆 АВТОДРОМ ЛАП"
+ ],
+ "🐎 Montaria grátis: pise no círculo": [
+  "🐎 Free mount: step on the circle",
+  "🐎 Montura gratis: pisa el círculo",
+  "🐎 Бесплатное ездовое: встань в круг"
+ ],
+ "Locutor Bigode": [
+  "Announcer Whiskers",
+  "Locutor Bigote",
+  "Комментатор Усач"
+ ],
+ "Narrador da corrida": [
+  "Race announcer",
+  "Narrador de la carrera",
+  "Комментатор гонки"
+ ],
+ "Duas voltas, passando pelos 5 portais em ordem! As faixas amarelas dão turbo.": [
+  "Two laps, going through the 5 gates in order! The yellow strips give a boost.",
+  "¡Dos vueltas, pasando por los 5 portales en orden! Las franjas amarillas dan turbo.",
+  "Два круга через 5 ворот по порядку! Жёлтые полосы дают ускорение."
+ ],
+ "Sem montaria? Pegue uma grátis no estábulo!": [
+  "No mount? Grab a free one at the stable!",
+  "¿Sin montura? ¡Toma una gratis en el establo!",
+  "Нет ездового? Возьми бесплатно в конюшне!"
+ ],
+ "O melhor tempo de cada um vai para o ranking online!": [
+  "Everyone's best time goes to the online ranking!",
+  "¡El mejor tiempo de cada uno va al ranking en línea!",
+  "Лучшее время каждого попадает в онлайн-рейтинг!"
+ ],
+ "🏁 Ranking da Corrida": [
+  "🏁 Race Ranking",
+  "🏁 Ranking de la Carrera",
+  "🏁 Рейтинг гонки"
+ ],
+ "Ninguém correu ainda. Seja o primeiro!": [
+  "Nobody has raced yet. Be the first!",
+  "Nadie ha corrido aún. ¡Sé el primero!",
+  "Ещё никто не гонял. Будь первым!"
+ ],
+ "🏁 Valendo! ": [
+  "🏁 Go! ",
+  "🏁 ¡Ya! ",
+  "🏁 Старт! "
+ ],
+ " voltas pelos portais": [
+  " laps through the gates",
+  " vueltas por los portales",
+  " круга через ворота"
+ ],
+ "🔁 Última volta!": [
+  "🔁 Final lap!",
+  "🔁 ¡Última vuelta!",
+  "🔁 Последний круг!"
+ ],
+ "🏁 Volta ": [
+  "🏁 Lap ",
+  "🏁 Vuelta ",
+  "🏁 Круг "
+ ],
+ "  ·  portal ": [
+  "  ·  gate ",
+  "  ·  portal ",
+  "  ·  ворота "
+ ],
+ "🏆 Seu recorde: ": [
+  "🏆 Your record: ",
+  "🏆 Tu récord: ",
+  "🏆 Твой рекорд: "
+ ],
+ "🏁 Passe pela largada para começar": [
+  "🏁 Cross the start line to begin",
+  "🏁 Pasa por la salida para empezar",
+  "🏁 Пересеки старт, чтобы начать"
+ ],
+ "Atalho detectado: o tempo não vale": [
+  "Shortcut detected: time doesn't count",
+  "Atajo detectado: el tiempo no cuenta",
+  "Обнаружен срез: время не засчитано"
+ ],
+ "A pé": [
+  "On foot",
+  "A pie",
+  "Пешком"
+ ],
+ "Sem montaria": [
+  "No mount",
+  "Sin montura",
+  "Без ездового"
+ ],
+ "Gatão": [
+  "Big Cat",
+  "Gatazo",
+  "Котище"
+ ],
+ "+70% de velocidade": [
+  "+70% speed",
+  "+70% de velocidad",
+  "+70% скорости"
+ ],
+ "Skate Aero": [
+  "Aero Skateboard",
+  "Skate Aero",
+  "Аэро-скейт"
+ ],
+ "+110% de velocidade, com luz neon": [
+  "+110% speed, with neon light",
+  "+110% de velocidad, con luz neón",
+  "+110% скорости и неоновая подсветка"
+ ],
+ "Tigre": [
+  "Tiger",
+  "Tigre",
+  "Тигр"
+ ],
+ "+95% de velocidade": [
+  "+95% speed",
+  "+95% de velocidad",
+  "+95% скорости"
+ ],
+ "Pantera Neon": [
+  "Neon Panther",
+  "Pantera Neón",
+  "Неоновая пантера"
+ ],
+ "+115% de velocidade e olhos de laser": [
+  "+115% speed and laser eyes",
+  "+115% de velocidad y ojos láser",
+  "+115% скорости и лазерные глаза"
+ ],
+ "Nuvem Voadora": [
+  "Flying Cloud",
+  "Nube Voladora",
+  "Летающее облако"
+ ],
+ "VOA! Espaço sobe, C desce (no VR: aponte e segure o gatilho)": [
+  "FLIES! Space goes up, C goes down (in VR: point and hold the trigger)",
+  "¡VUELA! Espacio sube, C baja (en VR: apunta y mantén el gatillo)",
+  "ЛЕТАЕТ! Пробел — вверх, C — вниз (в VR: наведи и держи курок)"
+ ],
+ "Dragãozinho": [
+  "Little Dragon",
+  "Dragoncito",
+  "Дракончик"
+ ],
+ "VOA rápido! Precisa do nível 20": [
+  "FLIES fast! Requires level 20",
+  "¡VUELA rápido! Requiere nivel 20",
+  "Быстро ЛЕТАЕТ! Нужен 20 уровень"
+ ],
+ "Precisa do nível ": [
+  "Requires level ",
+  "Requiere nivel ",
+  "Нужен уровень "
+ ],
+ "🐎 Nova montaria: ": [
+  "🐎 New mount: ",
+  "🐎 Nueva montura: ",
+  "🐎 Новое ездовое: "
+ ],
+ "Você ainda não tem essa montaria": [
+  "You don't have this mount yet",
+  "Aún no tienes esta montura",
+  "У тебя ещё нет этого ездового"
+ ],
+ "🐎 Montado: ": [
+  "🐎 Riding: ",
+  "🐎 Montado: ",
+  "🐎 Верхом: "
+ ],
+ "🚶 Desmontou": [
+  "🚶 Dismounted",
+  "🚶 Desmontaste",
+  "🚶 Слез"
+ ],
+ "Você ainda não tem montaria (Menu rápido > 🐾 > Montarias)": [
+  "You don't have a mount yet (Quick menu > 🐾 > Mounts)",
+  "Aún no tienes montura (Menú rápido > 🐾 > Monturas)",
+  "У тебя ещё нет ездового (Быстрое меню > 🐾 > Ездовые)"
+ ],
+ "🐎 Montaria emprestada: ": [
+  "🐎 Borrowed mount: ",
+  "🐎 Montura prestada: ",
+  "🐎 Ездовое напрокат: "
+ ],
+ " (só neste mapa)": [
+  " (this map only)",
+  " (solo en este mapa)",
+  " (только на этой карте)"
+ ],
+ "Céu limpo": [
+  "Clear sky",
+  "Cielo despejado",
+  "Ясно"
+ ],
+ "Nublado": [
+  "Cloudy",
+  "Nublado",
+  "Облачно"
+ ],
+ "Chuva": [
+  "Rain",
+  "Lluvia",
+  "Дождь"
+ ],
+ "Tempestade": [
+  "Storm",
+  "Tormenta",
+  "Гроза"
+ ],
+ "Neblina": [
+  "Fog",
+  "Niebla",
+  "Туман"
+ ],
+ "Nevasca": [
+  "Blizzard",
+  "Nevada",
+  "Метель"
+ ],
+ "Tempestade de areia": [
+  "Sandstorm",
+  "Tormenta de arena",
+  "Песчаная буря"
+ ],
+ " chegando…": [
+  " coming…",
+  " llegando…",
+  " приближается…"
+ ],
+ "🎄 Feliz Natal!": [
+  "🎄 Merry Christmas!",
+  "🎄 ¡Feliz Navidad!",
+  "🎄 С Рождеством!"
+ ],
+ "🎃 Feliz Halloween!": [
+  "🎃 Happy Halloween!",
+  "🎃 ¡Feliz Halloween!",
+  "🎃 Счастливого Хэллоуина!"
+ ],
+ "🎆 Feliz Ano Novo!": [
+  "🎆 Happy New Year!",
+  "🎆 ¡Feliz Año Nuevo!",
+  "🎆 С Новым годом!"
+ ],
+ "Sushi": [
+  "Sushi",
+  "Sushi",
+  "Суши"
+ ],
+ "Peixe Assado": [
+  "Grilled Fish",
+  "Pescado Asado",
+  "Жареная рыба"
+ ],
+ "Sopa de Cogumelo": [
+  "Mushroom Soup",
+  "Sopa de Setas",
+  "Грибной суп"
+ ],
+ "Torta de Abóbora": [
+  "Pumpkin Pie",
+  "Tarta de Calabaza",
+  "Тыквенный пирог"
+ ],
+ "Suco de Cacto": [
+  "Cactus Juice",
+  "Jugo de Cactus",
+  "Кактусовый сок"
+ ],
+ "Sorvete de Neve": [
+  "Snow Ice Cream",
+  "Helado de Nieve",
+  "Снежное мороженое"
+ ],
+ "Trabalhador": [
+  "Hard Worker",
+  "Trabajador",
+  "Трудяга"
+ ],
+ "Faça 20 ações de profissão": [
+  "Do 20 job actions",
+  "Haz 20 acciones de profesión",
+  "Сделай 20 рабочих действий"
+ ],
+ "Comerciante": [
+  "Merchant",
+  "Comerciante",
+  "Торговец"
+ ],
+ "Venda 10 itens na sua lojinha": [
+  "Sell 10 items in your shop",
+  "Vende 10 objetos en tu tiendita",
+  "Продай 10 предметов в своём магазинчике"
+ ],
+ "💼 Trabalho: ": [
+  "💼 Job: ",
+  "💼 Trabajo: ",
+  "💼 Работа: "
+ ],
+ " · 🍖 comida": [
+  " · 🍖 food",
+  " · 🍖 comida",
+  " · 🍖 еда"
+ ],
+ "🍖 Comida": [
+  "🍖 Food",
+  "🍖 Comida",
+  "🍖 Еда"
+ ],
+ "+20% de XP por ": [
+  "+20% XP for ",
+  "+20% de XP por ",
+  "+20% опыта на "
+ ],
+ " · comida nas mercearias ou feita por cozinheiros": [
+  " · food at grocers or made by cooks",
+  " · comida en tiendas o hecha por cocineros",
+  " · еда в лавках или от поваров"
+ ],
+ "🍳 Cozinhar": [
+  "🍳 Cook",
+  "🍳 Cocinar",
+  "🍳 Готовить"
+ ],
+ "Pratos com peixe, cogumelo, abóbora…": [
+  "Dishes with fish, mushroom, pumpkin…",
+  "Platos con pescado, setas, calabaza…",
+  "Блюда из рыбы, грибов, тыквы…"
+ ],
+ "🛒 Minha lojinha": [
+  "🛒 My shop",
+  "🛒 Mi tiendita",
+  "🛒 Мой магазинчик"
+ ],
+ "Escolha o que vender (precisa do Caixa na casa)": [
+  "Choose what to sell (needs the Shop Counter at home)",
+  "Elige qué vender (necesita la Caja en casa)",
+  "Выбери, что продавать (нужна касса дома)"
+ ],
+ "🩺 Curar quem está perto": [
+  "🩺 Heal someone nearby",
+  "🩺 Curar a quien esté cerca",
+  "🩺 Вылечить ближайшего"
+ ],
+ "Cura total no jogador mais próximo (até 3 m)": [
+  "Full heal on the nearest player (up to 3 m)",
+  "Curación total al jugador más cercano (hasta 3 m)",
+  "Полное лечение ближайшему игроку (до 3 м)"
+ ],
+ "🚨 Sirene: LIGADA": [
+  "🚨 Siren: ON",
+  "🚨 Sirena: ENCENDIDA",
+  "🚨 Сирена: ВКЛ"
+ ],
+ "🚨 Sirene: desligada": [
+  "🚨 Siren: off",
+  "🚨 Sirena: apagada",
+  "🚨 Сирена: выкл."
+ ],
+ "📢 Apito": [
+  "📢 Whistle",
+  "📢 Silbato",
+  "📢 Свисток"
+ ],
+ "Todos perto ouvem": [
+  "Everyone nearby hears it",
+  "Todos cerca lo oyen",
+  "Слышат все рядом"
+ ],
+ "💧 Mangueira (5 s)": [
+  "💧 Hose (5 s)",
+  "💧 Manguera (5 s)",
+  "💧 Шланг (5 с)"
+ ],
+ "Mire numa fogueira (Colocar objetos > fogo)": [
+  "Aim at a fire (Place objects > fire)",
+  "Apunta a una fogata (Colocar objetos > fuego)",
+  "Наведи на костёр (Поставить объекты > огонь)"
+ ],
+ "📦 Entregar para ": [
+  "📦 Deliver to ",
+  "📦 Entregar a ",
+  "📦 Доставить: "
+ ],
+ "📦 Pegar uma entrega": [
+  "📦 Take a delivery",
+  "📦 Tomar una entrega",
+  "📦 Взять доставку"
+ ],
+ "Siga o brilho dourado": [
+  "Follow the golden glow",
+  "Sigue el brillo dorado",
+  "Следуй за золотым сиянием"
+ ],
+ "+12 moedas por entrega": [
+  "+12 coins per delivery",
+  "+12 monedas por entrega",
+  "+12 монет за доставку"
+ ],
+ "📚 Dar aula": [
+  "📚 Teach a class",
+  "📚 Dar clase",
+  "📚 Провести урок"
+ ],
+ "Quem estiver perto ganha +15 XP": [
+  "Anyone nearby gets +15 XP",
+  "Quien esté cerca gana +15 XP",
+  "Все рядом получают +15 опыта"
+ ],
+ "👔 Escolher profissão": [
+  "👔 Choose a job",
+  "👔 Elegir profesión",
+  "👔 Выбрать профессию"
+ ],
+ "Atual: ": [
+  "Current: ",
+  "Actual: ",
+  "Сейчас: "
+ ],
+ "Cozinheiro, médico, policial, bombeiro…": [
+  "Cook, doctor, police, firefighter…",
+  "Cocinero, médico, policía, bombero…",
+  "Повар, врач, полицейский, пожарный…"
+ ],
+ "Roupa e chapéu da profissão": [
+  "Job outfit and hat",
+  "Ropa y gorro de la profesión",
+  "Форма и шапка профессии"
+ ],
+ "🍖 Comer": [
+  "🍖 Eat",
+  "🍖 Comer",
+  "🍖 Поесть"
+ ],
+ "Comidas da bolsa": [
+  "Food in your bag",
+  "Comida de la bolsa",
+  "Еда из сумки"
+ ],
+ "👔 Profissões": [
+  "👔 Jobs",
+  "👔 Profesiones",
+  "👔 Профессии"
+ ],
+ "Sua bolsa não tem itens vendáveis.": [
+  "Your bag has no sellable items.",
+  "Tu bolsa no tiene objetos vendibles.",
+  "В сумке нет товаров для продажи."
+ ],
+ "✔ À venda: ": [
+  "✔ For sale: ",
+  "✔ A la venta: ",
+  "✔ В продаже: "
+ ],
+ " 💰 cada · toque para ": [
+  " 💰 each · tap to ",
+  " 💰 cada uno · toca para ",
+  " 💰 за шт. · нажми, чтобы "
+ ],
+ "tirar da vitrine": [
+  "remove from display",
+  "quitar del escaparate",
+  "убрать с витрины"
+ ],
+ "colocar à venda": [
+  "put up for sale",
+  "poner a la venta",
+  "выставить на продажу"
+ ],
+ "🟢 Loja ABERTA: visitantes compram no Caixa": [
+  "🟢 Shop OPEN: visitors buy at the Counter",
+  "🟢 Tienda ABIERTA: los visitantes compran en la Caja",
+  "🟢 Магазин ОТКРЫТ: гости покупают на кассе"
+ ],
+ "🔴 Fechada: fique na sua casa com um Caixa da lojinha": [
+  "🔴 Closed: stay home with a Shop Counter",
+  "🔴 Cerrada: quédate en tu casa con una Caja",
+  "🔴 Закрыто: будь дома, где стоит касса"
+ ],
+ "Vendas nesta sessão: ": [
+  "Sales this session: ",
+  "Ventas en esta sesión: ",
+  "Продажи за сессию: "
+ ],
+ " · +25% de bônus": [
+  " · +25% bonus",
+  " · +25% de bono",
+  " · +25% бонус"
+ ],
+ "🛍️ Lojinha": [
+  "🛍️ Shop",
+  "🛍️ Tiendita",
+  "🛍️ Магазинчик"
+ ],
+ "Abrindo a lojinha…": [
+  "Opening the shop…",
+  "Abriendo la tiendita…",
+  "Открываю магазинчик…"
+ ],
+ "O dono não está na loja agora.": [
+  "The owner isn't at the shop right now.",
+  "El dueño no está en la tienda ahora.",
+  "Хозяина сейчас нет в магазине."
+ ],
+ "A vitrine está vazia.": [
+  "The display is empty.",
+  "El escaparate está vacío.",
+  "Витрина пуста."
+ ],
+ "Estoque: ": [
+  "Stock: ",
+  "Existencias: ",
+  "В наличии: "
+ ],
+ "Chapéu de chef": [
+  "Chef hat",
+  "Gorro de chef",
+  "Поварской колпак"
+ ],
+ "Quepe de policial": [
+  "Police cap",
+  "Gorra de policía",
+  "Полицейская фуражка"
+ ],
+ "Capacete de bombeiro": [
+  "Firefighter helmet",
+  "Casco de bombero",
+  "Пожарная каска"
+ ],
+ "Avental de chef": [
+  "Chef apron",
+  "Delantal de chef",
+  "Фартук повара"
+ ],
+ "Uniforme policial": [
+  "Police uniform",
+  "Uniforme de policía",
+  "Полицейская форма"
+ ],
+ "Uniforme de bombeiro": [
+  "Firefighter uniform",
+  "Uniforme de bombero",
+  "Форма пожарного"
+ ],
+ "Avental de vendedor": [
+  "Shopkeeper apron",
+  "Delantal de vendedor",
+  "Фартук продавца"
+ ],
+ "Caixa da lojinha 🛒": [
+  "Shop Counter 🛒",
+  "Caja de la tiendita 🛒",
+  "Касса магазинчика 🛒"
+ ],
+ "Sem profissão": [
+  "No job",
+  "Sin profesión",
+  "Без профессии"
+ ],
+ "Escolha uma profissão para fazer roleplay e ganhar salário": [
+  "Choose a job to roleplay and earn a salary",
+  "Elige una profesión para hacer roleplay y ganar salario",
+  "Выбери профессию для ролевой игры и зарплаты"
+ ],
+ "Cozinheiro(a)": [
+  "Cook",
+  "Cocinero(a)",
+  "Повар"
+ ],
+ "Vendedor(a)": [
+  "Shopkeeper",
+  "Vendedor(a)",
+  "Продавец"
+ ],
+ "Médico(a)": [
+  "Doctor",
+  "Médico(a)",
+  "Врач"
+ ],
+ "Policial": [
+  "Police",
+  "Policía",
+  "Полицейский"
+ ],
+ "Bombeiro(a)": [
+  "Firefighter",
+  "Bombero(a)",
+  "Пожарный"
+ ],
+ "Entregador(a)": [
+  "Courier",
+  "Repartidor(a)",
+  "Курьер"
+ ],
+ "Professor(a)": [
+  "Teacher",
+  "Profesor(a)",
+  "Учитель"
+ ],
+ "Cozinhe pratos com o que pesca e coleta e venda na lojinha": [
+  "Cook dishes from what you fish and gather, and sell them in your shop",
+  "Cocina platos con lo que pescas y recolectas y véndelos en tu tiendita",
+  "Готовь блюда из улова и находок и продавай в магазинчике"
+ ],
+ "Lojinha na sua casa: +25% de bônus em cada venda": [
+  "Shop at your home: +25% bonus on every sale",
+  "Tiendita en tu casa: +25% de bono en cada venta",
+  "Магазинчик дома: +25% к каждой продаже"
+ ],
+ "Cure os jogadores que estiverem perto": [
+  "Heal players who are nearby",
+  "Cura a los jugadores cercanos",
+  "Лечи игроков поблизости"
+ ],
+ "Sirene, apito e salário por patrulhar": [
+  "Siren, whistle and pay for patrolling",
+  "Sirena, silbato y salario por patrullar",
+  "Сирена, свисток и зарплата за патруль"
+ ],
+ "Apague fogueiras com a mangueira": [
+  "Put out fires with the hose",
+  "Apaga fogatas con la manguera",
+  "Туши костры из шланга"
+ ],
+ "Leve encomendas até os NPCs do mapa": [
+  "Carry packages to the map's NPCs",
+  "Lleva paquetes a los NPC del mapa",
+  "Доставляй посылки NPC на карте"
+ ],
+ "Dê aulas: quem está perto ganha XP": [
+  "Teach classes: anyone nearby gets XP",
+  "Da clases: quien esté cerca gana XP",
+  "Проводи уроки: все рядом получают опыт"
+ ],
+ "💼 Agora você é ": [
+  "💼 You are now ",
+  "💼 Ahora eres ",
+  "💼 Теперь ты "
+ ],
+ "👔 Uniforme vestido!": [
+  "👔 Uniform on!",
+  "👔 ¡Uniforme puesto!",
+  "👔 Форма надета!"
+ ],
+ " moedas · ": [
+  " coins · ",
+  " monedas · ",
+  " монет · "
+ ],
+ "Faltam ingredientes": [
+  "Missing ingredients",
+  "Faltan ingredientes",
+  "Не хватает ингредиентов"
+ ],
+ "cozinhou ": [
+  "cooked ",
+  "cocinó ",
+  "приготовил: "
+ ],
+ "Chegue perto de um jogador (até 3 m)": [
+  "Get close to a player (up to 3 m)",
+  "Acércate a un jugador (hasta 3 m)",
+  "Подойди к игроку (до 3 м)"
+ ],
+ "Esse paciente acabou de ser atendido (": [
+  "This patient was just treated (",
+  "Este paciente acaba de ser atendido (",
+  "Этого пациента только что лечили ("
+ ],
+ "atendeu ": [
+  "treated ",
+  "atendió a ",
+  "вылечил "
+ ],
+ "Nenhum NPC longe o bastante neste mapa (vá para a Vila)": [
+  "No NPC far enough on this map (go to the Village)",
+  "Ningún NPC lo bastante lejos en este mapa (ve a la Villa)",
+  "Нет достаточно далёких NPC (иди в деревню)"
+ ],
+ "📦 Leve a encomenda para ": [
+  "📦 Take the package to ",
+  "📦 Lleva el paquete a ",
+  "📦 Отнеси посылку: "
+ ],
+ " (siga o brilho!)": [
+  " (follow the glow!)",
+  " (¡sigue el brillo!)",
+  " (следуй за сиянием!)"
+ ],
+ "Próxima aula em ": [
+  "Next class in ",
+  "Próxima clase en ",
+  "Следующий урок через "
+ ],
+ "aula para ": [
+  "class for ",
+  "clase para ",
+  "урок для "
+ ],
+ " aluno(s)": [
+  " student(s)",
+  " alumno(s)",
+  " учеников"
+ ],
+ " curou você!": [
+  " healed you!",
+  " te curó!",
+  " вылечил тебя!"
+ ],
+ "📚 Aula de ": [
+  "📚 Class by ",
+  "📚 Clase de ",
+  "📚 Урок от "
+ ],
+ ": +15 XP": [
+  ": +15 XP",
+  ": +15 XP",
+  ": +15 опыта"
+ ],
+ " comprou ": [
+  " bought ",
+  " compró ",
+  " купил "
+ ],
+ " (com bônus)": [
+  " (with bonus)",
+  " (con bono)",
+  " (с бонусом)"
+ ],
+ "Não deu: o item acabou ou a loja fechou": [
+  "Didn't work: item sold out or the shop closed",
+  "No se pudo: se agotó o la tienda cerró",
+  "Не вышло: товар закончился или магазин закрыт"
+ ],
+ "🛍️ Você comprou ": [
+  "🛍️ You bought ",
+  "🛍️ Compraste ",
+  "🛍️ Ты купил "
+ ],
+ "apagou um fogo": [
+  "put out a fire",
+  "apagó un fuego",
+  "потушил огонь"
+ ],
+ "📦 Obrigado!": [
+  "📦 Thanks!",
+  "📦 ¡Gracias!",
+  "📦 Спасибо!"
+ ],
+ "entrega para ": [
+  "delivery to ",
+  "entrega para ",
+  "доставка: "
+ ],
+ "patrulha": [
+  "patrol",
+  "patrulla",
+  "патруль"
+ ],
+ "🐎 MONTARIAS: Gatão, Tigre, Pantera Neon, Skate Aero, Nuvem Voadora e Dragãozinho (voam!). Corrida no novo Autódromo das Patas com ranking online.": [
+  "🐎 MOUNTS: Big Cat, Tiger, Neon Panther, Aero Skateboard, Flying Cloud and Little Dragon (they fly!). Race at the new Paws Racetrack with an online ranking.",
+  "🐎 MONTURAS: Gatazo, Tigre, Pantera Neón, Skate Aero, Nube Voladora y Dragoncito (¡vuelan!). Carreras en el nuevo Autódromo de las Patas con ranking en línea.",
+  "🐎 ЕЗДОВЫЕ: Котище, Тигр, Неоновая пантера, Аэро-скейт, Летающее облако и Дракончик (летают!). Гонки на новом Автодроме Лап с онлайн-рейтингом."
+ ],
+ "💼 PROFISSÕES: cozinheiro, vendedor, médico, policial, bombeiro, entregador e professor, com uniformes, salário e lojinha na sua casa.": [
+  "💼 JOBS: cook, shopkeeper, doctor, police, firefighter, courier and teacher, with uniforms, salary and a shop in your home.",
+  "💼 PROFESIONES: cocinero, vendedor, médico, policía, bombero, repartidor y profesor, con uniformes, salario y tiendita en tu casa.",
+  "💼 ПРОФЕССИИ: повар, продавец, врач, полицейский, пожарный, курьер и учитель — с формой, зарплатой и магазинчиком дома."
+ ],
+ "🌦️ CLIMA: chuva, tempestade, neblina, nevasca e tempestade de areia, iguais para todos. Natal, Halloween e Ano Novo automáticos.": [
+  "🌦️ WEATHER: rain, storms, fog, blizzards and sandstorms, the same for everyone. Christmas, Halloween and New Year happen automatically.",
+  "🌦️ CLIMA: lluvia, tormenta, niebla, nevada y tormenta de arena, igual para todos. Navidad, Halloween y Año Nuevo automáticos.",
+  "🌦️ ПОГОДА: дождь, гроза, туман, метель и песчаная буря — одинаково для всех. Рождество, Хэллоуин и Новый год автоматически."
+ ],
+ "🚩 Denunciar ": [
+  "🚩 Report ",
+  "🚩 Denunciar a ",
+  "🚩 Пожаловаться на "
+ ],
+ "Escolha o motivo. A denúncia vai para o admin com as últimas mensagens desse jogador.": [
+  "Choose a reason. The report goes to the admin with this player's latest messages.",
+  "Elige el motivo. La denuncia va al admin con los últimos mensajes de este jugador.",
+  "Выбери причину. Жалоба уйдёт админу вместе с последними сообщениями игрока."
+ ],
+ "🤬 Xingamento ou ofensa": [
+  "🤬 Insults or offense",
+  "🤬 Insultos u ofensas",
+  "🤬 Оскорбления"
+ ],
+ "😠 Assédio ou bullying": [
+  "😠 Harassment or bullying",
+  "😠 Acoso o bullying",
+  "😠 Травля или домогательства"
+ ],
+ "🎮 Trapaça ou hack": [
+  "🎮 Cheating or hacking",
+  "🎮 Trampa o hack",
+  "🎮 Читы или взлом"
+ ],
+ "🏷 Nome ou visual impróprio": [
+  "🏷 Inappropriate name or look",
+  "🏷 Nombre o aspecto inapropiado",
+  "🏷 Неприемлемое имя или вид"
+ ],
+ "📢 Spam": [
+  "📢 Spam",
+  "📢 Spam",
+  "📢 Спам"
+ ],
+ "❓ Outro motivo": [
+  "❓ Other reason",
+  "❓ Otro motivo",
+  "❓ Другая причина"
+ ],
+ "✏ Detalhes: ": [
+  "✏ Details: ",
+  "✏ Detalles: ",
+  "✏ Подробности: "
+ ],
+ "✏ Escrever detalhes (opcional)": [
+  "✏ Write details (optional)",
+  "✏ Escribir detalles (opcional)",
+  "✏ Написать подробности (необязательно)"
+ ],
+ "Detalhes da denúncia": [
+  "Report details",
+  "Detalles de la denuncia",
+  "Подробности жалобы"
+ ],
+ "🚩 Enviar denúncia": [
+  "🚩 Send report",
+  "🚩 Enviar denuncia",
+  "🚩 Отправить жалобу"
+ ],
+ "Escolha um motivo": [
+  "Choose a reason",
+  "Elige un motivo",
+  "Выбери причину"
+ ],
+ "🚩 Denúncia enviada. Obrigado por ajudar!": [
+  "🚩 Report sent. Thanks for helping!",
+  "🚩 Denuncia enviada. ¡Gracias por ayudar!",
+  "🚩 Жалоба отправлена. Спасибо за помощь!"
+ ],
+ "Se alguém te incomodar, você também pode silenciar (🔇) em Social > Jogadores.": [
+  "If someone bothers you, you can also mute them (🔇) in Social > Players.",
+  "Si alguien te molesta, también puedes silenciarlo (🔇) en Social > Jugadores.",
+  "Если кто-то мешает, его можно заглушить (🔇) в «Общение > Игроки»."
+ ],
+ "◀ Voltar": [
+  "◀ Back",
+  "◀ Volver",
+  "◀ Назад"
+ ],
+ "⛔ Banir ": [
+  "⛔ Ban ",
+  "⛔ Banear a ",
+  "⛔ Забанить "
+ ],
+ "Motivo:": [
+  "Reason:",
+  "Motivo:",
+  "Причина:"
+ ],
+ "Xingamento": [
+  "Insults",
+  "Insultos",
+  "Оскорбления"
+ ],
+ "Assédio": [
+  "Harassment",
+  "Acoso",
+  "Травля"
+ ],
+ "Trapaça": [
+  "Cheating",
+  "Trampa",
+  "Читы"
+ ],
+ "Nome impróprio": [
+  "Bad name",
+  "Nombre inapropiado",
+  "Плохое имя"
+ ],
+ "Spam": [
+  "Spam",
+  "Spam",
+  "Спам"
+ ],
+ "Outro": [
+  "Other",
+  "Otro",
+  "Другое"
+ ],
+ "Duração:": [
+  "Duration:",
+  "Duración:",
+  "Срок:"
+ ],
+ "1 hora": [
+  "1 hour",
+  "1 hora",
+  "1 час"
+ ],
+ "1 dia": [
+  "1 day",
+  "1 día",
+  "1 день"
+ ],
+ "7 dias": [
+  "7 days",
+  "7 días",
+  "7 дней"
+ ],
+ "Permanente": [
+  "Permanent",
+  "Permanente",
+  "Навсегда"
+ ],
+ "O banimento vale no servidor: a pessoa não consegue entrar, salvar nem aparecer para os outros até o prazo acabar.": [
+  "The ban is enforced by the server: the person can't log in, save or appear to others until it ends.",
+  "El baneo lo aplica el servidor: la persona no puede entrar, guardar ni aparecer para los demás hasta que termine.",
+  "Бан действует на сервере: человек не сможет войти, сохраняться и быть видимым до конца срока."
+ ],
+ "⛔ Confirmar banimento": [
+  "⛔ Confirm ban",
+  "⛔ Confirmar baneo",
+  "⛔ Подтвердить бан"
+ ],
+ "◀ Cancelar": [
+  "◀ Cancel",
+  "◀ Cancelar",
+  "◀ Отмена"
+ ],
+ " foi banido": [
+  " was banned",
+  " fue baneado",
+  " забанен"
+ ],
+ "🚩 Denúncias": [
+  "🚩 Reports",
+  "🚩 Denuncias",
+  "🚩 Жалобы"
+ ],
+ "⛔ Banidos": [
+  "⛔ Banned",
+  "⛔ Baneados",
+  "⛔ Баны"
+ ],
+ "⛔ Banir": [
+  "⛔ Ban",
+  "⛔ Banear",
+  "⛔ Бан"
+ ],
+ "⬅ Puxar": [
+  "⬅ Pull",
+  "⬅ Traer",
+  "⬅ Притянуть"
+ ],
+ "\"Vila\" e \"Puxar\" dependem do jogo do jogador obedecer. O ⛔ Banir vale no servidor.": [
+  "\"Village\" and \"Pull\" depend on the player's game obeying. ⛔ Ban is enforced by the server.",
+  "\"Villa\" y \"Traer\" dependen de que el juego del jugador obedezca. ⛔ Banear lo aplica el servidor.",
+  "«Деревня» и «Притянуть» зависят от игры игрока. ⛔ Бан действует на сервере."
+ ],
+ "Carregando denúncias…": [
+  "Loading reports…",
+  "Cargando denuncias…",
+  "Загрузка жалоб…"
+ ],
+ " denúncia(s) aberta(s)": [
+  " open report(s)",
+  " denuncia(s) abierta(s)",
+  " открытых жалоб"
+ ],
+ "Nenhuma denúncia aberta. 🎉": [
+  "No open reports. 🎉",
+  "Ninguna denuncia abierta. 🎉",
+  "Открытых жалоб нет. 🎉"
+ ],
+ " denúncias)": [
+  " reports)",
+  " denuncias)",
+  " жалоб)"
+ ],
+ "por ": [
+  "by ",
+  "por ",
+  "от "
+ ],
+ "sem mensagens no chat": [
+  "no chat messages",
+  "sin mensajes en el chat",
+  "нет сообщений в чате"
+ ],
+ "✔ Resolvida": [
+  "✔ Resolved",
+  "✔ Resuelta",
+  "✔ Решено"
+ ],
+ "Carregando…": [
+  "Loading…",
+  "Cargando…",
+  "Загрузка…"
+ ],
+ " jogador(es) banido(s)": [
+  " banned player(s)",
+  " jugador(es) baneado(s)",
+  " забаненных игроков"
+ ],
+ "Ninguém banido agora.": [
+  "Nobody is banned right now.",
+  "Nadie baneado ahora.",
+  "Сейчас никто не забанен."
+ ],
+ "sem motivo": [
+  "no reason",
+  "sin motivo",
+  "без причины"
+ ],
+ "até ": [
+  "until ",
+  "hasta ",
+  "до "
+ ],
+ "permanente": [
+  "permanent",
+  "permanente",
+  "навсегда"
+ ],
+ " · por ": [
+  " · by ",
+  " · por ",
+  " · от "
+ ],
+ "✅ Desbanir": [
+  "✅ Unban",
+  "✅ Desbanear",
+  "✅ Разбанить"
+ ],
+ " desbanido": [
+  " unbanned",
+  " desbaneado",
+  " разбанен"
+ ],
+ "Você já denunciou muito na última hora. Tente mais tarde.": [
+  "You've reported a lot in the last hour. Try again later.",
+  "Ya denunciaste mucho en la última hora. Inténtalo más tarde.",
+  "Ты отправил много жалоб за час. Попробуй позже."
+ ],
+ "Você já denunciou esse jogador agora há pouco.": [
+  "You just reported this player.",
+  "Ya denunciaste a este jugador hace poco.",
+  "Ты уже жаловался на этого игрока недавно."
+ ],
+ "Não foi possível enviar a denúncia": [
+  "Couldn't send the report",
+  "No se pudo enviar la denuncia",
+  "Не удалось отправить жалобу"
+ ],
+ "Não dá para banir outro admin": [
+  "You can't ban another admin",
+  "No se puede banear a otro admin",
+  "Нельзя забанить другого админа"
+ ],
+ "👥 Convidar": [
+  "👥 Invite",
+  "👥 Invitar",
+  "👥 Позвать"
+ ],
+ "Você foi banido do RoleVRGO": [
+  "You were banned from RoleVRGO",
+  "Fuiste baneado de RoleVRGO",
+  "Тебя забанили в RoleVRGO"
+ ],
+ "Se você acha que foi um engano, fale com o admin.": [
+  "If you think this was a mistake, talk to the admin.",
+  "Si crees que fue un error, habla con el admin.",
+  "Если считаешь это ошибкой, напиши админу."
+ ],
+ "Motivo: ": [
+  "Reason: ",
+  "Motivo: ",
+  "Причина: "
+ ],
+ "regras do jogo": [
+  "game rules",
+  "reglas del juego",
+  "правила игры"
+ ],
+ "Até ": [
+  "Until ",
+  "Hasta ",
+  "До "
+ ],
+ "Banimento permanente": [
+  "Permanent ban",
+  "Baneo permanente",
+  "Бессрочный бан"
+ ],
+ "Carregando o ranking…": [
+  "Loading the ranking…",
+  "Cargando el ranking…",
+  "Загрузка рейтинга…"
+ ],
+ "Offline: só o Claude aparece": [
+  "Offline: only Claude shows up",
+  "Sin conexión: solo aparece Claude",
+  "Офлайн: виден только Claude"
+ ],
+ "🤖 Você venceu o Claude! Mais rápido que a IA!": [
+  "🤖 You beat Claude! Faster than the AI!",
+  "🤖 ¡Le ganaste a Claude! ¡Más rápido que la IA!",
+  "🤖 Ты обогнал Claude! Быстрее ИИ!"
+ ],
+ "Mais rápido que a IA": [
+  "Faster than the AI",
+  "Más rápido que la IA",
+  "Быстрее ИИ"
+ ],
+ "Vença o tempo do Claude no Autódromo das Patas": [
+  "Beat Claude's time at the Paws Racetrack",
+  "Supera el tiempo de Claude en el Autódromo de las Patas",
+  "Побей время Claude на Автодроме Лап"
+ ],
+ "🤖 Você venceu o Claude!": [
+  "🤖 You beat Claude!",
+  "🤖 ¡Le ganaste a Claude!",
+  "🤖 Ты обогнал Claude!"
+ ],
+ "Grande Prêmio Arco-Íris": [
+  "Rainbow Grand Prix",
+  "Gran Premio Arcoíris",
+  "Радужный Гран-при"
+ ],
+ "🌈 Grande Prêmio": [
+  "🌈 Grand Prix",
+  "🌈 Gran Premio",
+  "🌈 Гран-при"
+ ],
+ "Contra bot (dificuldade):": [
+  "Against a bot (difficulty):",
+  "Contra bot (dificultad):",
+  "Против бота (сложность):"
+ ],
+ "Fácil": [
+  "Easy",
+  "Fácil",
+  "Легко"
+ ],
+ "Normal": [
+  "Normal",
+  "Normal",
+  "Нормально"
+ ],
+ "Difícil": [
+  "Hard",
+  "Difícil",
+  "Сложно"
+ ],
+ "Extremo": [
+  "Extreme",
+  "Extremo",
+  "Экстрим"
+ ],
+ "Impossível": [
+  "Impossible",
+  "Imposible",
+  "Невозможно"
+ ],
+ "🏆 Maior vitória: ": [
+  "🏆 Best win: ",
+  "🏆 Mayor victoria: ",
+  "🏆 Лучшая победа: "
+ ],
+ "Todo bot dá para vencer (o Impossível só com os turbos)": [
+  "Every bot can be beaten (Impossible only with the boosts)",
+  "Todos los bots se pueden vencer (el Imposible solo con los turbos)",
+  "Любого бота можно обогнать (Невозможного — только с ускорениями)"
+ ],
+ "👥 Corrida com jogadores": [
+  "👥 Race with players",
+  "👥 Carrera con jugadores",
+  "👥 Гонка с игроками"
+ ],
+ "🏁 Largar agora (todos no mapa)": [
+  "🏁 Start now (everyone on the map)",
+  "🏁 Salir ahora (todos en el mapa)",
+  "🏁 Старт (все на карте)"
+ ],
+ "⏱ Treino sozinho": [
+  "⏱ Solo practice",
+  "⏱ Práctica solo",
+  "⏱ Тренировка"
+ ],
+ "🏁 Corrida: modos": [
+  "🏁 Race: modes",
+  "🏁 Carrera: modos",
+  "🏁 Гонка: режимы"
+ ],
+ "🎮 Modos de corrida: menu rápido": [
+  "🎮 Race modes: quick menu",
+  "🎮 Modos de carrera: menú rápido",
+  "🎮 Режимы гонки: быстрое меню"
+ ],
+ "Mecânica Faísca": [
+  "Mechanic Sparky",
+  "Mecánica Chispa",
+  "Механик Искра"
+ ],
+ "Grande Prêmio": [
+  "Grand Prix",
+  "Gran Premio",
+  "Гран-при"
+ ],
+ "Escolha o modo no menu rápido: contra bot, contra jogadores ou treino!": [
+  "Pick a mode in the quick menu: vs bot, vs players or practice!",
+  "¡Elige el modo en el menú rápido: contra bot, contra jugadores o práctica!",
+  "Выбери режим в быстром меню: против бота, игроков или тренировка!"
+ ],
+ "Todo bot dá para vencer. O Impossível só perde para quem pega TODOS os turbos.": [
+  "Every bot can be beaten. Impossible only loses to whoever grabs ALL the boosts.",
+  "Todos los bots se pueden vencer. El Imposible solo pierde con quien toma TODOS los turbos.",
+  "Любого бота можно обогнать. Невозможный проигрывает только тому, кто берёт ВСЕ ускорения."
+ ],
+ "Duas voltas, passando pelos 8 portais coloridos em ordem.": [
+  "Two laps, through the 8 colored gates in order.",
+  "Dos vueltas, por los 8 portales de colores en orden.",
+  "Два круга через 8 цветных ворот по порядку."
+ ],
+ "👥 Corrida com jogadores: quando todos estiverem prontos, toque em \"Largar\"": [
+  "👥 Race with players: when everyone's ready, tap \"Start\"",
+  "👥 Carrera con jugadores: cuando todos estén listos, toca \"Salir\"",
+  "👥 Гонка с игроками: когда все готовы, нажми «Старт»"
+ ],
+ "Precisa de pelo menos 2 jogadores no mapa": [
+  "Needs at least 2 players on the map",
+  "Se necesitan al menos 2 jugadores en el mapa",
+  "Нужно минимум 2 игрока на карте"
+ ],
+ "🏁 Largada em ": [
+  "🏁 Start in ",
+  "🏁 Salida en ",
+  "🏁 Старт через "
+ ],
+ "🏁 VAI!": [
+  "🏁 GO!",
+  "🏁 ¡YA!",
+  "🏁 ПОЕХАЛИ!"
+ ],
+ "👥 Corrida com jogadores · peça a largada no menu": [
+  "👥 Race with players · ask for the start in the menu",
+  "👥 Carrera con jugadores · pide la salida en el menú",
+  "👥 Гонка с игроками · запусти старт в меню"
+ ],
+ "🏁 Corrida terminada · menu rápido para correr de novo": [
+  "🏁 Race over · quick menu to race again",
+  "🏁 Carrera terminada · menú rápido para correr otra vez",
+  "🏁 Гонка окончена · быстрое меню, чтобы ещё раз"
+ ],
+ "🏁 Grande Prêmio: escolha o modo no menu rápido": [
+  "🏁 Grand Prix: choose a mode in the quick menu",
+  "🏁 Gran Premio: elige el modo en el menú rápido",
+  "🏁 Гран-при: выбери режим в быстром меню"
+ ],
+ "🤖 O bot ": [
+  "🤖 Bot ",
+  "🤖 El bot ",
+  "🤖 Бот "
+ ],
+ " cruzou a linha em ": [
+  " crossed the line in ",
+  " cruzó la meta en ",
+  " финишировал за "
+ ],
+ "🏁 Você terminou em ": [
+  "🏁 You finished ",
+  "🏁 Terminaste en ",
+  "🏁 Ты финишировал: "
+ ],
+ " de ": [
+  " of ",
+  " de ",
+  " из "
+ ],
+ "🥇 Você venceu o bot ": [
+  "🥇 You beat bot ",
+  "🥇 ¡Le ganaste al bot ",
+  "🥇 Ты обогнал бота "
+ ],
+ "🥈 O bot ": [
+  "🥈 Bot ",
+  "🥈 El bot ",
+  "🥈 Бот "
+ ],
+ " venceu. Tente de novo!": [
+  " won. Try again!",
+  " ganó. ¡Inténtalo de nuevo!",
+  " победил. Попробуй ещё!"
+ ],
+ "🥇 Venceu": [
+  "🥇 Won",
+  "🥇 Ganaste",
+  "🥇 Победа"
+ ],
+ "🥈 Perdeu": [
+  "🥈 Lost",
+  "🥈 Perdiste",
+  "🥈 Поражение"
+ ],
+ " do bot ": [
+  " vs bot ",
+  " contra el bot ",
+  " против бота "
+ ],
+ " lugar! ": [
+  " place! ",
+  " lugar! ",
+  " место! "
+ ],
+ "⏱ Treino: ": [
+  "⏱ Practice: ",
+  "⏱ Práctica: ",
+  "⏱ Тренировка: "
+ ],
+ "Visite todos os 19 mapas": [
+  "Visit all 19 maps",
+  "Visita los 19 mapas",
+  "Посети все 19 карт"
+ ],
+ "Vencedor do Grande Prêmio": [
+  "Grand Prix Winner",
+  "Ganador del Gran Premio",
+  "Победитель Гран-при"
+ ],
+ "Vença um bot no Grande Prêmio Arco-Íris": [
+  "Beat a bot at the Rainbow Grand Prix",
+  "Vence a un bot en el Gran Premio Arcoíris",
+  "Обгони бота на Радужном Гран-при"
+ ],
+ "Lenda das Pistas": [
+  "Track Legend",
+  "Leyenda de las Pistas",
+  "Легенда трасс"
+ ],
+ "Vença o bot Impossível": [
+  "Beat the Impossible bot",
+  "Vence al bot Imposible",
+  "Обгони Невозможного бота"
+ ],
+ "Rei do Asfalto": [
+  "King of the Asphalt",
+  "Rey del Asfalto",
+  "Король асфальта"
+ ],
+ "Vença uma corrida contra jogadores": [
+  "Win a race against players",
+  "Gana una carrera contra jugadores",
+  "Выиграй гонку против игроков"
+ ],
+ "🏁 GRANDE PRÊMIO ARCO-ÍRIS: novo circuito de 2 voltas com arcos-íris, rampas de turbo e arquibancada. Corra contra o bot (Fácil, Normal, Difícil, Extremo ou Impossível, todos dá para vencer) ou contra outros jogadores na mesma sala.": [
+  "🏁 RAINBOW GRAND PRIX: a new 2-lap circuit with rainbow arches, boost pads and a grandstand. Race the bot (Easy, Normal, Hard, Extreme or Impossible, all beatable) or other players in the same room.",
+  "🏁 GRAN PREMIO ARCOÍRIS: nuevo circuito de 2 vueltas con arcos iris, rampas de turbo y gradas. Corre contra el bot (Fácil, Normal, Difícil, Extremo o Imposible, todos se pueden vencer) o contra otros jugadores en la misma sala.",
+  "🏁 РАДУЖНЫЙ ГРАН-ПРИ: новая трасса на 2 круга с радужными арками, ускорителями и трибуной. Гоняйся с ботом (Лёгкий, Нормальный, Сложный, Экстремальный или Невозможный — всех можно победить) или с другими игроками в той же комнате."
+ ]
 }

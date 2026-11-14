@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { World, worldMat, matU, glossify } from './world.js';
 import { MAPS, initPrims, PORTAL_COLORS, MAP_ICONS } from './maps.js';
 import './maps2.js';
+import { gp } from './gp.js';
 import { modelGeometry, play, playAt, meow, purr, pop, setUnder, ambience, chime, splashSfx, chirp, thunder, boing } from './assets.js';
 import { CatAvatar, HandPool, EMOTES, AGE_EYE } from './cat.js';
 import { FX, LabelBatch } from './fx.js';
@@ -61,7 +62,7 @@ export const G = {
   // ================= carregamento de mapa =================
   travel(id) { if (this.pending || (!MAPS[id] && id !== 'custom' && id !== 'home') || (id === this.mapId && id !== 'home')) return; this.pending = id; this.fade = 0.001; play('portal', 0.6); },
   loadMap(id, keep) {
-    const scene = this.scene; if (id !== 'nuke' || !keep) infect.leave(); this.modeLabel = ''; if (id !== 'track' && mounts.rented) { mounts.rented = null; emit('meta'); } this._disposeMap();
+    const scene = this.scene; if (id !== 'nuke' || !keep) infect.leave(); if (id !== 'gp' || !keep) gp.leave(); this.modeLabel = ''; if (id !== 'track' && mounts.rented) { mounts.rented = null; emit('meta'); } this._disposeMap();
     const def = id === 'custom' ? this.customDef : id === 'home' ? this.homeDef : MAPS[id], w = new World(scene, def.size); w.surface = def.surface;
     if (id !== 'custom' && maker.playing) maker.close(); S._sbChests = [];
     const E = { npcs: [], ores: [], chests: [], portals: [], collects: [], digs: [], fishes: [], secrets: [], dummies: [], zones: [], lamps: [], signs: [], boards: [], springs: [] };
@@ -225,6 +226,7 @@ export const G = {
     if (e.t === 'vc') { voice.signal(e); return; }
     if (['heal', 'class', 'whistle', 'ext', 'shopq', 'shopl', 'buy', 'sold'].indexOf(e.t) >= 0) { jobs.onNet(e); return; }
     if (e.t === 'nk') { infect.onNet(e); return; }
+    if (e.t === 'gp') { gp.onNet(e); return; }
     if (e.t === 'zap') { if ([e.x, e.y, e.z].every((v) => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) < 2000)) { this._bolt(e.x, e.y, e.z, false); const r = this.remotes.get(e.f); if (r) this._log('⚡', r.meta.name + ' foi atingido por um raio!'); if (r) r.burntT = 25; } return; }
     if (e.t === 'chat') { if (r && !this.muted(e.f)) { const tx = String(e.x == null ? '' : e.x).slice(0, 80); r.av.say(tx, 6); this._log(r.meta.name, tx); play('msg', 0.4); } }
     else if (e.t === 'tree') { const tr = this.E.trees[e.i | 0]; if (tr && tr.alive) this._fell(tr, Math.min(Number(e.u) || 0, net.now() + 180000), 0, 1); }
