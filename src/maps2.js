@@ -5,6 +5,8 @@ import { fbm, noise2, clamp, smooth, emit } from './util.js';
 import { S } from './state.js';
 import { play, chime, boing, whoosh, sizzle, rumble } from './assets.js';
 import { CatAvatar, FUR_COLORS } from './cat.js';
+import { net } from './net.js';
+import { mounts, MOUNT_BY } from './mounts.js';
 
 // Três mapas novos com mecânicas próprias: Ilhas do Céu (parkour com cronômetro), Vulcão Ardente
 // (lava que queima e erupções) e Neon City (cyberpunk com chuva, holograma e carros voadores).
@@ -13,6 +15,7 @@ const T = (hex) => [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 
 const C = (hex) => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
 function mix(c, a, b, t) { c[0] = a[0] + (b[0] - a[0]) * t; c[1] = a[1] + (b[1] - a[1]) * t; c[2] = a[2] + (b[2] - a[2]) * t; }
 function boxA(w, x, y, z, sx, sy, sz, color, nocol) { return w.put('prim/box', x, z, { s: [sx, sy, sz], tint: T(color), abs: y, col: nocol ? null : 'box' }); }
+function scatter(w, r, keys, n, o) { let k = 0, tries = 0; const h = w.half - 6; while (k < n && tries++ < n * 15) { const x = (r() * 2 - 1) * h, z = (r() * 2 - 1) * h; if (o.ok && !o.ok(x, z)) continue; const sc = o.s ? o.s[0] + r() * (o.s[1] - o.s[0]) : 1; w.put(keys[Math.floor(r() * keys.length)], x, z, { s: sc, ry: r() * PI * 2, col: o.col, cw: o.cw ? o.cw * sc : undefined }); k++; } }
 const fmt = (s) => s.toFixed(1).replace('.', ',') + 's';
 // junta várias caixas brilhantes (sem luz) numa malha só: 1 draw call para todos os neons
 function glowMesh(list) {
@@ -68,7 +71,7 @@ MAPS.sky = {
     if (R.run && on(ISL.length - 1)) { const t = now - R.t0, b = this.best(); R.run = false; R.cp = 0; S.d.best = S.d.best || {};
       if (t < 8) { S.toast('Atalho detectado: o tempo não vale como recorde', '#ff9a8a'); }
       else if (!b || t < b) { S.d.best.sky = Math.round(t * 10) / 10; emit('banner', '🏆 NOVO RECORDE: ' + fmt(t) + '!', 5); S.addCoins(b ? 60 : 150); S.addXp(80); play('win', 0.8); } else { emit('banner', '🏁 Chegou! ' + fmt(t) + ' (recorde ' + fmt(b) + ')', 4); S.addCoins(20); S.addXp(30); play('quest', 0.7); }
-      S.stat('skyRace'); G._confetti && G._confetti(40); S.touch(); }
+      S.stat('skyRace'); G._confetti && G._confetti(40); S.touch(); if (t >= 8 && net.online) net.rpc('rv_race_submit', { p_track: 'sky', p_ms: Math.round(t * 1000), p_mount: mounts.cur() ? mounts.cur().id : '' }).then((r) => { if (r && r.ok) S.toast('🌐 Ranking online: #' + r.rank, '#ffd76a'); }).catch(() => {}); }
     if (p.y < -12) { const s = ISL[R.cp]; P.teleport(s[0], s[2] + 0.4, s[1], P.yaw); S.toast('☁ Caiu nas nuvens! Voltando ao checkpoint', '#bfe6ff'); whoosh(0.5); }
     G.modeLabel = R.run ? '⏱ ' + fmt(now - R.t0) + (this.best() ? '  ·  recorde ' + fmt(this.best()) : '') : this.best() ? '🏆 Recorde: ' + fmt(this.best()) : '🏁 Corrida nas Nuvens';
   },
@@ -197,7 +200,74 @@ MAPS.neon = {
   amb() { return { rain: 1, neon: 0.6, wind: 0.2 }; }
 };
 
+// ======================= AUTÓDROMO DAS PATAS (corrida de montaria) =======================
+const TL = 140 + 48 * PI, LAPS = 2;
+function tpt(s) { s = ((s % TL) + TL) % TL; if (s < 35) return [s, 24]; s -= 35; if (s < 24 * PI) { const a = H - s / 24; return [35 + 24 * Math.cos(a), 24 * Math.sin(a)]; } s -= 24 * PI; if (s < 70) return [35 - s, -24]; s -= 70; if (s < 24 * PI) { const a = -H - s / 24; return [-35 + 24 * Math.cos(a), 24 * Math.sin(a)]; } s -= 24 * PI; return [-35 + s, 24]; }
+function tdir(s) { const a = tpt(s), b = tpt(s + 0.5), l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; return [(b[0] - a[0]) / l, (b[1] - a[1]) / l]; }
+const tdist = (x, z) => (Math.abs(x) <= 35 ? Math.min(Math.abs(z - 24), Math.abs(z + 24)) : Math.abs(Math.hypot(x - Math.sign(x) * 35, z) - 24));
+const infield = (x, z) => (Math.abs(x) <= 35 ? Math.abs(z) < 24 : Math.hypot(x - Math.sign(x) * 35, z) < 24);
+const GATES = [0, 1, 2, 3, 4, 5].map((k) => k * TL / 6), PADS = [20, 130, 160, 270];
+const mmss = (t) => { const m = Math.floor(t / 60), s2 = t - m * 60; return m + ':' + (s2 < 10 ? '0' : '') + s2.toFixed(1).replace('.', ','); };
+MAPS.track = {
+  name: 'Autódromo das Patas', size: 170, surface: 'grass', sky: [0x8fd0f5, 0xffb27a, 0x0b1230], fog: 1.1, spawn: [0, 42, 0],
+  build(w, E, r) {
+    w.heightFn = (x, z) => { const d = Math.max(Math.abs(x), Math.abs(z * 1.4)); return d > 74 ? Math.min(10, (d - 74) * (d - 74) * 0.08) : 0; };
+    const asp = C(0x3a3a44), g1 = C(0x6fbf4f), g2 = C(0x5eb044), red = C(0xd83a3a), wht = C(0xf4f4f4);
+    w.buildGround(110, (x, z, h, c) => { const d = tdist(x, z); if (d < 6) { mix(c, asp, asp, 0); if (Math.abs(x) < 1.3 && Math.abs(z - 24) < 6) mix(c, c, (Math.floor(x * 2) + Math.floor(z * 2)) & 1 ? wht : C(0x1a1a1a), 1); } else if (d < 6.8) mix(c, c, (Math.floor((x + z) / 1.6) & 1) ? red : wht, 1); else mix(c, g1, g2, (Math.floor((x + z * 0.3) / 5) & 1) * 0.6); });
+    // cercas dos dois lados (abertura na entrada perto da largada)
+    for (let s = 0; s < TL; s += 3.4) { const [x, z] = tpt(s), [dx, dz] = tdir(s), ry = Math.atan2(-dz, dx); for (const sd of [-1, 1]) { const qx = x - dz * 7.4 * sd, qz = z + dx * 7.4 * sd, inner = infield(qx, qz); if (!inner && Math.abs(qx) < 7 && qz > 24) continue; w.put('nature/fence_simple', qx, qz, { s: 3.5, ry, col: 'box', tint: inner ? [1.2, 1.2, 1.2] : [1.4, 0.6, 0.6] }); } }
+    // portais de checkpoint (o 0 é largada/chegada)
+    GATES.forEach((s, k) => { const [x, z] = tpt(s), [dx, dz] = tdir(s), ry = Math.atan2(-dz, dx), col = k ? [0x3cf0ff, 0xff3cc8, 0xffe040, 0x40ff90, 0xa060ff][k - 1] : 0xffd040;
+      for (const sd of [-1, 1]) boxA(w, x - dz * 6.6 * sd, 0, z + dx * 6.6 * sd, 0.8, 4.8, 0.8, k ? 0x4a4a5a : 0x1a1a1a);
+      w.put('prim/box', x, z, { s: [0.8, 0.8, 14], ry, abs: 4.6, tint: T(col) }); E.lamp(x, 5.6, z, col); E.sign(k ? '🚩 ' + k + '/5' : '🏁 LARGADA / CHEGADA', x, 6.4, z); });
+    // faixas de turbo
+    for (const s of PADS) { const [x, z] = tpt(s), [dx, dz] = tdir(s), ry = Math.atan2(-dz, dx); w.put('prim/box', x, z, { s: [3.4, 0.06, 4.2], ry, abs: 0.01, tint: [2, 1.7, 0.3] }); for (let k = -1; k <= 1; k++) w.put('prim/cone', x + dx * k * 1.1, z + dz * k * 1.1, { s: [0.9, 0.08, 0.9], abs: 0.08, tint: [2, 1.2, 0.2] }); E.lamp(x, 0.6, z, 0xffd040); }
+    // arquibancada e placar
+    for (let row = 0; row < 6; row++) boxA(w, 0, 0, -33 - row * 1.4, 56, 0.6 + row * 0.6, 1.4, [0xd83a3a, 0x3a6ad8, 0xf0c040][row % 3]);
+    boxA(w, 0, 0, -43.6, 22, 13, 0.6, 0x2a2838); E.sign('🏆 AUTÓDROMO DAS PATAS', 0, 14.2, -43); for (const sx of [-28, -14, 14, 28]) { w.put('castle/flag', sx, -42, { s: 3, abs: 4, tint: [1.4, 0.6, 0.6] }); }
+    // estábulo com montaria emprestada
+    boxA(w, -16, 0, 44, 8, 0.2, 6, 0x8a6a45); for (const [x, z] of [[-19.6, 41.4], [-12.4, 41.4], [-19.6, 46.6], [-12.4, 46.6]]) boxA(w, x, 0, z, 0.4, 3.6, 0.4, 0x6b4a36); w.put('prim/box', -16, 44, { s: [8.6, 0.3, 6.6], abs: 3.6, tint: T(0xc04030) });
+    w.put('prim/cyl', -16, 38.5, { s: [3, 0.08, 3], abs: 0.02, tint: [1.6, 1.3, 0.5] }); E.sign('🐎 Montaria grátis: pise no círculo', -16, 3.4, 38.5); E.lamp(-16, 1, 38.5, 0xffd040);
+    E.npc('locutor', 'Locutor Bigode', 'Narrador da corrida', 6, 36, { fur: '#8a8f98', fur2: '#f5f1e8', pattern: 1, eyes: '#e0b030', hat: 1 }, { lines: ['Duas voltas, passando pelos 5 portais em ordem! As faixas amarelas dão turbo.', 'Sem montaria? Pegue uma grátis no estábulo!', 'O melhor tempo de cada um vai para o ranking online!'], wander: 0 });
+    E.portal('village', 9, 46);
+    scatter(w, r, ['nature/tree_default', 'nature/tree_oak', 'nature/tree_fat'], 40, { s: [3.5, 5], col: 'trunk', cw: 0.1, ok: (x, z) => tdist(x, z) > 12 && !(Math.abs(x) < 30 && z < -30 && z > -46) && !(Math.abs(x + 16) < 8 && z > 34) && Math.abs(x) + Math.abs(z) > 20 });
+    for (let i = 0; i < 12; i++) { const [x, z] = tpt(i * TL / 12 + 10), [dx, dz] = tdir(i * TL / 12 + 10); const qx = x + dz * 9, qz = z - dx * 9; if (!infield(qx, qz)) w.put('grave/lightpost-single', qx, qz, { s: 2, col: 'trunk' }); }
+  },
+  after(G, add) {
+    this.R = { run: false, lap: 0, next: 1, t0: 0, armed: true };
+    const c = document.createElement('canvas'); c.width = 512; c.height = 512; const tx = new THREE.CanvasTexture(c); tx.minFilter = THREE.LinearFilter; this.board = { c, tx };
+    const m = add(new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.MeshBasicMaterial({ map: tx, fog: false }))); m.position.set(0, 7.2, -43.2); this.drawBoard(null); this.loadBoard();
+  },
+  loadBoard() { if (!net.online) return; net.client.rpc('rv_race_top', { p_track: 'track' }).then(({ data }) => this.drawBoard(data || [])).catch(() => {}); },
+  drawBoard(rows) {
+    const b = this.board; if (!b) return; const g = b.c.getContext('2d'); g.fillStyle = '#141228'; g.fillRect(0, 0, 512, 512); g.fillStyle = '#ffd76a'; g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.fillText('🏁 Ranking da Corrida', 256, 48);
+    g.font = 'bold 24px sans-serif'; g.textAlign = 'left'; if (!rows) { g.fillStyle = '#aab'; g.fillText(net.online ? 'Carregando…' : 'Offline', 30, 110); }
+    else if (!rows.length) { g.fillStyle = '#aab'; g.fillText('Ninguém correu ainda. Seja o primeiro!', 24, 110); }
+    (rows || []).forEach((r, i) => { const y = 100 + i * 40, mt = MOUNT_BY[r.mount]; g.fillStyle = i === 0 ? '#ffd76a' : i < 3 ? '#e8e8f0' : '#aab'; g.fillText((i + 1) + '. ' + String(r.name).slice(0, 14), 24, y); g.textAlign = 'right'; g.fillText(mmss(r.ms / 1000) + (mt && mt.id !== 'none' ? '  🐎' : ''), 490, y); g.textAlign = 'left'; });
+    b.tx.needsUpdate = true;
+  },
+  tick(dt, G) {
+    const P = G.player, p = P.pos, R = this.R, now = G.time; if (!R) return; const near = (s, r) => { const q = tpt(s); return Math.hypot(p.x - q[0], p.z - q[1]) < r; };
+    if (Math.hypot(p.x + 16, p.z - 38.5) < 1.6 && !mounts.cur()) mounts.rent('gatao');
+    for (const s of PADS) if (near(s, 2.3) && !(G.trackBoost > 1.2)) { G.trackBoost = 1.6; whoosh(0.6); const q = tpt(s); G.fx.burst(q[0], 0.5, q[1], 0xffd040, 16, 4, 1); }
+    if (!R.run) { if (!near(0, 7.5)) R.armed = true; if (R.armed && near(0, 6.8)) { R.run = true; R.lap = 0; R.next = 1; R.t0 = now; R.armed = false; emit('banner', '🏁 Valendo! ' + LAPS + ' voltas pelos portais', 2.5); play('confirm', 0.7); } }
+    else if (near(GATES[R.next], 7.2)) {
+      if (R.next === 0) { R.lap++; if (R.lap >= LAPS) { const t = now - R.t0; R.run = false; R.armed = false; this.finish(G, t); } else { R.next = 1; emit('banner', '🔁 Última volta!', 2); chime(3, 0.7); } }
+      else { chime(R.next, 0.6); const q = tpt(GATES[R.next]); G.fx.burst(q[0], 4.6, q[1], 0x3cf0ff, 14, 3, 1); R.next = (R.next + 1) % 6; }
+    }
+    G.modeLabel = R.run ? '🏁 Volta ' + Math.min(LAPS, R.lap + 1) + '/' + LAPS + '  ·  ' + mmss(now - R.t0) + '  ·  portal ' + (R.next || 6) + '/6' : S.d.best && S.d.best.track ? '🏆 Seu recorde: ' + mmss(S.d.best.track) : '🏁 Passe pela largada para começar';
+  },
+  finish(G, t) {
+    if (t < 25) { S.toast('Atalho detectado: o tempo não vale', '#ff9a8a'); return; }
+    S.d.best = S.d.best || {}; const b = S.d.best.track, rec = !b || t < b; if (rec) S.d.best.track = Math.round(t * 10) / 10;
+    S.addCoins(rec ? 60 : 25); S.addXp(rec ? 80 : 35); S.stat('trackRace'); S.touch(); G._confetti && G._confetti(40); play(rec ? 'win' : 'quest', 0.8);
+    emit('banner', (rec ? '🏆 NOVO RECORDE: ' : '🏁 Chegou! ') + mmss(t), 4);
+    if (net.online) net.rpc('rv_race_submit', { p_track: 'track', p_ms: Math.round(t * 1000), p_mount: mounts.cur() ? mounts.cur().id : '' }).then((r) => { if (r && r.ok) S.toast('🌐 Ranking online: #' + r.rank, '#ffd76a'); this.loadBoard(); }).catch(() => {});
+  },
+  amb() { return { wind: 0.25 }; }
+};
+
 // registro: ordem, ícones e cores dos portais
-for (const id of ['sky', 'volcano', 'neon']) if (MAP_ORDER.indexOf(id) < 0) MAP_ORDER.push(id);
-Object.assign(MAP_ICONS, { sky: '☁️', volcano: '🌋', neon: '🌃' });
-Object.assign(PORTAL_COLORS, { sky: 0xbfe8ff, volcano: 0xff6a20, neon: 0xff3cc8 });
+for (const id of ['sky', 'volcano', 'neon', 'track']) if (MAP_ORDER.indexOf(id) < 0) MAP_ORDER.push(id);
+Object.assign(MAP_ICONS, { sky: '☁️', volcano: '🌋', neon: '🌃', track: '🏁' });
+Object.assign(PORTAL_COLORS, { sky: 0xbfe8ff, volcano: 0xff6a20, neon: 0xff3cc8, track: 0xffd040 });

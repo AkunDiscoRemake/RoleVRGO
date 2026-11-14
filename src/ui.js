@@ -14,7 +14,9 @@ import { maker, SKIES, GROUNDS, MOODS, AMBS, COLORS, CAT_ORDER } from './maker.j
 import { rec } from './rec.js';
 import { FUR_COLORS, EYE_COLORS, PATTERNS, HATS, EMOTES, roundRect, AGES, OUTFITS, LASERS, PRESETS } from './cat.js';
 import { voice } from './voice.js';
+import { mounts, MOUNTS } from './mounts.js';
 import { infect } from './infect.js';
+import { weather } from './weather.js';
 import { home, HOUSES, FURN, FCATS, FURN_BY, WALLS, FLOORS, COLS, COL_NAMES } from './home.js';
 import { play, setVolume, audioVolume } from './assets.js';
 import { on, emit, store, clamp } from './util.js';
@@ -73,6 +75,7 @@ export const ui = {
       else if (e.code === 'Enter' && !this.open) { this.keyboard('Mensagem para a sala', '', 60, (t) => { G.say(t); }, 'close'); }
       else if (e.code === 'Escape' && this.open) this.hide();
       else if (e.code === 'Backspace') { e.preventDefault(); this.quick(); }
+      else if (e.code === 'KeyJ' && !this.open) mounts.toggle();
       else if (e.code === 'KeyN' && !this.open) { voice.setMic(!voice.mic).then((m) => S.toast(m || (voice.mic ? '🎙 Microfone ligado (N desliga)' : '🎙 Microfone desligado'), m ? '#ff9a8a' : '#9cf09c')); }
       else if (!this.open && /^Digit[1-9]$/.test(e.code)) G.emote(+e.code.slice(5));
     });
@@ -85,7 +88,7 @@ export const ui = {
   qpager(n, per) { const pages = Math.max(1, Math.ceil(n / per)); this.scroll = clamp(this.scroll, 0, pages - 1); if (pages > 1) { this.btn(224, 462, 90, 40, '▲', () => { this.scroll--; }, { off: this.scroll <= 0, bg: '#33355a' }); this.text(384, 482, (this.scroll + 1) + '/' + pages, { a: 'center' }); this.btn(454, 462, 90, 40, '▼', () => { this.scroll++; }, { off: this.scroll >= pages - 1, bg: '#33355a' }); } return this.scroll * per; },
   p_q_root() {
     this.qhead('Menu rápido', true); const h = S.held(), P = this.player, pet = PETS.find((x) => x.id === S.d.pet) || PETS[0], R = (i, label, cb, o) => this.btn(224, 56 + i * 30, 320, 27, label, cb, Object.assign({ bg: '#4a5cc8', fs: 14 }, o || {}));
-    [['💬 Chat', 'q_chat'], ['🎙 Voz: ' + (voice.mic ? 'microfone ligado' : voice.on ? 'só ouvindo' : 'desligada'), 'q_voice'], ['🐱 Avatar', 'q_avatar'], ['🏠 Casa' + (home.mine() && home.editing ? ' (decorando)' : ''), 'q_home'], ['🗡 Itens na pata: ' + h.n, 'q_items'], ['🐾 Bichinho: ' + pet.n, 'q_pets'], ['🔨 Fabricar itens', 'q_craft'], [infect.active ? '☢ Infecção: trocar modo' : '📦 Colocar objetos', infect.active ? 'q_nuke' : 'q_spawn'], ['😺 Emotes', 'q_emotes'], ['🗺 Viajar', 'q_travel'], ['🍖 Consumíveis', 'q_use']].forEach((r, i) => R(i, r[0], () => { this.page = r[1]; this.scroll = 0; }));
+    [['💬 Chat', 'q_chat'], ['🎙 Voz: ' + (voice.mic ? 'microfone ligado' : voice.on ? 'só ouvindo' : 'desligada'), 'q_voice'], ['🐱 Avatar', 'q_avatar'], ['🏠 Casa' + (home.mine() && home.editing ? ' (decorando)' : ''), 'q_home'], ['🗡 Itens na pata: ' + h.n, 'q_items'], ['🐾 Bichinho e montaria' + (mounts.cur() ? ': 🐎 ' + mounts.cur().n : ''), 'q_pets'], ['🔨 Fabricar itens', 'q_craft'], [infect.active ? '☢ Infecção: trocar modo' : '📦 Colocar objetos', infect.active ? 'q_nuke' : 'q_spawn'], ['😺 Emotes', 'q_emotes'], ['🗺 Viajar', 'q_travel'], ['🍖 Consumíveis', 'q_use']].forEach((r, i) => R(i, r[0], () => { this.page = r[1]; this.scroll = 0; }));
     R(11, '📷 Câmera: ' + ['1ª pessoa', '2ª pessoa (de frente)', '3ª pessoa (por trás)'][P.viewMode - 1], () => P.cycleView(), { bg: '#33355a' });
     R(12, '📸 Tirar foto', () => { this.hide(); setTimeout(() => self.RVphoto && self.RVphoto(), 120); }, { bg: '#33355a' });
     R(13, rec.on ? '⏹ Parar e baixar vídeo (' + Math.floor(rec.seconds()) + 's)' : '⏺ Gravar vídeo', () => { const m = rec.toggle(G.renderer.domElement); if (m) this.msg = m; else if (rec.on) this.hide(); }, { bg: rec.on ? '#b04050' : '#33355a', off: !rec.supported() });
@@ -124,7 +127,13 @@ export const ui = {
     this.qhead('🐾 Bichinhos'); const off = this.qpager(PETS.length, 6);
     PETS.slice(off, off + 6).forEach((p, i) => { const ok = S.petOk(p), on = S.d.pet === p.id, pr = p.price ? S.buyPrice(p.price) : 0;
       this.qrow(i, (on ? '✔ ' : '') + p.n + (ok || !p.price ? '' : '  —  ' + pr + ' 💰'), p.id === 'none' ? 'Sem bichinho' : ok ? (on ? 'Seguindo você' : 'Toque para chamar') : p.how ? p.how : S.d.coins < pr ? 'Moedas insuficientes' : 'Toque para adotar', () => { this.msg = S.setPet(p.id); if (!this.msg) emit('saveNow'); }, { sel: on, off: !ok && (!p.price || S.d.coins < pr), bg: ok ? '#4a5cc8' : '#3a9a5a' }); });
-    this.text(384, 424, 'Os outros jogadores também veem seu bichinho.', { a: 'center', fs: 13, c: '#99a', b: false });
+    this.btn(224, 412, 320, 44, '🐎 Montarias' + (mounts.cur() ? ' (montado)' : ''), () => { this.page = 'q_mounts'; this.scroll = 0; }, { bg: '#a0603a', fs: 18 });
+  },
+  p_q_mounts() {
+    this.qhead('🐎 Montarias'); this.btn(224, 14, 70, 38, '◀', () => { this.page = 'q_pets'; this.scroll = 0; }, { bg: '#33355a' }); const off = this.qpager(MOUNTS.length, 6), cur = mounts.cur();
+    MOUNTS.slice(off, off + 6).forEach((m, i) => { const own = mounts.owned(m.id), on = m.id === 'none' ? !cur : cur && cur.id === m.id, pr = m.price ? S.buyPrice(m.price) : 0, lock = m.level && S.d.level < m.level;
+      this.qrow(i, (on ? '✔ ' : '') + m.n + (own ? '' : '  —  ' + pr + ' 💰'), lock && !own ? '🔒 Precisa do nível ' + m.level : (own ? (on ? 'Montado · ' : 'Toque para montar · ') : '') + m.d, () => { this.msg = m.id === 'none' ? (mounts.dismount(), '') : own ? mounts.ride(m.id) : mounts.buy(m.id); if (!this.msg) emit('saveNow'); }, { sel: on, off: !own && (lock || S.d.coins < pr), bg: own ? '#4a5cc8' : '#3a9a5a' }); });
+    this.text(384, 446, 'PC: tecla J monta/desmonta · Corrida de montaria no Autódromo', { a: 'center', fs: 12, c: '#ffd76a', b: false, max: 320 });
   },
   p_q_craft() {
     this.qhead('🔨 Fabricar'); const off = this.qpager(RECIPES.length, 6);
@@ -281,7 +290,7 @@ export const ui = {
     const g = this.g; g.fillStyle = 'rgba(255,255,255,0.07)'; roundRect(g, 20, 296, W - 40, 150, 12); g.fill();
     this.text(34, 318, '🌟 ' + (ev.active ? 'Evento ativo: ' + ev.ev.n : 'Próximo evento: ' + ev.ev.n), { c: '#ffe070' });
     this.text(34, 344, ev.ev.d + ' ' + MAPS[ev.map].name + (ev.active ? ' — termina em ' : ' — começa em ') + Math.ceil(ev.left / 60) + ' min', { fs: 17, b: false });
-    const h = G.sky.hour; this.text(34, 376, (h > 6 && h < 18 ? '☀ Dia' : '🌙 Noite') + ' — ' + String(Math.floor(h)).padStart(2, '0') + ':' + String(Math.floor((h % 1) * 60)).padStart(2, '0') + '   |   Sala: ' + G.roomName + ' (' + (G.roomPublic ? 'pública' : 'privada') + ')', { fs: 17 });
+    const h = G.sky.hour; this.text(34, 376, (h > 6 && h < 18 ? '☀ Dia' : '🌙 Noite') + ' — ' + String(Math.floor(h)).padStart(2, '0') + ':' + String(Math.floor((h % 1) * 60)).padStart(2, '0') + '   |   ' + weather.info().i + ' ' + weather.info().n + (weather.season ? ' · ' + { xmas: '🎄 Natal', halloween: '🎃 Halloween', newyear: '🎆 Ano Novo' }[weather.season] : '') + '   |   Sala: ' + G.roomName + ' (' + (G.roomPublic ? 'pública' : 'privada') + ')', { fs: 17 });
     this.text(34, 404, 'Jogadores neste mapa: ' + (G.remotes.size + 1) + '   |   Online no jogo: ' + (net.online ? Math.max(1, net.onlineCount()) : 0) + '   |   Rede: ' + (net.online ? net.status : 'offline'), { fs: 17 });
     this.text(34, 430, 'Você: ' + S.name + ' — Nv ' + S.d.level + ' — ' + S.d.coins + ' moedas' + (S.d.prof ? ' — ' + PROFS[S.d.prof].n : ''), { fs: 17, c: '#9cf09c' });
     this.btn(20, 458, 160, 40, '❓ Como jogar', () => { this.page = 'help'; }, { bg: '#33355a', fs: 17 });

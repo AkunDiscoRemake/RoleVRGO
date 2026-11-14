@@ -10,6 +10,8 @@ import { worldMat } from './world.js';
 import { home } from './home.js';
 import { voice } from './voice.js';
 import { infect } from './infect.js';
+import { weather } from './weather.js';
+import { mounts } from './mounts.js';
 import { CatAvatar, defaultLook, cleanLook, FUR_COLORS, EYE_COLORS, PATTERNS, AGES, PRESETS } from './cat.js'; // eslint-disable-line
 import { store, emit, on } from './util.js';
 import { rec, downloadBlob, stamp } from './rec.js';
@@ -188,5 +190,5 @@ on('look', () => { /* a cor das patas vem de S.look a cada quadro */ });
 addEventListener('beforeunload', () => { net.leave(); });
 player.handTrack = hands;
 import('./maker.js').then(({ maker }) => { self.RV.maker = maker; const f = $('file'); if (f) f.onchange = () => { const file = f.files && f.files[0]; f.value = ''; if (!file) return; S.toast('Importando ' + file.name + '...', '#bfe6ff'); maker.importFile(file).then((e) => S.toast(e || 'Asset importado! Ele já está no pincel.', e ? '#ff9a8a' : '#9cf09c')).catch((e) => S.toast('Falha ao importar: ' + (e && e.message ? e.message : e), '#ff9a8a')); }; });
-self.RV = { G, S, net, perf, player, ui, rec, music, hands, admin, home, voice, infect, CatAvatar, PRESETS }; // para depuração no console
+self.RV = { G, S, net, perf, player, ui, rec, music, hands, admin, home, voice, infect, weather, mounts, CatAvatar, PRESETS }; // para depuração no console
 boot();

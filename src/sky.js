@@ -36,8 +36,9 @@ export class Sky {
     this.night = def.indoor ? 1 : 1 - day;
     const col = this._a.setHex(def.sky[2]).lerp(this._b.setHex(def.sky[0]), day).lerp(this._c.setHex(def.sky[1]), dusk * 0.6);
     if (def.indoor) col.setHex(def.sky[0]);
+    const wx = !def.indoor && this.wx && this.wx.d > 0 ? this.wx : null; if (wx) col.lerp(wx.c, wx.d); // clima: céu acinzentado
     this.scene.background.copy(col); this.scene.fog.color.copy(col);
-    const far = perf.drawDist * (def.fog || 1); this.scene.fog.near = far * 0.6; this.scene.fog.far = far;
+    const far = perf.drawDist * (def.fog || 1); this.scene.fog.near = far * 0.6; this.scene.fog.far = far; if (wx) { this.scene.fog.near *= 1 - wx.fog * 0.85; this.scene.fog.far *= 1 - wx.fog * 0.6; }
     if (def.indoor) { this.hemi.intensity = 0.8 * PI; this.hemi.color.setHex(0xb0a8d0); this.hemi.groundColor.setHex(0x504840); this.sun.intensity = 0.25 * PI; this.sun.color.setHex(0xffc890); this.sun.position.set(center.x + 5, center.y + 30, center.z + 8); }
     else {
       this.hemi.intensity = (0.5 + day * 0.14) * PI; this.hemi.color.setHex(0xa8b8ff).lerp(this._b.setHex(0xffffff), day); this.hemi.groundColor.setHex(0x454a66).lerp(this._b.setHex(0x9a8a68), day);
@@ -46,8 +47,10 @@ export class Sky {
       this.sun.position.set(center.x + sx * 60, center.y + sy * 60, center.z + sz * 60);
       this.orb.position.set(center.x + sx * 260, center.y + sy * 260, center.z + sz * 260); this.orb.material.color.setHex(moon ? 0xdfe8ff : 0xfff2b0);
     }
+    if (wx) { this.hemi.intensity *= 1 - wx.d * 0.45; this.sun.intensity *= 1 - wx.d * 0.8; }
+    this.clouds.material.color.setScalar(wx ? 1 - wx.d * 0.6 : 1); // nuvens carregadas no mau tempo
     this.sun.target.position.copy(center);
-    this.orb.visible = !def.indoor; this.stars.visible = !def.indoor && this.night > 0.3; this.stars.material.opacity = clamp((this.night - 0.3) * 2, 0, 1); this.stars.position.copy(center);
+    this.orb.visible = !def.indoor && !(wx && wx.d > 0.35); this.stars.visible = !def.indoor && this.night > 0.3; this.stars.material.opacity = clamp((this.night - 0.3) * 2, 0, 1); this.stars.position.copy(center);
     this.sun.castShadow = perf.shadows === 2;
     if (under) { col.setHex(0x1a9ac8).multiplyScalar(0.55 + day * 0.45); this.scene.background.copy(col); this.scene.fog.color.copy(col); this.scene.fog.near = 1; this.scene.fog.far = 36; }
     // cúpula: recolore ~2x por segundo
@@ -56,6 +59,6 @@ export class Sky {
     // nuvens: giram devagar em volta do jogador
     const cv = !def.indoor && perf.level >= 1; this.clouds.visible = cv; this.glow.visible = !def.indoor && perf.level >= 1;
     if (cv) { const tt = nowMs / 1000; for (let i = 0; i < this.cl.length; i++) { const c = this.cl[i], a = c.a + tt * c.v; this._m.compose(this._p.set(center.x + Math.cos(a) * c.r, c.y, center.z + Math.sin(a) * c.r), this._q, this._s.set(c.s, c.s * 0.7, c.s)); this.clouds.setMatrixAt(i, this._m); } this.clouds.instanceMatrix.needsUpdate = true; this.clouds.material.color.copy(this._b.setHex(0x9098b8).lerp(this._c.setHex(0xffffff), day)).lerp(this._c.setHex(0xffb890), dusk * 0.5); this.clouds.material.emissive.setScalar(0.1 + day * 0.12); }
-    if (this.glow.visible) { this.glow.position.copy(this.orb.position); this.glow.material.color.copy(this.orb.material.color); this.glow.material.opacity = 0.55 + dusk * 0.35; }
+    if (this.glow.visible) { this.glow.position.copy(this.orb.position); this.glow.material.color.copy(this.orb.material.color); this.glow.material.opacity = (0.55 + dusk * 0.35) * (wx ? 1 - wx.d : 1); }
   }
 }

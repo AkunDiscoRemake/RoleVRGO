@@ -16,6 +16,8 @@ import { maker } from './maker.js';
 import { home } from './home.js';
 import { voice } from './voice.js';
 import { infect } from './infect.js';
+import { weather, decorate } from './weather.js';
+import { mounts } from './mounts.js';
 import { admin } from './admin.js';
 import { DAY_LENGTH } from './config.js';
 
@@ -52,13 +54,13 @@ export const G = {
     this.tpArc = new THREE.Line(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(player.tp.pts, 3).setUsage(THREE.DynamicDrawUsage)), new THREE.LineBasicMaterial({ color: 0x60e8ff, transparent: true, opacity: 0.9, fog: false })); this.tpArc.frustumCulled = false; this.tpArc.visible = false; scene.add(this.tpArc);
     on('teleported', () => { play('portal', 0.45, 0, 1.5); const p = player.pos; this.fx.burst(p.x, p.y + 0.6, p.z, 0x60e8ff, 18, 3, 1); });
     this.heldMesh = new THREE.Mesh(modelGeometry('survival/tool-pickaxe'), instMat); this.heldMesh.visible = false; this.heldMesh.frustumCulled = false; scene.add(this.heldMesh);
-    voice.init(this); infect.init(this); this._bindEvents(); this.ready = true;
+    voice.init(this); infect.init(this); mounts.init(this); this._bindEvents(); this.ready = true;
   },
 
   // ================= carregamento de mapa =================
   travel(id) { if (this.pending || (!MAPS[id] && id !== 'custom' && id !== 'home') || (id === this.mapId && id !== 'home')) return; this.pending = id; this.fade = 0.001; play('portal', 0.6); },
   loadMap(id, keep) {
-    const scene = this.scene; if (id !== 'nuke' || !keep) infect.leave(); this.modeLabel = ''; this._disposeMap();
+    const scene = this.scene; if (id !== 'nuke' || !keep) infect.leave(); this.modeLabel = ''; if (id !== 'track' && mounts.rented) { mounts.rented = null; emit('meta'); } this._disposeMap();
     const def = id === 'custom' ? this.customDef : id === 'home' ? this.homeDef : MAPS[id], w = new World(scene, def.size); w.surface = def.surface;
     if (id !== 'custom' && maker.playing) maker.close(); S._sbChests = [];
     const E = { npcs: [], ores: [], chests: [], portals: [], collects: [], digs: [], fishes: [], secrets: [], dummies: [], zones: [], lamps: [], signs: [], boards: [], springs: [] };
@@ -69,8 +71,9 @@ export const G = {
     E.dummy = (x, z) => E.dummies.push({ x, z }); E.zone = (type, x, z, r) => E.zones.push({ type, x, z, r }); E.lamp = (x, y, z, c) => E.lamps.push({ x, y, z, c: c || 0xffd890 });
     E.sign = (text, x, y, z) => E.signs.push({ text, x, y, z }); E.board = (x, z, yaw) => E.boards.push({ x, z, yaw }); E.spring = (x, z, p) => E.springs.push({ x, z, p }); E.enemies = []; E.enemy = (type, x, z, boss) => E.enemies.push({ type, x, z, boss }); E.schools = []; E.school = (x, y, z, r, n) => E.schools.push({ x, y, z, r, n }); E.bubbleN = 0; E.bubbles = (n) => { E.bubbleN = n; }; E.rainbow = (x, z, r) => { E.rb = { x, z, r }; }; E.trees = []; E.tree = (x, z, model) => E.trees.push({ x, z, model: model || 'nature/tree_default' }); E.falls = []; E.waterfall = (x, y1, z, y0, wd) => E.falls.push({ x, y1, z, y0, wd });
     def.build(w, E, rng(hashStr(id)));
+    if (!def.custom && !def.home) decorate(weather.seasonNow(), id, w, E); // Natal, Halloween, Ano Novo
     w.swim = !!def.swim; matU.uTiles.value = id === 'pool' ? 1 : 0; matU.uGloss.value = id === 'pool' ? 0.6 : id === 'neon' ? 0.85 : id === 'aero' || (def.custom && def.sky[0] === 0x4cc6ff) ? 1 : 0; matU.uCaust.value = def.swim ? 1 : 0;
-    this.world = w; this.E = E; this.def = def; this.mapId = id;
+    this.world = w; this.E = E; this.def = def; this.mapId = id; this.baseGloss = matU.uGloss.value;
     const add = (o) => { scene.add(o); this.objs.push(o); return o; };
     const inst = (geo, n, mat) => { const m = new THREE.InstancedMesh(geo, mat || instMat, Math.max(1, n)); m.count = n; m.frustumCulled = false; m.castShadow = true; return add(m); };
     this.labels = new LabelBatch(scene);
@@ -184,14 +187,14 @@ export const G = {
   _chestVis(c) { const open = !c.ev && S.chestOpen(this.mapId + ':' + c.key); c.open = open; setInst(this.chestMesh, c.i, c.x, c.hidden ? -999 : c.y, c.z, c.ev ? 2.6 : 1.9, c.ry); this.chestMesh.setColorAt(c.i, c.ev ? _col.setRGB(2, 1.6, 0.4) : open ? _col.setRGB(0.35, 0.35, 0.4) : c.tier >= 2 ? _col.setRGB(1.3, 1.1, 1.6) : _col.setRGB(1.1, 1.1, 1.1)); this.chestMesh.instanceColor.needsUpdate = true; },
   _npcMarks() { for (const n of this.npcs) { let mark = ''; if (n.quests) for (const q of n.quests) { const st = S.questState(q); if (st === 'ready') { mark = '❓ '; break; } if (st === 'open' && !mark) mark = '❗ '; } n.av.setName(mark + n.name, n.role); } },
   _boards() { if (!this.E || !this.E.boards.length) return; const draw = (lb) => { for (const b of this.E.boards) { const g = b.canvas.getContext('2d'); g.fillStyle = '#1c1830'; g.fillRect(0, 0, 512, 512); g.fillStyle = '#ffd76a'; g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.fillText('🏆 Ranking da Arena', 256, 46); g.font = 'bold 24px sans-serif'; g.textAlign = 'left'; const rows = lb ? lb.wins : []; if (!lb) { g.fillStyle = '#aaa'; g.fillText(net.online ? 'Carregando...' : 'Offline', 40, 110); } else if (!rows.length) { g.fillStyle = '#aaa'; g.fillText('Ninguém venceu ainda. Seja o primeiro!', 30, 110); } rows.forEach((r, i) => { g.fillStyle = i === 0 ? '#ffd76a' : i < 3 ? '#e8e8f0' : '#aab'; g.fillText((i + 1) + '. ' + r.name, 30, 100 + i * 38); g.textAlign = 'right'; g.fillText(r.wins + ' vitórias  Nv ' + r.level, 490, 100 + i * 38); g.textAlign = 'left'; }); b.tex.needsUpdate = true; } }; draw(null); if (net.online) net.leaderboard().then(draw).catch(() => {}); },
-  pushMeta() { net.setMeta({ name: /^hark/i.test(S.name) && !admin.is ? 'Gato' : S.name, look: S.look, level: S.d.level, sid: this.sid, pet: S.d.pet, admin: admin.is ? 1 : 0, prof: S.d.prof, party: net.partyCode, fc: net.friendCode, held: S.d.hand, vc: voice.on ? 1 : 0, mic: voice.mic ? 1 : 0 }); },
+  pushMeta() { net.setMeta({ name: /^hark/i.test(S.name) && !admin.is ? 'Gato' : S.name, look: S.look, level: S.d.level, sid: this.sid, pet: S.d.pet, admin: admin.is ? 1 : 0, prof: S.d.prof, party: net.partyCode, fc: net.friendCode, held: S.d.hand, vc: voice.on ? 1 : 0, mic: voice.mic ? 1 : 0, mount: mounts.cur() ? mounts.cur().id : '' }); },
 
   // ================= eventos de rede e de jogo =================
   _bindEvents() {
     on('questReady', () => this._npcMarks()); on('inv', () => { if (this.npcs.length) this._npcMarks(); });
     on('peerJoin', (id, meta) => { if (!meta || this.remotes.has(id)) return; meta.name = cleanName(meta.name); const av = new CatAvatar(meta.look, (admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), { sub: 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1), tagColor: this._tagColor(id, meta) }); av.root.visible = false; this.scene.add(av.root); const r = { id, av, meta, has: false, x: 0, y: 0, z: 0, yaw: 0, hy: 0, hp: 0, h: [0, 0.6, -0.4, 0, 0.6, -0.4], flags: 1, life: 100, px: 0, pz: 0, hit: [0, 0], patT: 0 }; this.remotes.set(id, r); if (meta.sid) this.sids[meta.sid] = r; this._remoteHeld(r); setTimeout(() => this.props.forEach((p) => { if (p.owner === net.id) net.send('prop', { id: p.id, k: p.k, x: p.x, y: p.y, z: p.z, ry: p.ry }); }), 1500); emit('toast', meta.name + (this.mapId === 'home' && home.mine() ? ' veio te visitar! 🏠' : ' entrou'), '#bfe6ff'); if (home.mine()) setTimeout(() => home.share(), 1200); emit('players'); });
     on('peerMeta', (id, meta) => { const r = this.remotes.get(id); if (!r || !meta) return; meta.name = cleanName(meta.name); if (JSON.stringify(meta.look) !== JSON.stringify(r.meta.look)) r.av.setLook(meta.look); r.meta = meta; this._remoteHeld(r); r.av.tagColor = this._tagColor(id, meta); r.av.setName((admin.ids.has(id) ? '👑 ' : '') + (meta.name || 'Gato'), 'Nv ' + (meta.level || 1) + ' · ' + titleFor(meta.level || 1)); if (meta.sid) this.sids[meta.sid] = r; emit('players'); });
-    on('peerLeave', (id) => { voice.close(id); const r = this.remotes.get(id); if (!r) return; if (r.pet && r.pet.av) r.pet.av.dispose(); if (r.heldMesh) this.scene.remove(r.heldMesh); this.props.forEach((p, k) => { if (p.owner === id) this._delProp(k); }); r.av.dispose(); this.remotes.delete(id); for (const k in this.sids) if (this.sids[k] === r) delete this.sids[k]; emit('players'); });
+    on('peerLeave', (id) => { voice.close(id); const r = this.remotes.get(id); if (!r) return; mounts.drop(r); if (r.pet && r.pet.av) r.pet.av.dispose(); if (r.heldMesh) this.scene.remove(r.heldMesh); this.props.forEach((p, k) => { if (p.owner === id) this._delProp(k); }); r.av.dispose(); this.remotes.delete(id); for (const k in this.sids) if (this.sids[k] === r) delete this.sids[k]; emit('players'); });
     on('peerState', (p) => { if (!Array.isArray(p) || p.length < 15) return; for (let i = 1; i < 15; i++) if (typeof p[i] !== 'number' || !Number.isFinite(p[i]) || Math.abs(p[i]) > 2000) return; const r = this.sids[p[0]]; if (!r) return; r.x = p[1]; r.y = p[2]; r.z = p[3]; r.yaw = p[4]; r.hy = p[5]; r.hp = p[6]; for (let i = 0; i < 6; i++) r.h[i] = p[7 + i]; const fl = p[13]; const em = (fl >> 4) & 15; r.tool = (fl >> 8) & 7; if (em !== r.av.emote) { r.av.setEmote(em); if (em === 7) playAt('click', r.av.root.position, this.camera, 0), meow(0.5, 1.1); } r.flags = fl; r.life = p[14]; if (!r.has) { r.has = true; r.av.root.position.set(r.x, r.y, r.z); r.av.root.visible = true; } });
     on('peerEvent', (e) => this._peerEvent(e));
     for (const ev of ['peerJoin', 'peerMeta', 'friends', 'party']) on(ev, () => { clearTimeout(this._vcT); this._vcT = setTimeout(() => voice.sync(), 600); });
@@ -351,12 +354,12 @@ export const G = {
     const tp = P.tp; this.tpBall.visible = this.tpArc.visible = tp.show; if (tp.show) { this.tpBall.position.set(tp.x, tp.y + 0.22 + Math.sin(this.time * 6) * 0.04, tp.z); this.tpBall.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.material.color.setHex(tp.valid ? 0x60e8ff : 0xff5050); this.tpArc.geometry.setDrawRange(0, tp.n); this.tpArc.geometry.attributes.position.needsUpdate = true; }
     // passos
     if (P.grounded && P.speed > 1 && !P.wasTouching) { this.stepT -= dt * P.speed; if (this.stepT <= 0) { this.stepT = 2.2; if (P.speed > 3 && !P.inWater && perf.particles >= 0.5) this.fx.burst(P.pos.x, P.pos.y + 0.05, P.pos.z, { snow: 0xffffff, sand: 0xe8d098 }[W.surface] || 0xbcae90, 2, 0.8, 3); play(P.inWater ? 'splash' : this.E.aero && P.pos.y > 1.9 && Math.hypot(P.pos.x, P.pos.z) < 44 ? 'glass' : W.surface === 'snow' ? 'step_snow' : W.surface === 'stone' ? 'step_stone' : 'step_grass', 0.22); } }
-    this._interact(dt, now); this._npcs(dt); this._enemies(dt); this._self(dt); this._remotes(dt); this._fishing(dt); this._events(dt, now);
+    this._interact(dt, now); this._npcs(dt); this._enemies(dt); this._self(dt); this._remotes(dt); mounts.update(dt); this._fishing(dt); this._events(dt, now);
     // mãos + sombras em lote
     const hp = this.hands; hp.begin(); const fur = this.burntT > 0 ? '#2a2420' : this.infFur || S.look.fur;
     for (let i = 0; i < 2; i++) { const h = P.hands[i]; hp.hand(h.pos.x, h.pos.y, h.pos.z, HAND_R, P.block ? '#ffd0a0' : this.pawColor || fur); }
     if (perf.shadows) hp.blob(P.pos.x, W.floorAt(P.pos.x, P.pos.y + 0.3, P.pos.z), P.pos.z, 0.34);
-    this.remotes.forEach((r) => { if (!r.has || !r.av.root.visible) return; const p = r.av.root.position; if (r.near) { hp.hand(p.x + r.h[0], p.y + r.h[1], p.z + r.h[2], HAND_R, r.av.look.fur); hp.hand(p.x + r.h[3], p.y + r.h[4], p.z + r.h[5], HAND_R, r.av.look.fur); } if (perf.shadows && r.near) hp.blob(p.x, W.floorAt(p.x, p.y + 0.3, p.z), p.z, 0.34); });
+    this.remotes.forEach((r) => { if (!r.has || !r.av.root.visible) return; const p = r.av.root.position; if (r.near) { { const my = p.y - (r.mountH || 0); hp.hand(p.x + r.h[0], my + r.h[1], p.z + r.h[2], HAND_R, r.av.look.fur); hp.hand(p.x + r.h[3], my + r.h[4], p.z + r.h[5], HAND_R, r.av.look.fur); } } if (perf.shadows && r.near) hp.blob(p.x, W.floorAt(p.x, p.y + 0.3, p.z), p.z, 0.34); });
     for (const n of this.npcs) { if (!n.near) continue; const p = n.av.root.position, av = n.av; av.procHands(_v, _v2);
       if (n.spar && n.state !== 'idle' && n.state !== 'ko') { const c = Math.cos(av.root.rotation.y), sn = Math.sin(av.root.rotation.y), up = n.state === 'windup' ? 1.15 : n.state === 'strike' ? 0.85 : 0.8, fwd = n.state === 'windup' ? -0.1 : n.state === 'strike' ? 0.75 : 0.3; _v.set(p.x + c * 0.3 - sn * fwd, p.y + up, p.z - sn * 0.3 - c * fwd); _v2.set(p.x - c * 0.3 - sn * fwd, p.y + up, p.z + sn * 0.3 - c * fwd); }
       hp.hand(_v.x, _v.y, _v.z, HAND_R, av.look.fur); hp.hand(_v2.x, _v2.y, _v2.z, HAND_R, av.look.fur); if (perf.shadows) hp.blob(p.x, n.y, p.z, 0.34); }
@@ -366,9 +369,11 @@ export const G = {
     // lanternas e céu
     this.camera.getWorldPosition(_v); const under = W.swim && _v.y < W.waterY - 0.05; this.under = under;
     const skyNow = admin.eventOn('night') ? DAY_LENGTH * 750 : admin.eventOn('day') ? DAY_LENGTH * 250 : this.mapId === 'dark' ? DAY_LENGTH * 985 : this.mapId === 'neon' ? DAY_LENGTH * 760 : this.mapId === 'volcano' ? DAY_LENGTH * 455 : now; // Reino Sombrio: crepúsculo eterno
-    this.sky.update(skyNow, this.def, P.pos, perf, under); this._adminTick(dt, now);
+    weather.update(dt, this.mapId, this.def); this.sky.wx = weather.wx();
+    this.sky.update(skyNow, this.def, P.pos, perf, under); this._adminTick(dt, now); { const wi = weather.info(); matU.uGloss.value = Math.max(this.baseGloss || 0, wi.wet ? 0.6 * weather.k : 0); } // chão molhado brilha na chuva
+    if (weather.season === 'newyear' && this.sky.night > 0.5 && !this.def.indoor) { this.fwT = (this.fwT || 0) - dt; if (this.fwT <= 0) { this.fwT = 0.8 + Math.random() * 1.6; const fx2 = P.pos.x + (Math.random() - 0.5) * 60, fz = P.pos.z + (Math.random() - 0.5) * 60, fy = P.pos.y + 22 + Math.random() * 18, c = [0xff4040, 0x40ff80, 0xffe040, 0x40a0ff, 0xff60e0][Math.floor(Math.random() * 5)]; this.fx.burst(fx2, fy, fz, c, 40, 9, 2); this.fx.burst(fx2, fy, fz, 0xffffff, 12, 4, 2); setTimeout(() => thunder(0.15), 400); } } // 🎆 fogos de Ano Novo
     if (this.mapId === 'pool') { this.sky.hemi.groundColor.setHex(0xcfeef2); this.sky.hemi.color.setHex(0xffffff); this.sky.sun.color.setHex(0xf4fbff); } // luz fluorescente fria
-    if (this.mapId === 'dark' || this.mapId === 'neon') { // relâmpagos com trovão
+    if (this.mapId === 'dark' || this.mapId === 'neon' || (weather.info().bolt && weather.k > 0.6)) { // relâmpagos com trovão (também nas tempestades)
       this.boltT = (this.boltT == null ? 6 : this.boltT) - dt;
       if (this.boltT <= 0) { this.boltT = 9 + Math.random() * 16; this.bolt = 0.45; setTimeout(() => thunder(0.8), 300 + Math.random() * 900); }
       if (this.bolt > 0) { this.bolt -= dt; const k = this.bolt > 0.3 || (this.bolt > 0.12 && this.bolt < 0.2) ? 1 : 0.25; this.sky.hemi.intensity += k * 4; this.scene.background.lerp(_col.setHex(0xd8d0ff), k * 0.7); this.scene.fog.color.copy(this.scene.background); }
@@ -386,7 +391,7 @@ export const G = {
     { const sp = Math.hypot(P.vel.x, P.vel.y, P.vel.z); if (sp > 6.5 && !P.grounded && !P.swimming) { const cp = this.camera.getWorldPosition(_v2), k = 1 / sp; for (let n = 0; n < 2; n++) { const ox = (Math.random() - 0.5) * 3, oy = (Math.random() - 0.5) * 2, oz = (Math.random() - 0.5) * 3; this.fx.streak(cp.x + P.vel.x * k * 3 + ox, cp.y + P.vel.y * k * 3 + oy, cp.z + P.vel.z * k * 3 + oz, -P.vel.x * 0.9, -P.vel.y * 0.9, -P.vel.z * 0.9, 0xe8f4ff, 0.22); } } }
     if (this.E.portals.length && perf.particles >= 0.5) for (const pt of this.E.portals) { if (Math.random() > 0.35 || Math.abs(pt.x - P.pos.x) > 24 || Math.abs(pt.z - P.pos.z) > 24) continue; const a = Math.random() * 6.283, c = Math.cos(pt.yaw), sn = Math.sin(pt.yaw), r = 1.05; this.fx.streak(pt.x + c * Math.cos(a) * r, pt.y + 1.45 + Math.sin(a) * r, pt.z - sn * Math.cos(a) * r, -c * Math.cos(a) * 1.2, -Math.sin(a) * 1.2, sn * Math.cos(a) * 1.2, PORTAL_COLORS[pt.to] || 0xffffff, 0.75); }
     this._zapRoll(dt); if (this.zapK > 0) { this.zapK = Math.max(0, this.zapK - dt * 2.5); this.zapFlash.material.opacity = this.zapK; }
-    this.fx.ambient(this.under ? 'bubble' : this.def.custom ? this.def.ambId : AMBIENT[this.mapId] || '', P.pos, this.time, this.sky.night);
+    this.fx.ambient(this.under ? 'bubble' : (weather.k > 0.3 && weather.info().amb) || (this.def.custom ? this.def.ambId : AMBIENT[this.mapId] || ''), P.pos, this.time, this.sky.night);
     this.fx.update(dt);
     // laser de mira
     const a = this.uiOpen ? null : this.aim(); const show = this.uiOpen || !!a; this.laser.visible = show && !P.hands[0].touch && !P.desktop;
@@ -421,10 +426,10 @@ export const G = {
   // ---------- seu próprio gato (visível em 2ª e 3ª pessoa) ----------
   _self(dt) {
     const P = this.player; if (!this.selfCat) { this.selfCat = new CatAvatar(S.look, S.name, { noTag: true }); this.scene.add(this.selfCat.root); on('look', () => this.selfCat.setLook(S.look)); }
-    P.eye = EYE * AGE_EYE[clamp(S.look.age | 0, 0, 2)]; // filhotes e adolescentes enxergam mais baixo
+    P.eye = EYE * AGE_EYE[clamp(S.look.age | 0, 0, 2)] + mounts.height(); // filhotes e adolescentes enxergam mais baixo
     const av = this.selfCat; av.root.visible = P.viewMode !== 1; if (!av.root.visible) return;
-    av.root.position.copy(P.pos); av.root.rotation.y = P.bodyYaw; av.speed = av.speed * 0.8 + P.speed * 0.2; av.grounded = P.grounded || P.wasTouching; av.blocking = P.block; av.headYaw = angDiff(P.bodyYaw, P.headYaw); av.headPitch = 0;
-    if (av.emote !== (this.myEmote || 0)) { av.emote = this.myEmote || 0; av.emoteT = 0; } av.update(dt, false);
+    av.root.position.copy(P.pos); av.root.position.y += mounts.height(); av.root.rotation.y = P.bodyYaw; av.speed = av.speed * 0.8 + P.speed * 0.2; av.grounded = P.grounded || P.wasTouching; av.blocking = P.block; av.headYaw = angDiff(P.bodyYaw, P.headYaw); av.headPitch = 0;
+    { const want = this.myEmote || (mounts.cur() ? 3 : 0); if (av.emote !== want) { av.emote = want; av.emoteT = 1; } } av.update(dt, false); // montado: pose sentada
   },
   // ---------- inimigos: perseguem, avisam o golpe (incham e ficam vermelhos) e atacam; dá para bloquear e esquivar ----------
   _enemies(dt) {
@@ -483,8 +488,8 @@ export const G = {
   _aero(dt) {
     const P = this.player, t = this.time, W = this.world, ax = this.ax;
     // ambiente sonoro: marolas perto da água, ronco submarino, cachoeira por distância
-    if (this.def.amb && !W.swim) { ambience(this.def.amb(P, this)); this._amb = true; } // ambiência própria dos mapas novos (lava, chuva, vento, neon)
-    else if (W.swim || ax || this.mapId === 'dark') { let fall = 0; if (ax) for (const f of ax.falls) { const d = Math.hypot(P.pos.x - f.x, P.pos.z - f.z); fall = Math.max(fall, clamp(1 - d / 34, 0, 1)); } const nearW = W.heightAt(P.pos.x, P.pos.z) < W.waterY + 2.5 || P.swimming; ambience({ water: this.under ? 0 : nearW ? (this.mapId === 'pool' ? 0.5 : 1) : 0.25, under: this.under ? 1 : 0, fall: this.under ? fall * 0.3 : fall * fall, wind: this.mapId === 'dark' ? 1 : 0, hum: this.mapId === 'pool' && !this.under ? 1 : 0 }); this._amb = true; } else if (this._amb) { this._amb = false; ambience({}); }
+    if (this.def.amb && !W.swim) { ambience(Object.assign(this.def.amb(P, this), weather.levels() || {})); this._amb = true; } // ambiência própria dos mapas novos (lava, chuva, vento, neon)
+    else if (W.swim || ax || this.mapId === 'dark') { let fall = 0; if (ax) for (const f of ax.falls) { const d = Math.hypot(P.pos.x - f.x, P.pos.z - f.z); fall = Math.max(fall, clamp(1 - d / 34, 0, 1)); } const nearW = W.heightAt(P.pos.x, P.pos.z) < W.waterY + 2.5 || P.swimming; ambience({ water: this.under ? 0 : nearW ? (this.mapId === 'pool' ? 0.5 : 1) : 0.25, under: this.under ? 1 : 0, fall: this.under ? fall * 0.3 : fall * fall, wind: this.mapId === 'dark' ? 1 : 0, hum: this.mapId === 'pool' && !this.under ? 1 : 0 }); this._amb = true; } else if (weather.levels() && !this.under) { ambience(weather.levels()); this._amb = true; } else if (this._amb) { this._amb = false; ambience({}); }
     // rastro de bolhas das braçadas
     if (P.swimming) for (const h of P.hands) if (h.speed > 1.6 && Math.random() < 0.35) this.fx.burst(h.pos.x, h.pos.y, h.pos.z, 0xdff8ff, 1, 0.6, -2.2);
     if (ax) {
@@ -538,7 +543,8 @@ export const G = {
   _adminFx(dt) {
     const P = this.player, t = this.time;
     if (infect.myInf) P.speedMul *= 1.05; // infectado: +5% de velocidade
-    if (admin.has('speed')) P.speedMul *= 2.2; if (admin.has('jump')) P.jumpMul *= 2.3; P.gravMul = admin.has('lowgrav') ? 0.32 : 1; P.fly = admin.has('fly');
+    { const mt = mounts.cur(); if (mt) { P.speedMul *= mt.speed; P.jumpMul *= 1.15; } if (this.trackBoost > 0) { this.trackBoost -= dt; P.speedMul *= 1.75; } } // montaria e turbo da pista
+    if (admin.has('speed')) P.speedMul *= 2.2; if (admin.has('jump')) P.jumpMul *= 2.3; P.gravMul = admin.has('lowgrav') ? 0.32 : 1; P.fly = admin.has('fly') || mounts.flying();
     const fr = admin.has('freeze'); if (fr && !this._admFrozen) { this._admFrozen = true; P.frozen = true; P.vel.set(0, 0, 0); } else if (!fr && this._admFrozen) { this._admFrozen = false; P.frozen = false; }
     if (fr && Math.random() < 0.3) this.fx.burst(P.pos.x, P.pos.y + 0.8, P.pos.z, 0xbfefff, 2, 1);
     this.pawColor = null;
@@ -691,7 +697,7 @@ export const G = {
     const P = this.player, k = Math.min(1, dt * 12), t = this.time;
     this.remotes.forEach((r) => {
       if (!r.has) return; const av = r.av, p = av.root.position;
-      const ox = p.x, oz = p.z; if (Math.abs(r.x - p.x) > 12 || Math.abs(r.z - p.z) > 12) p.set(r.x, r.y, r.z); else { p.x += (r.x - p.x) * k; p.y += (r.y - p.y) * k; p.z += (r.z - p.z) * k; }
+      const ox = p.x, oz = p.z; const ry = r.y + (r.mountH || 0); if (Math.abs(r.x - p.x) > 12 || Math.abs(r.z - p.z) > 12) p.set(r.x, ry, r.z); else { p.x += (r.x - p.x) * k; p.y += (ry - p.y) * k; p.z += (r.z - p.z) * k; } // montado: o gato fica em cima da montaria
       av.root.rotation.y += angDiff(av.root.rotation.y, r.yaw) * k; av.headYaw = r.hy; av.headPitch = r.hp;
       av.speed = av.speed * 0.8 + Math.hypot(p.x - ox, p.z - oz) / Math.max(dt, 0.001) * 0.2; av.grounded = !!(r.flags & 1); av.blocking = !!(r.flags & 2);
       const dx = p.x - P.pos.x, dz = p.z - P.pos.z, d = Math.hypot(dx, dz); r.near = d < perf.animDist; av.root.visible = d < perf.drawDist; if (av.tag) av.tag.visible = d < perf.tagDist;
