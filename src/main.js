@@ -16,6 +16,7 @@ import { jobs } from './jobs.js';
 import { gp } from './gp.js';
 import { CatAvatar, defaultLook, cleanLook, FUR_COLORS, EYE_COLORS, PATTERNS, AGES, PRESETS } from './cat.js'; // eslint-disable-line
 import { store, emit, on } from './util.js';
+import { touch } from './touch.js';
 import { rec, downloadBlob, stamp } from './rec.js';
 import { admin } from './admin.js';
 import { LANG, LANGS, setLang, translateDOM } from './i18n.js';
@@ -135,6 +136,7 @@ function start() {
   G.room = chosen.code; G.roomName = chosen.name; G.roomPublic = chosen.pub;
   G.init(scene, camera, renderer, player); ui.init(scene, camera, player);
   on('map', (id) => music.setMap(id)); music.start();
+  setTimeout(() => { if (!cardboard && !renderer.xr.isPresenting && touch.want()) { touch.init(player, canvas); $('hint').style.display = 'none'; S.toast('📱 Joystick à esquerda para andar · arraste a tela para olhar · toque rápido para usar · ⤒ pula', '#bfe6ff'); } }, 300);
   G.loadMap('village'); S.touch(); emit('saveNow'); S.streakCheck(); S.checkAccs(); S.angelCheck();
   if (net.online) { G.refreshFriends(); if (S.d.party) net.joinParty(S.d.party); }
   if (!(S.d.stats.fling > 0)) setTimeout(() => S.toast('Fale com a Mimi (❗) à sua frente. Menu: touchpad / tecla M', '#bfe6ff'), 1500);
@@ -161,13 +163,13 @@ async function enterCardboard() {
   // tela cheia e trava de paisagem são opcionais: não esperamos por elas (alguns navegadores nunca respondem)
   const el = document.documentElement; try { const f = el.requestFullscreen ? el.requestFullscreen() : el.webkitRequestFullscreen ? el.webkitRequestFullscreen() : null; if (f && f.then) f.then(() => { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); }).catch(() => {}); } catch (e) { /* tela cheia opcional */ }
   try { if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(() => {}); } catch (e) { /* sem wake lock */ }
-  cardboard = true; player.enableCardboard(); if (!store.get('profile', null)) store.set('profile', 'performance');
+  cardboard = true; touch.show(false); player.enableCardboard(); if (!store.get('profile', null)) store.set('profile', 'performance');
   start(); $('hint').style.display = 'none'; $('vr2').style.display = 'none'; if ($('ht').checked) hands.start();
   setTimeout(() => S.toast('VR Box: toque na tela = gatilho · segure para andar · olhe para mirar', '#bfe6ff'), 2500);
   setTimeout(() => { if (noGyro || !player.devOK) S.toast('Sem sensor de movimento: arraste o dedo na tela para olhar', '#ff9a8a'); }, 6000);
 }
 $('card').onclick = enterCardboard;
-self.RVcard = { exit() { cardboard = false; player.card = false; renderer.setScissorTest(false); resize(); if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen(); }, get on() { return cardboard; }, enter: enterCardboard };
+self.RVcard = { exit() { cardboard = false; player.card = false; if (touch.want()) { touch.init(player, canvas); touch.show(true); } renderer.setScissorTest(false); resize(); if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen(); }, get on() { return cardboard; }, enter: enterCardboard };
 
 // ---------- loop ----------
 let photoReq = false, shotHud = null, comfortVig = store.get('vignette', true);
@@ -206,6 +208,6 @@ on('look', () => { /* a cor das patas vem de S.look a cada quadro */ });
 addEventListener('beforeunload', () => { net.leave(); });
 player.handTrack = hands;
 import('./maker.js').then(({ maker }) => { self.RV.maker = maker; const f = $('file'); if (f) f.onchange = () => { const file = f.files && f.files[0]; f.value = ''; if (!file) return; S.toast('Importando ' + file.name + '...', '#bfe6ff'); maker.importFile(file).then((e) => S.toast(e || 'Asset importado! Ele já está no pincel.', e ? '#ff9a8a' : '#9cf09c')).catch((e) => S.toast('Falha ao importar: ' + (e && e.message ? e.message : e), '#ff9a8a')); }; });
-rec.isVR = () => renderer.xr.isPresenting; renderer.xr.addEventListener('sessionstart', () => { if (rec.on) { rec.stop(); S.toast('⏹ Gravação parada: o gravador do jogo não funciona dentro do VR', '#ffd76a'); } });
-self.RV = { G, S, net, perf, player, ui, rec, music, hands, admin, home, voice, infect, weather, mounts, jobs, gp, CatAvatar, PRESETS }; // para depuração no console
+rec.isVR = () => renderer.xr.isPresenting; renderer.xr.addEventListener('sessionend', () => { if (!cardboard && touch.el) touch.show(true); }); on('openChat', () => { const t = prompt('Mensagem para a sala'); if (t && t.trim()) G.say(t.trim().slice(0, 60)); }); renderer.xr.addEventListener('sessionstart', () => { touch.show(false); if (rec.on) { rec.stop(); S.toast('⏹ Gravação parada: o gravador do jogo não funciona dentro do VR', '#ffd76a'); } });
+self.RV = { touch, G, S, net, perf, player, ui, rec, music, hands, admin, home, voice, infect, weather, mounts, jobs, gp, CatAvatar, PRESETS }; // para depuração no console
 boot();

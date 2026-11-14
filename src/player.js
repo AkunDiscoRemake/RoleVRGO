@@ -29,7 +29,7 @@ export class Player {
     this.onTrigger = null; this.onRelease = null; this.onMenu = null; this.onBack = null; // callbacks do jogo
     this.snapA = Math.PI / 6; this.smoothTurn = false; this.speedMul = 1; this.jumpMul = 1; this.gravMul = 1; this.fly = false; this.hover = 0; this.hovering = false; this._hT = 0; this.backWas = false; this.swimming = false; this.swimDist = 0;
     // VR Box / Cardboard (giroscópio do celular), gamepads/Joy-Cons, rastreamento de mãos e teleporte
-    this.card = false; this.devQ = new THREE.Quaternion(); this.devOK = false; this._yaw0 = 0; this.gpMove = { x: 0, y: 0 }; this.gpAim = { x: 0, y: 0 }; this._gb = []; this._gbPrev = []; this.gpTrig = false; this.gpBlock = false; this.gpFound = false;
+    this.card = false; this.devQ = new THREE.Quaternion(); this.devOK = false; this._yaw0 = 0; this.gpMove = { x: 0, y: 0 }; this.touchMove = { x: 0, y: 0 }; this.gpAim = { x: 0, y: 0 }; this._gb = []; this._gbPrev = []; this.gpTrig = false; this.gpBlock = false; this.gpFound = false;
     this.handTrack = null; this.tracked = false; this.tpHeld = false; this.tpWas = false; this.tpCd = 0; this.padT = 0; this.padCenter = false; this.xrTp = false;
     this.tp = { show: false, valid: false, x: 0, y: 0, z: 0, n: 0, pts: new Float32Array(40 * 3) };
     this.viewMode = 1; this.viewYaw = 0; this.emoteId = 0; this.emoteTime = 0; // câmera: 1 = 1ª pessoa, 2 = 2ª (de frente), 3 = 3ª (por trás)
@@ -85,6 +85,7 @@ export class Player {
   _press() { this.trigger = true; if (this.onTrigger && this.onTrigger()) { this.consumed = true; return; } this.consumed = false; let g = false; for (const h of this.hands) if (h.touch || h.nearT > 0) { h.grab = true; g = true; } if (!g) this.walkHeld = true; else emit('grab'); }
   _release() { if (!this.trigger) return; this.trigger = false; this.walkHeld = false; for (const h of this.hands) h.grab = false; if (this.onRelease) this.onRelease(); }
   pulse(i, ms) { const s = this.active && this.active.userData.src; const gp = s && s.gamepad; const a = gp && gp.hapticActuators && gp.hapticActuators[0]; if (a && a.pulse) { try { a.pulse(i, ms); } catch (e) { /* sem vibração */ } } }
+  jumpPress() { if (this.grounded && !this.frozen && !this.swimming) { this.vel.y = 4.6 * this.jumpMul; this.grounded = false; emit('jump'); } else if (this.swimming) this.vel.y += 2.5; }
   teleport(x, y, z, yaw) { this.pos.set(x, y, z); this.vel.set(0, 0, 0); if (yaw != null) { this.yaw = yaw; } for (const h of this.hands) { h.touch = h.grab = false; h.pos.set(x, y + 0.6, z); h.prevT.copy(h.pos); } this.hist.length = 0; }
   dodge(dir) {
     if (this.dodgeCd > 0 || this.stamina < 20 || this.frozen) return;
@@ -113,7 +114,7 @@ export class Player {
       if (gp.axes.length >= 4) { mx += gp.axes[0]; my += gp.axes[1]; ax += gp.axes[2]; ay += gp.axes[3]; } else if (gp.axes.length >= 2) lone.push(gp); }
     if (lone.length) { lone.sort((a, b) => (/\(R\)|right/i.test(a.id) ? 1 : 0) - (/\(R\)|right/i.test(b.id) ? 1 : 0)); mx += lone[0].axes[0]; my += lone[0].axes[1]; if (lone[1]) { ax += lone[1].axes[0]; ay += lone[1].axes[1]; } }
     const dz = (v) => (Math.abs(v) < 0.18 ? 0 : clamp(v, -1, 1));
-    this.gpMove.x = dz(mx); this.gpMove.y = dz(my); this.gpAim.x += (dz(ax) - this.gpAim.x) * 0.5; this.gpAim.y += (dz(ay) - this.gpAim.y) * 0.5; this.gpFound = found; if (!found) return;
+    this.gpMove.x = clamp(dz(mx) + this.touchMove.x, -1, 1); this.gpMove.y = clamp(dz(my) + this.touchMove.y, -1, 1); this.gpAim.x += (dz(ax) - this.gpAim.x) * 0.5; this.gpAim.y += (dz(ay) - this.gpAim.y) * 0.5; this.gpFound = found; if (!found) return;
     const down = (i) => B[i] && !prev[i];
     const trig = !!(B[7] || B[0]); if (trig !== this.gpTrig) { this.gpTrig = trig; if (trig) this._press(); else this._release(); }
     this.gpBlock = !!B[6];

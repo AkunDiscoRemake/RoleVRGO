@@ -97,11 +97,10 @@ export const ui = {
     R(14, '📜 Menu completo', () => { this.page = 'map'; }, { bg: '#33355a' });
   },
   p_q_angel() {
-    this.qhead('😇 Gato-Anjo'); const A = S.d.angel, on = S.angelOn();
+    this.qhead('😇 Gato-Anjo'); const on = S.angelOn();
     this.qrow(0, on ? '😇 Forma de Gato-Anjo: LIGADA' : '🐱 Forma de Gato-Anjo: desligada', on ? 'Asas, auréola e o teclado do Keyboard Cat · toque para voltar ao seu gato' : 'Toque para virar o Gato-Anjo de novo', () => { G.setAngel(!on); }, { sel: on, bg: '#c8a040' });
-    this.qrow(1, A.hover ? '🪽 Flutuar a 5 m: ligado' : '🪽 Flutuar a 5 m: desligado', A.hover ? 'No PC, Espaço sobe e C desce um pouco · desligue para minerar e escalar' : 'Toque para planar a 5 metros do chão', () => { A.hover = A.hover ? 0 : 1; S.touch(); }, { sel: !!A.hover, bg: '#4a5cc8', off: !on });
-    this.qrow(2, '🎹 Tocar o teclado', 'Uma musiquinha para quem está perto', () => { G.keyboard(); this.hide(); }, { bg: '#3a9a5a', off: !on });
-    this.qrow(3, '🐱 Editar avatar', 'Cores, chapéus e roupas do seu gato normal', () => { this.page = 'q_avatar'; }, { bg: '#33355a' });
+    this.qrow(1, '🎹 Tocar o teclado', 'Uma musiquinha para quem está perto', () => { G.keyboard(); this.hide(); }, { bg: '#3a9a5a', off: !on });
+    this.qrow(2, '🐱 Editar avatar', 'Cores, chapéus e roupas do seu gato normal', () => { this.page = 'q_avatar'; }, { bg: '#33355a' });
     this.wrap(234, 330, '🎹 Em memória do Keyboard Cat: Fatso, o gato laranja de camisa azul que tocava teclado nos vídeos de Charlie Schmidt (1984). Descanse em paz, pequeno músico. 🕊️', 300, 20, { fs: 14, b: false, c: '#ffe28a' });
   },
   p_q_voice() {

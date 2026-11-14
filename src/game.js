@@ -554,13 +554,13 @@ export const G = {
     const P = this.player, t = this.time;
     if (infect.myInf) P.speedMul *= 1.05; // infectado: +5% de velocidade
     { const mt = mounts.cur(); if (mt) { P.speedMul *= mt.speed; P.jumpMul *= 1.15; } if (this.trackBoost > 0) { this.trackBoost -= dt; P.speedMul *= 1.75; } } // montaria e turbo da pista
-    if (admin.has('speed')) P.speedMul *= 2.2; if (admin.has('jump')) P.jumpMul *= 2.3; P.gravMul = admin.has('lowgrav') ? 0.32 : 1; P.fly = admin.has('fly') || mounts.flying(); P.hover = S.look.angel && S.d.angel.hover && !P.fly && !mounts.cur() ? 5 : 0;
+    if (admin.has('speed')) P.speedMul *= 2.2; if (admin.has('jump')) P.jumpMul *= 2.3; P.gravMul = admin.has('lowgrav') ? 0.32 : 1; P.fly = admin.has('fly') || mounts.flying(); P.hover = 0; /* o Gato-Anjo não flutua: só bate as asas */
     const fr = admin.has('freeze'); if (fr && !this._admFrozen) { this._admFrozen = true; P.frozen = true; P.vel.set(0, 0, 0); } else if (!fr && this._admFrozen) { this._admFrozen = false; P.frozen = false; }
     if (fr && Math.random() < 0.3) this.fx.burst(P.pos.x, P.pos.y + 0.8, P.pos.z, 0xbfefff, 2, 1);
     this.pawColor = null;
     if (admin.has('rainbow')) { _col.setHSL((t * 0.4) % 1, 0.9, 0.6); this.pawColor = '#' + _col.getHexString(); if (Math.random() < 0.5) this.fx.burst(P.pos.x, P.pos.y + 0.4, P.pos.z, _col.getHex(), 1, 0.6, -0.5); }
     if (admin.has('gold')) { this.pawColor = '#ffd040'; if (Math.random() < 0.5) this.fx.burst(P.pos.x + (Math.random() - 0.5) * 0.6, P.pos.y + Math.random() * 1.3, P.pos.z + (Math.random() - 0.5) * 0.6, 0xffd040, 1, 0.4, -0.8); }
-    if (P.hovering && Math.random() < 0.25) this.fx.burst(P.pos.x + (Math.random() - 0.5) * 0.8, P.pos.y + 0.4, P.pos.z + (Math.random() - 0.5) * 0.8, Math.random() < 0.5 ? 0xffffff : 0xffe28a, 1, 0.4, -0.6); /* penas e brilhos do Gato-Anjo */
+    if (S.look.angel && P.speed > 0.5 && Math.random() < 0.06) this.fx.burst(P.pos.x + (Math.random() - 0.5) * 0.8, P.pos.y + 0.6, P.pos.z + (Math.random() - 0.5) * 0.8, Math.random() < 0.5 ? 0xffffff : 0xffe28a, 1, 0.4, -0.6); /* penas e brilhos do Gato-Anjo */
     if (P.fly && P.speed > 1 && Math.random() < 0.4) this.fx.burst(P.pos.x, P.pos.y + 0.3, P.pos.z, 0xffffff, 1, 0.3, 0.5);
   },
   _confetti(n) { const P = this.player.pos; for (let i = 0; i < 6; i++) { _col.setHSL(Math.random(), 0.9, 0.6); this.fx.burst(P.x + (Math.random() - 0.5) * 6, P.y + 3 + Math.random() * 2, P.z + (Math.random() - 0.5) * 6, _col.getHex(), Math.ceil(n / 6), 3, 3); } pop(0.5, 0.3); },
