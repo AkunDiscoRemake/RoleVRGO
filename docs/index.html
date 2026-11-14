@@ -26,12 +26,12 @@ footer{text-align:center;color:var(--mut);padding:30px 16px;font-size:14px}
 </head>
 <body>
 <header>
-  <div class="badge">1.0.0 · FullFinalVer</div>
+  <div class="badge">1.1.0 · FullFinalVer</div>
   <h1>Role<b>VR</b>GO Docs</h1>
-  <p>Tudo para criar no RoleVRGO: o Studio, a API em Luau no estilo Roblox, mods HTML/CSS/JS, o rastreamento pelo "+" no papel e uma versão destes documentos feita para IAs.</p>
+  <p>Tudo para criar no RoleVRGO: o Studio, scripts de servidor e de cliente com a API em Luau no estilo Roblox, mods HTML/CSS/JS, o rastreamento pelo "+" no papel e uma versão destes documentos feita para IAs.</p>
   <p><a class="btn" href="../">🎮 Abrir o jogo</a><a class="btn" href="for-vibecode/llms.txt">🤖 For-VibeCode</a></p>
 </header>
-<nav><a href="#comecar">Começar</a><a href="#studio">Studio</a><a href="#api">API</a><a href="#marcador">Marcador +</a><a href="#ia">Para IAs</a><a href="#final">FullFinalVer</a></nav>
+<nav><a href="#comecar">Começar</a><a href="#studio">Studio</a><a href="#servidor">Servidor</a><a href="#api">API</a><a href="#marcador">Marcador +</a><a href="#ia">Para IAs</a><a href="#final">FullFinalVer</a></nav>
 <main>
 <section id="comecar">
   <h2>Começar em 2 minutos</h2>
@@ -43,7 +43,7 @@ footer{text-align:center;color:var(--mut);padding:30px 16px;font-size:14px}
     <li>Quando estiver pronto, vá em <b>📦 Projeto</b> &gt; <b>🌍 Publicar para a comunidade</b>.</li>
   </ol>
   <div class="grid">
-    <div class="card"><b>📜 Scripts Luau</b>Código no estilo Roblox: <code>Instance.new("Part")</code>, <code>Touched:Connect</code>, <code>TweenService</code>, GUI...</div>
+    <div class="card"><b>🖥 Script · 📱 LocalScript · 📦 Módulo</b>Como no Roblox: servidor, cliente e <code>require</code>, com RemoteEvents, DataStore, <code>leaderstats</code>, CFrame, Raycast, ClickDetector e ProximityPrompt.</div>
     <div class="card"><b>🧩 Mods HTML/CSS/JS</b>Importe um .zip (ou arquivos soltos). Vira uma página por cima do jogo, com a API <code>window.rv</code>.</div>
     <div class="card"><b>⚡ Poderes</b>Voar, velocidade, gravidade, hora do dia e moedas infinitas. Tudo em sandbox, sem mexer no seu save.</div>
     <div class="card"><b>🌍 Comunidade</b>Mapas publicados aparecem para todos. Os scripts rodam isolados, sem acesso à conta de ninguém.</div>
@@ -59,7 +59,17 @@ footer{text-align:center;color:var(--mut);padding:30px 16px;font-size:14px}
     <tr><td>⚡ Poderes</td><td>voar, velocidade, gravidade, hora, moedas infinitas, ir para o spawn, definir o spawn</td></tr>
     <tr><td>📦 Projeto</td><td>renomear, exportar/importar <code>.zip</code>, salvar privado, publicar, projeto novo</td></tr>
   </table>
-  <blockquote>Os scripts rodam no aparelho de cada jogador (como LocalScripts do Roblox). Ainda não há servidor de script, RemoteEvents nem dados salvos por script.</blockquote>
+</section>
+<section id="servidor">
+  <h2>🖥 Servidor (como no Roblox)</h2>
+  <p>O RoleVRGO usa um <b>servidor de jogador</b>: quem está no mapa há mais tempo hospeda os <b>Scripts</b>. O que eles criam (Parts, RemoteEvents, <code>leaderstats</code>...) é replicado para todos pela sala, e quem chega depois recebe o mundo pronto. Os <b>LocalScripts</b> rodam em cada jogador.</p>
+  <table><tr><th>Situação</th><th>O que acontece</th></tr>
+    <tr><td>Você está sozinho</td><td>você é o servidor</td></tr>
+    <tr><td>Outro jogador entra</td><td>recebe uma "foto" do mundo e passa a receber as mudanças (10 vezes por segundo)</td></tr>
+    <tr><td>O anfitrião sai</td><td>o próximo jogador mais antigo vira o servidor e os Scripts recomeçam; o que estiver no <b>DataStore</b> continua</td></tr>
+    <tr><td>RemoteEvent / RemoteFunction</td><td>viajam do cliente até o anfitrião e voltam pela sala</td></tr>
+  </table>
+  <blockquote>O anfitrião é um jogador comum: valide tudo no servidor e não trate o DataStore como à prova de trapaça. Para o DataStore valer em mapas publicados, o dono do servidor Supabase precisa rodar <code>supabase/datastore.sql</code>; antes disso, os dados ficam no aparelho do anfitrião.</blockquote>
 </section>
 <section id="api">
   <h2>Referência da API</h2>
@@ -91,12 +101,12 @@ footer{text-align:center;color:var(--mut);padding:30px 16px;font-size:14px}
     <div class="card"><b><a href="for-vibecode/API.md">API.md</a></b>Referência completa num arquivo só.</div>
     <div class="card"><b><a href="for-vibecode/llms.txt">llms.txt</a></b>Índice no padrão <code>llms.txt</code>, para ferramentas que leem sites.</div>
     <div class="card"><b><a href="for-vibecode/rolevrgo.d.luau">rolevrgo.d.luau</a> · <a href="for-vibecode/rv.d.ts">rv.d.ts</a></b>Tipos para autocompletar (luau-lsp e TypeScript).</div>
-    <div class="card"><b>Exemplos</b><a href="for-vibecode/examples/obby.luau">obby.luau</a> · <a href="for-vibecode/examples/loja.luau">loja.luau</a> · <a href="for-vibecode/examples/mod-placar/index.html">mod-placar</a></div>
+    <div class="card"><b>Exemplos</b><a href="for-vibecode/examples/placar.server.luau">placar.server</a> · <a href="for-vibecode/examples/loja-remote.server.luau">loja-remote.server</a> + <a href="for-vibecode/examples/loja-remote.client.luau">.client</a> · <a href="for-vibecode/examples/util.module.luau">util.module</a> · <a href="for-vibecode/examples/obby.client.luau">obby.client</a> · <a href="for-vibecode/examples/mod-placar/index.html">mod-placar</a></div>
     <div class="card"><b><a href="https://github.com/AkunDiscoRemake/RoleVRGO/blob/main/AGENTS.md">AGENTS.md</a></b>Para IAs que vão mexer no código do próprio jogo.</div>
   </div>
 </section>
 <section id="final">
-  <h2>1.0.0 · FullFinalVer</h2>
+  <h2>1.1.0 · FullFinalVer</h2>
   <p>Esta é a <b>última versão oficial</b> do RoleVRGO. Daqui em diante o jogo cresce pela comunidade: mapas, minigames e mods feitos no Studio e publicados para todo mundo jogar. O <a href="https://github.com/AkunDiscoRemake/RoleVRGO">código</a> continua aberto.</p>
   <p class="muted">Criado por hark · programado com Claude (Anthropic) · modelos e sons: Kenney.nl (CC0) · Lua no navegador: fengari (MIT).</p>
 </section>

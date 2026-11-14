@@ -32,8 +32,9 @@ python3 -m http.server 8080   # abre http://localhost:8080
 | `state.js` (`S`) | save, XP, itens, conquistas |
 | `data.js` | itens, conquistas, missões, inimigos |
 | `maker.js` | criador de mapas da comunidade (`maker.map` = JSON do mapa, com `scripts` e `mods`) |
-| `studio/host.js` | host dos scripts e mods (iframes sandbox, Parts, GUI, `tick`) |
-| `studio/runtime.js` | conversor Luau→Lua e prelúdio Lua (API estilo Roblox), roda dentro do iframe |
+| `studio/host.js` | host: iframes de servidor e cliente, eleição do anfitrião (`meta.jt`), replicação pela sala (mensagens `rx*`), Parts/GUI/placar/ClickDetector/Prompt e DataStore |
+| `studio/runtime.js` | conversor Luau→Lua e inicialização do iframe |
+| `studio/prelude.js` | prelúdio Lua: toda a API estilo Roblox (Instance, CFrame, serviços, Players, Remotes, DataStore...), com contexto `server` ou `client` |
 | `studio/panel.js` | painel do Studio (DOM) |
 | `studio/zip.js` | unzip/zip mínimos e montagem de mods |
 | `marker.js`, `plusdetect.js` | rastreamento por um "+" no papel (câmera) |

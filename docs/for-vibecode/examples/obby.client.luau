@@ -1,4 +1,4 @@
--- Obby: 12 plataformas subindo, checkpoints e lava embaixo. Cole num script do Studio.
+-- LocalScript (cliente): Obby: 12 plataformas subindo, checkpoints e lava embaixo. Cole num script do Studio.
 local Players = game:GetService("Players")
 local hum = Players.LocalPlayer.Character:WaitForChild("Humanoid")
 local checkpoint = Vector3.new(0, 3, 0)

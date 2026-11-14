@@ -7,7 +7,89 @@ import { S } from '../state.js';
 import { on, emit, store } from '../util.js';
 import { downloadBlob } from '../rec.js';
 
+export const EX_KIND = { 'Olá mundo': 'server', 'Part que mata (lava)': 'server', 'Plataformas que somem': 'server', 'Contador de moedas (GUI)': 'client', 'Porta com tecla E': 'client', 'Chuva de bolas': 'server', 'Super pulo + velocidade': 'client', 'Placar + DataStore (servidor)': 'server', 'Loja com RemoteEvent (servidor)': 'server', 'Loja com RemoteEvent (cliente)': 'client', 'Botão ClickDetector + Prompt (servidor)': 'server', 'Módulo de utilidades': 'module' };
 export const EXAMPLES = {
+  'Placar + DataStore (servidor)': `-- Script (servidor): leaderstats com moedas salvas no DataStore do mapa
+local Players = game:GetService("Players")
+local DataStoreService = game:GetService("DataStoreService")
+local banco = DataStoreService:GetDataStore("Moedas")
+
+Players.PlayerAdded:Connect(function(player)
+  local leaderstats = Instance.new("Folder")
+  leaderstats.Name = "leaderstats"
+  leaderstats.Parent = player
+  local moedas = Instance.new("IntValue")
+  moedas.Name = "Moedas"
+  moedas.Value = banco:GetAsync(tostring(player.UserId)) or 0
+  moedas.Parent = leaderstats
+  while player.Parent do
+    task.wait(5)
+    moedas.Value += 1
+    banco:SetAsync(tostring(player.UserId), moedas.Value)
+  end
+end)`,
+  'Loja com RemoteEvent (servidor)': `-- Script (servidor): recebe o pedido de compra do cliente e valida
+local RS = game:GetService("ReplicatedStorage")
+local comprar = Instance.new("RemoteEvent")
+comprar.Name = "Comprar"
+comprar.Parent = RS
+comprar.OnServerEvent:Connect(function(player, item)
+  local hum = player.Character:FindFirstChild("Humanoid")
+  if item == "velocidade" and hum then
+    hum.WalkSpeed += 8
+    comprar:FireClient(player, "Comprado! Velocidade " .. hum.WalkSpeed)
+  end
+end)`,
+  'Loja com RemoteEvent (cliente)': `-- LocalScript (cliente): botão na tela que pede a compra ao servidor
+local RS = game:GetService("ReplicatedStorage")
+local comprar = RS:WaitForChild("Comprar")
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.Players.LocalPlayer.PlayerGui
+local botao = Instance.new("TextButton")
+botao.Size = UDim2.new(0, 260, 0, 50)
+botao.Position = UDim2.new(0, 20, 1, -80)
+botao.Text = "⚡ Comprar velocidade"
+botao.Parent = gui
+botao.Activated:Connect(function() comprar:FireServer("velocidade") end)
+comprar.OnClientEvent:Connect(function(msg) RoleVR.toast(msg) end)`,
+  'Botão ClickDetector + Prompt (servidor)': `-- Script (servidor): um botão para clicar e uma alavanca com a tecla E
+local botao = Instance.new("Part")
+botao.Size = Vector3.new(2, 1, 2)
+botao.Position = Vector3.new(4, 0.5, -6)
+botao.Color = Color3.fromRGB(220, 50, 50)
+botao.Material = Enum.Material.Neon
+botao.Parent = workspace
+local clique = Instance.new("ClickDetector")
+clique.Parent = botao
+clique.MouseClick:Connect(function(player)
+  local bum = Instance.new("Explosion")
+  bum.Position = botao.Position + Vector3.new(0, 6, -6)
+  bum.BlastRadius = 3
+  bum.Parent = workspace
+  print(player.Name .. " apertou o botão")
+end)
+
+local alavanca = Instance.new("Part")
+alavanca.Size = Vector3.new(1, 3, 1)
+alavanca.Position = Vector3.new(-4, 1.5, -6)
+alavanca.Parent = workspace
+local prompt = Instance.new("ProximityPrompt")
+prompt.ActionText = "Puxar"
+prompt.ObjectText = "Alavanca"
+prompt.Parent = alavanca
+prompt.Triggered:Connect(function(player)
+  game:GetService("Lighting").ClockTime = (game:GetService("Lighting").ClockTime + 12) % 24
+  RoleVR.toast(player.Name .. " mudou o dia!")
+end)`,
+  'Módulo de utilidades': `-- ModuleScript: use com require("Módulo de utilidades") em qualquer Script ou LocalScript
+local Util = {}
+function Util.sortear(lista)
+  return lista[math.random(1, #lista)]
+end
+function Util.formatar(n)
+  return string.format("%d", n):reverse():gsub("(%d%d%d)", "%1."):reverse():gsub("^%.", "")
+end
+return Util`,
   'Olá mundo': `print("Olá do RoleVRGO Studio!")
 RoleVR.toast("Meu primeiro script 🎉")`,
   'Part que mata (lava)': `local lava = Instance.new("Part")
@@ -111,17 +193,17 @@ const CSS = `#rvst{position:fixed;top:0;right:0;bottom:0;width:min(460px,100vw);
 #rvst label{display:flex;gap:8px;align-items:center}#rvst input[type=range]{flex:1}#rvst small{color:#aab}#rvst h4{margin:4px 0;color:#ffd76a}`;
 
 export const studio = {
-  on: false, el: null, G: null, tab: 'scripts', sel: 0, pw: { fly: false, speed: 1, grav: 1, time: null, coins: false },
+  EXAMPLES, EX_KIND, on: false, el: null, G: null, tab: 'scripts', sel: 0, pw: { fly: false, speed: 1, grav: 1, time: null, coins: false },
   enter(G) {
     this.G = G; this.on = true; const d = store.get('studioDraft', null); const map = d && d.map ? d.map : maker.blank('Meu jogo no Studio');
-    if (!map.scripts) map.scripts = [{ n: 'Script', src: EXAMPLES['Plataformas que somem'] }]; if (!map.mods) map.mods = [];
+    if (!map.scripts) map.scripts = [{ n: 'Script', k: 'server', src: EXAMPLES['Plataformas que somem'] }]; if (!map.mods) map.mods = [];
     maker.studio = true; maker.open(G, map, d && d.id, true, false); this.build(); this.run(); emit('toast', '🛠 Studio: tudo liberado em sandbox (não mexe no seu save). F2 mostra/esconde o painel', '#ffd76a');
     on('studioLog', () => this.tab === 'out' && this.render());
     addEventListener('keydown', (e) => { if (e.code === 'F2') { this.el.classList.toggle('min'); } });
   },
   map() { return maker.map; },
   save() { const m = this.map(); if (!m) return; store.set('studioDraft', { id: maker.id, map: m }); const kb = JSON.stringify(m).length / 1024; if (kb > 900) emit('toast', '⚠ Projeto com ' + Math.round(kb) + ' KB: o limite para publicar é 900 KB', '#ff9a8a'); },
-  run() { const m = this.map(); if (maker.editing) maker.setEditing(false); host.start(this.G, m.scripts, m.mods, { studio: true }); this.applyPowers(); this.render(); },
+  run() { const m = this.map(); if (maker.editing) maker.setEditing(false); host.start(this.G, m.scripts, m.mods, { studio: true, mapId: maker.id, mapName: m.name }); this.applyPowers(); this.render(); },
   stopRun() { host.stop(); this.applyPowers(); this.render(); },
   applyPowers() { const G = this.G, P = G.player, w = this.pw; G.scriptFly = w.fly || G.scriptFly; if (w.speed !== 1) P.scriptWalk = w.speed; if (w.grav !== 1) G.scriptGrav = w.grav; if (w.time != null) G.scriptTime = w.time; if (w.coins) S.d.coins = 999999; },
   build() {
@@ -143,15 +225,19 @@ export const studio = {
     const pg = h('div', { class: 'pg' }); el.appendChild(pg);
     if (this.tab === 'scripts') {
       const list = m.scripts; if (this.sel >= list.length) this.sel = 0;
-      pg.appendChild(h('div', { class: 'row' }, [h('button', { text: '＋ Script', on: { click: () => { list.push({ n: 'Script' + (list.length + 1), src: '-- seu código Luau aqui\nprint("oi")\n' }); this.sel = list.length - 1; this.save(); this.render(); } } }),
-        h('select', { on: { change: (e) => { if (!e.target.value) return; list.push({ n: e.target.value, src: EXAMPLES[e.target.value] }); this.sel = list.length - 1; this.save(); this.render(); } } }, [h('option', { value: '', text: '📚 Exemplos...' })].concat(Object.keys(EXAMPLES).map((k) => h('option', { value: k, text: k }))))]));
-      list.forEach((s, i) => pg.appendChild(h('div', { class: 'it' + (i === this.sel ? ' on' : ''), on: { click: () => { this.sel = i; this.render(); } } }, [h('span', { text: (s.on === false ? '⏸ ' : '📜 ') + s.n }),
+      const add = (k, nome, src) => { list.push({ n: nome + (list.length + 1), k, src }); this.sel = list.length - 1; this.save(); this.render(); };
+      pg.appendChild(h('div', { class: 'row' }, [h('button', { text: '＋ 🖥 Script', title: 'roda no servidor (um só, no anfitrião)', on: { click: () => add('server', 'Script', '-- Script (servidor)\nlocal Players = game:GetService("Players")\nPlayers.PlayerAdded:Connect(function(player)\n  print(player.Name .. " entrou")\nend)\n') } }),
+        h('button', { text: '＋ 📱 LocalScript', title: 'roda em cada jogador', on: { click: () => add('client', 'LocalScript', '-- LocalScript (cliente)\nlocal player = game.Players.LocalPlayer\nprint("oi, " .. player.Name)\n') } }),
+        h('button', { text: '＋ 📦 Módulo', on: { click: () => add('module', 'Modulo', 'local M = {}\nfunction M.oi() return "oi" end\nreturn M\n') } }),
+        h('select', { on: { change: (e) => { if (!e.target.value) return; list.push({ n: e.target.value, k: EX_KIND[e.target.value] || 'server', src: EXAMPLES[e.target.value] }); this.sel = list.length - 1; this.save(); this.render(); } } }, [h('option', { value: '', text: '📚 Exemplos...' })].concat(Object.keys(EXAMPLES).map((k) => h('option', { value: k, text: k }))))]));
+      list.forEach((s, i) => pg.appendChild(h('div', { class: 'it' + (i === this.sel ? ' on' : ''), on: { click: () => { this.sel = i; this.render(); } } }, [h('span', { text: (s.on === false ? '⏸ ' : '') + ({ server: '🖥 ', client: '📱 ', module: '📦 ' }[s.k || 'client']) + s.n }),
+        h('button', { class: 'g', text: { server: 'Script', client: 'Local', module: 'Módulo' }[s.k || 'client'], title: 'trocar o tipo', on: { click: (e) => { e.stopPropagation(); s.k = { server: 'client', client: 'module', module: 'server' }[s.k || 'client']; this.save(); this.render(); } } }),
         h('button', { class: 'g', text: '✎', on: { click: (e) => { e.stopPropagation(); const n = prompt('Nome do script', s.n); if (n) { s.n = n.slice(0, 40); this.save(); this.render(); } } } }),
         h('button', { class: 'g', text: s.on === false ? '▶' : '⏸', on: { click: (e) => { e.stopPropagation(); s.on = s.on === false; this.save(); this.render(); } } }),
         h('button', { class: 's', text: '🗑', on: { click: (e) => { e.stopPropagation(); if (confirm('Apagar ' + s.n + '?')) { list.splice(i, 1); this.save(); this.render(); } } } })])));
       const cur = list[this.sel]; if (cur) { const t = h('textarea', { spellcheck: 'false' }); t.value = cur.src; t.addEventListener('input', () => { cur.src = t.value; clearTimeout(this._sv); this._sv = setTimeout(() => this.save(), 600); });
         t.addEventListener('keydown', (e) => { if (e.key === 'Tab') { e.preventDefault(); const a = t.selectionStart; t.setRangeText('  ', a, t.selectionEnd, 'end'); cur.src = t.value; } if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); this.run(); } });
-        pg.appendChild(t); pg.appendChild(h('small', { text: 'Ctrl+Enter roda · Luau (estilo Roblox): Instance, Vector3, Color3, task.wait, game:GetService, eventos :Connect · extras em RoleVR.*' })); if (caret) { t.selectionStart = t.selectionEnd = caret[0]; t.scrollTop = caret[1]; } }
+        pg.appendChild(t); pg.appendChild(h('small', { text: '🖥 Script = servidor (roda só no anfitrião e vale para todos) · 📱 LocalScript = cada jogador (GUI, teclas, câmera) · 📦 Módulo = require("Nome"). Ctrl+Enter roda.' })); if (caret) { t.selectionStart = t.selectionEnd = caret[0]; t.scrollTop = caret[1]; } }
     } else if (this.tab === 'mods') {
       const inp = h('input', { type: 'file', multiple: '', accept: '.zip,.html,.htm,.css,.js,.mjs,.lua,.luau,.png,.jpg,.jpeg,.gif,.webp,.svg,.mp3,.ogg,.wav,.json', style: 'display:none' });
       inp.addEventListener('change', () => this.importFiles(inp.files)); pg.appendChild(inp);
@@ -193,11 +279,11 @@ export const studio = {
     emit('toast', '📥 Importado: ' + b.scripts.length + ' script(s), ' + b.mods.length + ' mod(s)', '#9cf09c'); this.render(); if (host.running) this.run();
   },
   exportZip() { const m = this.map(), f = { 'map.json': JSON.stringify(Object.assign({}, m, { scripts: undefined, mods: undefined })), 'LEIA-ME.txt': 'Projeto do RoleVRGO Studio. Importe este .zip no Studio (aba Projeto).\n' };
-    for (const s of m.scripts) f['scripts/' + s.n.replace(/[^\w-]+/g, '_') + '.luau'] = s.src; for (const md of m.mods) f['mods/' + md.n.replace(/[^\w-]+/g, '_') + '.html'] = md.html;
+    for (const s of m.scripts) f['scripts/' + s.n.replace(/[^\w-]+/g, '_') + '.' + (s.k || 'client') + '.luau'] = s.src; for (const md of m.mods) f['mods/' + md.n.replace(/[^\w-]+/g, '_') + '.html'] = md.html;
     downloadBlob(zip(f), (m.name || 'projeto').replace(/[^\w-]+/g, '_') + '.rvstudio.zip'); },
   async importProject(file) { if (!file) return; try { const buf = new Uint8Array(await file.arrayBuffer()); let map;
       if (/\.json$/i.test(file.name)) map = JSON.parse(new TextDecoder().decode(buf)); else { const fs = await unzip(buf); map = fs['map.json'] ? JSON.parse(new TextDecoder().decode(fs['map.json'])) : maker.blank(file.name); map.scripts = []; map.mods = [];
-        for (const k in fs) { if (/^scripts\/.+\.(lua|luau)$/i.test(k)) map.scripts.push({ n: k.split('/').pop().replace(/\.\w+$/, ''), src: new TextDecoder().decode(fs[k]) }); else if (/^mods\/.+\.html?$/i.test(k)) map.mods.push({ n: k.split('/').pop().replace(/\.\w+$/, ''), html: new TextDecoder().decode(fs[k]) }); } }
+        for (const k in fs) { if (/^scripts\/.+\.(lua|luau)$/i.test(k)) { const fn = k.split('/').pop(); map.scripts.push({ n: fn.replace(/(\.(server|client|module))?\.(lua|luau)$/i, ''), k: /\.server\./i.test(fn) ? 'server' : /\.module\./i.test(fn) ? 'module' : 'client', src: new TextDecoder().decode(fs[k]) }); } else if (/^mods\/.+\.html?$/i.test(k)) map.mods.push({ n: k.split('/').pop().replace(/\.\w+$/, ''), html: new TextDecoder().decode(fs[k]) }); } }
       if (!map.objs) throw new Error('não parece um projeto do Studio'); map.scripts = map.scripts || []; map.mods = map.mods || []; host.stop(); maker.open(this.G, map, null, true, false); this.save(); this.render(); emit('toast', '📥 Projeto importado: ' + map.name, '#9cf09c');
     } catch (e) { emit('toast', 'Não deu para importar: ' + e.message, '#ff9a8a'); } }
 };

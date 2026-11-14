@@ -1,277 +1,363 @@
 # RoleVRGO Studio — referência completa da API
 
-> Versão do jogo: **1.0.0 "FullFinalVer"**. Este arquivo é a fonte única da API: humanos leem em `docs/`, IAs leem este arquivo.
+> **Versão do jogo:** 1.1.0 "FullFinalVer". Este arquivo é a fonte única da API: humanos leem em `docs/`, IAs leem este arquivo.
 
-O RoleVRGO Studio roda **dois tipos de código** feitos pela comunidade:
+O RoleVRGO Studio roda **três tipos de script**, como o Roblox, e **mods HTML/CSS/JS**:
 
-| Tipo | Linguagem | Onde roda | Para quê |
+| Tipo | Ícone | Onde roda | Para quê |
 |---|---|---|---|
-| **Script** | Luau (estilo Roblox), convertido para Lua 5.3 | iframe sandbox invisível | lógica do jogo: Parts, eventos, GUI, física simples |
-| **Mod** | HTML + CSS + JS | iframe sandbox visível, por cima do jogo | interfaces, HUDs, minigames 2D, efeitos |
+| **Script** | 🖥 | no **servidor** (um só, no jogador anfitrião) | regras do jogo, pontos, DataStore, Parts que todos veem |
+| **LocalScript** | 📱 | em **cada jogador** | GUI, teclas, câmera, efeitos só seus |
+| **ModuleScript** | 📦 | onde for chamado com `require` | código compartilhado |
+| **Mod** | 🧩 | em cada jogador, por cima do jogo | interfaces HTML/CSS/JS com a API `window.rv` |
 
-Os dois **não têm acesso** à conta, ao login, ao save, à rede (CSP `default-src 'none'`) nem à página do jogo. Eles só falam com o jogo pela API abaixo.
+Nada disso tem acesso à conta, ao login, ao save, à rede (CSP `default-src 'none'`) ou à página do jogo. Tudo roda em iframes isolados e só fala com o jogo pela API abaixo.
 
 ---
 
-## 1. Scripts Luau
+## 0. Como funciona o servidor
 
-### 1.1 O que é "Luau-lite"
+O RoleVRGO não tem um servidor de jogo dedicado, então usa o modelo **"servidor de jogador"** (*listen server*):
 
-O código é convertido para Lua 5.3 antes de rodar. Funciona:
+- O jogador que está no mapa **há mais tempo** é o **anfitrião**: ele roda todos os `Script`s do mapa.
+- **Replicação:** tudo que o servidor cria em `workspace`, `ReplicatedStorage`, `Players` (inclusive `leaderstats`), `Teams` e `Lighting` é replicado para todos pela sala. Quem chega depois recebe uma "foto" do mundo.
+- **Troca de anfitrião:** se o anfitrião sair, o próximo jogador mais antigo vira o servidor e os `Script`s **recomeçam do zero**. Use o **DataStore** para o que precisa sobreviver.
+- **Sozinho ou offline:** você mesmo é o servidor (online, ele sobe em cerca de 1,5 s, depois de ver quem está na sala).
+- **LocalScripts** veem o mundo replicado. O que eles criam fica **só no seu aparelho**, e eles não mexem nas Parts do servidor (como o FilteringEnabled do Roblox).
+- **Tempo de resposta:** a replicação acontece 10 vezes por segundo, e os RemoteEvents viajam pela sala com alguns décimos de segundo de atraso.
+- **Confiança:** o anfitrião é um jogador comum. Não guarde segredos nos Scripts, e não trate o DataStore como à prova de trapaça.
 
-- Anotações de tipo: `local x: number = 1`, `function f(a: string, b: {number}?): boolean`, retorno em tupla `(): (number, string)`.
-- Declarações `type X = ...` e `export type X = {...}` (inclusive em várias linhas): são removidas.
-- Atribuição composta: `+=  -=  *=  /=  //=  %=  ^=  ..=`.
-- `continue` dentro de `for`/`while`.
-- Interpolação: `` `Moedas: {moedas}` ``.
+## 1. Linguagem: Luau-lite
 
-**Não** funciona: generics complexos em expressões, `if ... then ... else` como expressão (`local x = if a then b else c`), bibliotecas `buffer`/`bit32`, `require` de ModuleScripts (use um script só, ou `_G`).
+O código é convertido para Lua 5.3 (fengari) antes de rodar.
 
-Números do Lua 5.3: `10 / 2` dá `5.0`. Use `//` para divisão inteira e `math.floor` quando precisar de inteiro. O `print` já mostra `5` em vez de `5.0` quando o número é inteiro.
+**Funciona:**
+- anotações de tipo (`local x: number = 1`, `function f(a: string): boolean`, `(): (number, string)`);
+- `type X = ...` e `export type X = {...}` (inclusive em várias linhas);
+- `+= -= *= /= //= %= ^= ..=` em qualquer lugar da linha;
+- `continue`;
+- `` `texto {expr}` ``;
+- `if a then b elseif c then d else e` usado como **expressão** (numa linha);
+- o corpo do script pode pausar (`task.wait`, `WaitForChild`, `:Wait()`).
 
-### 1.2 Globais
+**Não funciona:**
+- generics em expressões;
+- `buffer`, `bit32` e `vector`;
+- atributos de função (`@native`).
+
+Números do Lua 5.3: `10 / 2` dá `5.0`. Use `//` para divisão inteira. O `print` mostra inteiros sem `.0`.
+
+**Funções do Luau adicionadas:**
+- `math.clamp`, `math.sign`, `math.round`, `math.noise`, `math.lerp`;
+- `string.split`;
+- `table.find`, `table.clear`, `table.clone`, `table.freeze`, `table.isfrozen`, `table.create`;
+- `typeof`, `utf8`, `os.time`, `os.clock`, `DateTime.now()`.
+
+## 2. Globais
 
 | Global | Descrição |
 |---|---|
-| `game` | DataModel. `game:GetService(nome)`, `game.Workspace`, `game.Players`, `game.Lighting`... |
-| `workspace` | O mundo. Parts com `Parent = workspace` aparecem no mapa. `workspace.Gravity` (padrão 196.2) |
-| `script` | O script atual (`script.Parent == workspace`) |
-| `Instance.new(classe, pai?)` | Cria um objeto |
-| `Vector3`, `Color3`, `UDim2`, `CFrame`, `TweenInfo`, `BrickColor`, `Enum` | Tipos de dados |
-| `task.wait(s)`, `task.spawn(f, ...)`, `task.delay(s, f, ...)`, `task.defer(f, ...)`, `task.cancel(co)` | Agendador. `wait`, `spawn`, `delay` também existem |
-| `print(...)`, `warn(...)` | Vão para a aba **Saída** do Studio |
-| `tick()`, `time()` | Segundos desde que os scripts começaram |
-| `RoleVR` | Extras do RoleVRGO (seção 1.8) |
+| `game` | DataModel. `game:GetService(n)`, `game.Workspace`, `game.Players`, `game.PlaceId`, `game.JobId`, `game:BindToClose(f)` |
+| `workspace` / `Workspace` | o mundo. `Gravity` (196.2), `CurrentCamera`, `Raycast`, `GetPartBoundsInRadius`, `GetPartBoundsInBox`, `GetPartsInPart`, `GetServerTimeNow` |
+| `script` | o script atual. `script.Parent` é `ServerScriptService` (Script) ou `workspace` (LocalScript) |
+| `Instance.new(classe, pai?)` | cria um objeto |
+| `require(m)` | roda um ModuleScript: `require("Nome")` ou `require(game.ReplicatedStorage.Nome)` |
+| `task.wait/spawn/delay/defer/cancel`, `wait`, `spawn`, `delay` | agendador |
+| `print`, `warn` | vão para a aba **🖨 Saída** (os do servidor aparecem com `[Servidor]`) |
+| `tick()`, `time()`, `elapsedTime()` | segundos desde o início |
+| `Vector3`, `Vector2`, `CFrame`, `Color3`, `BrickColor`, `UDim`, `UDim2`, `TweenInfo`, `Random`, `Ray`, `RaycastParams`, `OverlapParams`, `NumberRange`, `ColorSequence`, `NumberSequence`, `Enum` | tipos de dados |
+| `RoleVR` | extras do RoleVRGO (seção 10) |
 
-### 1.3 Tipos de dados
+## 3. Tipos de dados
 
-**Vector3**: `Vector3.new(x, y, z)`. Também `Vector3.zero`, `Vector3.one`, `xAxis`, `yAxis`, `zAxis`.
-- Campos: `.X .Y .Z .Magnitude .Unit`
-- Operações: `+ - * /` (com vetor ou número), `-v`, `==`
-- Métodos: `:Dot(v)`, `:Cross(v)`, `:Lerp(v, t)`
+**Vector3**
+- Criar: `Vector3.new(x, y, z)`, `.zero`, `.one`, `.xAxis`, `.yAxis`, `.zAxis`.
+- Campos: `.X .Y .Z .Magnitude .Unit`.
+- Operações: `+ - * / //` (com vetor ou número), `==`, `-v`.
+- Métodos: `:Dot`, `:Cross`, `:Lerp`, `:Abs`, `:Floor`, `:Ceil`, `:Max`, `:Min`, `:FuzzyEq`, `:Angle`.
 
-**Color3**: `Color3.new(r, g, b)` (0–1), `Color3.fromRGB(0–255)`, `Color3.fromHSV(h, s, v)`.
-- Campos: `.R .G .B`
-- Método: `:Lerp(c, t)`
+**Vector2:** `Vector2.new(x, y)`, com `.X .Y .Magnitude .Unit`, `+ - * /`, `:Dot` e `:Lerp`.
 
-**UDim2**: `UDim2.new(escalaX, pixelsX, escalaY, pixelsY)`, `UDim2.fromScale(x, y)`, `UDim2.fromOffset(x, y)`.
+**CFrame** (completo: posição + rotação, convenções do Roblox)
+- Criar: `CFrame.new(x, y, z)`, `CFrame.new(pos)`, `CFrame.new(pos, olharPara)`, `CFrame.new(x, y, z, qx, qy, qz, qw)` (quatérnio), `CFrame.new(x, y, z, r00..r22)`.
+- Construtores: `CFrame.lookAt(pos, alvo, up?)`, `CFrame.Angles(rx, ry, rz)` / `fromEulerAnglesXYZ`, `fromEulerAnglesYXZ` / `fromOrientation`, `fromAxisAngle(eixo, ângulo)`, `fromMatrix(pos, direita, cima, trás?)`, `CFrame.identity`.
+- Operações: `cf * cf`, `cf * vec` (ponto no mundo), `cf + vec`, `cf - vec`, `==`.
+- Campos: `.Position` (`.p`), `.X .Y .Z`, `.LookVector`, `.RightVector`, `.UpVector`, `.XVector .YVector .ZVector`, `.Rotation`.
+- Métodos: `:Inverse()`, `:Lerp(cf, t)` (com interpolação esférica), `:ToWorldSpace`, `:ToObjectSpace`, `:PointToWorldSpace`, `:PointToObjectSpace`, `:VectorToWorldSpace`, `:VectorToObjectSpace`, `:GetComponents()` / `:components()`, `:ToEulerAnglesYXZ()` / `:ToOrientation()`, `:ToEulerAnglesXYZ()`, `:ToAxisAngle()`.
 
-**CFrame** (simplificado): `CFrame.new(x, y, z)` ou `CFrame.new(vec)`. Só a posição (`.Position`) é usada. `part.CFrame = ...` muda a posição.
+**Color3**
+- Criar: `Color3.new(r, g, b)` (0–1), `fromRGB`, `fromHSV`, `fromHex("#ff8800")`.
+- Métodos: `:ToHex()`, `:ToHSV()`, `:Lerp()`.
 
-**TweenInfo**: `TweenInfo.new(tempo, estilo?, direção?, repetições?, volta?, atraso?)`. A suavização é sempre "smoothstep".
+**BrickColor:** `BrickColor.new("Bright red")` e cerca de 30 nomes comuns, `BrickColor.Random()`, `.Color`, `.Name`. `part.BrickColor = ...` funciona.
 
-**BrickColor**: `BrickColor.new("Red" | "Blue" | "Green" | "Yellow" | "White" | "Black" | "Gray")` e depois `.Color`.
+**UDim2:** `UDim2.new(sx, ox, sy, oy)`, `fromScale` e `fromOffset`.
 
-**Enum**:
-- `Enum.KeyCode.A..Z`, `Space`, `LeftShift`, `Return`, `One..Five`, `Up`, `Down`, `Left`, `Right`
-- `Enum.PartType.Block | Ball | Cylinder`
-- `Enum.UserInputType.Keyboard`
-- `Enum.Material.*` é aceito e ignorado.
+**TweenInfo:** `TweenInfo.new(tempo, estilo?, direção?, repetições?, volta?, atraso?)`.
+- Estilos: `Linear`, `Quad`, `Back`, `Bounce`, `Elastic`. Os outros usam suavização.
+- `repetições = -1` repete para sempre.
 
-### 1.4 Classes de Instance
+**Random:** `Random.new(semente?)` com `:NextInteger(a, b)`, `:NextNumber(a?, b?)`, `:NextUnitVector()`, `:Shuffle(t)` e `:Clone()`.
 
-Toda Instance tem:
+**Enum:**
+- `KeyCode` (A–Z, números, setas, `Space`, `LeftShift`, `Return`, `Tab`...);
+- `UserInputType`, `UserInputState`, `PartType` (`Block`, `Ball`, `Cylinder`), `Material`;
+- `EasingStyle`, `EasingDirection`, `RaycastFilterType`, `HumanoidStateType`, `Font`, `TextXAlignment`, `SortOrder`.
 
-- **Propriedades:** `Name`, `ClassName`, `Parent`
-- **Métodos:**
-  - `:IsA(c)`, `:GetChildren()`, `:GetDescendants()`
-  - `:FindFirstChild(nome, recursivo?)`, `:FindFirstChildOfClass(c)`, `:FindFirstAncestor(nome)`, `:WaitForChild(nome, timeout?)`
-  - `:Destroy()`, `:ClearAllChildren()`, `:Clone()`, `:GetFullName()`
-  - `:SetAttribute(k, v)`, `:GetAttribute(k)`, `:GetPropertyChangedSignal(prop)`
-- **Eventos:** `Changed(prop)`, `ChildAdded`, `ChildRemoved`, `AncestryChanged`, `Destroying`
+Itens desconhecidos são criados sob demanda e não dão erro.
 
-Um filho pode ser acessado pelo nome: `workspace.Lava`.
+## 4. Instâncias
 
-| Classe | Propriedades extras | Eventos / métodos |
+### 4.1 O que toda Instance tem
+
+- **Propriedades:** `Name`, `ClassName`, `Parent`.
+- **Hierarquia:**
+  - `:GetChildren()`, `:GetDescendants()`;
+  - `:FindFirstChild(n, recursivo?)`, `:FindFirstChildOfClass`, `:FindFirstChildWhichIsA`;
+  - `:FindFirstAncestor`, `:FindFirstAncestorOfClass`, `:FindFirstAncestorWhichIsA`;
+  - `:IsDescendantOf`, `:IsAncestorOf`, `:WaitForChild(n, timeout?)`;
+  - `:IsA(c)` (entende `BasePart`, `GuiObject`, `ValueBase`, `GuiButton`, `Light`...);
+  - `:GetFullName()`.
+- **Objeto:** `:Destroy()`, `:ClearAllChildren()`, `:Clone()`.
+- **Atributos:** `:SetAttribute`, `:GetAttribute`, `:GetAttributes`, `:GetAttributeChangedSignal`.
+- **Tags:** `:AddTag`, `:RemoveTag`, `:HasTag`, `:GetTags`.
+- **Eventos:** `Changed`, `ChildAdded`, `ChildRemoved`, `DescendantAdded`, `AncestryChanged`, `Destroying`, `AttributeChanged`, `:GetPropertyChangedSignal(prop)`.
+
+Um filho pode ser acessado pelo nome: `workspace.Lava`, `player.leaderstats.Moedas`.
+
+### 4.2 Classes
+
+| Classe | Propriedades | Eventos / métodos |
 |---|---|---|
-| `Part`, `SpawnLocation`, `WedgePart`, `MeshPart` | `Position` (V3), `Size` (V3, padrão 4×1×2), `Orientation` (V3, graus; só Y afeta a colisão), `Color` (C3), `BrickColor`, `Transparency` (0–1), `Anchored` (padrão true), `CanCollide` (padrão true), `Shape` (`Block`/`Ball`/`Cylinder`), `Velocity`, `CFrame` (só a posição), `Material` (ignorado) | `Touched(hit)`, `TouchEnded(hit)`, `:ApplyImpulse(v)`, `:PivotTo(cf)`, `:GetPivot()`, `:MoveTo(v)` |
-| `Model`, `Folder` | — | agrupam objetos |
-| `StringValue`, `IntValue`, `NumberValue`, `BoolValue`, `ObjectValue`, `Vector3Value`, `Color3Value` | `Value` | `Changed` |
-| `ScreenGui` | `Enabled`/`Visible` | contêiner da interface. Ponha em `game.Players.LocalPlayer.PlayerGui` |
-| `Frame`, `TextLabel`, `TextButton`, `ImageLabel` | `Position`, `Size` (UDim2), `Text`, `TextSize`, `TextColor3`, `BackgroundColor3`, `BackgroundTransparency`, `Visible`, `Image` (só `data:image/...;base64`) | `TextButton`: `Activated`, `MouseButton1Click` |
-| `Sound` | `SoundId` (nome de um som do jogo, ex. `"coin"`), `Volume` | `:Play()`, `:Stop()` |
-| `PointLight` | `Brightness`, `Range`, `Color` | (ainda não ilumina) |
-| `Humanoid` | `Health`, `MaxHealth`, `WalkSpeed` (16 = normal), `JumpPower` (50 = normal) | `Died`, `HealthChanged`, `:TakeDamage(n)`, `:MoveTo(v3)` (teleporta) |
+| `Part`, `SpawnLocation`, `WedgePart`, `MeshPart`, `TrussPart`, `Seat`... | `Position`, `Size`, `Orientation` (graus), `CFrame`, `Color`, `BrickColor`, `Transparency`, `Anchored`, `CanCollide`, `CanTouch`, `Shape`, `Material` (`Neon` brilha, `Glass` fica translúcido), `Velocity` | `Touched(hit)`, `TouchEnded(hit)`, `:ApplyImpulse(v)`, `:GetMass()`, `:PivotTo(cf)`, `:GetPivot()`, `:MoveTo(v)` |
+| `Model`, `Folder`, `Configuration` | `PrimaryPart` (Model) | `:PivotTo`, `:GetPivot`, `:MoveTo`, `:GetBoundingBox`, `:GetExtentsSize`, `:SetPrimaryPartCFrame` |
+| `StringValue`, `IntValue`, `NumberValue`, `BoolValue`, `ObjectValue`, `Vector3Value`, `Color3Value`, `CFrameValue` | `Value` | `Changed(novoValor)` |
+| `RemoteEvent` | — | servidor: `:FireClient(player, ...)`, `:FireAllClients(...)`, `OnServerEvent(player, ...)`. Cliente: `:FireServer(...)`, `OnClientEvent(...)` |
+| `RemoteFunction` | `OnServerInvoke = function(player, ...)` | cliente: `:InvokeServer(...)` (espera a resposta) |
+| `BindableEvent` / `BindableFunction` | `OnInvoke` | `:Fire(...)` / `Event`, `:Invoke(...)` (no mesmo lado) |
+| `ClickDetector` (filho de uma Part) | `MaxActivationDistance` (32) | `MouseClick(player)`. O jogador mira com o centro da tela e aperta o gatilho, o clique ou o toque |
+| `ProximityPrompt` (filho de uma Part) | `ActionText`, `ObjectText`, `KeyboardKeyCode` (E), `MaxActivationDistance` (10), `Enabled` | `Triggered(player)`, `TriggerEnded`. Mostra "[E] Ação" na tela; no VR e no celular, o gatilho ativa |
+| `Explosion` | `Position`, `BlastRadius`, `DestroyJointRadiusPercent` | `Hit(part, distância)`. No servidor, mata os jogadores dentro do raio (se `DestroyJointRadiusPercent` > 0) e empurra Parts soltas |
+| `ScreenGui`, `Frame`, `TextLabel`, `TextButton`, `ImageLabel`, `ImageButton`, `TextBox` | `Position`/`Size` (UDim2), `Text`, `TextSize`, `TextColor3`, `BackgroundColor3`, `BackgroundTransparency`, `Visible`, `Enabled`, `Image` (só `data:`) | botões: `Activated`, `MouseButton1Click`. `TextBox`: `FocusLost` com `.Text`. Ponha a ScreenGui em `player.PlayerGui` (num LocalScript) |
+| `Sound` | `SoundId` (nome de um som do jogo), `Volume` | `:Play()` (num Script, todos ouvem), `:Stop()` |
+| `PointLight`, `SpotLight` | `Brightness`, `Range`, `Color` | (ainda não iluminam) |
+| `ModuleScript` | — | `require` |
+| `UICorner`, `UIListLayout`, `UIPadding`, `UIStroke`, `UIGradient`, `Attachment`, `Decal`, `ParticleEmitter`, `Fire`, `Smoke`, `Sparkles`, `Tool`, `Accessory`, `Team` | aceitos (para scripts do Roblox não quebrarem); só guardam propriedades | `ParticleEmitter:Emit()` faz partículas |
 
-**Física:** uma Part com `Anchored = false` cai com a gravidade do `workspace`, quica no chão e respeita `Velocity` e `ApplyImpulse`. Não colide com outras Parts.
+**Física:** uma Part com `Anchored = false` cai com a gravidade do `workspace`, quica no chão e respeita `Velocity` e `ApplyImpulse`. Quem simula é o servidor, que replica a posição. Não colide com outras Parts.
 
-**Colisão do jogador:** Parts com `CanCollide = true` viram caixas sólidas. Rotação só no eixo Y.
+**Colisão do jogador:** Parts com `CanCollide = true` são caixas sólidas. Só a rotação Y entra na colisão.
 
 **Limite:** 600 Parts por mapa.
 
-### 1.5 Jogador
+## 5. Jogadores
 
 ```lua
+-- Script (servidor)
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer           -- você (Name = seu nome)
-local char = player.Character                -- Model "Gato"
-local root = char.HumanoidRootPart           -- .Position (só leitura em tempo real; escrever teleporta)
-local hum = char.Humanoid                    -- Health, WalkSpeed, JumpPower...
-```
-
-Mais coisas do jogador:
-
-- `player.PlayerGui`: onde vai a sua ScreenGui.
-- `player.Chatted:Connect(function(msg) end)`: o que você digitou no chat.
-- `Players:GetPlayers()`: lista com você.
-- `Players:GetPlayerFromCharacter(char)`.
-
-**Padrão do Roblox:**
-
-```lua
-part.Touched:Connect(function(hit)
-  local hum = hit.Parent:FindFirstChild("Humanoid")
-  if hum then hum:TakeDamage(10) end
+Players.PlayerAdded:Connect(function(player)
+  print(player.Name, player.UserId)
+  local hum = player.Character:WaitForChild("Humanoid")
+  hum.WalkSpeed = 20                        -- vale no aparelho daquele jogador
+  hum.Died:Connect(function() print(player.Name .. " caiu") end)   -- renasce no spawn após Players.RespawnTime (3 s)
 end)
+Players.PlayerRemoving:Connect(function(player) end)
 ```
 
-`hit` é a `HumanoidRootPart` do seu gato, então `hit.Parent` é o personagem.
+**Player**
+- Propriedades: `Name`, `DisplayName`, `UserId` (número estável por jogador), `Character`.
+- Filhos: `PlayerGui`, `Backpack`, `PlayerScripts`, `leaderstats`.
+- Eventos: `CharacterAdded`, `CharacterRemoving`, `Chatted`.
+- Métodos: `:Kick(motivo)` (manda para a Vila), `:LoadCharacter()`, `:DistanceFromCharacter(v)`, `:GetMouse()`.
 
-### 1.6 Serviços (`game:GetService`)
+**Character:** `HumanoidRootPart` (`Position`; escrever teleporta), `Head` e `Humanoid`.
+
+**Humanoid**
+- Propriedades: `Health`, `MaxHealth`, `WalkSpeed` (16), `JumpPower` (50), `JumpHeight`, `DisplayName`.
+- Eventos: `Died`, `HealthChanged`.
+- Métodos: `:TakeDamage(n)`, `:MoveTo(v)` (teleporta), `:LoadAnimation()` (ainda não anima).
+
+**Players (serviço)**
+- `GetPlayers()`, `GetPlayerByUserId`, `GetPlayerFromCharacter`;
+- `LocalPlayer` (só em LocalScripts);
+- `RespawnTime`, `MaxPlayers`.
+
+**`leaderstats`:** uma Folder chamada `leaderstats` dentro do Player, com `IntValue`/`NumberValue`/`StringValue`, aparece como **placar** no canto da tela de todos (até 4 colunas, ordenado pela primeira).
+
+**Toque do servidor:** `part.Touched` no servidor dispara para **qualquer** jogador. O `hit` é a `HumanoidRootPart` dele, então `Players:GetPlayerFromCharacter(hit.Parent)` funciona.
+
+## 6. Serviços (`game:GetService`)
 
 | Serviço | O que tem |
 |---|---|
-| `Players` | `LocalPlayer`, `GetPlayers()`, `PlayerAdded`, `PlayerRemoving` |
+| `Players` | seção 5 |
 | `Workspace` | igual a `workspace` |
-| `RunService` | `Heartbeat(dt)`, `RenderStepped(dt)`, `Stepped(t, dt)`: todos rodam uma vez por quadro |
-| `UserInputService` | `InputBegan(input, gp)`, `InputEnded`. `input.KeyCode == Enum.KeyCode.E` (teclado do PC) |
-| `TweenService` | `:Create(obj, TweenInfo, {Prop = alvo}):Play()`. Anima números, Vector3 e Color3. `tween.Completed` |
-| `Debris` | `:AddItem(obj, segundos)` |
-| `Lighting` | `ClockTime` (0–24): muda a hora do dia |
-| `ReplicatedStorage`, `ServerStorage` | guardar objetos fora do mundo |
-| `SoundService` | (vazio) |
-| `StarterGui` | `:SetCore("SendNotification", {Title=, Text=})` vira um aviso na tela |
-| `Chat` / `TextChatService` | `Chatted(msg)` |
+| `ReplicatedStorage`, `ReplicatedFirst` | compartilhados: RemoteEvents, módulos, modelos |
+| `ServerStorage`, `ServerScriptService` | só no servidor (não replicam) |
+| `RunService` | `Heartbeat(dt)`, `RenderStepped`, `Stepped`, `PreSimulation`, `PostSimulation`, `IsServer()`, `IsClient()`, `IsStudio()`, `BindToRenderStep`, `UnbindFromRenderStep` |
+| `UserInputService` | `InputBegan(input, gp)`, `InputEnded`, `JumpRequest`, `IsKeyDown(KeyCode)`, `GetKeysPressed()`, `TouchEnabled`, `KeyboardEnabled`. O clique e o gatilho chegam como `MouseButton1` |
+| `ContextActionService` | `BindAction(nome, f, botaoToque, KeyCode...)`, `UnbindAction` |
+| `TweenService` | `:Create(obj, TweenInfo, {Prop = alvo}):Play()`. Anima número, Vector3, Color3, CFrame e UDim2. Tem `Completed`, `Cancel` e `Pause` |
+| `Debris` | `:AddItem(obj, s)` |
+| `Lighting` | `ClockTime` (0–24, muda o céu para todos), `GetMinutesAfterMidnight`, `SetMinutesAfterMidnight` |
+| `DataStoreService` | seção 7 (só no servidor) |
+| `HttpService` | `JSONEncode`, `JSONDecode`, `GenerateGUID`, `UrlEncode`. `GetAsync`/`PostAsync` dão erro: **sem internet** |
+| `CollectionService` | `AddTag`, `RemoveTag`, `HasTag`, `GetTagged`, `GetTags`, `GetInstanceAddedSignal`, `GetInstanceRemovedSignal` (por lado; as tags não replicam) |
+| `StarterGui` | `SetCore("SendNotification", {Title, Text})` vira um aviso |
+| `StarterPlayer` | `CharacterWalkSpeed`, `CharacterJumpPower` (valores iniciais) |
+| `Chat`, `TextChatService` | `Chatted` / `MessageReceived` |
+| `MarketplaceService`, `BadgeService` | existem para scripts não quebrarem. Não há compras: o RoleVRGO é grátis. `AwardBadge` mostra um aviso |
+| `PathfindingService` | `CreatePath()` com caminho em linha reta |
+| `TeleportService`, `MessagingService`, `GroupService`, `LocalizationService`, `Teams`, `SoundService`, `StarterPack` | existem para compatibilidade, com funções vazias |
 
-### 1.7 Multijogador
+**Camera e Mouse** (LocalScript)
+- `workspace.CurrentCamera.CFrame`: onde você está olhando (só leitura).
+- `player:GetMouse()` traz:
+  - `Hit` (CFrame do ponto mirado);
+  - `Target` (a Part mirada);
+  - `UnitRay`;
+  - os eventos `Button1Down`, `Button1Up` e `KeyDown`.
 
-Os scripts rodam **no aparelho de cada jogador** (como LocalScripts). Cada pessoa que entra no mapa roda os scripts para si. Ainda não há RemoteEvents, servidor nem dados salvos por script.
+**Raycast**
 
-### 1.8 `RoleVR` — extras do RoleVRGO
+```lua
+local params = RaycastParams.new()
+params.FilterDescendantsInstances = { workspace.Parede }
+params.FilterType = Enum.RaycastFilterType.Exclude
+local r = workspace:Raycast(origem, direcao * 100, params)
+if r then print(r.Instance.Name, r.Position, r.Normal, r.Distance) end
+```
+
+Funciona contra as Parts dos scripts, como caixas sem rotação. O cenário do mapa e os modelos não entram.
+
+## 7. DataStore (só em Scripts do servidor)
+
+```lua
+local DSS = game:GetService("DataStoreService")
+local banco = DSS:GetDataStore("Moedas")
+local valor = banco:GetAsync(tostring(player.UserId)) or 0
+banco:SetAsync(tostring(player.UserId), valor + 10)
+banco:UpdateAsync("total", function(velho) return (velho or 0) + 1 end)
+banco:IncrementAsync("visitas", 1)
+banco:RemoveAsync("lixo")
+
+local ranking = DSS:GetOrderedDataStore("Recordes")
+ranking:SetAsync(tostring(player.UserId), 1234)
+for _, item in ipairs(ranking:GetSortedAsync(false, 10):GetCurrentPage()) do print(item.key, item.value) end
+```
+
+**Onde os dados ficam:**
+- **Mapa publicado:** no servidor do RoleVRGO, separados por mapa.
+- **Projeto ainda não publicado (Studio) ou offline:** no aparelho.
+
+**Valores aceitos:** número, texto, booleano, tabela, Vector3, Color3 e CFrame.
+
+**Limites:**
+- 16 KB por valor;
+- 20 mil chaves por mapa;
+- 120 gravações por minuto por anfitrião;
+- nomes com até 60 letras.
+
+`GetSortedAsync` só lista valores numéricos (até 100).
+
+## 8. Cliente ↔ servidor (padrão do Roblox)
+
+```lua
+-- Script (servidor)
+local evento = Instance.new("RemoteEvent")
+evento.Name = "Pontuar"
+evento.Parent = game:GetService("ReplicatedStorage")
+evento.OnServerEvent:Connect(function(player, quanto)
+  if typeof(quanto) ~= "number" or quanto > 10 then return end   -- sempre valide no servidor
+  player.leaderstats.Pontos.Value += quanto
+end)
+
+-- LocalScript (cliente)
+local evento = game:GetService("ReplicatedStorage"):WaitForChild("Pontuar")
+evento:FireServer(5)
+```
+
+**O que pode viajar entre cliente e servidor:**
+- números, textos, booleanos e tabelas;
+- `Vector3`, `Color3`, `CFrame`, `Vector2`, `UDim2` e EnumItems;
+- **Instances replicadas** (Parts, Players...).
+
+Funções não viajam.
+
+## 9. O que não existe (ainda)
+
+Isto aparece em muitos jogos do Roblox, mas ainda não existe no RoleVRGO:
+
+- Animações de personagem: `LoadAnimation` não anima.
+- Ferramentas na mão (`Tool` equipável).
+- Constraints e física entre Parts.
+- Terreno (`Terrain`).
+- Malhas e texturas importadas por ID.
+- Sons por `rbxassetid` (use os nomes de som do jogo).
+- `InvokeClient`.
+- Teleporte entre lugares e servidores reservados.
+- Compras.
+- Times com cores no placar.
+- Luzes que iluminam.
+
+## 10. `RoleVR`: extras do RoleVRGO
 
 | Função | Efeito |
 |---|---|
-| `RoleVR.toast(texto, corCSS?)` | aviso no canto |
-| `RoleVR.banner(texto, segundos?)` | faixa grande no topo |
-| `RoleVR.say(texto)` | o seu gato fala no chat (no máximo 1 vez a cada 5 s) |
-| `RoleVR.sound(nome, volume?)` | toca um som do jogo: `coin`, `pickup`, `win`, `secret`, `portal`, `levelup`, `quest`, `punch`, `click`, `bell`, `chest`, `power`, `heart`, `splash`, `glass`, `error`, `confirm`, `open`, `close`, `ko`, `event`, `dodge`, `book`, `msg` |
-| `RoleVR.effect(posV3, cor?, quantidade?)` | explosão de partículas |
-| `RoleVR.model(chave, posV3, escala?, giroY?)` | coloca um modelo do jogo (`"nature/tree_oak"`, `"food/burger"`, `"space/rocket_baseA"`...). Retorna um objeto com `:Destroy()` |
-| `RoleVR.npc(nome, posV3, {falas})` | cria um gato NPC que fala |
-| `RoleVR.fly(true/false)` | liga ou desliga o voo |
-| `RoleVR.sky(Color3)` | cor do céu |
-| `RoleVR.emote(id)` | o seu gato faz um emote |
+| `RoleVR.isServer` | `true` em Scripts do servidor |
+| `RoleVR.toast(texto, corCSS?)` | aviso. Num Script, todos veem |
+| `RoleVR.banner(texto, s?)` | faixa grande no topo. Num Script, todos veem |
+| `RoleVR.say(texto)` | o seu gato fala no chat (LocalScript, no máximo 1 vez a cada 5 s) |
+| `RoleVR.sound(nome, vol?)` | som do jogo. Num Script, todos ouvem |
+| `RoleVR.effect(posV3, Color3?, n?)` | partículas |
+| `RoleVR.model(chave, posV3, escala?, giroY?)` | modelo da Kenney (`"nature/tree_oak"`, `"food/burger"`, `"space/rocket_baseA"`...) |
+| `RoleVR.npc(nome, posV3, {falas})` | gato NPC que fala |
+| `RoleVR.fly(bool)`, `RoleVR.sky(Color3)`, `RoleVR.emote(id)` | voo, cor do céu, emote (LocalScript) |
 
-As chaves dos modelos estão no criador de mapas: menu > 🛠 Criar > paleta. São mais de 330 modelos da Kenney, nos pacotes nature, town, castle, city, pirate, survival, arena, holiday, plat, dungeon, grave, food, fur, car, space, golf e train.
+**Nomes de som:** `coin`, `pickup`, `win`, `secret`, `portal`, `levelup`, `quest`, `punch`, `click`, `bell`, `chest`, `power`, `heart`, `splash`, `glass`, `error`, `confirm`, `open`, `close`, `ko`, `event`, `dodge`, `book`, `msg`.
 
-### 1.9 Exemplos
-
-**Lava:**
-
-```lua
-local lava = Instance.new("Part")
-lava.Size = Vector3.new(8, 1, 8)
-lava.Position = Vector3.new(0, 0.5, -10)
-lava.Color = Color3.fromRGB(255, 80, 0)
-lava.Parent = workspace
-lava.Touched:Connect(function(hit)
-  local hum = hit.Parent:FindFirstChild("Humanoid")
-  if hum then hum.Health = 0 end
-end)
-```
-
-**Contador com GUI:**
-
-```lua
-local gui = Instance.new("ScreenGui")
-gui.Parent = game.Players.LocalPlayer.PlayerGui
-local label = Instance.new("TextLabel")
-label.Size = UDim2.new(0, 220, 0, 50)
-label.Position = UDim2.new(0, 20, 0, 20)
-label.Parent = gui
-local n = 0
-while true do
-  n += 1
-  label.Text = `Segundos: {n}`
-  task.wait(1)
-end
-```
-
-**Porta com tecla E:**
-
-```lua
-local porta = Instance.new("Part")
-porta.Size = Vector3.new(4, 6, 0.5)
-porta.Position = Vector3.new(0, 3, -6)
-porta.Parent = workspace
-local aberta = false
-game:GetService("UserInputService").InputBegan:Connect(function(input)
-  if input.KeyCode == Enum.KeyCode.E then
-    aberta = not aberta
-    local alvo = aberta and Vector3.new(0, 9, -6) or Vector3.new(0, 3, -6)
-    game:GetService("TweenService"):Create(porta, TweenInfo.new(0.5), { Position = alvo }):Play()
-  end
-end)
-```
+**Modelos:** mais de 330, nos pacotes nature, town, castle, city, pirate, survival, arena, holiday, plat, dungeon, grave, food, fur, car, space, golf e train. Veja a paleta em menu > 🛠 Criar.
 
 ---
 
-## 2. Mods HTML/CSS/JS
+## 11. Mods HTML/CSS/JS
 
-Um mod é uma página HTML transparente **por cima do jogo**. Ela ganha o objeto global `window.rv`.
+Um mod é uma página HTML transparente **por cima do jogo**, com o objeto `window.rv`.
 
-### 2.1 Formatos aceitos (Studio > aba Mods > Importar)
-
-- **`.zip`** com `index.html` (ou outro `.html`), `.css`, `.js` e imagens/sons. Os `<link rel="stylesheet">`, os `<script src>` e as imagens/sons referenciados são embutidos automaticamente.
-- **Arquivos soltos:** `.html`, `.css`, `.js` (CSS e JS sem HTML viram um mod próprio).
-- **`.lua` / `.luau`:** viram scripts (seção 1).
-
-### 2.2 `window.rv`
+**Importar:** Studio > 🧩 Mods > Importar.
+- `.zip` com `index.html` + `.css` + `.js` + imagens/sons, que são embutidos automaticamente;
+- ou arquivos soltos `.html`, `.css`, `.js`;
+- `.lua` e `.luau` viram scripts.
 
 ```js
-rv.player                         // { x, y, z } atualizado a cada quadro
-rv.on('tick', (dt) => {})         // uma vez por quadro
-rv.on('key', (code, down) => {})  // teclas do PC: 'KeyE', 'Space'...
-rv.on('chat', (texto) => {})      // o que você digitou no chat
-rv.on('touch', (partId, entrou) => {})
+rv.player                         // { x, y, z } a cada quadro
+rv.on('tick', (dt) => {}); rv.on('key', (code, down) => {}); rv.on('chat', (texto) => {}); rv.on('touch', (partId, entrou) => {})
 const p = rv.part({ Position: {x:0, y:3, z:-5}, Size: {x:2, y:2, z:2}, Color: [1, 0.3, 0.6], Anchored: true, Shape: 'Ball' })
 p.set('Position', {x:0, y:6, z:-5}); p.destroy()
-rv.toast(texto, corCSS?); rv.banner(texto, s?); rv.say(texto)
-rv.sound(nome, vol?); rv.effect(x, y, z, cor0xRRGGBB?, n?)
+rv.toast(t, cor?); rv.banner(t, s?); rv.say(t); rv.sound(nome, vol?); rv.effect(x, y, z, 0xRRGGBB?, n?)
 rv.teleport(x, y, z); rv.walkSpeed(16); rv.jumpPower(50); rv.gravity(196.2); rv.clockTime(14); rv.fly(true)
-rv.model('food/burger', x, y, z, escala?, giroY?) // -> { destroy() }
-rv.npc('Nome', x, y, z, ['fala 1', 'fala 2'])
-rv.interactive(true)  // o mod passa a receber cliques (bloqueia o jogo embaixo); false devolve
+rv.model('food/burger', x, y, z, escala?, giro?); rv.npc('Nome', x, y, z, ['fala'])
+rv.interactive(true)   // recebe cliques enquanto um menu estiver aberto; false devolve
 ```
 
-Por padrão o mod é **só visual** (não recebe cliques). Use `rv.interactive(true)` enquanto mostrar um menu e `false` ao fechar. O Studio também tem o botão "🖱 clicável".
+**Restrições:**
+- O mod roda **só no seu aparelho**.
+- Sem rede e sem `localStorage`.
+- Não aparece dentro do VR.
 
-### 2.3 Restrições
+## 12. Publicar e segurança
 
-- Sem rede: `fetch`, imagens externas e CDNs são bloqueados. Embuta tudo no `.zip`.
-- Sem `localStorage` (iframe sem origem). Guarde estado em variáveis.
-- Não aparece dentro do VR (é uma camada 2D da página). Funciona no PC e no celular.
+**Studio > 📦 Projeto:**
+- exportar e importar `.zip`;
+- salvar privado;
+- **🌍 Publicar**: o mapa aparece em menu > 🛠 Criar > 🌍 Comunidade, com um código.
 
----
+**Limites:** 900 KB por projeto, 700 objetos de mapa e 600 Parts de script. Mapas da comunidade são sandbox: não dão XP, moedas nem itens de verdade.
 
-## 3. Publicar para a comunidade
-
-Studio > **Projeto**:
-
-- **📤 Exportar .zip**: `map.json` + `scripts/*.luau` + `mods/*.html`.
-- **📥 Importar projeto**: o mesmo `.zip`, ou um `map.json`.
-- **🌍 Publicar**: vira um mapa da comunidade (menu > 🛠 Criar > 🌍 Comunidade), com um código de 6 letras.
-- **Limite:** 900 KB por projeto, 700 objetos de mapa e 600 Parts de script.
-
-Quem entra no seu mapa roda os scripts e mods isolados e recebe um aviso. O progresso dentro de mapas da comunidade é sandbox: não dá XP, moedas nem itens de verdade.
-
-## 4. Segurança (resumo)
-
-| Proteção | Como funciona |
-|---|---|
-| Isolamento | iframes com `sandbox="allow-scripts"` (origem nula) |
-| Sem rede | CSP `default-src 'none'` (só scripts inline e o fengari) |
-| Comunicação | o host só aceita `postMessage` dos próprios iframes |
-| Valores | os valores são validados e limitados (tamanhos, quantidades, textos) |
-| Chat | `say` no máximo a cada 5 s |
-| Imagens | só `data:` |
+**Segurança:**
+- iframes `sandbox="allow-scripts"` (origem nula), com CSP sem rede;
+- o host só aceita `postMessage` dos próprios iframes;
+- valores limitados;
+- `say` no máximo a cada 5 s;
+- imagens só `data:`;
+- mensagens de rede aceitas só do anfitrião (replicação) ou validadas por ele (RemoteEvents).

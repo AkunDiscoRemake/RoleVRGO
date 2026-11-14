@@ -1,4 +1,4 @@
--- Loja com GUI: junte moedas e compre velocidade. Mostra ScreenGui, TextButton e TweenService.
+-- LocalScript (cliente): Loja com GUI: junte moedas e compre velocidade. Mostra ScreenGui, TextButton e TweenService.
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local hum = Players.LocalPlayer.Character:WaitForChild("Humanoid")

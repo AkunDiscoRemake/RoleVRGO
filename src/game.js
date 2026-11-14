@@ -54,7 +54,7 @@ export const G = {
     this.fadeMesh = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 6), new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false })); this.fadeMesh.renderOrder = 999; this.fadeMesh.visible = false; camera.add(this.fadeMesh);
     this.bobber = new THREE.Mesh(new THREE.IcosahedronGeometry(0.09, 0), new THREE.MeshBasicMaterial({ color: 0xff4040 })); this.bobber.visible = false; scene.add(this.bobber);
     this.line = new THREE.Line(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3)), new THREE.LineBasicMaterial({ color: 0xffffff })); this.line.frustumCulled = false; this.line.visible = false; scene.add(this.line);
-    player.onTrigger = () => this.onTrigger(); player.onRelease = () => { if (this.def && this.def.release) this.def.release(this); };
+    player.onTrigger = () => this.onTrigger(); player.onRelease = () => { host.mouse(false); if (this.def && this.def.release) this.def.release(this); };
     this.tpBall = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22, 1), new THREE.MeshBasicMaterial({ color: 0x60e8ff, transparent: true, opacity: 0.85, fog: false })); this.tpBall.visible = false; this.tpBall.renderOrder = 8; scene.add(this.tpBall);
     this.tpArc = new THREE.Line(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(player.tp.pts, 3).setUsage(THREE.DynamicDrawUsage)), new THREE.LineBasicMaterial({ color: 0x60e8ff, transparent: true, opacity: 0.9, fog: false })); this.tpArc.frustumCulled = false; this.tpArc.visible = false; scene.add(this.tpArc);
     on('teleported', () => { play('portal', 0.45, 0, 1.5); const p = player.pos; this.fx.burst(p.x, p.y + 0.6, p.z, 0x60e8ff, 18, 3, 1); });
@@ -78,6 +78,7 @@ export const G = {
     def.build(w, E, rng(hashStr(id)));
     if (!def.custom && !def.home) decorate(weather.seasonNow(), id, w, E); // Natal, Halloween, Ano Novo
     w.swim = !!def.swim; matU.uTiles.value = id === 'pool' ? 1 : 0; matU.uGloss.value = id === 'pool' ? 0.6 : id === 'neon' ? 0.85 : id === 'aero' || (def.custom && def.sky[0] === 0x4cc6ff) ? 1 : 0; matU.uCaust.value = def.swim ? 1 : 0;
+    this.mapJt = net.online && net.now ? net.now() : Date.now(); /* hora de entrada no mapa: o mais antigo hospeda os Scripts */
     this.world = w; this.E = E; this.def = def; this.mapId = id; this.baseGloss = matU.uGloss.value;
     const add = (o) => { scene.add(o); this.objs.push(o); return o; };
     const inst = (geo, n, mat) => { const m = new THREE.InstancedMesh(geo, mat || instMat, Math.max(1, n)); m.count = n; m.frustumCulled = false; m.castShadow = true; return add(m); };
@@ -200,7 +201,7 @@ export const G = {
   // liga/desliga a forma de Gato-Anjo (só nível 100+)
   setAngel(on) { if (on && !S.d.angel.got) return; S.d.angel.on = on ? 1 : 0; S.look.angel = S.angelOn() ? 1 : 0; emit('look'); emit('meta'); S.touch(); },
   keyboard() { if (!S.angelOn()) return; const n = this.time; if (n - (this._kbT || -9) < 3) return; this._kbT = n; keyboardTune(1); if (net.online) net.send('kbd', {}); const p = this.player.pos; this.fx.burst(p.x, p.y + 1, p.z, 0xffe28a, 20, 2, 1.5); S.toast('🎹🎶', '#ffe28a'); },
-  pushMeta() { net.setMeta({ name: /^hark/i.test(S.name) && !admin.is ? 'Gato' : S.name, look: S.look, level: S.d.level, sid: this.sid, pet: S.d.pet, admin: admin.is ? 1 : 0, prof: S.d.prof, party: net.partyCode, fc: net.friendCode, held: S.d.hand, vc: voice.on ? 1 : 0, mic: voice.mic ? 1 : 0, mount: mounts.cur() ? mounts.cur().id : '', job: S.d.job || '', sir: jobs.siren ? 1 : 0 }); },
+  pushMeta() { net.setMeta({ name: /^hark/i.test(S.name) && !admin.is ? 'Gato' : S.name, look: S.look, level: S.d.level, sid: this.sid, pet: S.d.pet, admin: admin.is ? 1 : 0, prof: S.d.prof, party: net.partyCode, fc: net.friendCode, held: S.d.hand, vc: voice.on ? 1 : 0, mic: voice.mic ? 1 : 0, mount: mounts.cur() ? mounts.cur().id : '', job: S.d.job || '', sir: jobs.siren ? 1 : 0 , jt: this.mapJt || 0}); },
 
   // ================= eventos de rede e de jogo =================
   _bindEvents() {
@@ -241,7 +242,8 @@ export const G = {
     if (e.t === 'gp') { gp.onNet(e); return; }
     if (e.t === 'kbd') { const r = this.remotes.get(e.f); if (r && r.av.root.visible) { const p = r.av.root.position, d = Math.hypot(p.x - this.player.pos.x, p.z - this.player.pos.z); if (d < 30) { keyboardTune(Math.max(0.15, 1 - d / 30)); this.fx.burst(p.x, p.y + 1, p.z, 0xffe28a, 14, 2, 1.5); r.av.say('🎹🎶', 3); } } return; }
     if (e.t === 'zap') { if ([e.x, e.y, e.z].every((v) => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) < 2000)) { this._bolt(e.x, e.y, e.z, false); const r = this.remotes.get(e.f); if (r) this._log('⚡', r.meta.name + ' foi atingido por um raio!'); if (r) r.burntT = 25; } return; }
-    if (e.t === 'chat') { if (r && !this.muted(e.f)) { const tx = String(e.x == null ? '' : e.x).slice(0, 80); r.av.say(tx, 6); this._log(r.meta.name, tx); play('msg', 0.4); } }
+    if (typeof e.t === 'string' && e.t.startsWith('rx')) { host.onNet(e); return; } // Studio: servidor/replicação/RemoteEvents
+    if (e.t === 'chat') { if (r && !this.muted(e.f)) { const tx = String(e.x == null ? '' : e.x).slice(0, 80); host.remoteChat(e.f, tx); r.av.say(tx, 6); this._log(r.meta.name, tx); play('msg', 0.4); } }
     else if (e.t === 'tree') { const tr = this.E.trees[e.i | 0]; if (tr && tr.alive) this._fell(tr, Math.min(Number(e.u) || 0, net.now() + 180000), 0, 1); }
     else if (e.t === 'ore') { const o = this.E.ores[e.i | 0]; if (o && o.alive && !o.ev) { o.alive = false; o.respawn = Math.min(Number(e.u) || 0, net.now() + 180000); this._oreVis(o); } }
     else if (e.t === 'hit' && e.to === net.id && Number.isFinite(e.x) && Number.isFinite(e.z) && Number.isFinite(e.d)) {
@@ -315,6 +317,7 @@ export const G = {
   onTrigger() {
     if (!this.world || this.pending) return true;
     if (this.uiClick && this.uiClick()) return true;
+    host.mouse(true); if (host.press(this)) return true;
     if (maker.editing && this.mapId === 'custom') { maker.act(); return true; }
     if (home.editing && home.mine()) { home.act(); return true; }
     if (this.def && this.def.press && this.def.press(this)) return true;

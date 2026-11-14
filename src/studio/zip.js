@@ -34,7 +34,8 @@ const b64 = (u8) => { let s = ''; for (let i = 0; i < u8.length; i += 32768) s +
 export function bundle(files, baseName) {
   const txt = {}, bin = {}; for (const k in files) { const ext = k.split('.').pop().toLowerCase(); if (/^(html?|css|js|mjs|lua|luau|txt|json)$/.test(ext)) txt[k] = td.decode(files[k]); else bin[k] = files[k]; }
   const base = (k) => k.split('/').pop(), find = (ref, from) => { const r = ref.replace(/^\.\//, ''); const dir = from.includes('/') ? from.slice(0, from.lastIndexOf('/') + 1) : ''; return [dir + r, r].find((c) => c in txt || c in bin) || Object.keys({ ...txt, ...bin }).find((k) => base(k) === base(r)); };
-  const scripts = Object.keys(txt).filter((k) => /\.(lua|luau)$/i.test(k)).map((k) => ({ n: base(k).replace(/\.(lua|luau)$/i, ''), src: txt[k] }));
+  const kindOf = (k) => (/\.server\.(lua|luau)$/i.test(k) ? 'server' : /\.(module)\.(lua|luau)$/i.test(k) || /(^|\/)ModuleScript/i.test(k) ? 'module' : 'client');
+  const scripts = Object.keys(txt).filter((k) => /\.(lua|luau)$/i.test(k)).map((k) => ({ n: base(k).replace(/(\.(server|client|module))?\.(lua|luau)$/i, ''), k: kindOf(k), src: txt[k] }));
   const mods = []; const htmls = Object.keys(txt).filter((k) => /\.html?$/i.test(k)).sort((a, b) => (/index\.html?$/i.test(b) ? 1 : 0) - (/index\.html?$/i.test(a) ? 1 : 0));
   const inlineAssets = (html, from) => html.replace(/(src|href)=["']([^"':]+\.(png|jpe?g|gif|webp|svg|mp3|ogg|wav))["']/gi, (m, attr, ref, ext) => { const k = find(ref, from); return k && bin[k] ? attr + '="data:' + MIME[ext.toLowerCase()] + ';base64,' + b64(bin[k]) + '"' : m; });
   const used = new Set();

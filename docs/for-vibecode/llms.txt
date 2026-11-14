@@ -1,6 +1,6 @@
 # RoleVRGO
 
-> RoleVRGO é um jogo multiplayer de gatos em realidade virtual que roda no navegador (Meta Quest, Oculus Go, VR Box, celular e PC). Versão final 1.0.0 "FullFinalVer". Depois dela, o jogo continua pela comunidade: qualquer pessoa cria mapas, scripts Luau (estilo Roblox) e mods HTML/CSS/JS no RoleVRGO Studio e publica como mapa da comunidade.
+> RoleVRGO é um jogo multiplayer de gatos em realidade virtual que roda no navegador (Meta Quest, Oculus Go, VR Box, celular e PC). Versão final 1.1.0 "FullFinalVer" (com servidor de jogador e API estilo Roblox completa). Depois dela, o jogo continua pela comunidade: qualquer pessoa cria mapas, scripts Luau (estilo Roblox) e mods HTML/CSS/JS no RoleVRGO Studio e publica como mapa da comunidade.
 
 Para gerar código para o RoleVRGO, use SÓ a API descrita nestes arquivos. Não invente funções do Roblox que não estão listadas.
 
@@ -10,9 +10,12 @@ Para gerar código para o RoleVRGO, use SÓ a API descrita nestes arquivos. Não
 - [Tipos Luau (luau-lsp)](rolevrgo.d.luau): autocompletar no VS Code
 - [Tipos JS dos mods](rv.d.ts): autocompletar para `window.rv`
 
-## Exemplos
-- [Obby com checkpoints](examples/obby.luau)
-- [Loja com GUI e moedas](examples/loja.luau)
+## Exemplos (convenção do Rojo: .server / .client / .module)
+- [Placar + DataStore + ranking](examples/placar.server.luau)
+- [Loja com RemoteFunction — servidor](examples/loja-remote.server.luau) e [cliente](examples/loja-remote.client.luau)
+- [Módulo de utilidades](examples/util.module.luau)
+- [Obby com checkpoints (LocalScript)](examples/obby.client.luau)
+- [Loja só no cliente](examples/loja.client.luau)
 - [Mod HTML de placar](examples/mod-placar/index.html)
 
 ## Código do jogo (para quem mexe no próprio RoleVRGO)

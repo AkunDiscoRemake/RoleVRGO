@@ -1,5 +1,36 @@
 # Changelog
 
+## 1.1.0 — Servidor e API do Roblox no Studio
+
+### 🖥 Servidor (como no Roblox)
+- **Três tipos de script:** 🖥 **Script** (servidor), 📱 **LocalScript** (cada jogador) e 📦 **ModuleScript** (`require`).
+- **Servidor de jogador** (*listen server*):
+  - quem está no mapa há mais tempo hospeda os Scripts;
+  - tudo que o servidor cria (Parts, RemoteEvents, `leaderstats`...) é replicado para todos pela sala, 10 vezes por segundo;
+  - quem chega depois recebe uma "foto" do mundo;
+  - se o anfitrião sair, outro jogador assume automaticamente.
+- **RemoteEvent e RemoteFunction** entre cliente e servidor. Também `BindableEvent` e `BindableFunction`.
+- **DataStore:**
+  - `GetDataStore` e `GetOrderedDataStore`, com `GetAsync`, `SetAsync`, `UpdateAsync`, `IncrementAsync`, `RemoveAsync` e `GetSortedAsync`;
+  - fica no Supabase, por mapa publicado (`supabase/datastore.sql`), ou no aparelho enquanto o projeto não é publicado.
+- **`leaderstats`** viram um placar no canto da tela de todos.
+- **Vários jogadores no servidor:**
+  - `PlayerAdded` e `PlayerRemoving`;
+  - `Character`, `Humanoid` (vida, velocidade, pulo, morte e renascimento) e `Kick`;
+  - `Touched` no servidor para qualquer jogador.
+
+### 🧩 API do Roblox bem mais completa
+- **CFrame completo:** `Angles`, `lookAt`, `fromOrientation`, `Inverse`, `Lerp`, `ToWorldSpace`/`ToObjectSpace`, `LookVector`... `Part.CFrame` lê e escreve.
+- **Classes:** `ClickDetector` (mira e gatilho), `ProximityPrompt` ("[E] Ação" na tela; o gatilho no VR e no celular), `Explosion`, `TextBox`, `ImageButton`, `Model:PivotTo`/`GetBoundingBox`, `Material` `Neon` e `Glass`.
+- **Consultas espaciais:** `workspace:Raycast`, `GetPartBoundsInRadius`, `GetPartBoundsInBox`, `CurrentCamera.CFrame`, `Mouse.Hit` e `Mouse.Target`.
+- **Serviços:** `ContextActionService`, `HttpService` (só JSON), `CollectionService` (tags), `Random`, `Vector2`, `BrickColor` com nomes e muitos `Enum`. `MarketplaceService`, `BadgeService`, `PathfindingService` e outros existem para scripts do Roblox não quebrarem.
+- **Funções do Luau:** `math.clamp`, `string.split`, `table.find` e outras. O conversor agora aceita `+=` no meio da linha, `if` como expressão, generics em funções e scripts que pausam no corpo (`WaitForChild`).
+- **Formato de arquivos:** importar e exportar `.zip` usa a convenção do Rojo (`.server.luau`, `.client.luau`, `.module.luau`).
+
+### 📖 Docs
+- A API (`docs/for-vibecode/API.md`), o prompt para IAs, os tipos `.d.luau`, o `llms.txt` e os exemplos foram atualizados. Exemplos novos: placar com DataStore e ranking, loja com RemoteFunction (servidor + cliente) e módulo.
+- A seção 9 da API lista o que ainda **não** existe (animações, `Tool`, constraints, Terrain...).
+
 ## 1.0.0 — FullFinalVer (versão final)
 
 **Esta é a última versão oficial do RoleVRGO.** Daqui em diante o jogo é da comunidade: mapas, minigames, scripts e mods feitos no **RoleVRGO Studio** e publicados para todo mundo.

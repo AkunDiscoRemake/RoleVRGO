@@ -1,4 +1,4 @@
-# RoleVRGO 🐱🥽 (1.0.0 FullFinalVer)
+# RoleVRGO 🐱🥽 (1.1.0 FullFinalVer)
 
 > **Versão final.** A 1.0.0 "FullFinalVer" é a última versão oficial. Daqui em diante o RoleVRGO é mantido pela **comunidade**: mapas, minigames, scripts Luau (estilo Roblox) e mods HTML/CSS/JS feitos no **RoleVRGO Studio** e publicados para todos. Documentação: https://akundiscoremake.github.io/RoleVRGO/docs/ · versão para IAs: [docs/for-vibecode](docs/for-vibecode/) · guia para quem mexe no motor: [AGENTS.md](AGENTS.md)
 
@@ -12,6 +12,7 @@ Também funciona em **VR Box / Cardboard** (tela dividida + sensor do celular), 
 
 Botão **🛠 RoleVRGO Studio** na tela inicial. Tudo roda em sandbox (não mexe no seu save):
 
+- **Servidor como no Roblox:** Scripts (servidor), LocalScripts e ModuleScripts. O jogador há mais tempo no mapa hospeda o servidor (*listen server*); o mundo é replicado pela sala, com RemoteEvents/RemoteFunctions, DataStore (`supabase/datastore.sql`) e placar de `leaderstats`.
 - **Scripts Luau no estilo Roblox:** `Instance.new("Part")`, `Touched:Connect`, `TweenService`, `UserInputService`, `ScreenGui`/`TextButton`, `Humanoid`, `task.wait`... Roda sobre o [fengari](https://github.com/fengari-lua/fengari-web) (Lua 5.3, MIT), com conversão de Luau (tipos, `+=`, `continue` e interpolação).
 - **Mods HTML/CSS/JS:** importe um `.zip` ou arquivos soltos; vira uma página por cima do jogo com a API `window.rv`.
 - **Poderes de desenvolvedor**, **exportar/importar** projeto e **publicar** como mapa da comunidade (quem entra roda os scripts isolados).

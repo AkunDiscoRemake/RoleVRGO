@@ -139,6 +139,64 @@ declare class Sound extends Instance
   function Play(self): ()
   function Stop(self): ()
 end
+declare class RemoteEvent extends Instance
+  OnServerEvent: RBXScriptSignal
+  OnClientEvent: RBXScriptSignal
+  function FireServer(self, ...: any): ()
+  function FireClient(self, player: Player, ...: any): ()
+  function FireAllClients(self, ...: any): ()
+end
+declare class RemoteFunction extends Instance
+  OnServerInvoke: (player: Player, ...any) -> ...any
+  function InvokeServer(self, ...: any): ...any
+end
+declare class BindableEvent extends Instance
+  Event: RBXScriptSignal
+  function Fire(self, ...: any): ()
+end
+declare class BindableFunction extends Instance
+  OnInvoke: (...any) -> ...any
+  function Invoke(self, ...: any): ...any
+end
+declare class ClickDetector extends Instance
+  MaxActivationDistance: number
+  MouseClick: RBXScriptSignal
+end
+declare class ProximityPrompt extends Instance
+  ActionText: string
+  ObjectText: string
+  KeyboardKeyCode: KeyCode
+  MaxActivationDistance: number
+  Enabled: boolean
+  Triggered: RBXScriptSignal
+  TriggerEnded: RBXScriptSignal
+end
+declare class Explosion extends Instance
+  Position: Vector3
+  BlastRadius: number
+  DestroyJointRadiusPercent: number
+  Hit: RBXScriptSignal
+end
+type RaycastResult = { Instance: BasePart, Position: Vector3, Normal: Vector3, Distance: number }
+type RaycastParams = { FilterDescendantsInstances: { Instance }, FilterType: any }
+declare RaycastParams: { new: () -> RaycastParams }
+declare class GlobalDataStore
+  function GetAsync(self, key: string): any
+  function SetAsync(self, key: string, value: any): any
+  function UpdateAsync(self, key: string, transform: (any) -> any): any
+  function IncrementAsync(self, key: string, delta: number?): number
+  function RemoveAsync(self, key: string): any
+end
+declare class OrderedDataStore extends GlobalDataStore
+  function GetSortedAsync(self, ascending: boolean, pageSize: number): { GetCurrentPage: (any) -> { { key: string, value: number } }, IsFinished: boolean }
+end
+declare class Random
+  function NextInteger(self, min: number, max: number): number
+  function NextNumber(self, min: number?, max: number?): number
+  function NextUnitVector(self): Vector3
+  function Shuffle(self, t: { any }): ()
+end
+declare Random: { new: (seed: number?) -> Random }
 declare class ValueBase extends Instance
   Value: any
 end
@@ -168,8 +226,11 @@ declare function delay(seconds: number, f: (...any) -> ...any): ()
 declare function tick(): number
 declare function time(): number
 declare function warn(...: any): ()
+declare function require(module: any): any
+declare function typeof(value: any): string
 
 declare RoleVR: {
+  isServer: boolean,
   toast: (text: string, cssColor: string?) -> (),
   banner: (text: string, seconds: number?) -> (),
   say: (text: string) -> (),

@@ -77,7 +77,7 @@ export const maker = {
         if (self.editing) for (const o of m.objs) if (o.t === 'e') w.put('prim/cone', o.x, o.z, { s: [0.35, 0.5, 0.35], abs: o.y + 2.6, tint: [1.6, 1.3, 0.2] }); // marcador das entidades no editor
       },
       after(G, add) { // quadros com imagens próprias (um plano texturizado por imagem); scripts e mods do mapa rodam isolados
-        if (!self.editing && ((m.scripts && m.scripts.length) || (m.mods && m.mods.length))) { host.start(G, m.scripts, m.mods, { studio: self.studio }); if (!self.studio && !self.mine) emit('toast', '🧩 Este mapa tem scripts da comunidade (rodando isolados, sem acesso à sua conta)', '#bfe6ff'); }
+        if (!self.editing && ((m.scripts && m.scripts.length) || (m.mods && m.mods.length))) { host.start(G, m.scripts, m.mods, { studio: self.studio, mapId: self.id, mapName: m.name }); if (!self.studio && !self.mine) emit('toast', '🧩 Este mapa tem scripts da comunidade (rodando isolados, sem acesso à sua conta)', '#bfe6ff'); }
         for (const o of G.E.imgs || []) { const a = m.assets[o.k.slice(6)]; if (!a) continue; const tx = new THREE.Texture(); const im = new Image(); im.onload = () => { tx.image = im; tx.needsUpdate = true; }; im.src = a.d; const hgt = 2.4 * o.s, wd = hgt * a.w / a.h;
           const me = add(new THREE.Mesh(new THREE.PlaneGeometry(wd, hgt), new THREE.MeshBasicMaterial({ map: tx, side: THREE.DoubleSide }))); me.position.set(o.x, o.y + hgt / 2 + 0.05, o.z); me.rotation.y = o.ry; }
       } };

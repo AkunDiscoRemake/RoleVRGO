@@ -3518,5 +3518,20 @@
   "🧩 This map has community scripts (running isolated, with no access to your account)",
   "🧩 Este mapa tiene scripts de la comunidad (aislados, sin acceso a tu cuenta)",
   "🧩 На этой карте есть скрипты сообщества (изолированы, без доступа к аккаунту)"
+ ],
+ "🖥 1.1.0: SERVIDOR NO STUDIO! Scripts de servidor, LocalScripts e ModuleScripts como no Roblox, RemoteEvents, DataStore, placar com leaderstats, ClickDetector, ProximityPrompt, Explosion, CFrame e Raycast. Quem está no mapa há mais tempo hospeda o servidor e todo mundo vê o mesmo mundo.": [
+  "🖥 1.1.0: SERVER IN STUDIO! Server Scripts, LocalScripts and ModuleScripts like in Roblox, RemoteEvents, DataStore, leaderstats scoreboard, ClickDetector, ProximityPrompt, Explosion, CFrame and Raycast. Whoever has been on the map the longest hosts the server and everyone sees the same world.",
+  "🖥 1.1.0: ¡SERVIDOR EN EL STUDIO! Scripts de servidor, LocalScripts y ModuleScripts como en Roblox, RemoteEvents, DataStore, marcador con leaderstats, ClickDetector, ProximityPrompt, Explosion, CFrame y Raycast. Quien lleva más tiempo en el mapa aloja el servidor y todos ven el mismo mundo.",
+  "🖥 1.1.0: СЕРВЕР В STUDIO! Серверные Script, LocalScript и ModuleScript как в Roblox, RemoteEvent, DataStore, таблица leaderstats, ClickDetector, ProximityPrompt, Explosion, CFrame и Raycast. Сервер держит тот, кто дольше всех на карте, и все видят один и тот же мир."
+ ],
+ "💀 Você caiu!": [
+  "💀 You fell!",
+  "💀 ¡Caíste!",
+  "💀 Ты упал!"
+ ],
+ "🚪 O mapa te expulsou": [
+  "🚪 The map kicked you",
+  "🚪 El mapa te expulsó",
+  "🚪 Карта тебя выгнала"
  ]
 }
