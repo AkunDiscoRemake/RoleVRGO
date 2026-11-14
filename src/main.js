@@ -17,6 +17,9 @@ import { gp } from './gp.js';
 import { CatAvatar, defaultLook, cleanLook, FUR_COLORS, EYE_COLORS, PATTERNS, AGES, PRESETS } from './cat.js'; // eslint-disable-line
 import { store, emit, on } from './util.js';
 import { touch } from './touch.js';
+import { marker } from './marker.js';
+import { studio } from './studio/panel.js';
+import { host } from './studio/host.js';
 import { rec, downloadBlob, stamp } from './rec.js';
 import { admin } from './admin.js';
 import { LANG, LANGS, setLang, translateDOM } from './i18n.js';
@@ -108,7 +111,7 @@ async function boot() {
     console.warn(e); S.load(saved ? saved.d : null); net.online = false; buildAngel();
     st.textContent = '⚠ Sem conexão com o servidor — modo solo offline (progresso salvo só neste aparelho).'; $('roomsBox').style.display = 'none';
   }
-  $('play').disabled = false; $('card').disabled = false;
+  $('play').disabled = false; $('card').disabled = false; $('studioBtn').disabled = false;
   if (navigator.xr && navigator.xr.isSessionSupported) navigator.xr.isSessionSupported('immersive-vr').then((ok) => { if (ok) { $('vr').disabled = false; $('vr').textContent = '🥽 Entrar em VR'; $('vr2').style.display = 'block'; } else $('vr').textContent = 'VR não disponível neste navegador'; }).catch(() => { $('vr').textContent = 'VR não disponível'; });
   else $('vr').textContent = 'VR não disponível neste navegador';
 }
@@ -137,6 +140,7 @@ function start() {
   G.init(scene, camera, renderer, player); ui.init(scene, camera, player);
   on('map', (id) => music.setMap(id)); music.start();
   setTimeout(() => { if (!cardboard && !renderer.xr.isPresenting && touch.want()) { touch.init(player, canvas); $('hint').style.display = 'none'; S.toast('📱 Joystick à esquerda para andar · arraste a tela para olhar · toque rápido para usar · ⤒ pula', '#bfe6ff'); } }, 300);
+  if (store.get('plusOn', false)) setTimeout(() => marker.start(player, renderer), 1500);
   G.loadMap('village'); S.touch(); emit('saveNow'); S.streakCheck(); S.checkAccs(); S.angelCheck();
   if (net.online) { G.refreshFriends(); if (S.d.party) net.joinParty(S.d.party); }
   if (!(S.d.stats.fling > 0)) setTimeout(() => S.toast('Fale com a Mimi (❗) à sua frente. Menu: touchpad / tecla M', '#bfe6ff'), 1500);
@@ -213,5 +217,6 @@ import('./maker.js').then(({ maker }) => { self.RV.maker = maker; const f = $('f
   addEventListener('keydown', (e) => { if (!started) return; ki = e.code === K[ki] ? ki + 1 : e.code === K[0] ? 1 : 0; if (ki === K.length) { ki = 0; G.rainbowT = 60; S.stat('konami'); S.toast('🌈 Código secreto ativado! Rastro de arco-íris por 1 minuto', '#ff9ad0'); emit('banner', '🌈 ↑↑↓↓←→←→BA', 3); G._confetti && G._confetti(60); } });
 }
 rec.isVR = () => renderer.xr.isPresenting; renderer.xr.addEventListener('sessionend', () => { if (!cardboard && touch.el) touch.show(true); }); on('openChat', () => { const t = prompt('Mensagem para a sala'); if (t && t.trim()) G.say(t.trim().slice(0, 60)); }); renderer.xr.addEventListener('sessionstart', () => { touch.show(false); if (rec.on) { rec.stop(); S.toast('⏹ Gravação parada: o gravador do jogo não funciona dentro do VR', '#ffd76a'); } });
-self.RV = { touch, G, S, net, perf, player, ui, rec, music, hands, admin, home, voice, infect, weather, mounts, jobs, gp, CatAvatar, PRESETS }; // para depuração no console
+$('studioBtn').onclick = async () => { if (!(await gate())) return; start(); setTimeout(() => studio.enter(G), 400); };
+self.RV = { host, studio, marker, touch, G, S, net, perf, player, ui, rec, music, hands, admin, home, voice, infect, weather, mounts, jobs, gp, CatAvatar, PRESETS }; // para depuração no console
 boot();

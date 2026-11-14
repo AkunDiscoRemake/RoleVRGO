@@ -23,6 +23,7 @@ import { home, HOUSES, FURN, FCATS, FURN_BY, WALLS, FLOORS, COLS, COL_NAMES } fr
 import { play, setVolume, audioVolume } from './assets.js';
 import { on, emit, store, clamp } from './util.js';
 import { VERSION } from './config.js';
+import { marker } from './marker.js';
 
 // Menu e HUD desenhados em canvas e exibidos como painéis 3D. O "laser" do controle
 // (ou o centro da tela no desktop) aponta; o gatilho clica. Todos os botões fazem algo real.
@@ -404,6 +405,10 @@ export const ui = {
   p_config() {
     this.text(20, 80, 'Desempenho (Thermal Controller)', { c: '#ffd76a' });
     ['performance', 'balanced', 'quality'].forEach((p, i) => this.btn(20 + i * 170, 98, 162, 44, perf.profiles[p].name, () => { perf.setProfile(p); store.set('profile', p); }, { sel: perf.profile === p, bg: '#33355a' }));
+    this.btn(20, 148, 380, 40, '➕ Marcador + na câmera: ' + marker.status(), () => { marker.toggle(this.player, G.renderer).then((m) => { if (m) this.msg = m; }); }, { bg: marker.on ? '#3a9a5a' : '#33355a', fs: 15, off: !marker.supported() });
+    this.btn(408, 148, 160, 40, 'Tamanho: ' + Math.round(marker.size * 100) + ' cm', () => marker.cycleSize(), { bg: '#33355a', fs: 15 });
+    this.btn(576, 148, 172, 40, '↺ Calibrar +', () => marker.calibrate(), { bg: '#33355a', fs: 15, off: !marker.on });
+    if (marker.on) this.dirty = true;
     this.btn(540, 98, 208, 44, 'Ajuste automático: ' + (perf.auto ? 'SIM' : 'NÃO'), () => { perf.auto = !perf.auto; }, { bg: perf.auto ? '#3a9a5a' : '#8a4a4a', fs: 16 });
     const inf = G.renderer.info.render; this.bar(20, 156, 728, 20, perf.load / 1.5, perf.load > 1.15 ? '#e05050' : perf.load > 0.95 ? '#e8a030' : '#3a9a5a');
     this.text(20, 196, 'FPS ' + perf.fps.toFixed(0) + '  ·  ' + perf.ms.toFixed(1) + ' ms/quadro  ·  carga ' + Math.round(perf.load * 100) + '%  ·  nível de qualidade ' + perf.level + '/3  ·  ' + perf.status, { fs: 16 });

@@ -14,7 +14,8 @@ import { S } from './state.js';
 import { ITEMS, ORES, PICKS, GLOVES, RODS, FISH_TABLE, TREASURE_TABLE, RARITY, QUESTS, currentEvent, HELD, PROPS, ENEMIES, BOSS_NAMES, BOSS_DROPS, titleFor, PETS } from './data.js';
 import { rng, hashStr, clamp, emit, on, angDiff } from './util.js';
 import { EYE, HAND_R } from './config.js';
-import { maker } from './maker.js';
+import { maker, KIT_SCALE } from './maker.js';
+import { host } from './studio/host.js';
 import { home } from './home.js';
 import { voice } from './voice.js';
 import { infect } from './infect.js';
@@ -179,7 +180,12 @@ export const G = {
     if (net.online && !keep) { net.join(this.room, def.netKey || id, this.roomPublic); this.pushMeta(); }
     if (def.infect) infect.enter();
   },
+  // ---- usados pela API de scripts (Studio / mapas da comunidade) ----
+  modelMesh(key) { if (!/^[a-z]+\/[\w-]+$/.test(key)) return null; const g = modelGeometry(key); if (!g || !g.attributes.position || g.attributes.position.count < 4) return null; const m = new THREE.Mesh(g, instMat); m.castShadow = true; m.scale.setScalar(KIT_SCALE[key.split('/')[0]] || 2); return m; },
+  scriptNpc(name, x, y, z, lines) { if (!this.world || this.npcs.length > 60) return; const fy = Number.isFinite(y) ? y : this.world.heightAt(x, z); const n = { id: 'sn' + this.npcs.length, name, role: 'NPC de script', x, z, fy, y: fy, hx: x, hz: z, yaw: 0, look: { fur: '#e8c27a', fur2: '#f5f1e8', pattern: 1, eyes: '#58c26a', hat: 0 }, lines, wander: 0, t: 0, tx: x, tz: z };
+    n.av = new CatAvatar(n.look, name, { npc: true, sub: n.role, tagColor: '#ffe9a8' }); n.av.root.position.set(x, fy, z); this.scene.add(n.av.root); this.npcs.push(n); },
   _disposeMap() {
+    host.stop();
     for (const o of this.objs) { this.scene.remove(o); if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose(); /* geometrias de modelo (cache) ficam */ if (o.material && o.material !== instMat && o.material !== worldMat) { if (o.material.map && o.material.map !== this.fx.tex) o.material.map.dispose(); o.material.dispose(); } if (o.isInstancedMesh) o.dispose(); }
     this.props.forEach((p) => this.scene.remove(p.mesh)); this.props.clear();
     this.enemies = []; this.drops = []; this.tChests = []; this.coinMesh = this.dropGemMesh = this.tChestMesh = this.beamMesh = null; this._tKey = '';
@@ -270,7 +276,7 @@ export const G = {
     else if (m.k === 'dm' && !this.muted(m.from)) { m.x = String(m.x || '').slice(0, 80); m.name = cleanName(m.name); this._log('[privado] ' + m.name, m.x); S.toast('✉ ' + m.name + ': ' + m.x, '#ffe9a8'); play('msg', 0.6); }
   },
   _log(who, text) { this.chatLog.push({ who, text }); if (this.chatLog.length > 30) this.chatLog.shift(); emit('chat'); },
-  say(text) { text = String(text).slice(0, 80); if (!text) return; this._log(S.name, text); net.send('chat', { x: text }); emit('selfSay', text); },
+  say(text) { text = String(text).slice(0, 80); if (!text) return; host.chat(text); this._log(S.name, text); net.send('chat', { x: text }); emit('selfSay', text); },
   emote(id) { const P = this.player; this.myEmote = id; this.emoteT = id === 3 || id === 4 ? 9999 : 3; if (id === 1) P.emoteWave = 2.5; P.emoteId = [2, 5, 6, 8, 10, 11, 12].indexOf(id) >= 0 ? id : 0; P.emoteTime = 0; if (id === 7) meow(1); if (id === 6) this.fx.burst(P.pos.x, P.pos.y + 1.4, P.pos.z, 0xff5080, 8, 1.2, -1); const e = EMOTES.find((x) => x.id === id); if (e) emit('selfSay', e.icon); S.stat('emote'); P.frozen = id === 3 || id === 4; },
   async refreshFriends() { if (!net.online) return; try { this.friends = await net.rpc('rv_friends'); S.setStat('friends', this.friends.filter((f) => f.status === 'accepted').length); this.remotes.forEach((r) => { r.av.tagColor = this._tagColor(r.id, r.meta); r.av.drawTag(); }); emit('friends'); } catch (e) { /* offline */ } },
   _combo() { this.combo = this.comboT > 0 ? this.combo + 1 : 1; this.comboT = 1.6; if (this.combo === 5) { S.stat('combo'); S.toast('🔥 COMBO x5!', '#ff9a40'); play('power', 0.5); } emit('combo', this.combo); },
@@ -380,7 +386,7 @@ export const G = {
     hp.end(perf.shadows > 0);
     // lanternas e céu
     this.camera.getWorldPosition(_v); const under = W.swim && _v.y < W.waterY - 0.05; this.under = under;
-    const skyNow = admin.eventOn('night') ? DAY_LENGTH * 750 : admin.eventOn('day') ? DAY_LENGTH * 250 : this.mapId === 'dark' ? DAY_LENGTH * 985 : this.mapId === 'neon' ? DAY_LENGTH * 760 : this.mapId === 'volcano' ? DAY_LENGTH * 455 : this.def && this.def.skyT != null ? DAY_LENGTH * this.def.skyT : now; // Reino Sombrio: crepúsculo eterno
+    const skyNow = admin.eventOn('night') ? DAY_LENGTH * 750 : admin.eventOn('day') ? DAY_LENGTH * 250 : this.mapId === 'dark' ? DAY_LENGTH * 985 : this.mapId === 'neon' ? DAY_LENGTH * 760 : this.mapId === 'volcano' ? DAY_LENGTH * 455 : this.def && this.def.skyT != null ? DAY_LENGTH * this.def.skyT : this.scriptTime != null ? DAY_LENGTH * ((this.scriptTime / 24 + 0.75) % 1) * 1000 : now; // Reino Sombrio: crepúsculo eterno
     weather.update(dt, this.mapId, this.def); this.sky.wx = weather.wx();
     this.sky.update(skyNow, this.def, P.pos, perf, under); this._adminTick(dt, now); { const wi = weather.info(); matU.uGloss.value = Math.max(this.baseGloss || 0, wi.wet ? 0.6 * weather.k : 0); } // chão molhado brilha na chuva
     if (weather.season === 'newyear' && this.sky.night > 0.5 && !this.def.indoor) { this.fwT = (this.fwT || 0) - dt; if (this.fwT <= 0) { this.fwT = 0.8 + Math.random() * 1.6; const fx2 = P.pos.x + (Math.random() - 0.5) * 60, fz = P.pos.z + (Math.random() - 0.5) * 60, fy = P.pos.y + 22 + Math.random() * 18, c = [0xff4040, 0x40ff80, 0xffe040, 0x40a0ff, 0xff60e0][Math.floor(Math.random() * 5)]; this.fx.burst(fx2, fy, fz, c, 40, 9, 2); this.fx.burst(fx2, fy, fz, 0xffffff, 12, 4, 2); setTimeout(() => thunder(0.15), 400); } } // 🎆 fogos de Ano Novo
@@ -390,6 +396,7 @@ export const G = {
       if (this.boltT <= 0) { this.boltT = 90 + Math.random() * 90; this.bolt = 0.45; /* relâmpago raro: a cada 1,5–3 min */ setTimeout(() => thunder(0.8), 300 + Math.random() * 900); }
       if (this.bolt > 0) { this.bolt -= dt; const k = Math.sin(Math.PI * Math.max(0, Math.min(1, 1 - this.bolt / 0.45))) * 0.55; /* SEGURANÇA: um único clarão suave, sem piscar liga/desliga (fotossensibilidade) */ this.sky.hemi.intensity += k * 1.4; this.scene.background.lerp(_col.setHex(0xd8d0ff), k * 0.35); this.scene.fog.color.copy(this.scene.background); }
     }
+    host.tick(dt);
     matU.uTime.value = this.time; if (under !== this._wasUnder) { this._wasUnder = under; setUnder(under); }
     this._aero(dt);
     if (this.lampMesh) { const n = this.E.aero ? Math.max(0.5, this.sky.night) : this.sky.night; this.lampMesh.material.color.setScalar(0.5 + n * 0.5); this.glow.visible = n > 0.12 && perf.particles >= 0.5; this.glow.material.opacity = n * 0.85; }
@@ -414,7 +421,7 @@ export const G = {
 
   // ---------- item na pata (visual + bônus) ----------
   _held(dt) {
-    const P = this.player, h = S.held(); P.speedMul = (h.speed || 1) * (1 + S.perk('speed') * 0.04); P.jumpMul = 1 + S.perk('jump') * 0.06;
+    const P = this.player, h = S.held(); P.speedMul = (h.speed || 1) * (1 + S.perk('speed') * 0.04) * (P.scriptWalk == null ? 1 : P.scriptWalk); P.jumpMul = (1 + S.perk('jump') * 0.06) * (P.scriptJump == null ? 1 : P.scriptJump);
     // ferramenta de contexto: sem item escolhido, a picareta aparece perto de minério, a pá perto de um X e a vara ao pescar
     let tool = 0;
     if (this.fishing) tool = 3; else if (h.id === 'none' || h.id === 'pick' || h.id === 'axe') { const px = P.pos.x, pz = P.pos.z; for (const o of this.E.ores) if (o.alive && Math.abs(o.x - px) < 3.5 && Math.abs(o.z - pz) < 3.5) { tool = 1; break; } if (!tool) for (const d of this.E.digs) if (d.alive && Math.abs(d.x - px) < 3.5 && Math.abs(d.z - pz) < 3.5) { tool = 2; break; } if (!tool) for (const tr of this.E.trees) if (tr.alive && Math.abs(tr.x - px) < 3.5 && Math.abs(tr.z - pz) < 3.5) { tool = 4; break; } }
@@ -556,7 +563,7 @@ export const G = {
     const P = this.player, t = this.time;
     if (infect.myInf) P.speedMul *= 1.05; // infectado: +5% de velocidade
     { const mt = mounts.cur(); if (mt) { P.speedMul *= mt.speed; P.jumpMul *= 1.15; } if (this.trackBoost > 0) { this.trackBoost -= dt; P.speedMul *= 1.75; } } // montaria e turbo da pista
-    if (admin.has('speed')) P.speedMul *= 2.2; if (admin.has('jump')) P.jumpMul *= 2.3; P.gravMul = (admin.has('lowgrav') ? 0.32 : 1) * (this.def && this.def.grav || 1); P.fly = admin.has('fly') || mounts.flying(); P.hover = 0; /* o Gato-Anjo não flutua: só bate as asas */
+    if (admin.has('speed')) P.speedMul *= 2.2; if (admin.has('jump')) P.jumpMul *= 2.3; P.gravMul = (admin.has('lowgrav') ? 0.32 : 1) * (this.def && this.def.grav || 1) * (this.scriptGrav == null ? 1 : this.scriptGrav); P.fly = admin.has('fly') || mounts.flying() || !!this.scriptFly; P.hover = 0; /* o Gato-Anjo não flutua: só bate as asas */
     const fr = admin.has('freeze'); if (fr && !this._admFrozen) { this._admFrozen = true; P.frozen = true; P.vel.set(0, 0, 0); } else if (!fr && this._admFrozen) { this._admFrozen = false; P.frozen = false; }
     if (fr && Math.random() < 0.3) this.fx.burst(P.pos.x, P.pos.y + 0.8, P.pos.z, 0xbfefff, 2, 1);
     this.pawColor = null;

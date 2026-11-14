@@ -5,6 +5,7 @@ import { net } from './net.js';
 import { S } from './state.js';
 import { ORES, ENEMIES, ITEMS } from './data.js';
 import { store, emit, clamp, fbm, noise2 } from './util.js';
+import { host } from './studio/host.js';
 
 // Criador de Mapas: o jogador monta um mapa com qualquer modelo do jogo, formas coloridas,
 // entidades de jogo e assets próprios (.glb / imagens), salva e publica para a comunidade.
@@ -17,7 +18,7 @@ export const GROUNDS = [['Grama', 0x6fbf4f, 0x58a844, 'grass'], ['Grama Aero', 0
 export const MOODS = ['village', 'forest', 'mine', 'desert', 'snow', 'arena', 'castle', 'city', 'island', 'training', 'aero'];
 export const AMBS = ['', 'leaf', 'snow', 'dust', 'fire', 'spark', 'bubble'];
 export const COLORS = [0xffffff, 0xd9d9d9, 0x8a8f98, 0x3b3b45, 0xe05050, 0xf2a65a, 0xf2c230, 0x6fd26f, 0x2fb8a0, 0x4aa8ff, 0x4a5cc8, 0xa45cf0, 0xe39ab0, 0x8a6a45, 0x9fe8ff];
-const KIT_SCALE = { nature: 3.5, town: 4, castle: 5, city: 6.5, pirate: 1.2, survival: 3, arena: 3, holiday: 2.2, plat: 2, dungeon: 3, grave: 2.5, prim: 2, asset: 2 };
+export const KIT_SCALE = { nature: 3.5, town: 4, castle: 5, city: 6.5, pirate: 1.2, survival: 3, arena: 3, holiday: 2.2, plat: 2, dungeon: 3, grave: 2.5, prim: 2, asset: 2 };
 const KIT_CAT = { nature: 'Natureza', town: 'Construção', castle: 'Construção', city: 'Cidade', pirate: 'Decoração', survival: 'Decoração', arena: 'Decoração', holiday: 'Decoração', plat: 'Decoração', dungeon: 'Decoração', grave: 'Decoração', prim: 'Formas' };
 export const CAT_ORDER = ['Natureza', 'Construção', 'Cidade', 'Decoração', 'Formas', 'Jogo', 'Meus assets'];
 // entidades de jogo colocáveis: id -> rótulo
@@ -75,7 +76,8 @@ export const maker = {
         if (!E.portals.length) E.portal('village', clamp(m.spawn[0] + 5, -half + 6, half - 6), clamp(m.spawn[1] + 5, -half + 6, half - 6));
         if (self.editing) for (const o of m.objs) if (o.t === 'e') w.put('prim/cone', o.x, o.z, { s: [0.35, 0.5, 0.35], abs: o.y + 2.6, tint: [1.6, 1.3, 0.2] }); // marcador das entidades no editor
       },
-      after(G, add) { // quadros com imagens próprias (um plano texturizado por imagem)
+      after(G, add) { // quadros com imagens próprias (um plano texturizado por imagem); scripts e mods do mapa rodam isolados
+        if (!self.editing && ((m.scripts && m.scripts.length) || (m.mods && m.mods.length))) { host.start(G, m.scripts, m.mods, { studio: self.studio }); if (!self.studio && !self.mine) emit('toast', '🧩 Este mapa tem scripts da comunidade (rodando isolados, sem acesso à sua conta)', '#bfe6ff'); }
         for (const o of G.E.imgs || []) { const a = m.assets[o.k.slice(6)]; if (!a) continue; const tx = new THREE.Texture(); const im = new Image(); im.onload = () => { tx.image = im; tx.needsUpdate = true; }; im.src = a.d; const hgt = 2.4 * o.s, wd = hgt * a.w / a.h;
           const me = add(new THREE.Mesh(new THREE.PlaneGeometry(wd, hgt), new THREE.MeshBasicMaterial({ map: tx, side: THREE.DoubleSide }))); me.position.set(o.x, o.y + hgt / 2 + 0.05, o.z); me.rotation.y = o.ry; }
       } };
