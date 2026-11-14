@@ -111,7 +111,7 @@ async function boot() {
     console.warn(e); S.load(saved ? saved.d : null); net.online = false; buildAngel();
     st.textContent = '⚠ Sem conexão com o servidor — modo solo offline (progresso salvo só neste aparelho).'; $('roomsBox').style.display = 'none';
   }
-  $('play').disabled = false; $('card').disabled = false; $('studioBtn').disabled = false;
+  if (/RoleVRGOApp/.test(navigator.userAgent) && $('dlApp')) $('dlApp').style.display = 'none'; $('play').disabled = false; $('card').disabled = false; $('studioBtn').disabled = false;
   if (navigator.xr && navigator.xr.isSessionSupported) navigator.xr.isSessionSupported('immersive-vr').then((ok) => { if (ok) { $('vr').disabled = false; $('vr').textContent = '🥽 Entrar em VR'; $('vr2').style.display = 'block'; } else $('vr').textContent = 'VR não disponível neste navegador'; }).catch(() => { $('vr').textContent = 'VR não disponível'; });
   else $('vr').textContent = 'VR não disponível neste navegador';
 }

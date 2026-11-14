@@ -1,0 +1,19 @@
+{
+  "name": "rolevrgo",
+  "productName": "RoleVRGO",
+  "version": "1.1.0",
+  "description": "RoleVRGO — mundo multiplayer de gatos (abre o jogo do site)",
+  "main": "main.js",
+  "author": "hark",
+  "license": "MIT",
+  "scripts": { "start": "electron .", "dist": "electron-builder --win portable --x64" },
+  "devDependencies": { "electron": "31.7.7", "electron-builder": "24.13.3" },
+  "build": {
+    "appId": "io.github.akundiscoremake.rolevrgo",
+    "productName": "RoleVRGO",
+    "files": ["main.js", "package.json"],
+    "directories": { "buildResources": "build", "output": "out" },
+    "win": { "target": "portable", "icon": "build/icon.ico" },
+    "portable": { "artifactName": "RoleVRGO.exe" }
+  }
+}

@@ -7,7 +7,8 @@ RoleVRGO 1.0.0 "FullFinalVer". É a última versão oficial: daqui em diante a c
 - JavaScript puro (ES modules) + **Three.js r160** + WebXR. Sem framework.
 - Build com **esbuild** (`tools/build.mjs`): gera `dist/game.js` (um arquivo só).
 - Backend: **Supabase**, acessado só por RPC (`security definer`). A identidade é `id` + `secret` no `localStorage`. Os SQL ficam em `supabase/*.sql`.
-- Hospedagem: GitHub Pages (`.github/workflows/pages.yml` copia `index.html dist assets lancamento docs`).
+- Hospedagem: GitHub Pages (`.github/workflows/pages.yml` copia `index.html dist assets lancamento docs baixar`).
+- Apps: `apps/android` (WebView) e `apps/desktop` (Electron) só abrem o site; `.github/workflows/apps.yml` gera o APK e o EXE na release `apps`.
 
 ## Comandos
 

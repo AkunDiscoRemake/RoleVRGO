@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Baixar RoleVRGO</title>
+<link rel="icon" href="../assets/app-icon.png">
+<style>
+:root{--bg:#120b26;--card:#1f1640;--tx:#f2eeff;--mu:#b9b0d8;--ac:#7b5cff;--ac2:#3a8ad0}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 30% 0%,#2c1d5e,var(--bg) 60%);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:24px 16px}
+main{max-width:760px;margin:0 auto}
+header{display:flex;gap:16px;align-items:center;margin-bottom:8px}
+header img{width:72px;height:72px;border-radius:18px}
+h1{margin:0;font-size:30px}
+p.sub{margin:4px 0 24px;color:var(--mu)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.c{background:var(--card);border-radius:16px;padding:18px;border:2px solid transparent}
+.c.voce{border-color:var(--ac)}
+.c h2{margin:0 0 4px;font-size:20px}
+.c p{margin:0 0 14px;color:var(--mu);font-size:14px}
+.b{display:block;text-align:center;padding:12px;border-radius:12px;background:linear-gradient(90deg,var(--ac),var(--ac2));color:#fff;text-decoration:none;font-weight:700}
+.b.sec{background:#33285c}
+.tag{display:none;font-size:12px;background:var(--ac);border-radius:8px;padding:1px 8px;margin-left:6px;vertical-align:middle}
+.c.voce .tag{display:inline}
+details{background:var(--card);border-radius:12px;padding:12px 16px;margin-top:12px}
+summary{cursor:pointer;font-weight:600}
+details p,details li{color:var(--mu);font-size:14px}
+footer{margin-top:24px;font-size:13px;color:var(--mu)}
+a{color:#bfe6ff}
+</style>
+</head>
+<body>
+<main>
+<header><img src="../assets/app-icon.png" alt=""><div><h1>Baixar RoleVRGO</h1></div></header>
+<p class="sub">Cansou de digitar o link? Instale o app. Ele abre o jogo do site, então está sempre na versão mais nova. O progresso fica salvo em cada aparelho (veja abaixo).</p>
+<div class="grid">
+  <div class="c" id="and"><h2>📱 Android <span class="tag">seu aparelho</span></h2><p>Celular puro (joystick na tela) ou VR Box / Cardboard.</p><a class="b" href="https://github.com/AkunDiscoRemake/RoleVRGO/releases/download/apps/RoleVRGO.apk">Baixar APK</a></div>
+  <div class="c" id="win"><h2>🖥 Windows <span class="tag">seu aparelho</span></h2><p>PC com teclado e mouse ou controle. Não precisa instalar: é só abrir.</p><a class="b" href="https://github.com/AkunDiscoRemake/RoleVRGO/releases/download/apps/RoleVRGO.exe">Baixar EXE</a></div>
+  <div class="c" id="vr"><h2>🥽 Meta Quest / Oculus <span class="tag">seu aparelho</span></h2><p>No óculos, o melhor ainda é o navegador, que tem o VR de verdade (WebXR).</p><a class="b sec" href="../">Abrir no navegador</a></div>
+</div>
+<details><summary>Como instalar no Android</summary><ol><li>Toque em <b>Baixar APK</b> e abra o arquivo.</li><li>Se pedir, permita <b>instalar apps desta fonte</b> (o app não vem da Play Store).</li><li>Abra o <b>RoleVRGO</b>. Para o VR Box, use o botão 📱 VR Box no lobby e coloque o celular no óculos.</li><li>Ao atualizar o APK, se o Android reclamar, desinstale o antigo antes (o jogo em si já se atualiza sozinho).</li></ol></details>
+<details><summary>Como abrir no Windows</summary><ol><li>Toque em <b>Baixar EXE</b> e abra o <b>RoleVRGO.exe</b>.</li><li>Se aparecer "O Windows protegeu o computador", clique em <b>Mais informações → Executar assim mesmo</b> (o app não tem assinatura paga).</li><li><b>F11</b> liga e desliga a tela cheia.</li></ol></details>
+<details><summary>E o meu progresso?</summary><p>O progresso fica salvo no aparelho, separado para cada navegador e app. Se você jogava no navegador do celular, o app começa um gato novo nesse celular. Os mapas, salas e amigos online são os mesmos para todos.</p></details>
+<footer>Os apps só abrem <a href="../">akundiscoremake.github.io/RoleVRGO</a> e não coletam nada além do que o site já usa. Código em <a href="https://github.com/AkunDiscoRemake/RoleVRGO">GitHub</a>.</footer>
+</main>
+<script>
+var u = navigator.userAgent, id = /OculusBrowser|Quest|Pacific/i.test(u) ? 'vr' : /Android/i.test(u) ? 'and' : /Windows/i.test(u) ? 'win' : '';
+if (id) document.getElementById(id).classList.add('voce');
+</script>
+</body>
+</html>
