@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.0.5 — Moderação (atualização)
+
+### 🛡️ Banimentos e denúncias
+- **Denunciar:** botão 🚩 em Social → Jogadores, com motivos prontos (xingamento, assédio, trapaça, nome impróprio, spam, outro) e detalhes opcionais.
+  - A denúncia leva as últimas mensagens do jogador no chat como prova.
+  - Limite contra abuso: 5 denúncias por hora, e 1 por jogador a cada 10 minutos.
+- **Painel de admin:**
+  - aba **🚩 Denúncias**, com o número de denúncias de cada jogador e os botões Banir e Resolvida;
+  - aba **⛔ Banidos**, com o botão Desbanir;
+  - botão **⛔ Banir** em cada jogador, com motivo e duração (1 hora, 1 dia, 7 dias ou permanente).
+- **O banimento vale no servidor:**
+  - quem está banido não entra (vê uma tela com o motivo e o prazo) e não consegue salvar nem usar amigos, mapas ou casas;
+  - se estiver jogando, é expulso na hora;
+  - os outros jogadores deixam de vê-lo;
+  - admins não podem ser banidos.
+- Servidor: `supabase/moderation.sql`.
+
 ## 0.0.5 — Montarias, profissões e clima
 
 ### 🐎 Montarias

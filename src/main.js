@@ -65,6 +65,17 @@ function drawRooms(list) {
   if (!chosen.pub) { const b = document.createElement('button'); b.className = 'room on'; b.textContent = '🔒 ' + chosen.name + ' [' + chosen.code + ']'; el.appendChild(b); }
 }
 let roomList = [];
+// ⛔ banido: tela cheia com motivo e prazo (no lobby e, se for banido jogando, na hora)
+function showBan(b) {
+  const until = b && b.until ? new Date(b.until) : null, el = document.createElement('div');
+  el.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(12,8,20,0.96);color:#fff;display:flex;align-items:center;justify-content:center;font-family:Inter,system-ui,sans-serif;text-align:center;padding:24px';
+  el.innerHTML = '<div style="max-width:520px"><div style="font-size:64px">⛔</div><h1 style="margin:8px 0 12px"></h1><p style="font-size:18px;color:#ffd0d0"></p><p style="font-size:16px;color:#c8c8e0"></p><p style="font-size:14px;color:#9a98b8;margin-top:20px"></p></div>';
+  el.querySelector('h1').textContent = 'Você foi banido do RoleVRGO'; el.querySelectorAll('p')[2].textContent = 'Se você acha que foi um engano, fale com o admin.';
+  el.querySelectorAll('p')[0].textContent = 'Motivo: ' + ((b && b.reason) || 'regras do jogo');
+  el.querySelectorAll('p')[1].textContent = until ? 'Até ' + until.toLocaleString() : 'Banimento permanente';
+  document.body.appendChild(el);
+}
+on('banned', (b) => { try { const s = renderer.xr.getSession && renderer.xr.getSession(); if (s) s.end(); } catch (e) { /* ok */ } net.leave(); net.online = false; player.frozen = true; showBan(b); });
 async function boot() {
   translateDOM(document.body);
   const ls = $('lang'); LANGS.forEach((l) => { const o = document.createElement('option'); o.value = l[0]; o.textContent = l[1]; if (l[0] === LANG) o.selected = true; ls.appendChild(o); });
@@ -84,6 +95,7 @@ async function boot() {
     roomList = await net.rooms(); drawRooms(roomList);
     st.textContent = 'Conectado ✔  Seu código de amigo: ' + net.friendCode;
   } catch (e) {
+    if (e && e.ban) { showBan(e.ban); return; }
     console.warn(e); S.load(saved ? saved.d : null); net.online = false;
     st.textContent = '⚠ Sem conexão com o servidor — modo solo offline (progresso salvo só neste aparelho).'; $('roomsBox').style.display = 'none';
   }

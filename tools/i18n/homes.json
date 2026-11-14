@@ -2308,5 +2308,330 @@
 "🌦️ WEATHER: rain, storms, fog, blizzards and sandstorms, the same for everyone. Christmas, Halloween and New Year happen automatically.",
 "🌦️ CLIMA: lluvia, tormenta, niebla, nevada y tormenta de arena, igual para todos. Navidad, Halloween y Año Nuevo automáticos.",
 "🌦️ ПОГОДА: дождь, гроза, туман, метель и песчаная буря — одинаково для всех. Рождество, Хэллоуин и Новый год автоматически."
+],
+"🚩 Denunciar ": [
+"🚩 Report ",
+"🚩 Denunciar a ",
+"🚩 Пожаловаться на "
+],
+"Escolha o motivo. A denúncia vai para o admin com as últimas mensagens desse jogador.": [
+"Choose a reason. The report goes to the admin with this player's latest messages.",
+"Elige el motivo. La denuncia va al admin con los últimos mensajes de este jugador.",
+"Выбери причину. Жалоба уйдёт админу вместе с последними сообщениями игрока."
+],
+"🤬 Xingamento ou ofensa": [
+"🤬 Insults or offense",
+"🤬 Insultos u ofensas",
+"🤬 Оскорбления"
+],
+"😠 Assédio ou bullying": [
+"😠 Harassment or bullying",
+"😠 Acoso o bullying",
+"😠 Травля или домогательства"
+],
+"🎮 Trapaça ou hack": [
+"🎮 Cheating or hacking",
+"🎮 Trampa o hack",
+"🎮 Читы или взлом"
+],
+"🏷 Nome ou visual impróprio": [
+"🏷 Inappropriate name or look",
+"🏷 Nombre o aspecto inapropiado",
+"🏷 Неприемлемое имя или вид"
+],
+"📢 Spam": [
+"📢 Spam",
+"📢 Spam",
+"📢 Спам"
+],
+"❓ Outro motivo": [
+"❓ Other reason",
+"❓ Otro motivo",
+"❓ Другая причина"
+],
+"✏ Detalhes: ": [
+"✏ Details: ",
+"✏ Detalles: ",
+"✏ Подробности: "
+],
+"✏ Escrever detalhes (opcional)": [
+"✏ Write details (optional)",
+"✏ Escribir detalles (opcional)",
+"✏ Написать подробности (необязательно)"
+],
+"Detalhes da denúncia": [
+"Report details",
+"Detalles de la denuncia",
+"Подробности жалобы"
+],
+"🚩 Enviar denúncia": [
+"🚩 Send report",
+"🚩 Enviar denuncia",
+"🚩 Отправить жалобу"
+],
+"Escolha um motivo": [
+"Choose a reason",
+"Elige un motivo",
+"Выбери причину"
+],
+"🚩 Denúncia enviada. Obrigado por ajudar!": [
+"🚩 Report sent. Thanks for helping!",
+"🚩 Denuncia enviada. ¡Gracias por ayudar!",
+"🚩 Жалоба отправлена. Спасибо за помощь!"
+],
+"Se alguém te incomodar, você também pode silenciar (🔇) em Social > Jogadores.": [
+"If someone bothers you, you can also mute them (🔇) in Social > Players.",
+"Si alguien te molesta, también puedes silenciarlo (🔇) en Social > Jugadores.",
+"Если кто-то мешает, его можно заглушить (🔇) в «Общение > Игроки»."
+],
+"◀ Voltar": [
+"◀ Back",
+"◀ Volver",
+"◀ Назад"
+],
+"⛔ Banir ": [
+"⛔ Ban ",
+"⛔ Banear a ",
+"⛔ Забанить "
+],
+"Motivo:": [
+"Reason:",
+"Motivo:",
+"Причина:"
+],
+"Xingamento": [
+"Insults",
+"Insultos",
+"Оскорбления"
+],
+"Assédio": [
+"Harassment",
+"Acoso",
+"Травля"
+],
+"Trapaça": [
+"Cheating",
+"Trampa",
+"Читы"
+],
+"Nome impróprio": [
+"Bad name",
+"Nombre inapropiado",
+"Плохое имя"
+],
+"Spam": [
+"Spam",
+"Spam",
+"Спам"
+],
+"Outro": [
+"Other",
+"Otro",
+"Другое"
+],
+"Duração:": [
+"Duration:",
+"Duración:",
+"Срок:"
+],
+"1 hora": [
+"1 hour",
+"1 hora",
+"1 час"
+],
+"1 dia": [
+"1 day",
+"1 día",
+"1 день"
+],
+"7 dias": [
+"7 days",
+"7 días",
+"7 дней"
+],
+"Permanente": [
+"Permanent",
+"Permanente",
+"Навсегда"
+],
+"O banimento vale no servidor: a pessoa não consegue entrar, salvar nem aparecer para os outros até o prazo acabar.": [
+"The ban is enforced by the server: the person can't log in, save or appear to others until it ends.",
+"El baneo lo aplica el servidor: la persona no puede entrar, guardar ni aparecer para los demás hasta que termine.",
+"Бан действует на сервере: человек не сможет войти, сохраняться и быть видимым до конца срока."
+],
+"⛔ Confirmar banimento": [
+"⛔ Confirm ban",
+"⛔ Confirmar baneo",
+"⛔ Подтвердить бан"
+],
+"◀ Cancelar": [
+"◀ Cancel",
+"◀ Cancelar",
+"◀ Отмена"
+],
+" foi banido": [
+" was banned",
+" fue baneado",
+" забанен"
+],
+"🚩 Denúncias": [
+"🚩 Reports",
+"🚩 Denuncias",
+"🚩 Жалобы"
+],
+"⛔ Banidos": [
+"⛔ Banned",
+"⛔ Baneados",
+"⛔ Баны"
+],
+"⛔ Banir": [
+"⛔ Ban",
+"⛔ Banear",
+"⛔ Бан"
+],
+"⬅ Puxar": [
+"⬅ Pull",
+"⬅ Traer",
+"⬅ Притянуть"
+],
+"\"Vila\" e \"Puxar\" dependem do jogo do jogador obedecer. O ⛔ Banir vale no servidor.": [
+"\"Village\" and \"Pull\" depend on the player's game obeying. ⛔ Ban is enforced by the server.",
+"\"Villa\" y \"Traer\" dependen de que el juego del jugador obedezca. ⛔ Banear lo aplica el servidor.",
+"«Деревня» и «Притянуть» зависят от игры игрока. ⛔ Бан действует на сервере."
+],
+"Carregando denúncias…": [
+"Loading reports…",
+"Cargando denuncias…",
+"Загрузка жалоб…"
+],
+" denúncia(s) aberta(s)": [
+" open report(s)",
+" denuncia(s) abierta(s)",
+" открытых жалоб"
+],
+"Nenhuma denúncia aberta. 🎉": [
+"No open reports. 🎉",
+"Ninguna denuncia abierta. 🎉",
+"Открытых жалоб нет. 🎉"
+],
+" denúncias)": [
+" reports)",
+" denuncias)",
+" жалоб)"
+],
+"por ": [
+"by ",
+"por ",
+"от "
+],
+"sem mensagens no chat": [
+"no chat messages",
+"sin mensajes en el chat",
+"нет сообщений в чате"
+],
+"✔ Resolvida": [
+"✔ Resolved",
+"✔ Resuelta",
+"✔ Решено"
+],
+"Carregando…": [
+"Loading…",
+"Cargando…",
+"Загрузка…"
+],
+" jogador(es) banido(s)": [
+" banned player(s)",
+" jugador(es) baneado(s)",
+" забаненных игроков"
+],
+"Ninguém banido agora.": [
+"Nobody is banned right now.",
+"Nadie baneado ahora.",
+"Сейчас никто не забанен."
+],
+"sem motivo": [
+"no reason",
+"sin motivo",
+"без причины"
+],
+"até ": [
+"until ",
+"hasta ",
+"до "
+],
+"permanente": [
+"permanent",
+"permanente",
+"навсегда"
+],
+" · por ": [
+" · by ",
+" · por ",
+" · от "
+],
+"✅ Desbanir": [
+"✅ Unban",
+"✅ Desbanear",
+"✅ Разбанить"
+],
+" desbanido": [
+" unbanned",
+" desbaneado",
+" разбанен"
+],
+"Você já denunciou muito na última hora. Tente mais tarde.": [
+"You've reported a lot in the last hour. Try again later.",
+"Ya denunciaste mucho en la última hora. Inténtalo más tarde.",
+"Ты отправил много жалоб за час. Попробуй позже."
+],
+"Você já denunciou esse jogador agora há pouco.": [
+"You just reported this player.",
+"Ya denunciaste a este jugador hace poco.",
+"Ты уже жаловался на этого игрока недавно."
+],
+"Não foi possível enviar a denúncia": [
+"Couldn't send the report",
+"No se pudo enviar la denuncia",
+"Не удалось отправить жалобу"
+],
+"Não dá para banir outro admin": [
+"You can't ban another admin",
+"No se puede banear a otro admin",
+"Нельзя забанить другого админа"
+],
+"👥 Convidar": [
+"👥 Invite",
+"👥 Invitar",
+"👥 Позвать"
+],
+"Você foi banido do RoleVRGO": [
+"You were banned from RoleVRGO",
+"Fuiste baneado de RoleVRGO",
+"Тебя забанили в RoleVRGO"
+],
+"Se você acha que foi um engano, fale com o admin.": [
+"If you think this was a mistake, talk to the admin.",
+"Si crees que fue un error, habla con el admin.",
+"Если считаешь это ошибкой, напиши админу."
+],
+"Motivo: ": [
+"Reason: ",
+"Motivo: ",
+"Причина: "
+],
+"regras do jogo": [
+"game rules",
+"reglas del juego",
+"правила игры"
+],
+"Até ": [
+"Until ",
+"Hasta ",
+"До "
+],
+"Banimento permanente": [
+"Permanent ban",
+"Baneo permanente",
+"Бессрочный бан"
 ]
 }

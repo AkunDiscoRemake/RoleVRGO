@@ -64,7 +64,7 @@ export const ui = {
     on('toast', (t, c) => { this.toasts.push({ t, c: c || '#fff', life: 4.5 }); if (this.toasts.length > 3) this.toasts.shift(); this.hudDirty = true; });
     for (const ev of ['hp', 'xp', 'coins', 'net', 'combo', 'map', 'event', 'rec']) on(ev, () => { this.hudDirty = true; });
     on('view', (m) => { S.toast('📷 Câmera: ' + ['1ª pessoa', '2ª pessoa', '3ª pessoa'][m - 1], '#bfe6ff'); this.dirty = true; });
-    for (const ev of ['inv', 'coins', 'players', 'friends', 'party', 'chat', 'lobby', 'map', 'meta', 'hands', 'voice', 'talking']) on(ev, () => { if (this.open) this.dirty = true; });
+    for (const ev of ['inv', 'coins', 'players', 'friends', 'party', 'chat', 'lobby', 'map', 'meta', 'hands', 'voice', 'talking', 'admin', 'bansChanged']) on(ev, () => { if (this.open) this.dirty = true; });
     on('dialog', (n) => { this.npc = n; this.line = Math.floor(Math.random() * n.lines.length); this.show('dialog'); });
     on('friendsDirty', () => G.refreshFriends()); on('partyChat', (m) => { G._log('[grupo] ' + m.n, m.x); play('msg', 0.4); });
     on('combo', (n) => { this.combo = n; });
@@ -305,7 +305,7 @@ export const ui = {
     if (this.page[0] === 'q' && this.page[1] === '_') { g.fillStyle = 'rgba(24,22,44,0.95)'; roundRect(g, 214, 0, 340, H, 20); g.fill(); g.strokeStyle = '#ffd76a'; g.lineWidth = 3; roundRect(g, 216, 2, 336, H - 4, 18); g.stroke(); this['p_' + this.page](); if (this.msg) this.text(384, H - 14, this.msg, { a: 'center', c: '#ff9a8a', fs: 14 }); this.tex.needsUpdate = true; return; }
     g.fillStyle = 'rgba(24,22,44,0.94)'; roundRect(g, 0, 0, W, H, 22); g.fill(); g.strokeStyle = '#6a7cff'; g.lineWidth = 3; roundRect(g, 2, 2, W - 4, H - 4, 20); g.stroke();
     const sub2 = this.page === 'ach' || this.page === 'album' || this.page === 'perks' || this.page === 'accs'; const toCfg = this.page === 'news';
-    const modal = this.page === 'news' || this.page === 'mk_pal' || this.page === 'dialog' || this.page === 'shop' || this.page === 'prof' || this.page === 'kb' || this.page === 'help' || sub2;
+    const modal = this.page === 'news' || this.page === 'report' || this.page === 'banpick' || this.page === 'mk_pal' || this.page === 'dialog' || this.page === 'shop' || this.page === 'prof' || this.page === 'kb' || this.page === 'help' || sub2;
     const tabs = admin.is ? TABS.concat([['admin', '👑 Admin']]) : TABS, tw = 752 / tabs.length;
     if (!modal) { tabs.forEach((t, i) => this.btn(8 + i * tw, 10, tw - 3, 44, t[1], () => { this.page = t[0]; this.scroll = 0; this.msg = ''; if (t[0] === 'social') this._loadRooms(); if (t[0] === 'maker') this._mkLoad(); }, { sel: this.page === t[0], fs: tabs.length > 8 ? 13 : 15, bg: t[0] === 'admin' ? '#8a6a10' : '#33355a' })); }
     else this.btn(W - 60, 10, 48, 44, '✕', () => { if (this.page === 'kb') this._kbBack(); else if (this.page === 'shop' || this.page === 'prof') this.page = 'dialog'; else if (sub2) this.page = 'quests'; else if (this.page === 'mk_pal') this.page = 'maker'; else if (this.page === 'help' || toCfg) this.page = 'config'; else this.hide(); }, { bg: '#b04050' });
@@ -444,7 +444,7 @@ export const ui = {
     list.slice(off, off + 7).forEach((r, i) => { const y = 142 + i * 44, fr = G.friends.find((f) => f.id === r.id); this.text(24, y + 19, r.meta.name + '  (Nv ' + (r.meta.level || 1) + ')', { c: r.av.tagColor, max: 226 }); this.btn(254, y, 70, 36, '🏠', () => this._visit(r.id, r.meta.name), { bg: '#3a6a8a', fs: 16 });
       const mu = G.muted(r.id); this.btn(662, y, 86, 36, mu ? '🔈 Ouvir' : '🔇 Mudo', () => { const a = S.d.muted || (S.d.muted = []); if (mu) a.splice(a.indexOf(r.id), 1); else a.push(r.id); S.touch(); S.toast(mu ? r.meta.name + ' pode falar com você de novo' : r.meta.name + ' silenciado', '#bfe6ff'); }, { bg: mu ? '#8a4a4a' : '#2a2c4a', fs: 13 });
       this.btn(330, y, 150, 36, fr ? (fr.status === 'accepted' ? '✔ Amigo' : fr.status === 'incoming' ? 'Aceitar amizade' : 'Pedido enviado') : '+ Amigo', () => { if (fr && fr.status === 'incoming') net.rpc('rv_friend_accept', { p_other: r.id }).then(() => { net.sendTo(r.id, { k: 'faccept' }); G.refreshFriends(); }); else if (r.meta.fc) net.rpc('rv_friend_add', { p_code: r.meta.fc }).then((x) => { if (x.ok) { net.sendTo(r.id, { k: x.status === 'accepted' ? 'faccept' : 'friend' }); S.toast(x.status === 'accepted' ? 'Agora vocês são amigos!' : 'Pedido de amizade enviado', '#9cf09c'); G.refreshFriends(); } }); }, { off: !!fr && fr.status !== 'incoming', bg: '#3a9a5a', fs: 16 });
-      this.btn(486, y, 170, 36, '👥 Convidar p/ grupo', () => { if (!net.partyCode) this._newParty(); net.sendTo(r.id, { k: 'party', code: net.partyCode }); S.toast('Convite de grupo enviado', '#8fd0ff'); }, { bg: '#33355a', fs: 16 }); });
+      this.btn(620, y, 38, 36, '🚩', () => this._report(r.id, r.meta.name), { bg: '#8a3a3a', fs: 16 }); this.btn(486, y, 130, 36, '👥 Convidar', () => { if (!net.partyCode) this._newParty(); net.sendTo(r.id, { k: 'party', code: net.partyCode }); S.toast('Convite de grupo enviado', '#8fd0ff'); }, { bg: '#33355a', fs: 16 }); });
   },
   s_friends() {
     this.text(20, 122, 'Seu código de amigo: ' + net.friendCode, { fs: 18, c: '#ffd76a' }); this.btn(480, 104, 268, 36, '+ Adicionar por código', () => this.keyboard('Código do amigo', '', 6, (t) => { net.rpc('rv_friend_add', { p_code: t }).then((x) => { if (x.ok) { net.sendTo(x.id, { k: x.status === 'accepted' ? 'faccept' : 'friend' }); S.toast('Pedido enviado para ' + x.name, '#9cf09c'); G.refreshFriends(); } else S.toast('Código não encontrado', '#ff9a8a'); }).catch(() => S.toast('Erro ao adicionar', '#ff9a8a')); }, 'social'), { bg: '#3a9a5a', fs: 16 });
@@ -474,7 +474,7 @@ export const ui = {
     if (!admin.is) { this.page = 'map'; return; }
     const a = this.adm || (this.adm = { sub: 'msg', tgt: 'all', dur: 120, qty: 5, boss: false, ip: 0 }), mk = G.def.netKey || G.mapId;
     const done = (p) => p.then((e) => { this.msg = e || '✔ Enviado'; this.dirty = true; });
-    [['msg', '📢 Mensagem'], ['spawn', '🎁 Spawnar'], ['fx', '✨ Efeitos'], ['ev', '🎉 Eventos'], ['pl', '👥 Jogadores']].forEach((t, i) => this.btn(20 + i * 147, 62, 142, 36, t[1], () => { a.sub = t[0]; this.scroll = 0; this.msg = ''; }, { sel: a.sub === t[0], bg: '#5a4510', fs: 16 }));
+    [['msg', '📢 Mensagem'], ['spawn', '🎁 Spawnar'], ['fx', '✨ Efeitos'], ['ev', '🎉 Eventos'], ['pl', '👥 Jogadores'], ['rep', '🚩 Denúncias' + (admin.reports && admin.reports.length ? ' (' + admin.reports.length + ')' : '')], ['ban', '⛔ Banidos']].forEach((t, i) => this.btn(20 + i * 105, 62, 101, 36, t[1], () => { a.sub = t[0]; this.scroll = 0; this.msg = ''; if (t[0] === 'rep') admin.loadReports(); if (t[0] === 'ban') admin.loadBans(); }, { sel: a.sub === t[0], bg: '#5a4510', fs: 13 }));
     const T = (y) => { this.text(20, y + 18, 'Alvo:', { fs: 16, c: '#ffd76a' }); [['me', '🙋 Só eu'], ['map', '🗺 Este mapa'], ['all', '🌍 Todo mundo']].forEach((o, i) => this.btn(80 + i * 140, y, 134, 36, o[1], () => { a.tgt = o[0]; }, { sel: a.tgt === o[0], bg: '#33355a', fs: 15 })); };
     const D = (y, x0) => { this.text(x0, y + 18, 'Duração:', { fs: 16, c: '#ffd76a' }); [[30, '30 s'], [120, '2 min'], [300, '5 min'], [600, '10 min']].forEach((o, i) => this.btn(x0 + 84 + i * 76, y, 72, 36, o[1], () => { a.dur = o[0]; }, { sel: a.dur === o[0], bg: '#33355a', fs: 15 })); };
     const target = () => (a.tgt === 'all' ? 'all' : 'map:' + mk);
@@ -507,20 +507,53 @@ export const ui = {
       D(108, 20); this.text(420, 126, 'Eventos valem para todos, em todos os mapas.', { fs: 13, b: false, c: '#99a' });
       EVENTS_ADM.forEach((e, i) => { const y = 152 + Math.floor(i / 2) * 64, x = 20 + (i % 2) * 368, on = admin.eventOn(e[0]); this.btn(x, y, 360, 58, '', () => done(admin.send('event', 'all', { ev: e[0] }, a.dur)), { bg: on ? '#8a6a10' : '#4a5cc8', sel: on }); this.text(x + 14, y + 20, e[1] + (on ? '  (ativo)' : ''), { fs: 18 }); this.text(x + 14, y + 42, e[2], { fs: 13, b: false, c: '#dfe6ff', max: 330 }); });
       this.btn(20, 412, 360, 40, '⏹ Encerrar evento e efeitos de todos', () => done(admin.send('stop', 'all', {}, 1)), { bg: '#8a4a4a', fs: 15 });
-    } else {
+    } else if (a.sub === 'pl') {
       const list = Array.from(G.remotes.values()); this.text(20, 118, 'Neste mapa (' + list.length + '):', { fs: 15, c: '#ffd76a' }); const P = this.player;
-      list.slice(0, 5).forEach((r, i) => { const y = 132 + i * 44; this.text(24, y + 18, r.meta.name + ' (Nv ' + (r.meta.level || 1) + ')', { fs: 15, max: 200 });
-        this.btn(228, y, 96, 36, '➡ Ir até', () => { const p = r.av.root.position; P.teleport(p.x + 1, p.y + 0.2, p.z + 1); this.hide(); }, { bg: '#33355a', fs: 14 });
+      list.slice(0, 5).forEach((r, i) => { const y = 132 + i * 44; this.text(24, y + 18, r.meta.name + ' (Nv ' + (r.meta.level || 1) + ')', { fs: 14, max: 120 });
+        this.btn(146, y, 76, 36, '⛔ Banir', () => this._ban(r.id, r.meta.name), { bg: '#b04050', fs: 13 }); this.btn(228, y, 96, 36, '➡ Ir até', () => { const p = r.av.root.position; P.teleport(p.x + 1, p.y + 0.2, p.z + 1); this.hide(); }, { bg: '#33355a', fs: 14 });
         this.btn(330, y, 104, 36, '⬅ Puxar', () => done(admin.send('tp', 'p:' + r.id, { map: mk, x: P.pos.x + 1, y: P.pos.y, z: P.pos.z + 1 })), { bg: '#33355a', fs: 14 });
         this.btn(440, y, 104, 36, '🎁 +100', () => done(admin.send('give', 'p:' + r.id, { coins: 100 })), { bg: '#3a9a5a', fs: 14 });
         this.btn(550, y, 96, 36, '❤ Curar', () => done(admin.send('effect', 'p:' + r.id, { fx: 'heal' })), { bg: '#3a9a5a', fs: 14 });
         this.btn(652, y, 96, 36, '🚪 Vila', () => done(admin.send('kick', 'p:' + r.id, {})), { bg: '#8a4a4a', fs: 14 }); });
       const lob = Object.keys(net.lobbyState).filter((k) => k !== net.id).map((k) => Object.assign({ id: k }, net.lobbyState[k][0])); this.text(20, 368, 'Online em outros lugares (' + lob.length + '):', { fs: 15, c: '#ffd76a' });
-      lob.slice(0, 2).forEach((p, i) => { const y = 380 + i * 40; this.text(24, y + 16, (p.n || 'Gato') + ' — ' + (MAPS[p.m] ? MAPS[p.m].name : p.m || '?'), { fs: 14, max: 380 }); if (p.m) this.btn(420, y, 150, 34, '➡ Ir para o mapa', () => { this.hide(); this._goMap(p.m); }, { bg: '#33355a', fs: 13 }); this.btn(578, y, 170, 34, '⬅ Puxar p/ cá', () => done(admin.send('tp', 'p:' + p.id, { map: mk, x: P.pos.x + 1, y: P.pos.y, z: P.pos.z + 1 })), { bg: '#33355a', fs: 13 }); });
-      this.text(20, 470, '"Vila" e "Puxar" dependem do jogo do jogador obedecer: não é um banimento.', { fs: 12, b: false, c: '#99a', max: W - 40 });
+      lob.slice(0, 2).forEach((p, i) => { const y = 380 + i * 40; this.text(24, y + 16, (p.n || 'Gato') + ' — ' + (MAPS[p.m] ? MAPS[p.m].name : p.m || '?'), { fs: 14, max: 380 }); if (p.m) this.btn(420, y, 150, 34, '➡ Ir para o mapa', () => { this.hide(); this._goMap(p.m); }, { bg: '#33355a', fs: 13 }); this.btn(672, y, 76, 34, '⛔ Banir', () => this._ban(p.id, p.n || 'Gato'), { bg: '#b04050', fs: 13 }); this.btn(578, y, 90, 34, '⬅ Puxar', () => done(admin.send('tp', 'p:' + p.id, { map: mk, x: P.pos.x + 1, y: P.pos.y, z: P.pos.z + 1 })), { bg: '#33355a', fs: 13 }); });
+      this.text(20, 470, '"Vila" e "Puxar" dependem do jogo do jogador obedecer. O ⛔ Banir vale no servidor.', { fs: 12, b: false, c: '#99a', max: W - 40 });
+    } else if (a.sub === 'rep') {
+      const L = admin.reports; if (!L) { this.text(20, 140, 'Carregando denúncias…', { c: '#bfe6ff' }); if (!this._repAsk) { this._repAsk = 1; admin.loadReports(); } return; } this._repAsk = 0;
+      this.btn(600, 104, 148, 32, '↻ Atualizar', () => admin.loadReports(), { bg: '#33355a', fs: 14 }); this.text(20, 120, L.length ? L.length + ' denúncia(s) aberta(s)' : 'Nenhuma denúncia aberta. 🎉', { fs: 16, c: '#ffd76a' });
+      const off = this.pager(L.length, 4, 470); L.slice(off, off + 4).forEach((r, i) => { const y = 142 + i * 80, gg = this.g; gg.fillStyle = 'rgba(255,255,255,0.06)'; roundRect(gg, 20, y, W - 40, 74, 10); gg.fill();
+        const why = { ofensa: 'Xingamento', assedio: 'Assédio', trapaca: 'Trapaça', nome: 'Nome impróprio', spam: 'Spam', outro: 'Outro' }[r.reason] || r.reason;
+        this.text(32, y + 16, '🚩 ' + r.target_name + (r.n > 1 ? '  (' + r.n + ' denúncias)' : '') + '  —  ' + why, { fs: 16, c: '#ff9a8a', max: 470 }); this.text(32, y + 38, 'por ' + r.reporter_name + (r.details ? ': ' + r.details : ''), { fs: 13, b: false, max: 470 });
+        this.text(32, y + 58, (r.chat && r.chat.length ? '💬 "' + r.chat.slice(-2).join('" "') + '"' : 'sem mensagens no chat'), { fs: 12, b: false, c: '#bfe6ff', max: 470 });
+        this.btn(512, y + 8, 116, 58, '⛔ Banir', () => this._ban(r.target, r.target_name), { bg: '#b04050', fs: 15 }); this.btn(634, y + 8, 106, 58, '✔ Resolvida', () => admin.closeReport(r.id), { bg: '#3a9a5a', fs: 14 }); });
+    } else if (a.sub === 'ban') {
+      const L = admin.bans; if (!L) { this.text(20, 140, 'Carregando…', { c: '#bfe6ff' }); if (!this._banAsk) { this._banAsk = 1; admin.loadBans(); } return; } this._banAsk = 0;
+      this.text(20, 120, L.length ? L.length + ' jogador(es) banido(s)' : 'Ninguém banido agora.', { fs: 16, c: '#ffd76a' });
+      const off = this.pager(L.length, 6, 470); L.slice(off, off + 6).forEach((b, i) => { const y = 140 + i * 52; this.text(24, y + 14, '⛔ ' + b.name + '  —  ' + (b.reason || 'sem motivo'), { fs: 15, max: 520 }); this.text(24, y + 36, (b.until ? 'até ' + new Date(b.until).toLocaleString() : 'permanente') + ' · por ' + b.by_name, { fs: 12, b: false, c: '#99a', max: 520 });
+        this.btn(600, y + 4, 148, 40, '✅ Desbanir', () => admin.unban(b.id).then((e) => S.toast(e || '✅ ' + b.name + ' desbanido', e ? '#ff9a8a' : '#9cf09c')), { bg: '#3a9a5a', fs: 15 }); });
     }
   },
   // ---------- Criador de Mapas ----------
+  _report(id, name) { this.rep = { id, name, reason: '' }; this.show('report'); },
+  p_report() {
+    const R = this.rep || {}; this.text(20, 34, '🚩 Denunciar ' + (R.name || ''), { fs: 24, c: '#ff9a8a' }); this.text(20, 72, 'Escolha o motivo. A denúncia vai para o admin com as últimas mensagens desse jogador.', { fs: 15, b: false, c: '#dfe6ff', max: W - 40 });
+    const reasons = [['ofensa', '🤬 Xingamento ou ofensa'], ['assedio', '😠 Assédio ou bullying'], ['trapaca', '🎮 Trapaça ou hack'], ['nome', '🏷 Nome ou visual impróprio'], ['spam', '📢 Spam'], ['outro', '❓ Outro motivo']];
+    reasons.forEach((x, i) => this.btn(20 + (i % 2) * 368, 100 + Math.floor(i / 2) * 64, 360, 56, x[1], () => { R.reason = x[0]; }, { sel: R.reason === x[0], bg: '#4a4a6a', fs: 18 }));
+    this.btn(20, 310, 360, 50, R.details ? '✏ Detalhes: ' + R.details : '✏ Escrever detalhes (opcional)', () => this.keyboard('Detalhes da denúncia', R.details || '', 120, (t) => { R.details = t; this.show('report'); }, 'report'), { bg: '#33355a', fs: 15 });
+    this.btn(388, 310, 360, 50, '🚩 Enviar denúncia', () => { if (!R.reason) { this.msg = 'Escolha um motivo'; return; } const chat = G.chatLog.filter((m) => m.who === R.name).slice(-6).map((m) => String(m.text).slice(0, 80));
+      admin.report(R.id, R.reason, R.details || '', G.def.netKey || G.mapId, chat).then((e) => { S.toast(e || '🚩 Denúncia enviada. Obrigado por ajudar!', e ? '#ff9a8a' : '#9cf09c'); }); this.show('social'); }, { off: !R.reason, bg: '#b04050', fs: 18 });
+    this.text(20, 392, 'Se alguém te incomodar, você também pode silenciar (🔇) em Social > Jogadores.', { fs: 14, b: false, c: '#99a', max: W - 40 });
+    this.btn(20, 440, 200, 44, '◀ Voltar', () => this.show('social'), { bg: '#33355a' });
+  },
+  _ban(id, name) { this.banT = { id, name, mins: 1440, reason: 'Xingamento' }; this.show('banpick'); },
+  p_banpick() {
+    const B = this.banT || {}; this.text(20, 34, '⛔ Banir ' + (B.name || ''), { fs: 24, c: '#ff9a8a' });
+    this.text(20, 74, 'Motivo:', { fs: 16, c: '#ffd76a' }); ['Xingamento', 'Assédio', 'Trapaça', 'Nome impróprio', 'Spam', 'Outro'].forEach((r, i) => this.btn(20 + (i % 3) * 245, 88 + Math.floor(i / 3) * 50, 238, 42, r, () => { B.reason = r; }, { sel: B.reason === r, bg: '#4a4a6a', fs: 16 }));
+    this.text(20, 210, 'Duração:', { fs: 16, c: '#ffd76a' }); [[60, '1 hora'], [1440, '1 dia'], [10080, '7 dias'], [0, 'Permanente']].forEach((d, i) => this.btn(20 + i * 184, 224, 178, 46, d[1], () => { B.mins = d[0]; }, { sel: B.mins === d[0], bg: '#4a4a6a', fs: 17 }));
+    this.wrap(20, 296, 'O banimento vale no servidor: a pessoa não consegue entrar, salvar nem aparecer para os outros até o prazo acabar.', W - 40, 20, { fs: 14, b: false, c: '#dfe6ff' });
+    this.btn(20, 360, 360, 56, '⛔ Confirmar banimento', () => { admin.ban(B.id, B.mins, B.reason).then((e) => S.toast(e || '⛔ ' + B.name + ' foi banido', e ? '#ff9a8a' : '#ffd76a')); this.show('admin'); }, { bg: '#b04050', fs: 19 });
+    this.btn(388, 360, 360, 56, '◀ Cancelar', () => this.show('admin'), { bg: '#33355a', fs: 18 });
+  },
   _visit(id, name) { this.hide(); home.visit(G, id, name).then((e) => { if (e) S.toast(e, '#ff9a8a'); }).catch(() => S.toast('Não foi possível abrir a casa', '#ff9a8a')); },
   _goMap(m) { if (!m) return; if (m.indexOf('h_') === 0) { this._visit(m.slice(2)); return; } if (m.indexOf('c_') === 0) { maker.play(G, m.slice(2), false).then((e) => { if (e) S.toast(e, '#ff9a8a'); }).catch(() => S.toast('Não foi possível abrir o mapa', '#ff9a8a')); return; } if (!MAPS[m]) return; if (S.d.maps.indexOf(m) < 0) S.d.maps.push(m); G.travel(m); },
   _mkLoad() { const k = this.mk || (this.mk = { sub: maker.playing && maker.mine ? 'ed' : 'com', sort: 'new', list: null, mine: null, err: '' }); if (!net.online) { k.err = 'Offline: só o rascunho local está disponível.'; return; }
