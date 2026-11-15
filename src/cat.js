@@ -3,7 +3,7 @@ import { clamp } from './util.js';
 
 // Gato low-poly procedural: UMA malha por gato; pernas, cabeça e cauda são
 // animadas no vertex shader (atributos aPart/aPivot), então cada gato custa 1 draw call.
-export const PATTERNS = ['Liso', 'Barriga clara', 'Siamês', 'Tigrado', 'Malhado', 'Meias'];
+export const PATTERNS = ['Liso', 'Barriga clara', 'Siamês', 'Tigrado', 'Malhado', 'Meias', '🐶 Cachorrinho'];
 export const HATS = ['Nenhum', 'Cartola', 'Coroa', 'Laço', 'Chapéu de palha', 'Capacete de minerador', 'Gorro', 'Bandana pirata', 'Chapéu de mago', 'Auréola', 'Chapéu de chef', 'Quepe de policial', 'Capacete de bombeiro'];
 export const FUR_COLORS = ['#f2a65a', '#3b3b45', '#f5f1e8', '#8a8f98', '#c9793d', '#6b4a36', '#e8c27a', '#b8b0d8', '#7fb7c9', '#e39ab0', '#5d8f5a', '#d9d9d9'];
 export const EYE_COLORS = ['#58c26a', '#4aa3e0', '#e0b030', '#c86a2a', '#9b6ad6', '#e0e0e0'];
@@ -88,6 +88,7 @@ function angelGeos() {
 }
 export function buildCatGeometry(look, extra) {
   const burnt = !!(extra && extra.burnt); look = cleanLook(look); const angel = !!look.angel; if (angel) look = Object.assign({}, look, ANGEL_LOOK); // 😇 Gato-Anjo: sempre o laranja rajado de camisa azul do Keyboard Cat
+  if (look.pattern === 6) look = Object.assign({}, look, { fur: '#e2bf8e', fur2: '#efd6b0' }); /* 🐶 homenagem ao cachorrinho de um jogador (filhote enrugado cor de areia) */
   if (look.inf) look = Object.assign({}, look, { fur: sick(look.fur), fur2: sick(look.fur2, 0.4) }); // infectado: pelo doente
   const b = new Builder(AGE_HEAD[look.age]), pt = look.pattern, LZ = LASERS[look.laser][1];
   const fur = rgb(look.fur), dark = rgb(look.fur, 0.72), f2 = rgb(look.fur2), pink = [236, 140, 160], eye = rgb(look.eyes), black = [30, 28, 34];
@@ -124,11 +125,12 @@ export function buildCatGeometry(look, extra) {
   if (!LZ && !look.inf) { b.box(0.03, 0.075, 0.02, -0.11, 0.99, -0.215, black, 1, NECK); b.box(0.03, 0.075, 0.02, 0.11, 0.99, -0.215, black, 1, NECK); }
   if (pt === 3) { b.box(0.05, 0.02, 0.2, -0.09, 1.125, -0.05, dark, 1, NECK); b.box(0.05, 0.02, 0.2, 0, 1.125, -0.05, dark, 1, NECK); b.box(0.05, 0.02, 0.2, 0.09, 1.125, -0.05, dark, 1, NECK); }
   if (pt === 4) b.box(0.2, 0.2, 0.02, 0.12, 1.02, 0.165, rgb('#3b3b45'), 1, NECK);
-  // orelhas
+  // orelhas (o cachorrinho tem orelhas caídas, focinho escuro e rugas na testa)
+  if (pt === 6) { const mz = [110, 92, 100]; for (const sx of [-1, 1]) b.box(0.09, 0.15, 0.03, sx * 0.2, 1.06, -0.03, dark, 1, NECK, 1, 0, sx * 0.25); b.box(0.17, 0.11, 0.07, 0, 0.88, -0.22, mz, 1, NECK); b.box(0.06, 0.035, 0.02, 0, 0.92, -0.258, [70, 58, 64], 1, NECK); for (let i = 0; i < 3; i++) b.box(0.16 - i * 0.03, 0.012, 0.012, 0, 1.06 + i * 0.03, -0.205, dark, 1, NECK); } else {
   b.cone(0.085, 0.16, 4, -0.14, 1.19, -0.02, earC, 1, NECK, Math.PI / 4); b.cone(0.085, 0.16, 4, 0.14, 1.19, -0.02, earC, 1, NECK, Math.PI / 4);
   b.cone(0.045, 0.1, 4, -0.14, 1.17, -0.05, pink, 1, NECK, Math.PI / 4); b.cone(0.045, 0.1, 4, 0.14, 1.17, -0.05, pink, 1, NECK, Math.PI / 4);
   // bigodes
-  b.box(0.16, 0.008, 0.008, -0.2, 0.88, -0.2, [245, 245, 245], 1, NECK); b.box(0.16, 0.008, 0.008, 0.2, 0.88, -0.2, [245, 245, 245], 1, NECK);
+  b.box(0.16, 0.008, 0.008, -0.2, 0.88, -0.2, [245, 245, 245], 1, NECK); b.box(0.16, 0.008, 0.008, 0.2, 0.88, -0.2, [245, 245, 245], 1, NECK); }
   // pernas (patas traseiras; sem braços — as mãos são bolinhas flutuantes)
   const HL = [-0.1, 0.34, 0], HR = [0.1, 0.34, 0];
   b.box(0.13, 0.26, 0.15, -0.1, 0.21, 0, legC, 2, HL); b.box(0.15, 0.09, 0.2, -0.1, 0.045, -0.03, pawC, 2, HL);
